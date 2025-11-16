@@ -8,7 +8,7 @@ import mdx from "@astrojs/mdx";
 export default defineConfig({
   output: 'server',
   adapter: cloudflare({
-    imageService: 'cloudflare', // This is where the setting is used
+    imageService: 'passthrough', // This is where the setting is used
   }),
   site: 'https://docs.signalrange.space',
   integrations: [starlight({
