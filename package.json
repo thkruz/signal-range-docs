@@ -3,13 +3,14 @@
   "type": "module",
   "version": "1.0.0",
   "scripts": {
-    "dev": "astro dev",
+    "dev": "npm run astro:dev",
+    "astro:dev": "astro dev",
+    "wrangler:dev": "wrangler dev",
     "start": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "wrangler:dev": "wrangler dev",
-    "wrangler:deploy": "wrangler deploy"
+    "deploy": "wrangler deploy"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
