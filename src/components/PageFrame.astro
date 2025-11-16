@@ -1,7 +1,7 @@
 ---
 export const prerender = false;  // 👈 this page is now server-rendered
 
-import type { Props } from "@astrojs/starlight/props";
+import type { StarlightRouteData } from '@astrojs/starlight/route-data';
 import Default from "@astrojs/starlight/components/PageFrame.astro";
 
 // Server-side check for content-only mode (no flickering!)
@@ -16,7 +16,7 @@ const contentOnly = url.searchParams.get("content-only") === "true";
   </div>
 ) : (
   <!-- Normal mode: Use default layout with header and sidebar -->
-  <Default {...Astro.props}>
+  <Default {...Astro.locals.starlightRoute as StarlightRouteData}>
     <slot name="header" slot="header" />
     <slot name="sidebar" slot="sidebar" />
     <slot />

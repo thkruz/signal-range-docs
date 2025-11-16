@@ -1,15 +1,24 @@
 {
 	// Cloudflare Workers configuration for signal-range
-	// Migrated from Cloudflare Pages to Workers with static assets support
+	// Astro SSR with Cloudflare adapter
 	"name": "signal-range-docs",
+	"main": "dist/_worker.js/index.js",
 	// Compatibility date - using a recent date for latest features
 	"compatibility_date": "2025-11-01",
+	// Enable Node.js compatibility layer
+	"compatibility_flags": [
+		"nodejs_compat",
+		"global_fetch_strictly_public"
+	],
 	// Static assets configuration
-	// This project is assets-only (no Workers script), so we only need the assets directory
 	"assets": {
+		"binding": "ASSETS",
 		"directory": "./dist",
-		"html_handling": "force-trailing-slash",
-		"not_found_handling": "404-page"
+		"html_handling": "none",
+		"not_found_handling": "none"
+	},
+	"observability": {
+		"enabled": true
 	},
 	// Map to your custom domain
 	"routes": [

@@ -7,7 +7,9 @@ import mdx from "@astrojs/mdx";
 // https://astro.build/config
 export default defineConfig({
   output: 'server',
-  adapter: cloudflare(),
+  adapter: cloudflare({
+    imageService: 'cloudflare', // This is where the setting is used
+  }),
   site: 'https://docs.signalrange.space',
   integrations: [starlight({
     prerender: false,
