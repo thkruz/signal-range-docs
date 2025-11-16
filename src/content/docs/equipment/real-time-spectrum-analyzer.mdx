@@ -1,0 +1,305 @@
+---
+title: Real-Time Spectrum Analyzer
+description: A beginner's guide to using the Real-Time Spectrum Analyzer in SignalRange
+lastUpdated: 2025-11-15
+---
+
+import { Steps } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+
+The Real-Time Spectrum Analyzer (RTSA) is one of the most essential diagnostic tools in RF engineering. It displays the frequency content of signals — showing you "what frequencies are present and how strong they are" at any point in your signal chain. Think of it as an oscilloscope for the frequency domain: where an oscilloscope shows voltage vs time, a spectrum analyzer shows power vs frequency.
+
+In satellite communications, you're working with signals at gigahertz frequencies that are invisible to oscilloscopes. The spectrum analyzer lets you see these signals, measure their power and bandwidth, verify frequencies are correct, identify interference, troubleshoot problems, and optimize system performance. Without a spectrum analyzer, you're essentially working blind — you can't see what signals are actually present or how your equipment is performing.
+
+### Display modes
+The RTSA provides three visualization modes:
+
+- **Spectral Density** - Traditional frequency domain display. Horizontal axis is frequency, vertical axis is power (dBm). Signals appear as peaks. This is the primary mode for analyzing signal characteristics, measuring power levels, and identifying specific frequencies. Updates in real-time showing the current spectrum.
+- **Waterfall** - Time-frequency display. Horizontal axis is frequency, vertical axis is time (newest at top, scrolling down). Power is shown as color: dark blue = low power, bright red = high power. This mode reveals how signals change over time, making it easy to spot intermittent signals, frequency hopping, drift, or transient events that would be missed in spectral density mode.
+- **Both** - Split screen showing spectral density on top and waterfall on bottom simultaneously. Combines the detailed amplitude measurement of spectral density with the time-history visibility of waterfall. Best for comprehensive signal analysis.
+
+### Key controls and settings
+
+- **Center Frequency (CF)** - The frequency at the horizontal center of the display. For example, if CF = 4.2 GHz, the display is centered on 4.2 GHz. Adjust this to move the viewing window to different parts of the spectrum. Range: 5 kHz to 25.5 GHz.
+- **Span** - The total frequency range displayed. If span = 100 MHz and CF = 4.2 GHz, you're viewing from 4.15 GHz to 4.25 GHz (CF ± span/2). Narrower span gives more frequency resolution and detail. Wider span shows more of the spectrum at once but less detail.
+- **Reference Level** - The power level (in dBm) at the top of the amplitude scale. Signals above this are clipped. Signals well below it are hard to see. Adjust to optimize display for your signal levels.
+- **Amplitude Range (Min/Max)** - The vertical scale in dBm. For example, max = -40 dBm, min = -100 dBm gives a 60 dB dynamic range. Signals between -40 and -100 dBm are visible. Signals below -100 dBm disappear into the noise floor. Signals above -40 dBm clip at the top.
+- **RBW (Resolution Bandwidth)** - The bandwidth of the analyzer's internal filter. Narrower RBW provides better frequency resolution (can separate closely-spaced signals) but slower sweep speed. Wider RBW is faster but lower resolution. Typical: 1 kHz to 10 MHz.
+- **Tap Points (A and B)** - Where in the signal chain the analyzer is connected. You can monitor multiple tap points simultaneously to see signals at different stages (e.g., before and after amplification, before and after filtering). Tap A and Tap B buttons enable/disable each tap.
+
+### Understanding the display
+
+**Spectral Density Plot:**
+
+- **X-axis (horizontal)** - Frequency in Hz, kHz, MHz, or GHz. Labels show frequencies across the span. Left edge = CF - span/2, right edge = CF + span/2, center = CF.
+- **Y-axis (vertical)** - Power in dBm (decibels relative to 1 milliwatt). Labels on left show power levels from minAmplitude (bottom) to maxAmplitude (top).
+- **Yellow trace** - Noise floor. This is the baseline power level from thermal noise and system noise. Signals must be above this to be detectable. Typically around -100 to -110 dBm depending on bandwidth and system noise temperature.
+- **Colored peaks** - Actual signals. Height indicates power, width indicates bandwidth. In developer mode, different signals are colored differently for identification.
+- **Green trace (if enabled)** - Max hold or min hold. Shows the maximum or minimum value seen at each frequency over time. Useful for capturing transient signals or finding worst-case noise.
+- **Red diamond marker (if enabled)** - Indicates a peak signal. Shows frequency and power level. Use marker controls to move between different peaks.
+
+**Waterfall Display:**
+
+- **X-axis (horizontal)** - Frequency, same as spectral density.
+- **Y-axis (vertical)** - Time, with newest data at top, oldest at bottom. The display scrolls down continuously as new data arrives. Each horizontal line represents one "sweep" or snapshot of the spectrum.
+- **Color scale** - Represents power:
+  - Dark blue/black: low power (near noise floor)
+  - Cyan/light blue: moderate power
+  - Green: medium-high power
+  - Yellow: high power
+  - Red/bright red: very high power (strongest signals)
+- **Vertical streaks** - Continuous signals at a fixed frequency. A vertical cyan line means a steady signal at that frequency.
+- **Horizontal streaks** - Wideband signals or interference across many frequencies.
+- **Diagonal lines** - Frequency drift or sweeping signals. The angle shows the rate of frequency change.
+- **Intermittent spots** - On-off signals, bursts, or transients. Visible in waterfall but might be missed in spectral density.
+
+### What are tap points?
+Your RF signal chain has multiple stages: antenna → OMT → LNA → LNB (downconversion to IF) → filter → receiver, and on transmit: modem → BUC (upconversion to RF) → HPA → OMT → antenna. The spectrum analyzer can "tap" into this chain at different points to see signals at each stage.
+
+Available tap points include:
+
+- **TX IF** - Transmit IF signals from modems before upconversion
+- **Post-BUC Pre-HPA** - RF signals after BUC, before final amplification
+- **Post-HPA** - Final transmit signals after high power amplification
+- **Pre-OMT Post-Antenna (RX)** - Received RF from antenna before any processing
+- **Post-OMT Pre-LNA (RX)** - After polarization separation, before amplification
+- **Post-LNA** - After low noise amplification, still at RF
+- **RX IF** - Final receive IF after downconversion and filtering
+
+**Why monitor multiple tap points?** You can compare before/after stages to verify gain, check for distortion, identify where problems occur, and measure filter performance. For example, comparing Pre-LNA and Post-LNA shows the LNA's gain. Comparing Post-BUC and Post-HPA shows HPA amplification.
+
+### Control panel operation
+The spectrum analyzer uses a physical-style control panel (opened with the gear button). Unlike typing numbers, you press buttons to enter values — mimicking real spectrum analyzer equipment.
+
+**Main control buttons (top rows):**
+
+- **FREQ** - Select to adjust center frequency
+- **SPAN** - Select to adjust frequency span
+- **AMPT** - Select to adjust amplitude/reference level
+- **MKR / MKR2** - Marker controls for identifying peaks
+- **BW** - Resolution bandwidth settings
+- **SWEEP** - Sweep time and mode
+- **TRACE** - Trace settings (max hold, min hold, averaging)
+- **MODE** - Display mode (spectral, waterfall, both)
+
+**Number pad and units:**
+
+- Press **0-9** to enter digits
+- Press **.** for decimal point
+- Press **GHz, MHz, kHz, or Hz** to select units and submit the value
+- Press **Backspace** to delete last digit
+- Press **Esc** to clear input
+- Press **✓ (Enter)** to confirm
+
+**Example: Setting center frequency to 4.25 GHz**
+
+1. Click **FREQ** button (selects center frequency control)
+2. Press **4**, **.**, **2**, **5**
+3. Press **GHz** button (sets units and submits)
+4. Display now centered on 4.25 GHz
+
+**Rotary knobs:**
+
+- **Minor Tick** - Fine adjustment (small increments)
+- **Major Tick** - Coarse adjustment (large increments)
+- Select a control (FREQ, SPAN, AMPT, etc.) then turn knobs to adjust without entering numbers
+
+### Marker functionality
+Markers identify and measure specific signals or frequencies. When markers are enabled, the analyzer automatically finds peaks (local maxima) in the spectrum and places markers on them.
+
+- **Enabling markers:** Use MKR button in control panel. A red diamond appears on the strongest signal.
+- **Marker readout:** Shows frequency (in MHz) and power (in dBm) of the marked signal. Displayed above the marker on the plot.
+- **Multiple markers:** The analyzer tracks up to 10 peaks. Use MKR2 or marker navigation to cycle between them.
+- **Peak tracking:** Markers automatically update as signals move or change power. If a signal drifts in frequency, the marker follows it.
+
+### Max hold and min hold
+
+**Max Hold:**
+
+- Captures and displays the maximum power seen at each frequency over time
+- Useful for finding intermittent signals, measuring peak power, or capturing transients
+- Green trace shows the highest value reached at each frequency point
+- Keeps rising as higher peaks occur, never decreases unless reset
+- Enable with TRACE button in control panel
+
+**Min Hold:**
+
+- Captures and displays the minimum power seen at each frequency over time
+- Useful for finding noise floor variations or gaps in signals
+- Green trace shows the lowest value reached at each frequency point
+- Keeps falling as lower values occur, never increases unless reset
+- Enable with TRACE button (select min hold option)
+
+When to use max/min hold: Max hold is valuable when troubleshooting - you can leave it running while manipulating equipment, and any signal that briefly appears will be captured. Min hold helps characterize noise floor stability or verify signals don't have unexpected dropouts.
+
+### Auto-tune functionality
+Auto-tune automatically adjusts the spectrum analyzer settings to optimally display the strongest signal within the current span. When activated:
+
+1. Finds the strongest signal in the current frequency range
+2. Centers the display on that signal's frequency
+3. Adjusts span to 1.1× the signal's bandwidth (giving 10% margin)
+4. Sets amplitude range to fit the signal:
+   - Max amplitude = signal power rounded up to nearest 10 dB
+   - Min amplitude = noise floor minus 6 dB
+
+**Use auto-tune when:** You're searching for a signal but don't know its exact frequency, you want to quickly optimize display for best visibility, or you need to verify a signal is present without manual adjustments.
+
+**Limitation:** If no signal is above the noise floor, auto-tune picks a random frequency within the span. Always verify you're looking at a real signal, not just noise.
+
+### Understanding noise floor
+The noise floor is the baseline power level you see even when no signals are present. It comes from thermal noise (kTB, where k is Boltzmann's constant, T is temperature, B is bandwidth) and system noise (LNA noise figure, cable losses, etc.).
+
+**Noise floor formula:** Noise power (dBm) = -174 dBm/Hz + 10×log₁₀(T/290) + 10×log₁₀(B) + NF, where T is system noise temperature in Kelvin, B is bandwidth in Hz, and NF is noise figure in dB.
+
+**Why it matters:** Your signal must be above the noise floor to be detected. The difference between signal power and noise floor is your signal-to-noise ratio (SNR). If SNR is too low (\<10 dB typically), the signal is unusable.
+
+**Noise floor varies with:**
+
+- **Bandwidth:** Doubling bandwidth increases noise floor by 3 dB
+- **System temperature:** Higher temperature = higher noise floor
+- **Gain:** Noise floor rises with LNA/amplifier gain
+- **Tap point:** Later in the receive chain typically has higher noise floor due to accumulated noise figure
+
+The analyzer automatically calculates and displays the correct noise floor (yellow trace) based on the tap point, bandwidth, and system parameters. This is essential for accurate signal analysis.
+
+### Common usage scenarios
+
+**1. Verifying transmit signal**
+
+- Set tap to "Post-BUC Pre-HPA" or "RX IF" (if using loopback)
+- Center frequency on expected transmit frequency
+- Set span to 2-3× signal bandwidth
+- Check signal appears at correct frequency with expected power and bandwidth
+- Look for spurious emissions (unwanted signals at other frequencies)
+
+**2. Checking received signal quality**
+
+- Set tap to "RX IF" (final receive output)
+- Auto-tune to find signal
+- Verify signal power is at least 10 dB above noise floor
+- Check signal shape is smooth (no distortion or ripple)
+- Enable max hold to check for dropouts or fading
+
+**3. Measuring gain**
+
+- Enable both tap A and tap B, placing them before and after the amplifier
+- Use markers to measure signal power at each tap point
+- Gain (dB) = Power_after - Power_before
+- For example, -70 dBm after and -120 dBm before = 50 dB gain
+
+**4. Finding interference**
+
+- Set wide span (several hundred MHz) to survey large frequency range
+- Use waterfall mode to see intermittent interference over time
+- Narrow span around interfering signal to analyze in detail
+- Enable max hold to capture brief interference bursts
+
+**5. Verifying filter performance**
+
+- Use wideband signal (or multiple signals across filter passband)
+- Compare spectrum before and after filter using two tap points
+- Verify signals within passband are unaffected (minimal insertion loss)
+- Verify signals outside passband are attenuated (filter rejection working)
+
+### Interpreting common signal characteristics
+
+- **Narrow peak (few kHz wide)** - CW carrier, narrowband voice, or telemetry. Typical: FM voice ~25 kHz, telemetry 10-100 kHz.
+- **Wide peak (MHz to tens of MHz)** - Modulated digital signal. Width approximates symbol rate × 1.2. For example, 10 MHz wide ≈ 8 Msym/s QPSK.
+- **Flat-top peak** - Signal bandwidth fills analyzer's resolution bandwidth. Increase RBW or decrease span to see true signal shape.
+- **Multiple peaks closely spaced** - Multi-carrier signal, adjacent channels, or frequency division multiplexed (FDM) signals.
+- **Peak with side lobes** - Digital modulation with rectangular pulse shaping. Side lobes indicate spectral regrowth or insufficient filtering.
+- **Noisy, irregular peak** - Low SNR signal, interference, or distortion. If SNR < 10 dB, signal quality is poor.
+- **Signal at wrong frequency** - Oscillator error, unlocked LO, or misconfigured equipment. Check BUC/LNB lock status and frequency settings.
+- **Unexpected signals (spurs)** - Harmonics, intermodulation products, or spurious mixer outputs. Usually indicate nonlinearity or poor filtering somewhere in the chain.
+
+### Waterfall patterns and what they mean
+
+- **Vertical line (constant frequency)** - Continuous carrier. Steady signal at fixed frequency. Color indicates power - red/yellow is strong, cyan is moderate.
+- **Vertical line that disappears** - Intermittent signal or burst transmission. On-off pattern. Useful for identifying TDMA or packet-based transmissions.
+- **Diagonal line (sloping up or down)** - Frequency drift. Slope indicates rate of drift in Hz/second. Common during oscillator warm-up or when unlocked. Steep slope = fast drift, shallow slope = slow drift.
+- **Sawtooth pattern (diagonal lines repeating)** - Frequency sweep or chirp. Could be deliberate (spread spectrum) or unintended (unstable oscillator cycling).
+- **Horizontal band** - Wideband noise or interference. Covers many frequencies simultaneously. Could be adjacent satellite, jammers, or RFI from local equipment.
+- **Random speckles** - Thermal noise or low-level interference. Normal background when no signals present. Color should be blue/dark - if it's bright, noise floor is too high.
+- **Regularly spaced vertical lines** - Harmonically related signals. Could be harmonics of a fundamental, or multiple carriers in an FDM system.
+- **Pulsing (brightness changing)** - Amplitude modulation or fading. Signal power varies over time. Common with mobile terminals or due to atmospheric effects.
+
+### Troubleshooting with the spectrum analyzer
+**Problem: No signals visible**
+
+- Check tap points are enabled (A and/or B buttons active)
+- Verify center frequency is correct (are you looking at the right part of spectrum?)
+- Increase span to survey wider range
+- Adjust amplitude range - signals might be present but outside vertical scale
+- Use auto-tune to automatically find and display strongest signal
+- Check upstream equipment is powered and transmitting
+
+**Problem: Signal too weak (barely above noise)**
+
+- Verify antenna is pointed correctly and locked on satellite
+- Check LNA is powered and locked to reference
+- Measure noise floor - if it's abnormally high, there's excessive system noise
+- Compare tap points before/after amplifiers to verify gain is applied
+- Check for cable losses, connector issues, or filter insertion loss
+
+**Problem: Signal at wrong frequency**
+
+- Verify BUC/LNB local oscillator (LO) frequency settings
+- Check if LO is locked to 10 MHz reference (unlocked = frequency drift)
+- Measure frequency error on GPSDO, BUC, LNB modules
+- If signal drifts over time (visible in waterfall), oscillator is unlocked or warming up
+
+**Problem: Distorted signal (unexpected shape)**
+
+- Check for saturation - if signal power too high, amplifiers compress (distortion)
+- Verify HPA back-off is adequate (>3 dB to avoid IMD)
+- Look for intermodulation products (new signals at f1±f2 frequencies)
+- Check filter bandwidth matches signal - too narrow clips the signal
+- Compare multiple tap points to identify which stage introduces distortion
+
+**Problem: Interference visible**
+
+- Use waterfall to determine if interference is continuous or intermittent
+- Check if interference frequency matches harmonics of known signals (2f, 3f, etc.)
+- Verify no adjacent satellite signals are bleeding in (polarization isolation issue?)
+- Test by powering off equipment one by one to isolate source
+- Check if interference moves with center frequency (image frequency, LO spur) or stays fixed (external RFI)
+
+### Best practices
+
+- **Always verify noise floor:** If noise floor seems wrong, check system noise temperature and tap point selection
+- **Use appropriate span:** Too wide and you lose resolution, too narrow and you miss context. Typical: 2-5× signal bandwidth
+- **Optimize amplitude range:** Signal should occupy middle 60-80% of vertical scale for best visibility
+- **Enable max hold when troubleshooting:** Captures intermittent problems you might otherwise miss
+- **Use waterfall for time-varying signals:** If signals appear/disappear or drift, waterfall reveals patterns
+- **Compare multiple tap points:** Seeing before/after helps isolate problems to specific equipment
+- **Check markers for precise measurements:** Visual estimation is ±5 dB at best, markers give exact values
+- **Document baseline "good" spectrum:** Compare current vs baseline to detect changes
+- **Understand your noise floor:** Any signal within 10 dB of noise floor is marginal - you need better SNR
+
+### Advanced: How spectrum analyzers work
+
+A spectrum analyzer is fundamentally a swept-tuned receiver. It uses a local oscillator (LO) that sweeps across the frequency range, mixing with the input signal to produce an intermediate frequency (IF). The IF is filtered (by the RBW filter) and detected to measure power at each frequency. The sweep repeats continuously to update the display.
+
+**Key internal components:**
+
+- **Input attenuator:** Adjusts input level to prevent mixer saturation
+- **Mixer:** Combines input signal with swept LO to produce IF
+- **RBW filter:** Bandpass filter that defines frequency resolution
+- **Detector:** Converts IF power to DC voltage proportional to signal amplitude
+- **Display:** Plots detected voltage (power) vs LO frequency
+
+**Real-time vs swept analyzers:** Traditional spectrum analyzers sweep through frequencies sequentially, missing signals that appear only briefly. Real-time spectrum analyzers (RTSA) capture the entire span simultaneously, showing all signals all the time. This makes them essential for analyzing intermittent signals, bursts, or transient events.
+
+### Final notes
+The spectrum analyzer is your window into the invisible world of RF signals. Master its use and you gain the ability to diagnose problems that would otherwise be impossible to solve, optimize system performance with precision, and verify your satellite link is operating correctly.
+
+**Key skills to develop:**
+
+- Recognizing signal characteristics (CW vs modulated, digital vs analog, clean vs distorted)
+- Correlating spectrum analyzer readings with link performance (SNR, BER, signal quality)
+- Using markers efficiently to measure power, frequency, and bandwidth
+- Interpreting waterfall patterns to understand signal behavior over time
+- Troubleshooting systematically using multiple tap points to isolate problems
+- Understanding noise floor and how it limits sensitivity
+
+Remember: The spectrum analyzer shows you objective truth - what signals are really there and how they really look. If the analyzer says your signal is weak, distorted, or at the wrong frequency, it is. Don't fight the measurement, investigate and fix the underlying problem.

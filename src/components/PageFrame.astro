@@ -1,0 +1,69 @@
+---
+export const prerender = false;  // 👈 this page is now server-rendered
+
+import type { Props } from "@astrojs/starlight/props";
+import Default from "@astrojs/starlight/components/PageFrame.astro";
+
+// Server-side check for content-only mode (no flickering!)
+const url = Astro.url;
+const contentOnly = url.searchParams.get("content-only") === "true";
+---
+
+{contentOnly ? (
+  <!-- Content-only mode: Skip header and sidebar -->
+  <div class="content-only-wrapper content-only-mode">
+    <slot />
+  </div>
+) : (
+  <!-- Normal mode: Use default layout with header and sidebar -->
+  <Default {...Astro.props}>
+    <slot name="header" slot="header" />
+    <slot name="sidebar" slot="sidebar" />
+    <slot />
+  </Default>
+)}
+
+<style is:global>
+  /* Styling for content-only wrapper */
+  .content-only-wrapper {
+    max-width: 100%;
+  }
+
+  .content-panel {
+    border: none !important;
+  }
+
+  /* Fallback: Hide any remaining UI elements in content-only mode */
+  .content-only-mode {
+    .sl-container {
+      margin-inline: auto !important;
+    }
+    .page {
+      grid-template-columns: 1fr !important;
+    }
+
+    .header {
+      display: none !important;
+    }
+
+    .sidebar-pane {
+      display: none !important;
+    }
+
+    .right-sidebar-container {
+      display: none !important;
+    }
+
+    main > div:first-child {
+      display: none !important;
+    }
+
+    .main-pane {
+      width: 100% !important;
+    }
+
+    .pagination-links {
+      display: none !important;
+    }
+  }
+</style>

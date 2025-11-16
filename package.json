@@ -1,0 +1,23 @@
+{
+  "name": "keeptrack-docs",
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "wrangler:dev": "wrangler dev",
+    "wrangler:deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/cloudflare": "^12.6.10",
+    "@astrojs/mdx": "^4.2.2",
+    "@astrojs/starlight": "^0.32.5",
+    "astro": "^5.5.5",
+    "sharp": "^0.32.5",
+    "typescript": "^5.5.4"
+  }
+}
