@@ -1,78 +1,259 @@
 ---
-title: SignalRange.Space Overview
-description: An overview of the SignalRange.Space platform.
-lastUpdated: 2025-05-31
+title: SignalRange Overview
+description: An introduction to SignalRange, a professional satellite ground station operations training platform.
+lastUpdated: 2025-11-15
 ---
 
 import { Steps } from '@astrojs/starlight/components';
 import { Aside } from '@astrojs/starlight/components';
 import { LinkCard, CardGrid } from '@astrojs/starlight/components';
 
-Welcome to the SignalRange.Space documentation! This guide will help you understand the basics of our platform and how it can make managing your astrodynamics projects easier.
+Welcome to SignalRange, a comprehensive training platform designed to teach satellite ground station operations through realistic, hands-on scenarios. Whether you're a student learning RF fundamentals, a new ground station operator, or an experienced engineer looking to sharpen your skills, SignalRange provides the tools and scenarios you need to master satellite communications.
 
-## What is SignalRange.Space?
+## What is SignalRange?
 
-SignalRange.Space is a user-friendly platform designed for anyone interested in astrodynamics, from beginners to professionals. Whether you're studying orbital mechanics, working on research, or just curious about space, SignalRange.Space has tools to help you track and analyze satellite data.
+SignalRange is an interactive satellite ground station simulator that recreates the equipment, procedures, and challenges of real-world satellite operations. Instead of learning from textbooks alone, you'll gain practical experience operating authentic RF equipment configurations, troubleshooting signal issues, and conducting satellite link tests—all in a safe, virtual environment where mistakes become learning opportunities rather than costly errors.
 
-## Key Features
+The platform simulates professional C-band and Ku-band ground station equipment with realistic RF physics, allowing you to see exactly how signals behave, how equipment interacts, and why specific procedures matter. You'll work with the same equipment you'd find in commercial teleport facilities, government tracking stations, and research installations worldwide.
 
-- **Live Orbital Tracking** Easily follow and visualize satellite orbits as they happen.
-- **Personalized Dashboards** Set up your dashboard to show the information that matters most to you.
-- **Easy Data Integration** Combine data from different sources, like satellite telemetry and ground stations, without any hassle.
-- **Simple Simulation Tools** Run basic simulations to see how satellites move and interact in space.
+## Core Equipment Suite
 
-## What You Can Do With SignalRange
+SignalRange provides a complete RF signal chain with professional-grade equipment modules:
 
-Here are some practical things you can accomplish with SignalRange:
+### Frequency Reference and Stability
+- **GPS Disciplined Oscillator (GPSDO)** - The frequency reference heart of your system, providing ultra-stable 10 MHz reference signals locked to atomic time. Learn about warmup procedures, GPS disciplining, holdover mode, and why frequency accuracy matters for satellite communications.
 
-- **Track the International Space Station (ISS)** and see when it will pass over your location
-- **Visualize satellite constellations** like GPS, Starlink, or scientific missions
-- **Calculate when satellites are visible** from ground stations around the world
-- **Simulate missile trajectories** for educational or research purposes
-- **Create polar plots** to plan satellite observations
-- **Analyze orbital debris** and potential collision risks
-- **Generate reports** with orbital data and look angles
-- **Take high-resolution screenshots** of your visualizations for presentations
+### Antenna System
+- **Antenna Control Unit (ACU)** - Control a precision parabolic dish antenna with motorized pointing, auto-tracking, and polarization alignment. Master the concepts of antenna gain, beamwidth, G/T ratio, and the critical importance of accurate pointing for satellite links.
+- **Orthomode Transducer (OMT)** - Manage polarization separation between transmit and receive paths. Understand how cross-polarization isolation affects signal quality and learn to optimize polarization alignment for maximum performance.
 
-## Who Can Use SignalRange.Space?
+### Receive Chain
+- **Low Noise Block Downconverter (LNB)** - Amplify and downconvert weak satellite signals with minimal added noise. Experience the importance of noise temperature, thermal stabilization, frequency stability, and reference locking in real-world reception.
+- **IF Filter Bank** - Select the optimal bandwidth for your signals while rejecting interference and noise. Learn the fundamental trade-offs between filter bandwidth, insertion loss, and noise floor that determine receive sensitivity.
+- **Real-Time Spectrum Analyzer (RTSA)** - Your window into the invisible world of RF signals. Master spectral density plots, waterfall displays, marker measurements, and signal analysis techniques essential for diagnosing problems and optimizing performance.
 
-SignalRange.Space is great for:
-- **Students and Teachers** A perfect tool for learning and teaching about space and satellite movement.
-- **Researchers** Use it to dive deeper into your studies or experiments.
-- **Space Enthusiasts** Anyone who loves space and wants to explore orbital mechanics can enjoy this platform.
+### Transmit Chain
+- **Block Upconverter (BUC)** - Upconvert IF signals to RF frequencies for satellite transmission. Understand frequency translation, mixer theory, phase-locked loops, and the critical importance of frequency accuracy when transmitting.
+- **High Power Amplifier (HPA)** - Provide the final amplification needed to reach satellites in orbit. Learn about P1dB compression, back-off settings, intermodulation distortion, and the balance between transmit power and signal quality.
+
+## What You'll Learn
+
+SignalRange teaches both fundamental concepts and practical skills:
+
+### RF Fundamentals
+- How satellite signals propagate through space and why they arrive so weak
+- The relationship between frequency, wavelength, and antenna performance
+- Signal-to-noise ratio and why it determines link success or failure
+- Polarization, cross-polarization, and how geometric alignment affects reception
+- Noise temperature, noise figure, and their impact on system sensitivity
+- The physics of mixing, frequency translation, and spectrum inversion
+
+### Equipment Operation
+- Proper power-up sequences and why they prevent equipment damage
+- Reference locking procedures and troubleshooting lock failures
+- Spectrum analyzer operation for signal verification and problem diagnosis
+- Antenna pointing optimization using signal strength and auto-tracking
+- Filter selection based on signal bandwidth and interference conditions
+- Amplifier configuration to balance power, linearity, and distortion
+
+### Real-World Procedures
+- Conducting initial satellite acquisition and beacon searches
+- Establishing and verifying transmit/receive links
+- Performing link margin measurements and optimization
+- Troubleshooting common problems: weak signals, frequency errors, interference
+- Coordinating with satellite operations teams during critical tests
+- Documenting configurations and results for operations reports
+
+### Link Budget Analysis
+- Understanding free-space path loss over satellite distances
+- Calculating effective isotropic radiated power (EIRP)
+- Determining G/T ratio and its role in receive performance
+- Accounting for atmospheric loss, polarization loss, and other impairments
+- Interpreting carrier-to-noise (C/N) and Eb/No measurements
+- Verifying adequate link margin for reliable operation
+
+## Training Scenarios
+
+SignalRange includes progressive scenarios that build your skills step-by-step:
+
+### Scenario 1: HELIOS-7 Initial Contact
+You're a ground station operator at a Pacific communications facility conducting the first link test with a newly-launched geostationary satellite. This critical milestone scenario teaches you:
+
+- Complete equipment power-up and warmup procedures
+- GPS reference acquisition and verification
+- Antenna pointing and beacon signal acquisition
+- Low-power transmit tests with satellite operations coordination
+- Receive path verification and link quality assessment
+- Power ramping procedures and link margin validation
+- Success criteria evaluation and operational handover
+
+**Duration:** 25-30 minutes | **Difficulty:** Beginner | **Mission Type:** Commercial Communications
+
+This hands-on scenario walks you through every step with detailed explanations of what you're doing and why it matters, building confidence through successful completion of real operational procedures.
+
+## Key Capabilities
+
+### Realistic RF Physics
+All equipment modules use authentic RF physics models:
+- Friis formula for noise temperature calculations
+- Thermal noise (kTB) with proper bandwidth scaling
+- Phase noise characteristics based on lock status
+- Compression and saturation at P1dB points
+- Polarization loss from geometric misalignment
+- Atmospheric absorption dependent on elevation and frequency
+- Antenna gain with Ruze formula for surface accuracy
+- Frequency drift based on temperature and reference status
+
+### Interactive Learning
+- Real-time visualization of signal behavior
+- Immediate feedback on configuration changes
+- Cause-and-effect demonstration of RF principles
+- Troubleshooting practice with realistic failure modes
+- Safe environment to experiment and make mistakes
+- Detailed explanations integrated into equipment interfaces
+
+### Professional Standards
+- Equipment specifications matching commercial installations
+- Procedures aligned with industry best practices
+- Terminology and metrics used by satellite operators worldwide
+- Realistic alarm conditions and fault handling
+- Documentation practices for operational environments
+
+## Who Should Use SignalRange?
+
+### Students and Educators
+Perfect for university courses in:
+- Satellite communications and systems
+- RF engineering and microwave systems
+- Telecommunications engineering
+- Aerospace engineering
+- Electrical engineering fundamentals
+
+SignalRange transforms abstract concepts from lectures into tangible, interactive experiences. Students can see exactly how the equations they're learning manifest in real signal behavior.
+
+### New Ground Station Operators
+Ideal for:
+- Pre-deployment training before operating real equipment
+- Learning proper procedures without risk of equipment damage
+- Building confidence through successful scenario completion
+- Understanding the "why" behind operational checklists
+- Practicing troubleshooting skills in a safe environment
+
+### Experienced Engineers
+Valuable for:
+- Refreshing skills during transitions between positions
+- Cross-training on different equipment configurations
+- Teaching junior staff with interactive demonstrations
+- Experimenting with configurations before implementing on live systems
+- Understanding equipment behavior for better troubleshooting
+
+### Space Enthusiasts
+Accessible to anyone interested in:
+- How satellite ground stations actually work
+- The engineering behind satellite communications
+- Hands-on learning about RF and microwave systems
+- Understanding what happens "behind the scenes" of satellite TV, GPS, and communications
+- Building foundational knowledge for amateur satellite operations
 
 ## Getting Started
 
-One of the best things about SignalRange.Space is how easy it is to get started. Here is all you have to do to get going for the first time:
 <Steps>
-1. <LinkCard
-    title="Load the SignalRange App"
-    description="Visit SignalRange.space/app/ to load the 3D app."
-    href="https://SignalRange.space/app/"
-   />
-3. ~Setup the time and date.~
-    <br />
-    Date and time are set automatically.
-4. ~Load the satellites you need individually.~
-    <br />
-    Satellites are loaded automatically.
-5. ~Create real sensors by hand~
-    <br />
-    Sensors are created automatically.
+1. **Start with the Equipment Guides**
+
+   Read the documentation for each equipment module to understand its purpose, controls, and key concepts. Begin with the GPSDO and Antenna Control Unit to understand the foundation of your system.
+
+2. **Review RF Fundamentals**
+
+   If you're new to RF engineering, pay special attention to the "Understanding" sections in each equipment guide that explain noise temperature, gain, frequency accuracy, and other core concepts.
+
+3. **Begin Scenario 1: HELIOS-7 Initial Contact**
+
+   This beginner scenario provides step-by-step guidance through a complete satellite link test. Follow the detailed procedures, read the explanations, and verify you meet each success criterion.
+
+4. **Use the Spectrum Analyzer Extensively**
+
+   The RTSA is your diagnostic tool for understanding signal behavior. Practice using different display modes, marker functions, and tap points to see signals at each stage of your signal chain.
+
+5. **Experiment and Troubleshoot**
+
+   Try intentional mistakes: power equipment in the wrong order, use incorrect frequencies, select mismatched filters. Learn to recognize problems and develop troubleshooting instincts.
 </Steps>
 
 <Aside type="tip">
-    SignalRange takes a unique approach of giving you everything by default and letting you remove/modify from there. You still have complete control, but can often get what you need in only a few clicks using the defaults.
+The most effective learning happens when you understand not just **what** to do, but **why** you're doing it. SignalRange equipment documentation explains the physics and engineering principles behind each procedure, turning checklist items into informed decisions.
 </Aside>
+
+## Documentation Structure
+
+This documentation is organized to support different learning approaches:
+
+- **Equipment Guides** - Comprehensive references for each module covering controls, readouts, theory, troubleshooting, and best practices
+- **Scenarios** - Step-by-step operational procedures with mission context and success criteria
+- **Fundamentals** - Deep dives into RF concepts, link budgets, and system-level understanding
+- **Quick Reference** - Checklists, tables, and summaries for experienced users
+
+You can follow a linear path through scenarios or jump directly to equipment references as needed.
+
+## Design Philosophy
+
+SignalRange is built on several core principles:
+
+**Authenticity Over Simplification** - Real satellite operations involve complex RF physics and equipment interactions. Rather than oversimplifying, SignalRange presents authentic challenges with sufficient guidance to master them.
+
+**Understanding Over Memorization** - Procedures make sense when you understand the underlying principles. Every piece of equipment includes explanations of how it works and why specific settings matter.
+
+**Progressive Complexity** - Begin with guided scenarios that explain every step, then advance to more complex situations requiring independent problem-solving and system-level thinking.
+
+**Mistakes as Learning** - The simulator environment lets you safely experiment, break things, and recover. Alarms and failures become teaching moments rather than disasters.
+
+**Professional Preparation** - Skills learned in SignalRange transfer directly to real ground station operations. The equipment, procedures, and problem-solving approaches match industry practice.
+
+## System Requirements
+
+SignalRange runs in modern web browsers with no installation required. For optimal performance:
+
+- Current version of Chrome, Firefox, Safari, or Edge
+- Display resolution of 1920×1080 or higher recommended
+- Stable internet connection for initial loading
+- JavaScript enabled
+- WebGL support for 3D visualizations
+
+The platform is designed to be accessible on standard laptops and desktops without requiring specialized hardware.
 
 ## Support and Community
 
-We're here to help! If you need assistance, take a look at our [Github page](https://github.com/thkruz/SignalRange.space) or [reach out to us directly](mailto:admin@SignalRange.space). We're always happy to help you get the most out of SignalRange.Space.
+We're committed to helping you succeed with SignalRange:
 
-## Contributing to SignalRange.Space
+- **Documentation** - Comprehensive guides for every equipment module and scenario
+- **GitHub** - Report issues, request features, and contribute to development
+- **Direct Contact** - Reach out with questions or feedback at [admin@SignalRange.space](mailto:admin@SignalRange.space)
 
-SignalRange.Space is open-source, and we love getting help from the community. If you're interested in contributing, visit our GitHub page to get started.
+## Open Source
+
+SignalRange is open-source software developed with the goal of making satellite communications education accessible worldwide. We welcome contributions from:
+
+- RF engineers who can improve equipment models
+- Educators who can develop new scenarios
+- Developers who can enhance the platform
+- Users who can provide feedback and testing
+
+Visit our [GitHub repository](https://github.com/thkruz/SignalRange.space) to get involved.
+
+## Looking Forward
+
+SignalRange continues to evolve with:
+
+- Additional scenarios covering different mission types and complexity levels
+- More equipment modules (modems, encoding/decoding, network interfaces)
+- Expanded frequency bands (L-band, Ka-band, X-band)
+- Advanced topics (interference mitigation, adaptive coding, rain fade compensation)
+- Multi-site operations and network coordination
+- Certification tracks for professional training programs
 
 ## Conclusion
 
-SignalRange.Space makes it easy to explore and understand astrodynamics. Whether you're learning, researching, or just exploring, our platform provides the tools you need to succeed in a fun and accessible way.
+Satellite ground station operations combine RF engineering, systems thinking, procedural discipline, and real-time problem-solving. SignalRange provides a comprehensive platform to develop these skills through realistic, hands-on experience.
+
+Whether you're taking your first steps into satellite communications or refining advanced techniques, SignalRange offers the tools, scenarios, and depth of explanation you need to build genuine expertise.
+
+The satellites are waiting. Power up your GPSDO, point your antenna, and begin your journey into professional satellite ground station operations.
