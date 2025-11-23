@@ -1,6 +1,6 @@
 ---
-title: 'Scenario 1: HELIOS-7 Initial Contact'
-description: Learn how to use KeepTrack.Space with external TLE files and customize your satellite view.
+title: 'Scenario 1: MARINER-1 Initial Contact'
+description: Conduct first RF link test with a newly launched GEO C-band maritime communications satellite. The CEO, insurers, and anchor customer are all watching.
 ---
 
 import { Steps } from '@astrojs/starlight/components';
@@ -10,38 +10,50 @@ import { Aside } from '@astrojs/starlight/components';
 
 **Difficulty:** Beginner
 
-**Mission Type:** Commercial Communications
+**Mission Type:** GEO Communications Satellite
 
 ### Mission Briefing
 
-You are a Ground Station Operator at Pacific Rim Communications facility in Guam. Your company has just launched HELIOS-7, a new C-band communications satellite positioned at 145°E geostationary orbit to provide broadband services across Southeast Asia and the Pacific islands.
-The satellite launched 14 days ago, completed its orbit-raising maneuvers yesterday, and is now station-keeping at its operational slot. The spacecraft operations team has completed initial checkout and has handed the payload over to ground operations. You are conducting the first ground station link test.
-This is a critical milestone - until this link is established and verified, the satellite cannot begin commercial operations. The CEO, board members, and Pacific Telecom (your anchor customer) are monitoring this test.
+You are a Ground Station Operator at North Atlantic Teleport Services, a commercial satellite ground station facility located in rural Vermont. Your company provides ground segment services for multiple GEO communication satellites serving the North Atlantic region.
+
+Your latest client, SeaLink Communications, launched MARINER-1 fourteen days ago aboard a Falcon 9 from Cape Canaveral. The satellite completed its apogee burns over the past two weeks and reached its operational slot at 53°W geostationary orbit yesterday. Beacon Orbital Analytics in Cambridge provided orbital analysis throughout the transfer orbit phase and confirmed the satellite achieved station-keeping this morning.
+
+The spacecraft operations team at SeaLink's control center in Halifax has completed initial checkout - solar arrays deployed, batteries charged, attitude control stable. They've now handed the communications payload over to ground operations. You are conducting the first ground station RF link test.
+
+This is a critical milestone. Until this link is established and verified, MARINER-1 cannot begin revenue service. The satellite is designed to provide C-band maritime connectivity from Newfoundland to the Caribbean - fishing fleets, cargo vessels, cruise ships, offshore platforms.
+
+**Who's Watching:**
+- **Catherine Vega** (SeaLink CEO): Former submarine communications officer. Bet the company on this satellite. Has already drafted two versions of tomorrow's press release - one congratulatory, one apologetic.
+- **Lloyd's of London Observer**: Present via video link from London. Pleasant until something goes wrong. Has authority to trigger the insurance investigation clause if initial contact fails.
+- **Captain James Okafor** (Atlantic Shipping Alliance): Your anchor customer. Runs 47 container ships. Tired of paying Inmarsat rates. Will either sign a 10-year contract tomorrow or walk away.
+- **Francis Martin**: Board Member and former investment banker who doesn't understand satellites but understands burn rate. Keeps asking "is it working yet?" on Slack.
+
+This test either succeeds, or very expensive conversations begin.
 
 ### Equipment Configuration
 
-**Ground Station: Guam Primary (GUMP-1)**
+**Ground Station: North Atlantic Teleport - Vermont Site (NATV-1)**
 
-*   Antenna: 9-meter C-band Earth Station
-*   Antenna Pointing: Az: 247.3°, El: 78.2° (pre-calculated for HELIOS-7)
+*   Antenna: 11-meter C-band Earth Station
+*   Antenna Pointing: Az: 161.8°, El: 34.2° (pre-calculated for MARINER-1 at 53°W)
 *   Polarization: Linear Vertical
 
-**Satellite HELIOS-7:**
+**Satellite MARINER-1:**
 
-*   Orbital Position: 145°E GEO
-*   Downlink Beacon: 3,985.5 MHz (C-band)
-*   Transponder 4C (Test):
-    *   Uplink: 6,180.0 MHz
-    *   Downlink: 3,920.0 MHz
+*   Orbital Slot: 53°W GEO
+*   Downlink Beacon: 3,702.5 MHz (C-band)
+*   Transponder 6A (Test):
+    *   Uplink: 5,925.0 MHz
+    *   Downlink: 3,700.0 MHz
     *   Bandwidth: 36 MHz
     *   Polarization: Vertical
 
 ### Pre-Operational Checklist
 
-*   Weather Conditions: Clear, 28°C, humidity 72%, wind 8 kts - **APPROVED FOR OPS**
-*   Satellite Status: On-station, solar arrays deployed, batteries charged - **HEALTHY**
-*   Frequency Coordination: Filed with ITU, domestic approvals received - **CLEARED**
-*   Insurance Observer: Standing by via video link - **PRESENT**
+*   Weather Conditions: Partly cloudy, 18°C, humidity 65%, wind 6 kts - **APPROVED FOR OPS**
+*   Satellite Status: On-station at 53°W, solar arrays deployed, batteries charged - **HEALTHY**
+*   Frequency Coordination: ITU filing confirmed, FCC license active - **CLEARED**
+*   Insurance Observer: Standing by via video link from London - **PRESENT**
 
 ### Detailed Step-by-Step Procedure
 
@@ -67,65 +79,65 @@ This is a critical milestone - until this link is established and verified, the 
     4.  Spectrum Analyzer
         *   Power on unit
         *   Select RF mode (direct C-band input)
-        *   Set center frequency: 3,985.5 MHz
+        *   Set center frequency: 3,702.5 MHz
         *   Set span: 10 MHz
         *   Set RBW: 10 kHz
         *   Set reference level: -40 dBm
         *   Success: Clean baseline noise floor visible
 2.  **Phase 2: Antenna Pointing & Beacon Acquisition (8-10 minutes)**
     1.  Antenna Control Unit (ACU)
-        *   Enter satellite parameters: Name: HELIOS-7, Longitude: 145.0°E, Latitude: 0.0° (GEO)
-        *   Calculated look angles: Azimuth: 247.3° ± 0.5°, Elevation: 78.2° ± 0.5°
+        *   Enter satellite parameters: Name: MARINER-1, Longitude: 53.0°W, Latitude: 0.0° (GEO)
+        *   Calculated look angles: Azimuth: 161.8° ± 0.5°, Elevation: 34.2° ± 0.5°
     2.  Initial Pointing
         *   Command antenna to calculated position
-        *   Watch for: Antenna begins moving (10-15 seconds transit time)
+        *   Watch for: Antenna begins moving (15-20 seconds transit time for 11m dish)
         *   Verify: Azimuth and elevation encoders show correct angles
         *   Wait for "ON TARGET" indication
     3.  Beacon Search
         *   Look at spectrum analyzer: You should see a carrier!
-        *   Expected beacon: Strong CW carrier at 3,985.5 MHz
-        *   Typical level: -65 to -75 dBm
+        *   Expected beacon: Strong CW carrier at 3,702.5 MHz
+        *   Typical level: -70 to -80 dBm (53°W is moderate elevation from Vermont)
         *   If beacon is weak or offset:
             *   Use antenna fine-pointing (±0.2° adjustments)
             *   Peak the signal by maximizing amplitude
-            *   Goal: Achieve at least -70 dBm beacon level
+            *   Goal: Achieve at least -75 dBm beacon level
     4.  Lock Status Verification
         *   Beacon should be stable (not drifting)
-        *   Frequency should be within ±1 kHz of 3,985.5 MHz
+        *   Frequency should be within ±1 kHz of 3,702.5 MHz
         *   Carrier-to-Noise (C/N): Should show >15 dB
         *   Log beacon parameters for operations report
 3.  **Phase 3: Transmit Path Checkout (5 minutes)**
     1.  Transmitter Configuration
         *   Power on Transmitter Modem #1
         *   Configure modem: Modulation: QPSK, Symbol Rate: 5.0 Msps, FEC: 3/4, Scrambling: ON
-        *   Set IF output: 140.0 MHz (will be upconverted to 6,180.0 MHz)
+        *   Set IF output: 140.0 MHz (will be upconverted to 5,925.0 MHz)
     2.  BUC Configuration for Transmit
-        *   Set uplink frequency: 6,180.0 MHz
+        *   Set uplink frequency: 5,925.0 MHz
         *   Set transmit power: -10 dBm
         *   Double-check antenna pointing
-        *   Coordinate with satellite ops: "GUMP-1 ready to transmit"
+        *   Coordinate with satellite ops: "NATV-1 ready to transmit on Transponder 6A"
         *   **CRITICAL:** Get explicit permission before unmuting
     3.  Low-Power RF Test
         *   Unmute BUC RF output
         *   Verify on spectrum analyzer: Clean QPSK signal at correct frequency
-        *   Listen for satellite ops confirmation: "GUMP-1, we see your carrier on Transponder 4C"
+        *   Listen for satellite ops confirmation: "NATV-1, we see your carrier on Transponder 6A"
         *   If no confirmation: MUTE immediately, troubleshoot
 4.  **Phase 4: Receive Path Verification (5 minutes)**
     1.  Downlink Monitoring
-        *   Change spectrum analyzer to monitor downlink: Center frequency: 3,920.0 MHz, Span: 50 MHz
+        *   Change spectrum analyzer to monitor downlink: Center frequency: 3,700.0 MHz, Span: 50 MHz
         *   You should see: Your uplink signal transponded back
-        *   Expected level: -55 to -65 dBm
+        *   Expected level: -60 to -70 dBm
         *   Verify: Signal is in correct location in transponder
     2.  Receiver Configuration
         *   Power on Receiver Modem #1
-        *   Set to monitor Transponder 4C downlink
-        *   Configure demodulator: Modulation: QPSK, Symbol Rate: 5.0 Msps, FEC: 3/4, Carrier frequency: 3,920.0 MHz
+        *   Set to monitor Transponder 6A downlink
+        *   Configure demodulator: Modulation: QPSK, Symbol Rate: 5.0 Msps, FEC: 3/4, Carrier frequency: 3,700.0 MHz
         *   Wait for modem lock: 5-10 seconds
         *   Success indicators: "CARRIER LOCK" LED, "FRAME LOCK" LED, Eb/No: >8 dB
     3.  Loopback Test
         *   Transmit a test pattern from modem TX port
         *   Verify receipt at modem RX port
-        *   Bit Error Rate (BER): Should be \<1×10⁻⁹
+        *   Bit Error Rate (BER): Should be \<1Ã—10â»â¹
         *   This confirms: Full duplex link is operational!
 5.  **Phase 5: Power Ramp & Link Optimization (5 minutes)**
     1.  Gradual Power Increase
@@ -140,7 +152,7 @@ This is a critical milestone - until this link is established and verified, the 
         *   Screenshot spectrum analyzer showing transponder
         *   Log all equipment serial numbers
         *   Record link parameters in operations database
-        *   Notify Satellite Ops: "GUMP-1 declares HELIOS-7 link OPERATIONAL"
+        *   Notify Satellite Ops: "NATV-1 declares MARINER-1 Transponder 6A link OPERATIONAL"
 
 ### Success Criteria
 

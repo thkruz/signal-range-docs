@@ -12,7 +12,7 @@ The LNB (Low Noise Block) converter is one of the most important components in s
 ### Key controls
 
 *   **POWER** - turns the LNB on or off. When powered, the LNB amplifies and downconverts signals. When off, no signals pass through.
-*   **LO (MHz)** - sets the Local Oscillator frequency (typically 3700–4200 MHz). The LO is mixed with incoming RF signals to produce the IF output. For example, if you receive a 4000 MHz signal and the LO is set to 4200 MHz, the output IF will be 200 MHz.
+*   **LO (MHz)** - sets the Local Oscillator frequency (typically 3700–4200 MHz). The LO is mixed with incoming RF signals to produce the IF output. For example, if you receive a 4000 MHz signal and the LO is set to 5000 MHz, the output IF will be 1000 MHz.
 *   **GAIN (dB)** - controls how much the LNB amplifies the signal (0–70 dB). Higher gain means stronger output signals, but also affects noise temperature. Typical LNBs operate around 50–65 dB of gain.
 
 ### Readouts you will see
@@ -45,14 +45,18 @@ When you first power on an LNB, the components are cold (ambient temperature). A
 
 For best reception, wait a few minutes after powering on the LNB before attempting to receive weak signals. Professional installations often leave LNBs powered continuously to avoid this stabilization period.
 
-### Frequency conversion and spectrum inversion
+### Frequency conversion
 
 The LNB uses a mixer to downconvert RF signals to IF. The formula is simple: `IF = |RF - LO|`. For example:
 
-*   RF signal at 4000 MHz, LO at 4200 MHz → IF output at 200 MHz
-*   RF signal at 4100 MHz, LO at 4200 MHz → IF output at 100 MHz
+*   RF signal at 4000 MHz, LO at 5200 MHz → IF output at 1200 MHz
+*   RF signal at 4100 MHz, LO at 5200 MHz → IF output at 1100 MHz
 
-Notice that when the LO is higher than the RF (high-side injection), the spectrum gets inverted: higher RF frequencies become lower IF frequencies. This is normal and expected. The downstream receiver needs to account for this inversion when tuning to specific signals.
+### Bandpass Filtering
+
+Most LNBs include bandpass filters to limit the input frequency range to just the desired satellite band (e.g., 3.7–4.2 GHz). This helps reject out-of-band signals and noise that could interfere with reception. Make sure your LNB is designed for the frequency band you intend to use.
+
+They also include output filtering to ensure the IF signal is clean and free from unwanted spurs or harmonics generated during mixing. SignalRange's LNBs will filter out signals below 950 Mhz or above 2150 MHz on the IF output so its important to set the LO frequency correctly to place your desired signals within this range.
 
 ### Alarms and warning conditions
 
@@ -72,9 +76,9 @@ The system will raise alarms for several conditions:
 
 ### Short examples
 
-*   **Example A - Normal operation:** Power ON, LO = 4200 MHz, Gain = 55 dB, Noise Temp = 45K, Temp = 50°C, Freq Err = 0.000 MHz, LOCK = Green. The LNB is fully warmed up, locked to reference, and performing optimally.
+*   **Example A - Normal operation:** Power ON, LO = 5200 MHz, Gain = 55 dB, Noise Temp = 45K, Temp = 50°C, Freq Err = 0.000 MHz, LOCK = Green. The LNB is fully warmed up, locked to reference, and performing optimally.
 *   **Example B - Just powered on:** Power ON, Noise Temp = 90K, Temp = 28°C, Freq Err = -2.1 MHz, LOCK = Amber. The LNB is cold and stabilizing. Noise temperature is high, frequency is drifting, and lock is being acquired. Wait 2–3 minutes for stabilization.
-*   **Example C - Unlocked operation:** Power ON, LO = 4200 MHz, Noise Temp = 47K, Temp = 50°C, Freq Err = 8.4 MHz, LOCK = Red. The LNB is thermally stable with good noise performance, but not locked to reference. Signals will be off-frequency by 8.4 MHz. Check GPSDO reference.
+*   **Example C - Unlocked operation:** Power ON, LO = 5200 MHz, Noise Temp = 47K, Temp = 50°C, Freq Err = 8.4 MHz, LOCK = Red. The LNB is thermally stable with good noise performance, but not locked to reference. Signals will be off-frequency by 8.4 MHz. Check GPSDO reference.
 *   **Example D - Degraded LNB:** Power ON, Noise Temp = 120K, LNA NF = 1.5 dB, LOCK = Green. Even though locked, the noise performance is poor - likely component degradation or damage. Sensitivity will be reduced by several dB compared to a healthy LNB.
 
 ### Advanced: Understanding gain and noise figure
