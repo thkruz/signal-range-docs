@@ -1,0 +1,676 @@
+---
+title: 'Scenario 6 - Interference Hunt'
+description: 'Troubleshoot and resolve RF interference causing service degradation with 15-minute SLA deadline - solo operations under pressure'
+---
+
+import { Steps } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+
+**Duration:** 20-25 minutes (15-minute hard deadline)
+
+**Difficulty:** Advanced
+
+**Mission Type:** Pressure Phase - Solo Troubleshooting
+
+**Time Limit:** 15 minutes until SLA breach (clock already running)
+
+### Mission Briefing
+
+**CRITICAL SITUATION - CUSTOMER IMPACT IN PROGRESS**
+
+A customer has reported degraded service on TIDEMARK-1. Their maritime vessel communications are experiencing packet loss climbing to 2-3%, and they're seeing intermittent connection drops. Something is interfering with the downlink carrier.
+
+The SLA (Service Level Agreement) terms are clear: service must be restored within 15 minutes of the customer's initial report, or financial penalties apply automatically. The clock started when they called - three minutes ago. **You have 12 minutes remaining.**
+
+Charlie is stuck on another emergency call with a different customer and can only provide brief support via intercom. You are solo on console. This is not a training scenario - this is real operations with real consequences.
+
+**Current Status:**
+- **C/N Ratio**: Down to 6 dB (normal: 12 dB) - 6 dB degradation
+- **Packet Loss**: 2.5% (SLA requires less than 0.5%)
+- **Customer Impact**: Service degraded, complaints logged
+- **SLA Deadline**: 12 minutes remaining when you start
+- **Financial Penalty**: Triggers automatically if not resolved in time
+- **Support Available**: Minimal - Charlie is unavailable for 10+ minutes
+
+**Your Mission:**
+1. Identify the interference source
+2. Determine interference characteristics (frequency, type, power)
+3. Calculate the Carrier-to-Interference (C/I) ratio
+4. Implement mitigation solution
+5. Verify service quality restored
+6. Complete before SLA deadline expires
+
+**Who's Available (Barely):**
+- **Charlie Brooks**: Tied up on another call, stressed, can only respond to emergencies via intercom
+
+<Aside type="danger">
+**HIGH PRESSURE SCENARIO - SLA CLOCK RUNNING**
+
+This is your first solo emergency. The clock is ticking, the customer is watching, and financial penalties loom. Work fast but work smart. Rushing causes mistakes, but taking too long causes penalties.
+
+You've been trained for this. Trust your skills. Execute.
+</Aside>
+
+### Initial Assessment
+
+**Ground Station: Vermont (VT-01)**
+
+*   **Antenna**: 9-meter C-band, locked on TIDEMARK-1
+*   **Position**: Az: 214.2°, El: 24.8° (on target)
+*   **Tracking**: Step-track mode, locked
+*   **GPSDO**: Stable
+*   **LNB**: Operational, 5,150 MHz LO, 55 dB gain
+*   **BUC/HPA**: Powered off (receive-only service)
+*   **Current Filter**: 10 MHz bandwidth (wide, currently selected)
+
+**Satellite: TIDEMARK-1**
+
+*   **Orbital Position**: 53°W GEO
+*   **Beacon**: 3,947.8 MHz, -95 dBm (visible, normal)
+*   **Customer Carrier**: 3,952.5 MHz, 16APSK, 5 Msps
+*   **Expected Signal Level**: -87 dBm (normal)
+*   **Service**: Maritime communications (currently degraded)
+
+**Degraded Performance Indicators:**
+
+*   **C/N Ratio**: 6.2 dB (should be 12 dB) → **6 dB degradation**
+*   **Packet Loss**: 2.5% (should be less than 0.5%) → **SLA violation**
+*   **Modem Status**: Carrier lock maintained, but error correction overloaded
+*   **Customer Report**: Intermittent disconnections, slow data rates
+
+**Charlie's Last Words (Intercom):**
+*"I'm stuck on this call with another customer for at least ten minutes. You need to handle this solo."*
+
+*"SLA terms say we've got fifteen minutes to restore service or we're paying penalties. Clock started when they called - three minutes ago."*
+
+*"Use the wide-span sweep to find the interferer. Check the filter bank settings - you might be able to notch it out. Page me if you absolutely need help, but I trust you can handle this."*
+
+### Interference Troubleshooting Process
+
+<Steps>
+
+1. **Phase 1: Assess Service Degradation**
+   
+   **Objective:** Quantify the problem and confirm interference is the cause.
+   
+   **Time Remaining:** 12 minutes (starting point)
+   
+   **Checks to Perform:**
+   
+   **Current C/N Ratio:**
+   *   Observe receiver modem C/N display
+   *   Current value: 6.2 dB
+   *   Normal value: 12 dB
+   *   Degradation: 6 dB (significant)
+   
+   **Packet Loss Rate:**
+   *   Check modem error statistics
+   *   Current packet loss: 2.5%
+   *   SLA requirement: less than 0.5%
+   *   Status: **SLA VIOLATION ACTIVE**
+   
+   **Beacon Status:**
+   *   Check spectrum analyzer for beacon at 3,947.8 MHz
+   *   Beacon level: -95 dBm (normal, stable)
+   *   Conclusion: Antenna pointing is correct, satellite is healthy
+   
+   **Carrier Power:**
+   *   Customer carrier at 3,952.5 MHz
+   *   Level: -87 dBm (normal, no satellite power issue)
+   *   Modulation: 16APSK visible and locked
+   
+   **Initial Assessment:**
+   - Satellite is healthy (beacon normal)
+   - Antenna pointing is correct
+   - Carrier power is normal
+   - BUT C/N is degraded by 6 dB
+   - **Conclusion**: External interference most likely cause
+   
+   **System Message:**
+   *"C/N down to about 6 dB. That's bad - we need at least 7 for this modulation scheme, and we usually run at 12."*
+   
+   *"Packet loss over 2 percent. Customer's definitely seeing impact."*
+   
+   *"Twelve minutes left on the SLA. Move fast."*
+
+2. **Phase 2: Perform Wide-Span Spectrum Sweep**
+   
+   **Objective:** Locate the interference source using spectrum analyzer.
+   
+   **Time Remaining:** ~10 minutes
+   
+   **Spectrum Analyzer Reconfiguration:**
+   
+   **Current Settings (Narrow View):**
+   - Center frequency: 3,952.5 MHz (carrier)
+   - Span: 10 MHz
+   - RBW: 10 kHz
+   - Issue: Can only see immediate vicinity of carrier
+   
+   **Wide-Span Mode (For Interference Hunt):**
+   - Center frequency: 3,950 MHz (slightly below carrier)
+   - Span: 50-100 MHz (wide view to find interferer)
+   - RBW: 100 kHz (wider for faster sweep)
+   - Reference level: -50 dBm
+   
+   **Procedure:**
+   1. Reconfigure spectrum analyzer to wide-span mode
+   2. Set span to 50-100 MHz to see adjacent channels
+   3. Observe entire frequency range around customer carrier
+   4. Look for unexpected signals near 3,952.5 MHz
+   
+   **What You Should See:**
+   
+   **Expected Signals:**
+   - Beacon at 3,947.8 MHz: -95 dBm (narrow CW, normal)
+   - Customer carrier at 3,952.5 MHz: -87 dBm (5 MHz wide, normal)
+   
+   **Interference Signal:**
+   - **Unexpected carrier at 3,957.5 MHz** (5 MHz above customer carrier)
+   - Power level: -83 dBm (stronger than our carrier!)
+   - Bandwidth: ~5 MHz (similar to data carrier)
+   - Modulation: Appears to be QPSK or similar
+   - Frequency offset: +5 MHz from our carrier
+   
+   **Analysis:**
+   This is an adjacent channel interferer. Someone's uplink either:
+   - Hit the wrong satellite
+   - Used wrong polarization (horizontal instead of vertical)
+   - Misconfigured their frequency
+   - Their transponder assignment overlaps with TIDEMARK-1's downlink
+
+3. **Phase 3: Identify and Characterize Interference**
+   
+   **Objective:** Measure interference parameters precisely.
+   
+   **Time Remaining:** ~8 minutes
+   
+   **Interference Characteristics:**
+   
+   **Frequency:**
+   - Center: 3,957.5 MHz (at RF)
+   - Offset from our carrier: +5 MHz
+   - Location: Adjacent channel (upper side)
+   
+   **Power Level:**
+   - Measured: -83 dBm
+   - Our carrier: -87 dBm
+   - Interference is 4 dB STRONGER than our signal
+   
+   **Bandwidth:**
+   - Approximately 5 MHz
+   - Overlaps with our 5 MHz carrier on adjacent channel
+   - Spectral spillover into our passband
+   
+   **Type:**
+   - Modulated carrier (QPSK or 16APSK)
+   - Continuous (not intermittent)
+   - Likely another legitimate satellite transmission
+   - Not malicious, just coordination error
+   
+   **System Message:**
+   *"There it is - adjacent channel carrier at 3,957.5 megahertz. Five megahertz above our signal."*
+   
+   *"Power's at minus-83 dBm. That's 4 dB stronger than our carrier. No wonder we're having problems."*
+   
+   *"Looks like someone's uplink hit the wrong polarization or satellite. Not our fault, but we still need to fix it."*
+   
+   *"Nine minutes remaining."*
+   
+   **Why This Causes Problems:**
+   Even though the interferer is on a different frequency (3,957.5 MHz vs our 3,952.5 MHz), it still degrades our signal because:
+   - Spectral spillover: Modulated signals have sidelobes
+   - Receiver front-end: LNB amplifies both signals
+   - Filter bandwidth: Current 10 MHz filter passes both signals
+   - Intermodulation: Non-linear amplifier products
+   - Desensitization: Receiver AGC responds to strong interferer
+
+4. **Phase 4: Calculate Carrier-to-Interference Ratio**
+   
+   **Objective:** Quantify the interference impact mathematically.
+   
+   **Time Remaining:** ~7 minutes
+   
+   **C/I Calculation:**
+   
+   **Formula:**
+   ```
+   C/I (dB) = Carrier_Power (dBm) - Interference_Power (dBm)
+   ```
+   
+   **Given:**
+   - Carrier power (C): -87 dBm
+   - Interference power (I): -83 dBm
+   
+   **Calculation:**
+   ```
+   C/I = -87 dBm - (-83 dBm)
+   C/I = -87 dBm + 83 dBm
+   C/I = -4 dB
+   ```
+   
+   Wait, that's negative! This means the interference is STRONGER than our carrier by 4 dB.
+   
+   **Correct Interpretation:**
+   - C/I = 4 dB (interference is 4 dB stronger)
+   - Or stated differently: I/C = -4 dB (our carrier is 4 dB weaker)
+   
+   **Industry Standard Requirement:**
+   - Minimum C/I for clean operation: 15-20 dB
+   - Current C/I: 4 dB
+   - Shortfall: 11-16 dB below requirement
+   
+   **Combined C/(N+I) Impact:**
+   
+   When you have both thermal noise (N) and interference (I), they combine:
+   ```
+   C/N = 12 dB (without interference, normal)
+   C/I = 4 dB (with interference, current)
+   Combined C/(N+I) = ?
+   ```
+   
+   The combined effect (noise + interference) is dominated by whichever is stronger. In this case, interference is much stronger than thermal noise, so:
+   ```
+   C/(N+I) ≈ C/I = 6 dB (approximately)
+   ```
+   
+   This matches the observed 6 dB C/N reading on the modem!
+   
+   **System Message:**
+   *"C/I ratio is 4 dB. That's terrible - we need at least 15 dB for clean operation."*
+   
+   *"Combined with the thermal noise, this explains exactly why the C/N dropped 6 dB."*
+   
+   *"Check the filter bank. There should be a notch filter that can reject that adjacent carrier."*
+
+5. **Phase 5: Implement Filter-Based Mitigation**
+   
+   **Objective:** Use notch filter to suppress interference.
+   
+   **Time Remaining:** ~5 minutes
+   
+   **Available IF Filters:**
+   
+   The filter bank has multiple options:
+   - Filter 0: 100 MHz (bypass - passes everything)
+   - Filter 1: 50 MHz (wide)
+   - Filter 2: 20 MHz (medium)
+   - Filter 3: 10 MHz (currently selected - too wide)
+   - Filter 4: 5 MHz (narrower)
+   - Filter 5: 2 MHz (narrow)
+   - **Filter 6**: 1 MHz with notch at +3 MHz offset
+   - **Filter 7**: 1 MHz with notch at +5 MHz offset ← **CORRECT CHOICE**
+   
+   **Filter Selection Logic:**
+   
+   **Our Carrier:**
+   - Frequency: 3,952.5 MHz (at RF)
+   - Bandwidth: 5 MHz
+   - Symbol rate: 5 Msps (requires ~5 MHz bandwidth)
+   
+   **Interference:**
+   - Frequency: 3,957.5 MHz (at RF)
+   - Offset: +5 MHz from our carrier
+   
+   **Solution:**
+   **Filter 7: 1 MHz with notch at +5 MHz**
+   
+   Wait - our carrier is 5 MHz wide, but this filter is only 1 MHz bandwidth. How does this work?
+   
+   **The Key:** These filters operate at IF (Intermediate Frequency), not RF. After downconversion:
+   - Our carrier at RF 3,952.5 MHz → IF 1,247.5 MHz (using LO 5,150 MHz - 3,952.5 MHz)
+   - Interferer at RF 3,957.5 MHz → IF 1,252.5 MHz (same LO)
+   - Offset at IF: 1,252.5 - 1,247.5 = 5 MHz
+   
+   So Filter 7 provides:
+   - 1 MHz passband centered at target IF (passes our carrier)
+   - Actually, checking the design - these are likely wider than label suggests
+   - Notch at +5 MHz from center rejects the interferer
+   - Notch depth: ~15-20 dB rejection
+   
+   **Application:**
+   1. Open IF filter bank controls
+   2. Select Filter 7 (1 MHz with notch at +5 MHz)
+   3. Apply filter change
+   4. Observe spectrum analyzer - interferer should be suppressed
+   5. Check modem C/N - should improve immediately
+   
+   **System Message:**
+   *"Notch filter applied. Watch the spectrum - interference is getting suppressed by the notch."*
+   
+   *"C/N should start climbing back up now."*
+   
+   **What Happens:**
+   - Notch filter attenuates interferer by 15-20 dB
+   - Interferer power drops from -83 dBm to ~-100 dBm (below noise floor)
+   - C/I improves from 4 dB to ~19 dB
+   - Combined C/(N+I) improves from 6 dB to ~11 dB
+   - Packet loss drops as error correction can handle traffic again
+
+6. **Phase 6: Verify Service Quality Restored**
+   
+   **Objective:** Confirm mitigation was successful and service is stable.
+   
+   **Time Remaining:** ~3 minutes
+   
+   **Verification Checks:**
+   
+   **C/N Ratio Improvement:**
+   - Before filter: 6.2 dB
+   - After filter: 11.0 dB
+   - Improvement: 4.8 dB (close to target 6 dB)
+   - Target achieved: greater than 10 dB ✓
+   
+   **Why not back to 12 dB?**
+   - Notch filter has some insertion loss
+   - Slightly narrower bandwidth reduces signal slightly
+   - Interferer may not be completely eliminated (notch is ~15-20 dB, not infinite)
+   - 11 dB is acceptable and well above threshold
+   
+   **Packet Loss:**
+   - Before filter: 2.5%
+   - After filter: 0.3%
+   - Improvement: Reduced by factor of 8
+   - SLA requirement: less than 0.5% ✓
+   
+   **Service Stability:**
+   - Monitor for 60 seconds continuous
+   - C/N remains stable at 11.0 ± 0.5 dB
+   - Packet loss remains below 0.5%
+   - No loss of carrier lock
+   - Modem error correction operating normally
+   
+   **System Message:**
+   *"C/N's back up to 11 dB. Packet loss dropped to near zero."*
+   
+   *"Service quality looks stable. Good work."*
+
+7. **Phase 7: SLA Compliance Verification**
+   
+   **Objective:** Confirm resolution completed before deadline.
+   
+   **Time Remaining:** ~2 minutes (or more if you worked efficiently)
+   
+   **Success Criteria:**
+   - Service quality restored ✓
+   - C/N ratio above 10 dB ✓
+   - Packet loss below 0.5% ✓
+   - Completed before 15-minute deadline ✓
+   - SLA breach avoided ✓
+   
+   **Charlie Returns (Intercom):**
+   *"Saw the C/N come back up on the monitoring dashboard. Nice work - you beat the SLA deadline with time to spare."*
+   
+   *"You identified the interference, calculated the impact, implemented a solution, and verified the fix. Exactly what I needed you to do."*
+   
+   *"That's real operations right there - time pressure, customer impact, working solo. You handled it."*
+   
+   *"I'll file a coordination request to track down whoever's transmitting on that adjacent carrier. For now, the customer's happy and we're not paying penalties."*
+   
+   **Mission Complete:**
+   You successfully:
+   - Diagnosed interference under pressure
+   - Applied correct mitigation technique
+   - Restored service quality
+   - Avoided SLA penalties
+   - Worked independently during emergency
+   - Made correct decisions with limited time
+
+</Steps>
+
+### RF Interference Fundamentals
+
+**Types of Interference:**
+
+**Adjacent Channel Interference (This Scenario):**
+- Legitimate signal on nearby frequency
+- Caused by coordination errors, misconfiguration
+- Spectral spillover into victim channel
+- Mitigation: Filtering, coordination, power control
+
+**Co-Channel Interference:**
+- Another signal on same frequency
+- More severe than adjacent channel
+- Caused by polarization errors, wrong satellite
+- Mitigation: Polarization adjustment, antenna repositioning
+
+**Intermodulation Interference:**
+- Created by non-linear amplifiers
+- Multiple signals combine to create spurious products
+- Appears at sum/difference frequencies
+- Mitigation: Amplifier backoff, filtering
+
+**Terrestrial Interference:**
+- Ground-based transmitters (radar, 5G, other)
+- Geographic-dependent
+- May be intermittent (radar sweeping)
+- Mitigation: Shielding, filtering, site relocation
+
+### C/I (Carrier-to-Interference Ratio)
+
+**Definition:**
+```
+C/I (dB) = Carrier_Power (dBm) - Interference_Power (dBm)
+```
+
+**Interpretation:**
+- High C/I (greater than 20 dB): Interference negligible
+- Medium C/I (10-20 dB): Interference noticeable, manageable
+- Low C/I (5-10 dB): Significant degradation
+- Very Low C/I (less than 5 dB): Severe problems (this scenario: 4 dB)
+
+**Combined with Thermal Noise:**
+When both noise (N) and interference (I) present:
+```
+Total degradation = C/(N+I)
+```
+
+The stronger impairment dominates. If I much greater than N, then C/(N+I) ≈ C/I.
+
+**Industry Requirements:**
+- DVB-S2 16APSK 3/4: Requires C/N greater than 7 dB (threshold)
+- With interference: Need C/(N+I) greater than 7 dB
+- Operational margin: Target 10-12 dB for reliability
+- Coordination standards: Adjacent channel C/I greater than 20 dB
+
+### Notch Filter Technology
+
+**How Notch Filters Work:**
+
+Notch filters are band-reject filters with very narrow rejection bandwidth:
+- **Passband**: Frequencies that pass with minimal attenuation
+- **Notch**: Very narrow frequency range with high attenuation (15-30 dB)
+- **Notch width**: Typically 1-10% of center frequency
+- **Notch depth**: 15-30 dB typical, 40+ dB for specialized filters
+
+**Application Strategy:**
+
+**Requirements:**
+- Interference must be at predictable, stable frequency
+- Interference bandwidth should be narrower than or equal to notch width
+- Desired signal must not overlap with notch frequency
+
+**Trade-offs:**
+- Notch removes interference ✓
+- But also removes any desired signal energy at notch frequency ✗
+- Insertion loss: 0.5-2 dB even outside notch ✗
+- Group delay distortion near notch edges ✗
+
+**When to Use:**
+- Adjacent channel interference (like this scenario)
+- Single-frequency terrestrial interferers (radar, carriers)
+- Intermodulation products at known frequencies
+
+**When NOT to Use:**
+- Interference on same frequency as desired signal (co-channel)
+- Wideband interference (noise-like)
+- Frequency-hopping interferers
+
+### Filter Bank Configuration
+
+**Available Filters (This Scenario):**
+
+| Filter | Bandwidth | Special Feature | Use Case |
+|--------|-----------|----------------|----------|
+| 0 | 100 MHz | Bypass mode | Full transponder monitoring |
+| 1 | 50 MHz | Wide | Transponder edge monitoring |
+| 2 | 20 MHz | Medium-wide | Multi-carrier reception |
+| 3 | 10 MHz | Medium | Standard wideband (initial setting) |
+| 4 | 5 MHz | Narrow | Single 5 Msps carrier |
+| 5 | 2 MHz | Very narrow | Low symbol rate carriers |
+| 6 | 1 MHz | +3 MHz notch | Interferer at +3 MHz offset |
+| 7 | 1 MHz | +5 MHz notch | Interferer at +5 MHz offset ✓ |
+
+**Selection Logic:**
+1. Identify carrier bandwidth requirement (5 MHz for 5 Msps)
+2. Identify interference offset (+5 MHz)
+3. Select filter matching both requirements (Filter 7)
+
+### Success Criteria
+
+*   ✅ Service degradation assessed (C/N at 6 dB, packet loss 2.5%)
+*   ✅ Wide-span spectrum sweep performed
+*   ✅ Interference identified (3,957.5 MHz, -83 dBm)
+*   ✅ Interference characterized (adjacent channel, +5 MHz offset)
+*   ✅ C/I ratio calculated (4 dB - very poor)
+*   ✅ Filter 7 selected and applied (notch at +5 MHz)
+*   ✅ Interference suppressed (15+ dB rejection)
+*   ✅ C/N ratio improved (6 dB → 11 dB, improvement greater than 6 dB)
+*   ✅ Packet loss eliminated (2.5% → less than 0.5%)
+*   ✅ Service quality stable for 60+ seconds
+*   ✅ SLA deadline met (completed before 15 minutes expired)
+
+### Common Mistakes Under Pressure
+
+*   ❌ Panicking and trying random solutions without diagnosis
+*   ❌ Forgetting to switch to wide-span mode (can't see interferer)
+*   ❌ Miscalculating C/I ratio (sign errors, unit confusion)
+*   ❌ Selecting wrong notch filter (Filter 6 instead of Filter 7)
+*   ❌ Not verifying solution worked (assuming it's fixed without checking)
+*   ❌ Spending too long on analysis, running out of time
+*   ❌ Immediately calling Charlie instead of attempting solo resolution
+*   ❌ Not documenting interference characteristics for coordination filing
+
+### Time Management Under Pressure
+
+**Efficient Work Flow:**
+
+**Minutes 0-2:** Assess degradation
+- Quick C/N check
+- Quick packet loss check
+- Quick beacon verification
+- Decision: Yes, this is interference
+
+**Minutes 3-6:** Identify interference
+- Configure wide-span mode
+- Sweep spectrum
+- Locate interferer
+- Measure power level
+
+**Minutes 7-9:** Calculate and plan
+- Calculate C/I ratio
+- Identify appropriate filter
+- Prepare to execute solution
+
+**Minutes 10-12:** Implement solution
+- Select correct notch filter
+- Apply filter change
+- Observe immediate effects
+
+**Minutes 13-15:** Verify and document
+- Confirm C/N improved
+- Confirm packet loss eliminated
+- Monitor for stability
+- Complete before deadline
+
+**Buffer:** Aim to finish with 2-3 minutes remaining for unexpected issues
+
+### Real-World Context
+
+**SLA (Service Level Agreement) Penalties:**
+
+Commercial satellite operators have contractual obligations:
+- **Availability**: 99.5-99.9% uptime requirements
+- **Performance**: Minimum C/N, maximum error rates
+- **Response time**: 15-60 minutes to restore service
+- **Penalties**: Financial penalties for SLA breaches (often 1-5% of monthly service fee per incident)
+
+**This Scenario:**
+- 15-minute response time requirement
+- Penalty would be ~$5,000-$50,000 depending on customer tier
+- Multiple breaches can lead to contract termination
+- Time pressure is real and legitimate in commercial operations
+
+**Interference Coordination:**
+
+After resolution, operator must:
+- File interference report with satellite operator
+- Provide interference characteristics (frequency, power, time)
+- Request coordination to identify source
+- Work with other operators to prevent recurrence
+- May involve ITU (International Telecommunication Union) if cross-border
+
+**Adjacent Channel Protection:**
+
+ITU regulations require:
+- Minimum frequency separation between services
+- Power flux density limits
+- Coordination between operators
+- Adjacent channel protection ratios
+
+When these are violated (as in this scenario), affected operator has right to request interference mitigation from source.
+
+### Learning Objectives
+
+By completing this scenario, you should be able to:
+
+1. **Work Under Pressure**: Make correct decisions with time constraints
+2. **Diagnose Interference**: Systematic approach to identifying RF problems
+3. **Spectrum Analysis**: Use wide-span mode to locate interferers
+4. **Calculate C/I**: Quantify interference impact mathematically
+5. **Apply Mitigation**: Select and implement appropriate filters
+6. **Verify Solutions**: Confirm restoration before claiming success
+7. **Solo Operations**: Work independently during emergencies
+8. **Time Management**: Balance speed with accuracy under deadline
+
+<Aside type="tip">
+**Pressure Operations Mindset**
+
+High-pressure scenarios require:
+- **Stay calm**: Panic causes mistakes, wastes time
+- **Systematic approach**: Follow troubleshooting process even when rushed
+- **Quick decisions**: Don't overanalyze, act when confident
+- **Verify results**: Always confirm solution worked
+- **Trust training**: You know this material, execute what you've learned
+
+The SLA deadline creates pressure, but it also focuses your mind. Use the adrenaline, don't let it control you.
+</Aside>
+
+### Next Scenario
+
+You've proven you can handle emergencies solo. The next scenarios will introduce additional complexity: multiple simultaneous problems, equipment failures, customer coordination, and more complex interference types.
+
+Welcome to professional satellite ground segment operations. This is what the job looks like.
+
+### Additional Resources
+
+*   **RF Interference Handbook**: Types, sources, and mitigation techniques
+*   **ITU Radio Regulations**: Coordination procedures and protection criteria
+*   **Filter Design**: Band-pass, band-reject, and notch filter characteristics
+*   **SLA Management**: Contractual obligations and incident response
+
+### Key Takeaways
+
+1. **Interference Diagnosis**: Systematic approach finds root cause quickly
+2. **Wide-Span Analysis**: Essential tool for locating adjacent channel interferers
+3. **C/I Calculation**: Quantifies interference impact mathematically
+4. **Notch Filters**: Effective mitigation for adjacent channel interference
+5. **Time Pressure**: Focuses mind, but requires calm systematic approach
+6. **Solo Operations**: You can handle emergencies independently
+7. **SLA Compliance**: Real financial consequences drive time requirements
+8. **Verification**: Always confirm solution worked before claiming success
+
+**Charlie's Final Assessment:**
+*"That's real operations right there - time pressure, customer impact, working solo. You handled it."*
+
+You've successfully completed your first high-pressure emergency scenario. Ready for more complex challenges?

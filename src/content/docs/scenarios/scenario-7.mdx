@@ -1,0 +1,178 @@
+---
+title: 'Scenario 7 - Equipment Cascade'
+description: 'Manage multiple simultaneous equipment faults during night shift - GPSDO holdover and LNB temperature alarm with 20-minute deadline'
+---
+
+import { Steps } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+
+**Duration:** 25-30 minutes (20-minute hard deadline)
+
+**Difficulty:** Advanced
+
+**Mission Type:** Pressure Phase - Cascade Failure Management
+
+**Time Limit:** 20 minutes before frequency drift causes service loss
+
+### Mission Briefing
+
+**NIGHT SHIFT - MULTIPLE EQUIPMENT FAULTS**
+
+It's 10 PM on a Tuesday. You're solo on the night shift at Vermont Ground Station. Charlie left for dinner 15 minutes ago - he'll be back in 45 minutes, but he's reachable by phone.
+
+**[ALARM SOUNDS]**
+
+The GPSDO (GPS Disciplined Oscillator) alarm just triggered. You check the panel: GNSS lock lost, zero satellites visible. The oscillator has entered holdover mode.
+
+The GPSDO is still providing a 10 MHz reference to all the RF equipment, but the frequency accuracy is slowly degrading. Holdover stability specification is 1 part in 10⁹. Based on that degradation rate, you have approximately **20 minutes** before accumulated frequency drift causes loss of service on TIDEMARK-1.
+
+You pull up the maintenance log. Earlier today: *"Roof crew removing snow, GPS antenna cable may have been disturbed."* That's probably your problem. Charlie is at dinner. You're on your own.
+
+**5 MINUTES LATER - SECOND ALARM**
+
+**[NEW ALARM]**
+
+LNB temperature alarm. You check the display: 85°C and rising. Normal operating temperature: 45°C. Alarm threshold: 75°C. This is a completely separate failure from the GPSDO issue.
+
+You now have two simultaneous equipment faults:
+1. **GPSDO in holdover** - Frequency drifting, 15 minutes remaining before service loss
+2. **LNB overheating** - Risk of hardware damage if temperature continues rising
+
+This is a cascade failure scenario. You need to manage multiple faults simultaneously, prioritize correctly, use backup systems, and keep the customer service online. Charlie is available by phone for guidance, but he's 25+ minutes away.
+
+**Who's Available:**
+- **Charlie Brooks**: At dinner, reachable by phone, 25-30 minutes away physically
+
+<Aside type="danger">
+**CASCADE FAILURE IN PROGRESS**
+
+Two unrelated equipment faults happening simultaneously. This is a test of:
+- **Triage**: Which problem to handle first
+- **Time management**: Both issues need resolution
+- **Backup systems**: When to switch to redundant equipment
+- **Priority judgment**: Hardware damage vs service degradation
+- **Solo operations**: Charlie can advise but can't physically help
+
+Work fast. Work smart. Prioritize correctly.
+</Aside>
+
+### Initial Status
+
+**Ground Station: Vermont (VT-01)**
+
+*   **Antenna**: 9-meter C-band, locked on TIDEMARK-1
+*   **Position**: Az: 214.2°, El: 24.8° (on target, tracking)
+*   **Service Status**: Currently operational, serving customer traffic
+
+**Primary RF Front End (Rack 1):**
+
+*   **GPSDO**: **FAULT - Holdover mode**
+    *   GNSS lock: LOST
+    *   GPS satellites visible: 0 (cable disconnected)
+    *   Holdover status: Active
+    *   Holdover duration: Just entered (0 minutes)
+    *   Frequency accuracy: 1×10⁻⁹ (degrading)
+    *   Time until service loss: ~20 minutes
+    *   10 MHz output: Still active (5 devices fed)
+
+*   **LNB**: Currently operational, **will fault at 5-minute mark**
+    *   Power: ON
+    *   LO frequency: 5,150 MHz
+    *   Gain: 55 dB
+    *   Temperature: 45°C (normal initially)
+    *   At 5 minutes: Temperature will jump to 85°C (ALARM)
+    *   Alarm threshold: 75°C
+    *   Thermal control: Failing
+
+*   **Modem**: Currently operational
+    *   Locked on TIDEMARK-1 carrier
+    *   C/N ratio: 12 dB (healthy)
+    *   Service: Normal
+
+**Backup RF Front End (Rack 2):**
+
+*   **Backup GPSDO**: Fully operational
+    *   GNSS lock: Active and stable
+    *   GPS antenna: Separate, unaffected
+    *   Frequency accuracy: 1×10⁻¹² (excellent)
+    *   Status: Available for switchover
+
+*   **Backup LNB**: Cold spare
+    *   Power: OFF (not currently configured)
+    *   Status: Available if needed
+
+### GPSDO Holdover Explained
+
+**What is Holdover?**
+
+A GPS Disciplined Oscillator (GPSDO) uses GPS signals to discipline (correct) an internal oven-controlled crystal oscillator (OCXO). When GPS lock is lost, the GPSDO enters "holdover mode":
+
+- **GPS lock active**: OCXO continuously corrected, accuracy ~1×10⁻¹² (excellent)
+- **GPS lock lost**: OCXO runs free using last known correction, accuracy degrades to ~1×10⁻⁹ (holdover)
+- **Holdover duration**: Time GPSDO can maintain acceptable accuracy without GPS
+
+**Why This Matters:**
+
+All RF equipment (LNB, BUC, modems) uses the GPSDO's 10 MHz reference for frequency generation:
+- LNB local oscillator: 5,150 MHz = 515 × 10 MHz
+- Any error in 10 MHz reference scales up by 515×
+- 1 Hz error at 10 MHz → 515 Hz error at 5,150 MHz
+- 515 Hz error → Carrier frequency shift → Lost lock
+
+**Frequency Drift Calculation:**
+
+```
+Holdover stability: 1×10⁻⁹ (1 part per billion)
+Time: 20 minutes = 1200 seconds
+LNB LO: 5,150 MHz = 5,150,000,000 Hz
+
+Maximum drift = 5,150,000,000 Hz × 1×10⁻⁹ × (1200 seconds / stability time constant)
+Drift ≈ 6-10 kHz over 20 minutes
+
+Modem can typically handle ±5 kHz before losing lock
+Therefore: ~20 minutes until service loss
+```
+
+**Holdover Mode Characteristics:**
+
+- 10 MHz output continues (equipment doesn't lose reference immediately)
+- Frequency accuracy degrades gradually (not sudden failure)
+- Rate of degradation depends on OCXO quality and environmental stability
+- Time limit is predictable based on specifications
+
+### LNB Temperature Management
+
+**Normal Operating Temperature:**
+- Target: 45°C (stabilized)
+- Achieved through: Internal thermal control (heater/cooling)
+- Purpose: Frequency stability requires stable temperature
+
+**Temperature Alarm (This Scenario):**
+- Normal: 45°C
+- At 5 minutes: Jumps to 85°C
+- Alarm threshold: 75°C
+- Risk: Hardware damage if continues rising
+
+**Root Cause:**
+Thermal control failure (heater stuck on or cooling failed)
+
+**Mitigation Strategy:**
+Reduce power dissipation by reducing gain:
+- Current gain: 55 dB
+- Reduced gain: 50 dB (5 dB reduction)
+- Effect: Less amplifier current → Less heat generation
+- Trade-off: C/N ratio will drop slightly (acceptable if still above threshold)
+
+### Mission Phases
+
+<Steps>
+
+1. **Phase 1: Initial GPSDO Alarm Assessment**
+   ...
+
+</Steps>
+
+### Cascade Failure Management Principles
+...
+
+
