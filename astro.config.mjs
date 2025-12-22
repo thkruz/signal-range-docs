@@ -84,11 +84,11 @@ export default defineConfig({
           slug: 'scenarios/scenario-1'
         }
       ]
-      // }, {
-      //   label: 'Developer Plugins',
-      //   autogenerate: {
-      //     directory: 'dev-plugins'
-      //   }
+    }, {
+      label: 'Checklists',
+      autogenerate: {
+        directory: 'checklists'
+      }
     }, {
       label: 'Contributing',
       items: [{

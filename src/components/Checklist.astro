@@ -1,0 +1,348 @@
+---
+import { processChecklist } from './rehype-checklist';
+import type { ChecklistProps } from './types/checklist';
+
+interface Props extends ChecklistProps {}
+
+const {
+	interactive = false,
+	storageKey,
+	statusColors,
+	class: className,
+	title,
+} = Astro.props;
+
+const content = await Astro.slots.render('default');
+const { html } = processChecklist(content, { interactive, statusColors, title });
+---
+
+<starlight-checklist
+	class:list={['sl-checklist-container', className]}
+	data-storage-key={storageKey}
+	data-interactive={interactive ? 'true' : 'false'}
+>
+	<div set:html={html} />
+</starlight-checklist>
+
+<style is:global>
+	.sl-checklist-container {
+		margin: 1rem;
+	}
+
+	.sl-checklist-title {
+		text-align: center;
+		margin: 0 0 1rem 0;
+		font-size: var(--sl-text-h4);
+		font-weight: 600;
+		color: var(--sl-color-white);
+	}
+
+	.sl-checklist {
+		list-style: none;
+		padding: 2rem;
+		background-color: var(--sl-color-gray-6);
+		border: 1px solid var(--sl-color-gray-5);
+		border-radius: 0.5rem;
+		margin: 0;
+	}
+
+	.sl-checklist-item {
+		display: grid;
+		grid-template-columns: auto 1fr auto auto;
+		grid-template-rows: auto;
+		gap: 0.5rem;
+		align-items: center;
+		padding: 0.5rem 0;
+		font-size: var(--sl-text-base);
+	}
+
+	/* Ensure checkbox, label, dots, and status are on the first row */
+	.sl-checklist-item > *:not(.sl-checklist-subitems) {
+		grid-row: 1;
+	}
+
+	.sl-checklist-item:first-child {
+		padding-top: 0;
+	}
+
+	.sl-checklist-item:last-child {
+		padding-bottom: 0;
+	}
+
+	/* Adjust grid when no checkbox */
+	.sl-checklist-container[data-interactive='false'] .sl-checklist-item {
+		grid-template-columns: auto 1fr auto;
+	}
+
+	/* Checkbox styling */
+	.sl-checklist-checkbox {
+		grid-column: 4;
+		appearance: none;
+		width: 1.25rem;
+		height: 1.25rem;
+		border: 2px solid var(--sl-color-gray-4);
+		border-radius: 0.25rem;
+		background-color: var(--sl-color-gray-6);
+		cursor: pointer;
+		position: relative;
+		transition: all 0.2s ease;
+		margin: 0;
+	}
+
+	.sl-checklist-checkbox:hover {
+		border-color: var(--sl-color-accent);
+	}
+
+	.sl-checklist-checkbox:checked {
+		background-color: var(--sl-color-accent);
+		border-color: var(--sl-color-accent);
+	}
+
+	.sl-checklist-checkbox:checked::after {
+		content: '';
+		position: absolute;
+		left: 0.35rem;
+		top: 0.1rem;
+		width: 0.4rem;
+		height: 0.7rem;
+		border: solid var(--sl-color-white);
+		border-width: 0 2px 2px 0;
+		transform: rotate(45deg);
+	}
+
+	/* Label */
+	.sl-checklist-label {
+		grid-column: 1;
+		height: 1.5em;
+		color: var(--sl-color-white);
+		white-space: nowrap;
+		font-family: 'Courier New', Courier, monospace;
+	}
+
+	/* Adjust label column when no checkbox */
+	.sl-checklist-container[data-interactive='false'] .sl-checklist-label {
+		grid-column: 1;
+	}
+
+	/* Dotted leader */
+	.sl-checklist-dots {
+		grid-column: 2;
+		overflow: hidden;
+		position: relative;
+		min-width: 2rem;
+		height: 1.5em;
+		align-self: center;
+	}
+
+	.sl-checklist-dots::after {
+		content: '....................................................................................................';
+		letter-spacing: 0.2em;
+		color: var(--sl-color-gray-4);
+		position: absolute;
+		white-space: nowrap;
+	}
+
+	/* Adjust dots column when no checkbox */
+	.sl-checklist-container[data-interactive='false'] .sl-checklist-dots {
+		grid-column: 2;
+	}
+
+	/* Status value */
+	.sl-checklist-status {
+		grid-column: 3;
+		font-weight: 600;
+		height: 1.5em;
+		white-space: nowrap;
+		color: var(--sl-color-white);
+		font-family: 'Courier New', Courier, monospace;
+	}
+
+	/* Adjust status column when no checkbox */
+	.sl-checklist-container[data-interactive='false'] .sl-checklist-status {
+		grid-column: 3;
+	}
+
+	/* Status color variants */
+	.sl-checklist-status[data-color='success'] {
+		color: #10b981;
+	}
+
+	.sl-checklist-status[data-color='warning'] {
+		color: #f59e0b;
+	}
+
+	.sl-checklist-status[data-color='error'] {
+		color: var(--sl-color-accent);
+	}
+
+	.sl-checklist-status[data-color='info'] {
+		color: #3b82f6;
+	}
+
+	/* Sub-items */
+	.sl-checklist-subitems {
+		grid-column: 1 / 4;
+		margin: 0.5rem 0 0 0;
+		padding-left: 1.5rem;
+		font-size: var(--sl-text-xs);
+		color: var(--sl-color-gray-2);
+		list-style: disc;
+	}
+
+	/* Adjust sub-items column when no checkbox */
+	.sl-checklist-container[data-interactive='false'] .sl-checklist-subitems {
+		grid-column: 1 / -1;
+	}
+
+	.sl-checklist-subitems li {
+		margin: 0.25rem 0;
+	}
+
+	/* Completed item styling */
+	.sl-checklist-item.completed .sl-checklist-label,
+	.sl-checklist-item.completed .sl-checklist-status {
+		opacity: 0.5;
+		text-decoration: line-through;
+	}
+
+	/* Aside-only items (no checkbox or label/status) */
+	.sl-checklist-item-aside-only {
+		display: block;
+		padding: 0;
+	}
+
+	.sl-checklist-aside {
+		padding: 0.75rem;
+		border-left: 4px solid;
+		border-radius: 0.25rem;
+		font-size: var(--sl-text-base);
+		line-height: 1.6;
+	}
+
+	.sl-checklist-aside[data-type='note'] {
+		background-color: rgba(59, 130, 246, 0.1);
+		border-color: #3b82f6;
+		color: #93c5fd;
+	}
+
+	.sl-checklist-aside[data-type='caution'] {
+		background-color: rgba(245, 158, 11, 0.1);
+		border-color: #f59e0b;
+		color: #fbbf24;
+	}
+
+	.sl-checklist-aside[data-type='warning'] {
+		background-color: rgba(239, 68, 68, 0.1);
+		border-color: #ef4444;
+		color: #fca5a5;
+	}
+
+	/* Responsive design */
+	@media (max-width: 768px) {
+		.sl-checklist-item {
+			grid-template-columns: 1fr auto !important;
+			row-gap: 0.25rem;
+		}
+
+		.sl-checklist-checkbox {
+			grid-column: 2;
+			grid-row: 1 / 3;
+		}
+
+		.sl-checklist-label {
+			grid-column: 1 !important;
+			grid-row: 1;
+		}
+
+		.sl-checklist-dots {
+			display: none;
+		}
+
+		.sl-checklist-status {
+			grid-column: 1 !important;
+			grid-row: 2;
+			padding-left: 0.5rem;
+			font-size: var(--sl-text-xs);
+		}
+
+		.sl-checklist-subitems {
+			grid-column: 1 / -1 !important;
+		}
+	}
+</style>
+
+{
+	interactive && (
+		<script>
+			class StarlightChecklist extends HTMLElement {
+				constructor() {
+					super();
+					// Use setTimeout to ensure DOM is ready
+					setTimeout(() => {
+						this.restoreState();
+						this.attachListeners();
+					}, 0);
+				}
+
+				restoreState() {
+					const key = this.dataset.storageKey;
+					if (!key) return;
+
+					try {
+						const saved = sessionStorage.getItem(`checklist-${key}`);
+						if (saved) {
+							const state = JSON.parse(saved);
+							const checkboxes = this.querySelectorAll('.sl-checklist-checkbox');
+							checkboxes.forEach((checkbox, index) => {
+								if (state[index]) {
+									(checkbox as HTMLInputElement).checked = true;
+									this.updateItemStyle(checkbox as HTMLInputElement);
+								}
+							});
+						}
+					} catch (e) {
+						console.error('Failed to restore checklist state:', e);
+					}
+				}
+
+				attachListeners() {
+					const checkboxes = this.querySelectorAll('.sl-checklist-checkbox');
+					checkboxes.forEach((checkbox) => {
+						checkbox.addEventListener('change', () => {
+							this.updateItemStyle(checkbox as HTMLInputElement);
+							this.persistState();
+						});
+					});
+				}
+
+				updateItemStyle(checkbox: HTMLInputElement) {
+					const item = checkbox.closest('.sl-checklist-item');
+					if (item) {
+						if (checkbox.checked) {
+							item.classList.add('completed');
+						} else {
+							item.classList.remove('completed');
+						}
+					}
+				}
+
+				persistState() {
+					const key = this.dataset.storageKey;
+					if (!key) return;
+
+					try {
+						const checkboxes = this.querySelectorAll('.sl-checklist-checkbox');
+						const state = Array.from(checkboxes).map(
+							(cb) => (cb as HTMLInputElement).checked
+						);
+						sessionStorage.setItem(`checklist-${key}`, JSON.stringify(state));
+					} catch (e) {
+						console.error('Failed to persist checklist state:', e);
+					}
+				}
+			}
+
+			customElements.define('starlight-checklist', StarlightChecklist);
+		</script>
+	)
+}

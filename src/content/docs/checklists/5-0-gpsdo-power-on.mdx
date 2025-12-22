@@ -1,0 +1,26 @@
+---
+title: 'GPSDO Power-On Sequence'
+description: 'Step-by-step checklist for powering on and verifying the GPS Disciplined Oscillator (GPSDO).'
+---
+
+import { Steps } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+import Checklist from '../../../components/Checklist.astro';
+
+<Checklist
+  interactive storageKey="scenario-1-gpsdo"
+  status
+  statusColors={{ ON: "success", WARM: "success", LOCKED: "success" }}
+>
+- GPSDO power...ON
+- OCXO temperature................WARM
+  - Confirm no "oven cold" alarm
+- GNSS status...................LOCKED
+  - Verify green indicator
+- [CAUTION] NOTHING downstream works properly without this reference.
+- 10 MHz reference............LOCKED
+  - Modems
+  - `BUC`
+  - `LNB`
+- Stability..................< 5×10⁻¹¹
+</Checklist>
