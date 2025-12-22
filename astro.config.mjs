@@ -80,9 +80,37 @@ export default defineConfig({
       label: 'Scenarios',
       items: [
         {
-          label: 'Scenario 1: HELIOS-7 Initial Contact',
+          label: 'Scenario 1: First Day at NATS',
           slug: 'scenarios/scenario-1'
-        }
+        },
+        {
+          label: 'Scenario 2: Scheduled Maintenance',
+          slug: 'scenarios/scenario-2'
+        },
+        {
+          label: 'Scenario 3 - Weather Emergency Handover',
+          slug: 'scenarios/scenario-3'
+        },
+        {
+          label: 'Scenario 4 - New Bird No Handbook',
+          slug: 'scenarios/scenario-4'
+        },
+        {
+          label: 'Scenario 5 - Inclined Orbit Operations',
+          slug: 'scenarios/scenario-5'
+        },
+        {
+          label: 'Scenario 6 - Interference Hunt',
+          slug: 'scenarios/scenario-6'
+        },
+        {
+          label: 'Scenario 7 - Equipment Cascade',
+          slug: 'scenarios/scenario-7'
+        },
+        {
+          label: 'Scenario 8 - First Light Solo',
+          slug: 'scenarios/scenario-8'
+        },
       ]
       // }, {
       //   label: 'Developer Plugins',

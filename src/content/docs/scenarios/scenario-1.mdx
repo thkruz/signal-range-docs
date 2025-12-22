@@ -1,174 +1,291 @@
 ---
-title: 'Scenario 1: MARINER-1 Initial Contact'
-description: Conduct first RF link test with a newly launched GEO C-band maritime communications satellite. The CEO, insurers, and anchor customer are all watching.
+title: 'Scenario 1: First Day at NATS'
+description: Equipment familiarization walkthrough with Charlie Brooks. Learn what each indicator means on an already-operational system serving TIDEMARK-1.
 ---
 
 import { Steps } from '@astrojs/starlight/components';
 import { Aside } from '@astrojs/starlight/components';
 
-**Duration:** 25-30 minutes
+**Duration:** 15-20 minutes
 
 **Difficulty:** Beginner
 
-**Mission Type:** GEO Communications Satellite
+**Mission Type:** Tutorial - Equipment Familiarization
 
 ### Mission Briefing
 
-You are a Ground Station Operator at North Atlantic Teleport Services, a commercial satellite ground station facility located in rural Vermont. Your company provides ground segment services for multiple GEO communication satellites serving the North Atlantic region.
+Welcome to North Atlantic Teleport Services (NATS). This is your first day as a Ground Station Operator at the Vermont Ground Station (VT-01), a commercial satellite communications facility providing ground segment services for GEO communication satellites.
 
-Your latest client, SeaLink Communications, launched MARINER-1 fourteen days ago aboard a Falcon 9 from Cape Canaveral. The satellite completed its apogee burns over the past two weeks and reached its operational slot at 53°W geostationary orbit yesterday. Beacon Orbital Analytics in Cambridge provided orbital analysis throughout the transfer orbit phase and confirmed the satellite achieved station-keeping this morning.
+Charlie Brooks, the senior operator who will be training you before his departure to Europe next month, is walking you through a routine health check of the facility. TIDEMARK-1, a C-band maritime communications satellite operated by SeaLink Global Communications, is already online and serving customer traffic at its operational slot at 53°W geostationary orbit.
 
-The spacecraft operations team at SeaLink's control center in Halifax has completed initial checkout - solar arrays deployed, batteries charged, attitude control stable. They've now handed the communications payload over to ground operations. You are conducting the first ground station RF link test.
+You won't be establishing contact today or touching any controls - just learning where everything is, what each indicator means, and what "normal operations" looks like. This is pure observation and familiarization with no time pressure and no failure states.
 
-This is a critical milestone. Until this link is established and verified, MARINER-1 cannot begin revenue service. The satellite is designed to provide C-band maritime connectivity from Newfoundland to the Caribbean - fishing fleets, cargo vessels, cruise ships, offshore platforms.
+**Mission Context:**
+- **TIDEMARK-1**: Eight-year-old C-band maritime satellite serving Newfoundland to Caribbean
+- **Current Status**: Fully operational, serving active customer traffic
+- **Your Role**: Shadow Charlie and learn the equipment
+- **Today's Goal**: Understand what healthy, operational equipment looks like
 
-**Who's Watching:**
-- **Catherine Vega** (SeaLink CEO): Former submarine communications officer. Bet the company on this satellite. Has already drafted two versions of tomorrow's press release - one congratulatory, one apologetic.
-- **Empire Insurance Syndicate Observer**: Represented via video link from New York City. Known for their no-nonsense approach and colorful language. They have a reputation for being thorough to the point of paranoia, and their motto is "If it can go wrong, it will."
-- **Captain James Okafor** (Atlantic Shipping Alliance): Your anchor customer. Runs 47 container ships. Tired of paying Inmarsat rates. Will either sign a 10-year contract tomorrow or walk away.
-- **Francis Martin**: Board Member and former investment banker who doesn't understand satellites but understands burn rate. Keeps asking "is it working yet?" on Slack.
+**Who's Training You:**
+- **Charlie Brooks**: Senior Ground Station Operator with 15 years of experience. Former Navy communications technician. Known for being thorough but patient. He's training three new hires (including you) before his transfer to NATS Europe operations next month. "Better to understand it now than guess later when you're solo on console."
 
-This test either succeeds, or very expensive conversations begin.
+<Aside type="tip">
+This is a no-pressure learning scenario. Take your time to understand each subsystem. Charlie will guide you through each step and explain what you're seeing.
+</Aside>
 
-### Equipment Configuration
+### Equipment Overview
 
-**Ground Station: North Atlantic Teleport - Vermont Site (NATV-1)**
+**Ground Station: Vermont Ground Station (VT-01)**
 
-*   Antenna: 11-meter C-band Earth Station
-*   Antenna Pointing: Az: 161.8°, El: 34.2° (pre-calculated for MARINER-1 at 53°W)
-*   Polarization: Linear Vertical
+*   **Antenna**: 9-meter C-band Earth Station (Vortek model)
+*   **Current Pointing**: Az: 214.2°, El: 24.8° (locked on TIDEMARK-1 at 53°W)
+*   **Tracking Mode**: Step-track (automatic small adjustments)
+*   **Polarization**: Horizontal
 
-**Satellite MARINER-1:**
+**Satellite: TIDEMARK-1**
 
-*   Orbital Slot: 53°W GEO
-*   Downlink Beacon: 3,702.5 MHz (C-band)
-*   Transponder 6A (Test):
-    *   Uplink: 5,925.0 MHz
-    *   Downlink: 3,700.0 MHz
-    *   Bandwidth: 36 MHz
-    *   Polarization: Vertical
+*   **Orbital Slot**: 53°W GEO
+*   **Service**: Maritime broadband communications
+*   **Downlink Beacon**: 3,947.8 MHz (C-band, CW carrier)
+*   **Active Carrier**: 3,952.5 MHz (customer traffic, 5 MHz bandwidth)
+*   **Status**: Fully operational, serving customer SLA
 
-### Pre-Operational Checklist
+### System Status - All Systems Operational
 
-*   Weather Conditions: Partly cloudy, 18°C, humidity 65%, wind 6 kts - **APPROVED FOR OPS**
-*   Satellite Status: On-station at 53°W, solar arrays deployed, batteries charged - **HEALTHY**
-*   Frequency Coordination: ITU filing confirmed, FCC license active - **CLEARED**
-*   Insurance Observer: Standing by via video link from London - **PRESENT**
+*   **GPSDO (GPS Disciplined Oscillator)**: ✅ LOCKED
+    *   GPS satellites: 12 in view
+    *   Frequency accuracy: 1×10⁻¹² (1 part per trillion)
+    *   UTC accuracy: 15 nanoseconds
+    *   Lock duration: 12 hours (stable)
+    *   Temperature: 65°C (stable)
+    *   Output: 5× 10 MHz references active
+*   **LNB (Low Noise Block)**: ✅ OPERATIONAL
+    *   Local oscillator: 5,150 MHz
+    *   Gain: 55 dB
+    *   Noise temperature: 65 K (excellent performance)
+    *   Temperature: 45°C (thermally stable)
+    *   External reference: Locked to GPSDO
+*   **Antenna Control**: ✅ ON TARGET
+    *   Azimuth: 214.2°
+    *   Elevation: 24.8°
+    *   Tracking: Step-track mode active
+    *   Target: TIDEMARK-1 (53°W)
+*   **BUC (Block Upconverter)**: ✅ ACTIVE
+    *   LO frequency: 2,225 MHz
+    *   Output power: +10 dBm
+    *   Status: Transmitting (not muted)
+    *   External reference: Locked to GPSDO
+*   **HPA (High Power Amplifier)**: ✅ ENABLED
+    *   Output power: 100 Watts
+    *   Status: Operational
+*   **Spectrum Analyzer**: ✅ DISPLAYING
+    *   Center frequency: 3,947.8 MHz
+    *   Span: 10 MHz
+    *   RBW: 10 kHz
+    *   Reference level: -50 dBm
+*   **Receiver Modem**: ✅ LOCKED
+    *   Carrier frequency: 3,952.5 MHz
+    *   Modulation: 16APSK
+    *   FEC: 3/4
+    *   C/N ratio: 12.3 dB (threshold: 7 dB)
+    *   Status: Clean lock, zero errors
 
-### Detailed Step-by-Step Procedure
+### Equipment Familiarization Phases
 
-1.  **Phase 1: Power-Up Sequence (5 minutes)**
-    1.  GPS Disciplined Oscillator (GPSDO)
-        *   Verify GPSDO unit is powered on
-        *   Verify GPSDO unit is warm (the OCXO will alarm if not at operating temp)
-        *   Verify GPS antenna has satellite lock (green LED)
-        *   Wait for frequency lock (30-60 seconds)
-        *   Success: "LOCKED" status, \<5×10⁻¹¹ stability
-        *   **Critical:** ALL other equipment depends on this reference!
-    2.  Low Noise Block (LNB)
-        *   Power on LNB (converts 3.7-4.2 GHz down to 950-1450 MHz IF)
-        *   Set gain: 55 dB
-        *   Wait for temperature stabilization: 2-3 minutes
-        *   Success: temperature stable and no frequency drift
-    3.  Block Upconverter (BUC)
-        *   **DO NOT TRANSMIT YET** - antenna must be pointed first
-        *   Power on BUC (standby mode)
-        *   Set to C-band mode (5.925-6.425 GHz)
-        *   Keep RF output MUTED
-        *   Success: Ready state, but no RF output
-    4.  Spectrum Analyzer
-        *   Power on unit
-        *   Select RF mode (direct C-band input)
-        *   Set center frequency: 3,702.5 MHz
-        *   Set span: 10 MHz
-        *   Set RBW: 10 kHz
-        *   Set reference level: -40 dBm
-        *   Success: Clean baseline noise floor visible
-2.  **Phase 2: Antenna Pointing & Beacon Acquisition (8-10 minutes)**
-    1.  Antenna Control Unit (ACU)
-        *   Enter satellite parameters: Name: MARINER-1, Longitude: 53.0°W, Latitude: 0.0° (GEO)
-        *   Calculated look angles: Azimuth: 161.8° ± 0.5°, Elevation: 34.2° ± 0.5°
-    2.  Initial Pointing
-        *   Command antenna to calculated position
-        *   Watch for: Antenna begins moving (15-20 seconds transit time for 11m dish)
-        *   Verify: Azimuth and elevation encoders show correct angles
-        *   Wait for "ON TARGET" indication
-    3.  Beacon Search
-        *   Look at spectrum analyzer: You should see a carrier!
-        *   Expected beacon: Strong CW carrier at 3,702.5 MHz
-        *   Typical level: -70 to -80 dBm (53°W is moderate elevation from Vermont)
-        *   If beacon is weak or offset:
-            *   Use antenna fine-pointing (±0.2° adjustments)
-            *   Peak the signal by maximizing amplitude
-            *   Goal: Achieve at least -75 dBm beacon level
-    4.  Lock Status Verification
-        *   Beacon should be stable (not drifting)
-        *   Frequency should be within ±1 kHz of 3,702.5 MHz
-        *   Carrier-to-Noise (C/N): Should show >15 dB
-        *   Log beacon parameters for operations report
-3.  **Phase 3: Transmit Path Checkout (5 minutes)**
-    1.  Transmitter Configuration
-        *   Power on Transmitter Modem #1
-        *   Configure modem: Modulation: QPSK, Symbol Rate: 5.0 Msps, FEC: 3/4, Scrambling: ON
-        *   Set IF output: 140.0 MHz (will be upconverted to 5,925.0 MHz)
-    2.  BUC Configuration for Transmit
-        *   Set uplink frequency: 5,925.0 MHz
-        *   Set transmit power: -10 dBm
-        *   Double-check antenna pointing
-        *   Coordinate with satellite ops: "NATV-1 ready to transmit on Transponder 6A"
-        *   **CRITICAL:** Get explicit permission before unmuting
-    3.  Low-Power RF Test
-        *   Unmute BUC RF output
-        *   Verify on spectrum analyzer: Clean QPSK signal at correct frequency
-        *   Listen for satellite ops confirmation: "NATV-1, we see your carrier on Transponder 6A"
-        *   If no confirmation: MUTE immediately, troubleshoot
-4.  **Phase 4: Receive Path Verification (5 minutes)**
-    1.  Downlink Monitoring
-        *   Change spectrum analyzer to monitor downlink: Center frequency: 3,700.0 MHz, Span: 50 MHz
-        *   You should see: Your uplink signal transponded back
-        *   Expected level: -60 to -70 dBm
-        *   Verify: Signal is in correct location in transponder
-    2.  Receiver Configuration
-        *   Power on Receiver Modem #1
-        *   Set to monitor Transponder 6A downlink
-        *   Configure demodulator: Modulation: QPSK, Symbol Rate: 5.0 Msps, FEC: 3/4, Carrier frequency: 3,700.0 MHz
-        *   Wait for modem lock: 5-10 seconds
-        *   Success indicators: "CARRIER LOCK" LED, "FRAME LOCK" LED, Eb/No: >8 dB
-    3.  Loopback Test
-        *   Transmit a test pattern from modem TX port
-        *   Verify receipt at modem RX port
-        *   Bit Error Rate (BER): Should be \<1Ã—10â»â¹
-        *   This confirms: Full duplex link is operational!
-5.  **Phase 5: Power Ramp & Link Optimization (5 minutes)**
-    1.  Gradual Power Increase
-        *   Increase BUC power in 3 dB steps: -10 dBm → -7 dBm → -4 dBm → -1 dBm → +2 dBm
-        *   Monitor at each step: Satellite ops confirms no saturation, Downlink power increases, No adjacent channel interference
-        *   Target transmit power: +2 dBm (28.5 dBm EIRP)
-    2.  Link Margin Verification
-        *   Record final link parameters: Uplink C/N: \_\_\_\_\_ dB, Downlink C/N: \_\_\_\_\_ dB, Combined Eb/No: \_\_\_\_\_ dB
-        *   Target: >2 dB margin above threshold
-        *   Check spectrum: Clean signal, no distortion
-    3.  Final Documentation
-        *   Screenshot spectrum analyzer showing transponder
-        *   Log all equipment serial numbers
-        *   Record link parameters in operations database
-        *   Notify Satellite Ops: "NATV-1 declares MARINER-1 Transponder 6A link OPERATIONAL"
+Charlie will walk you through six phases of equipment observation:
 
-### Success Criteria
+<Steps>
 
-*   ✅ GPSDO locked and providing stable reference
-*   ✅ Beacon acquired at >-75 dBm
-*   ✅ Antenna pointing optimized (peaking completed)
-*   ✅ Transmit carrier visible on satellite (confirmed by sat ops)
-*   ✅ Downlink signal received and demodulated
-*   ✅ BER < 1×10⁻⁹ on loopback test
-*   ✅ Link margin >2 dB at operational power
-*   ✅ No interference to adjacent satellites/transponders
+1. **Phase 1: GPSDO (GPS Disciplined Oscillator)**
+   
+   **What to Observe:**
+   *   Green lock indicator (GPS locked)
+   *   Satellite count: 12 satellites in view
+   *   Frequency accuracy: 1×10⁻¹² (excellent stability)
+   *   Five 10 MHz outputs active (feeding all other equipment)
+   *   Temperature stable at 65°C
+   *   No holdover warnings
+   
+   **What Charlie Explains:**
+   *   "See that green lock indicator? That's what we want to see - means we've got a stable 10 MHz reference for the entire rack. Everything else keys off that clock."
+   *   "Those five outputs? That's the 10 MHz reference feeding the LNB, BUC, spectrum analyzer, and both modems. They all need to stay phase-coherent."
+   *   "If this ever drops to holdover mode, you've got maybe twenty minutes before frequency drift kills the link. We'll cover that scenario later."
+   
+   **Key Learning:**
+   The GPSDO is the timing heart of the ground station. All RF equipment must share the same frequency reference to maintain coherent communications with the satellite.
 
-### Common New Operator Mistakes to Avoid
+2. **Phase 2: LNB (Low Noise Block Downconverter)**
+   
+   **What to Observe:**
+   *   Power: ON
+   *   Local oscillator: 5,150 MHz
+   *   Gain: 55 dB
+   *   Noise temperature: 65 K (lower is better)
+   *   Temperature: 45°C (thermally stable)
+   *   External reference: Locked to GPSDO
+   *   No frequency error
+   
+   **What Charlie Explains:**
+   *   "LNB's running at 5,150 MHz local oscillator, 55 dB gain. Temperature's stable at 45 celsius - took about three minutes to get there after power-up."
+   *   "See that noise temperature reading? 65 Kelvin. Lower is better - means less self-generated noise getting added to the signal. This unit's performing well."
+   *   "The IF output is feeding the spectrum analyzer and receiver modem through that coupler."
+   
+   **Key Learning:**
+   The LNB downconverts the high-frequency satellite signals (C-band, 3.7-4.2 GHz) to intermediate frequency (950-1450 MHz) while adding minimal noise. Thermal stability is critical for frequency accuracy.
 
-*   ❌ Transmitting before antenna is pointed (radiating in wrong direction!)
-*   ❌ Forgetting to lock GPSDO first (everything will drift)
-*   ❌ Using too much transmit power initially (can damage satellite)
-*   ❌ Not monitoring spectrum during transmit (blind operation)
-*   ❌ Forgetting to coordinate with satellite operations team
+3. **Phase 3: Antenna Control System**
+   
+   **What to Observe:**
+   *   Azimuth: 214.2°
+   *   Elevation: 24.8°
+   *   Polarization: 0° (Horizontal)
+   *   Tracking mode: Step-track (active)
+   *   Status: ON TARGET
+   
+   **What Charlie Explains:**
+   *   "Antenna's pointed at azimuth 214, elevation 25 - that's where TIDEMARK-1 sits in the sky from our location in Vermont."
+   *   "It's in step-track mode right now. System's making small adjustments to maximize signal strength. For a geostationary satellite that's not moving much, this works fine."
+   *   "Later this week I'll show you program track - that's for satellites with inclined orbits that appear to move. TIDEMARK-1's eight years old and starting to drift north-south daily."
+   
+   **Key Learning:**
+   Step-track mode automatically optimizes antenna pointing by making small adjustments to maximize received signal strength. This compensates for minor satellite position changes and atmospheric effects.
+
+4. **Phase 4: Spectrum Analyzer Display**
+   
+   **What to Observe:**
+   *   Center frequency: 3,947.8 MHz
+   *   Sharp spike: Beacon carrier at -95 dBm (CW)
+   *   Wider signal: Active customer carrier at 3,952.5 MHz (-87 dBm, 5 MHz wide)
+   *   Clean noise floor: No interference visible
+   *   Baseline: -140 dBm (thermal noise floor)
+   
+   **What Charlie Explains:**
+   *   "There's your beacon - that sharp spike at 3,947.8 MHz. Continuous wave carrier, about -95 dBm. Spacecraft transmits it constantly so we can verify the link."
+   *   "See that wider signal at 3,952.5 MHz? That's the active customer carrier - maritime vessel traffic. 5 megahertz bandwidth, running 16APSK modulation."
+   *   "The rest of that trace is noise floor. Clean baseline means no interference, which is exactly what we want."
+   
+   **Key Learning:**
+   The spectrum analyzer shows the actual RF signals in the frequency domain. The beacon is your reference for link health, while customer carriers represent revenue-generating traffic.
+
+5. **Phase 5: Receiver Modem Telemetry**
+   
+   **What to Observe:**
+   *   Carrier lock: LOCKED (green indicator)
+   *   Frequency: 3,952.5 MHz (customer carrier)
+   *   Modulation: 16APSK
+   *   FEC: 3/4
+   *   C/N ratio: 12.3 dB (threshold: 7 dB)
+   *   Link margin: 5.3 dB (excellent)
+   *   Bit errors: Zero
+   
+   **What Charlie Explains:**
+   *   "Modem's locked on that 3,952.5 MHz carrier. C/N ratio is 12.3 dB - well above the 7 dB threshold for this modulation scheme."
+   *   "That means bit errors are essentially zero. Customer's getting clean data, we're meeting SLA requirements. This is what normal operations look like."
+   
+   **Key Learning:**
+   The modem demodulates the RF signal back into data. C/N (Carrier-to-Noise) ratio is the primary link quality metric. Higher C/N means better signal quality and lower error rates.
+
+6. **Phase 6: Knowledge Check**
+   
+   Charlie will ask you a few questions to verify you understand what you've seen:
+   
+   **Question 1:** "What does that green lock indicator on the GPSDO mean?"
+   *   Correct answer: Stable 10 MHz reference for all equipment
+   *   Why it matters: Without GPSDO lock, frequency drift will cause link loss
+   
+   **Question 2:** "Why is LNB thermal stabilization important?"
+   *   Correct answer: Frequency stability depends on stable temperature
+   *   Why it matters: Temperature changes cause LO frequency drift
+   
+   **Question 3:** "What tracking mode is currently active on the antenna?"
+   *   Correct answer: Step-track
+   *   Why it matters: Different satellites require different tracking modes
+
+</Steps>
+
+### Key Equipment Concepts
+
+**Signal Chain - Receive Path:**
+1. Satellite transmits downlink signal (3.7-4.2 GHz C-band)
+2. 9-meter antenna receives and focuses signal
+3. LNB downconverts to IF (950-1450 MHz) and amplifies
+4. Signal splits via coupler to spectrum analyzer and modem
+5. Modem demodulates IF back to digital data
+
+**Signal Chain - Transmit Path:**
+1. Modem generates digital signal at IF (140 MHz)
+2. BUC upconverts IF to RF (5.925-6.425 GHz C-band)
+3. HPA amplifies to transmission power (100W)
+4. Signal couples through OMT (Orthomode Transducer) to antenna
+5. Antenna transmits uplink to satellite
+
+**Critical Dependencies:**
+*   All RF equipment must lock to GPSDO 10 MHz reference
+*   LNB must reach thermal stability (3+ minutes after power-on)
+*   Antenna must be accurately pointed before transmitting
+*   Spectrum analyzer provides visual verification of all signals
+
+### What "Normal" Looks Like
+
+Charlie is showing you healthy, operational equipment so you'll recognize problems later:
+
+**Healthy Indicators:**
+*   ✅ GPSDO: Green lock, 12+ satellites, less than 1×10⁻¹¹ accuracy
+*   ✅ LNB: Thermally stable, noise temp less than 70K, locked to external reference
+*   ✅ Antenna: On target, tracking active, no position errors
+*   ✅ Beacon: Strong, stable carrier at expected frequency
+*   ✅ Customer carrier: Clean modulation, good C/N, zero errors
+*   ✅ Noise floor: Clean baseline, no spurious signals
+
+**Warning Signs (You'll Learn These Later):**
+*   ⚠️ GPSDO in holdover mode (frequency drifting)
+*   ⚠️ LNB temperature unstable (frequency errors)
+*   ⚠️ Antenna tracking errors (pointing drift)
+*   ⚠️ Beacon level dropping (satellite or propagation issue)
+*   ⚠️ C/N ratio near threshold (link degradation)
+*   ⚠️ Interference visible on spectrum (RFI)
+
+### Learning Objectives
+
+By the end of this familiarization session, you should understand:
+
+1. **GPSDO Function**: Provides stable frequency reference for all equipment
+2. **LNB Operation**: Downconverts and amplifies weak satellite signals
+3. **Antenna Tracking**: Maintains optimal pointing at satellite
+4. **Spectrum Analysis**: Visual representation of RF signals in frequency domain
+5. **Modem Telemetry**: Link quality metrics (C/N, lock status, errors)
+6. **Normal Baseline**: What healthy equipment looks like for future comparison
+
+<Aside type="note">
+**Tomorrow's Session:** Charlie will have you perform scheduled maintenance - actually powering systems down and bringing them back up in correct sequence. Today was observation only.
+</Aside>
+
+### Charlie's Final Notes
+
+*"Not bad. You got the key concepts. GPSDO provides stable reference, LNB downconverts and amplifies, antenna points, spectrum analyzer shows what's there, modem locks and demodulates."*
+
+*"Tomorrow we'll do scheduled maintenance - you'll actually power things down and bring them back up. Today was just observation."*
+
+*"Equipment familiarization complete. See you at 08:00 tomorrow."*
+
+### Common Mistakes to Avoid (Future Lessons)
+
+While today was observation only, Charlie mentions mistakes new operators make:
+
+*   ❌ Powering up equipment before GPSDO locks
+*   ❌ Transmitting before antenna is accurately pointed
+*   ❌ Ignoring thermal stabilization requirements on LNB
+*   ❌ Not monitoring spectrum analyzer during operations
+*   ❌ Assuming equipment is working without verifying telemetry
+*   ❌ Failing to log anomalies for later analysis
+
+### Additional Resources
+
+*   **NATS Operations Manual**: Section 3 - Ground Station Equipment
+*   **TIDEMARK-1 Link Budget**: Reference for expected signal levels
+*   **Vermont Site Documentation**: Antenna coordinates and pointing calculations
+*   **Equipment Maintenance Logs**: Historical performance data
+
+### Next Scenario
+
+**Level 2: Scheduled Maintenance** - Tomorrow you'll perform your first actual equipment operations under Charlie's supervision. You'll power down subsystems, perform basic checks, and bring them back online in the correct sequence.

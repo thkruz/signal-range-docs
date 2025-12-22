@@ -1,0 +1,468 @@
+---
+title: 'Scenario 3 - Weather Emergency Handover'
+description: 'Transfer TIDEMARK-1 operations from Vermont to Maine backup station before approaching blizzard degrades link margin'
+---
+
+import { Steps } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+
+**Duration:** 25-30 minutes
+
+**Difficulty:** Beginner
+
+**Mission Type:** Tutorial - Multi-Site Operations
+
+**Time Pressure:** Mild (30 minutes before weather degrades link)
+
+### Mission Briefing
+
+Heavy snow is forecast for Vermont in 30 minutes. Weather analysis predicts the link margin to TIDEMARK-1 will degrade approximately 8 dB below operational threshold during the storm. You need to hand traffic from VT-01 (Vermont Ground Station) to the backup ground station ME-02 (Maine Backup Station) before the weather window closes.
+
+This is your third day at North Atlantic Teleport Services and your introduction to multi-site operations. Catherine from network operations has coordinated with the Network Operations Center (NOC). You'll configure the Maine site remotely, monitor both sites simultaneously during handover, and ensure graceful service continuity with zero packet loss.
+
+**Mission Context:**
+- **Current Status**: VT-01 serving TIDEMARK-1 traffic normally
+- **Weather Threat**: Blizzard arriving in 30 minutes, 8 dB link margin degradation expected
+- **Backup Site**: ME-02 (Maine) available and ready for activation
+- **Customer Impact**: Must maintain service continuity during handover
+- **Your Role**: Execute weather handover procedure before link quality degrades
+
+**Why This Matters:**
+Weather handovers are routine procedure in the Northeast during winter months. Snow accumulation on antennas and increased atmospheric attenuation both degrade link margins. Rather than risk service interruption, NATS maintains geographically diverse backup sites that can take over operations when weather threatens primary facilities.
+
+**Who's Guiding You:**
+- **Charlie Brooks**: Senior operator walking you through your first multi-site coordination. "This happens regularly up here. Standard procedure - nothing to stress about."
+- **Catherine (NOC)**: Network operations coordinator handling routing changes (appears in dialogue)
+
+<Aside type="tip">
+**New Concept: Multi-Site Operations**
+
+This scenario introduces the ground station switcher interface, allowing you to control multiple facilities simultaneously. You'll learn to monitor one site while configuring another, and coordinate traffic handovers between facilities.
+</Aside>
+
+### Current Status - Two Ground Stations
+
+**VT-01 (Vermont Ground Station) - Currently Operational:**
+
+*   **Location**: Vermont (44.56°N, 72.58°W, 350m elevation)
+*   **Antenna**: 9-meter C-band, pointed at TIDEMARK-1
+*   **Position**: Az: 214.2°, El: 24.8° (on target, tracking)
+*   **GPSDO**: Locked, 12 satellites, stable
+*   **LNB**: Operational, 5,150 MHz LO, 55 dB gain, 45°C
+*   **BUC/HPA**: Transmitting, 100W output
+*   **Modem**: Locked on 3,952.5 MHz carrier, good C/N
+*   **Weather Status**: Clear now, storm approaching in 30 minutes
+
+**ME-02 (Maine Backup Station) - Cold Standby:**
+
+*   **Location**: Maine (45.25°N, 69.77°W, 180m elevation)
+*   **Antenna**: 9-meter C-band, currently stowed (Az: 0°, El: 90°)
+*   **Position**: Needs pointing to TIDEMARK-1
+*   **GPSDO**: Locked and ready
+*   **LNB**: Powered off, needs activation (currently 15°C ambient)
+*   **BUC/HPA**: Powered off
+*   **Modem**: Not configured
+*   **Weather Status**: Clear, no weather threat
+
+**Key Difference:**
+Maine is approximately 60 miles northeast of Vermont. From Maine's perspective, TIDEMARK-1 at 53°W appears at slightly different angles:
+- **Maine pointing**: Az: 215.8°, El: 23.1°
+- **Vermont pointing**: Az: 214.2°, El: 24.8°
+
+### Weather Handover Procedure
+
+<Steps>
+
+1. **Phase 1: Weather Assessment**
+   
+   **Objective:** Acknowledge weather briefing and mission timeline.
+   
+   **What Charlie Says:**
+   *"Weather forecast shows heavy snow arriving in thirty minutes. Link margin's going to drop eight dB during the storm - well below operational threshold."*
+   
+   *"Catherine's already coordinating with the network ops center. We just need to configure Maine before the weather hits."*
+   
+   **Weather Impact Analysis:**
+   *   Rain/snow attenuation: ~5-6 dB (C-band, heavy precipitation)
+   *   Antenna snow accumulation: ~2 dB (if not cleared immediately)
+   *   Total degradation: ~8 dB below normal
+   *   Current VT-01 margin: ~12 dB → drops to ~4 dB (too close to threshold)
+   
+   **Action Required:**
+   *   Acknowledge the 30-minute timeline
+   *   Understand the mission criticality
+   *   Prepare for multi-site operations
+
+2. **Phase 2: Switch to Maine Ground Station**
+   
+   **Objective:** Access ME-02 control interface.
+   
+   **What Charlie Says:**
+   *"Switch to ME-02 in the ground station selector. See it? Good. Now let's verify their equipment status before we hand over the traffic."*
+   
+   **New UI Element:**
+   Ground station switcher allows you to toggle between VT-01 and ME-02 views. All equipment panels update to show the selected site's status.
+   
+   **Action Required:**
+   1. Locate ground station selector (typically top of interface)
+   2. Select "ME-02 - Maine Backup Station"
+   3. Observe that all equipment shows offline/stowed status
+   4. Note GPSDO is already locked (maintained 24/7)
+
+3. **Phase 3: Verify Maine Equipment Status**
+   
+   **Objective:** Confirm ME-02 GPSDO is operational.
+   
+   **What Charlie Says:**
+   *"GPSDO's locked at Maine. Good. Point their antenna at TIDEMARK-1."*
+   
+   *"From their location, that's azimuth 215.8, elevation 23.1. Slightly different geometry than from Vermont."*
+   
+   **Maine Equipment Check:**
+   *   **GPSDO**: Should already be locked (always maintained)
+   *   **Antenna**: Currently stowed, needs pointing
+   *   **LNB**: Powered off, cold (15°C ambient temperature)
+   *   **BUC/HPA**: Powered off
+   *   **Modem**: Not configured
+   
+   **Why GPSDO is Always On:**
+   Backup sites maintain GPSDO lock continuously so frequency references are immediately available during emergency activations. No warm-up delay.
+
+4. **Phase 4: Point Maine Antenna to TIDEMARK-1**
+   
+   **Objective:** Move antenna from stow to operational position.
+   
+   **Current Maine Antenna Position:**
+   *   Azimuth: 0° (North)
+   *   Elevation: 90° (Zenith/stow)
+   *   Tracking: Disabled
+   
+   **Target Position for TIDEMARK-1 from Maine:**
+   *   Azimuth: 215.8° (SSW direction)
+   *   Elevation: 23.1° (slightly lower than Vermont view)
+   
+   **Procedure:**
+   1. Stop any tracking mode (should already be manual)
+   2. Command antenna to Az: 215.8°, El: 23.1°
+   3. Wait for antenna movement (~15-20 seconds)
+   4. Verify "ON TARGET" indication
+   5. Do NOT enable tracking yet (wait for signal verification)
+   
+   **Why Different Angles?**
+   Geostationary satellites appear at different angles from different ground locations. Maine is northeast of Vermont, so TIDEMARK-1 appears slightly further south and at a lower elevation angle from Maine's perspective.
+
+5. **Phase 5: Configure Maine LNB**
+   
+   **Objective:** Power on and configure receive path for thermal stabilization.
+   
+   **Configuration Required:**
+   *   Power: ON
+   *   Local Oscillator: 5,150 MHz (same as Vermont)
+   *   Gain: 55 dB (same as Vermont)
+   
+   **Procedure:**
+   1. Power on LNB
+   2. Set LO frequency: 5,150 MHz
+   3. Set gain: 55 dB
+   4. Wait for thermal stabilization (green indicator)
+   
+   **What Charlie Says:**
+   *"LNB's up. Temperature's climbing from 15 celsius - it's colder in Maine. Wait for stabilization."*
+   
+   *"While that's warming, configure the receiver modem to match Vermont's settings."*
+   
+   **Thermal Considerations:**
+   Maine LNB starts at 15°C (cold winter ambient) vs Vermont's 45°C (already stabilized). Stabilization time will be approximately 3 minutes to reach operating temperature around 45°C.
+
+6. **Phase 6: Configure Maine Receiver Modem**
+   
+   **Objective:** Set modem to receive TIDEMARK-1 customer carrier.
+   
+   **Configuration Required:**
+   *   Frequency: 3,952.5 MHz (customer carrier, NOT beacon)
+   *   Symbol Rate: 5 Msps (megasymbols per second)
+   *   Modulation: 16APSK (automatic detection)
+   *   FEC: 3/4 (forward error correction)
+   
+   **Procedure:**
+   1. Open receiver modem panel (ME-02)
+   2. Set frequency: 3,952.5 MHz
+   3. Set symbol rate: 5,000,000 symbols/sec (5 Msps)
+   4. Set FEC rate: 3/4
+   5. Enable modem (start attempting lock)
+   
+   **Why These Settings?**
+   These match the active customer carrier that Vermont is currently receiving. The modem must be configured identically to achieve lock on the same signal.
+   
+   **What Charlie Says:**
+   *"While that's warming, configure the receiver modem to match Vermont's settings."*
+
+7. **Phase 7: Verify Maine Receiver Lock**
+   
+   **Objective:** Confirm modem has achieved carrier lock with acceptable C/N.
+   
+   **What to Verify:**
+   *   Carrier lock indicator: GREEN/LOCKED
+   *   C/N ratio: Greater than or equal to 10 dB (threshold ~7 dB for 16APSK 3/4)
+   *   Frame lock: Achieved
+   *   Bit errors: Minimal or zero
+   
+   **What Charlie Says:**
+   *"Maine's got carrier lock. C/N ratio is 11.2 dB - actually slightly better than Vermont right now. Good baseline."*
+   
+   *"Now notify the NOC that we're ready for handover. They'll coordinate the network routing."*
+   
+   **Why Better C/N in Maine?**
+   Several factors:
+   *   Clear weather at Maine (no atmospheric effects yet)
+   *   Slightly different atmospheric path
+   *   Potentially less local RF interference
+   *   Fresh, recently calibrated equipment
+
+8. **Phase 8: Coordinate Handover with NOC**
+   
+   **Objective:** Notify Network Operations Center that ME-02 is ready for traffic.
+   
+   **What Happens:**
+   Catherine at the NOC needs to:
+   *   Verify ME-02 link quality is acceptable
+   *   Prepare network routing changes
+   *   Coordinate traffic transfer timing
+   *   Monitor service continuity during switch
+   
+   **Action Required:**
+   1. Click "Coordinate Handover" button (or similar interface element)
+   2. Confirm ME-02 readiness status
+   3. Wait for NOC acknowledgment
+   
+   **NOC Coordination:**
+   The Network Operations Center manages the IP routing and traffic management systems. They control which ground station's data feed is active on the customer network. Your job is ground segment - their job is network layer.
+
+9. **Phase 9: Execute Traffic Handover**
+   
+   **Objective:** Transfer active traffic from VT-01 to ME-02 with zero packet loss.
+   
+   **Handover Sequence:**
+   1. NOC initiates routing change
+   2. Traffic begins flowing through ME-02
+   3. VT-01 transitions to idle/standby
+   4. Monitor both sites during transition
+   5. Verify service continuity metrics
+   
+   **What Charlie Says:**
+   *"Traffic's transferred. Zero packet loss during the handover - textbook execution."*
+   
+   *"Maine's now serving the customer. Vermont can ride out the storm without impacting service."*
+   
+   **Success Metrics:**
+   *   Packet loss during handover: Less than 0.1%
+   *   Service interruption: Less than 100 milliseconds
+   *   ME-02 C/N ratio: Maintained above 10 dB
+   *   VT-01 status: Gracefully transitioned to standby
+   
+   **Make vs Break Handover:**
+   This is a "make-before-break" handover. ME-02 is fully operational and verified BEFORE VT-01 traffic is switched over. This ensures zero service interruption.
+
+10. **Phase 10: Verify Handover Completion**
+    
+    **Objective:** Confirm ME-02 is serving traffic and handover completed before weather arrives.
+    
+    **Final Verification:**
+    *   ME-02 modem: LOCKED and passing traffic
+    *   ME-02 C/N ratio: Stable above threshold
+    *   Network status: Customer traffic flowing normally
+    *   Time remaining: At least 5 minutes buffer before weather
+    *   VT-01 status: Safe to weather the storm
+    
+    **What Charlie Says:**
+    *"Handover complete with twelve minutes to spare. Well done."*
+    
+    *"That's the tutorial phase finished. You've seen all the equipment panels, you understand the procedures, you can coordinate between sites."*
+    
+    *"Next mission, I'm not giving you the frequency values. You'll need to calculate them yourself. Time to see if you've been paying attention."*
+    
+    **Mission Success:**
+    Customer service continues uninterrupted. VT-01 can safely weather the storm without risk to service quality. ME-02 will serve TIDEMARK-1 until Vermont weather clears.
+
+</Steps>
+
+### Multi-Site Operations Concepts
+
+**Geographic Diversity:**
+NATS maintains ground stations in different geographic locations to provide:
+*   Weather resilience (storms rarely affect multiple sites simultaneously)
+*   Equipment redundancy (backup for maintenance or failures)
+*   Network optimization (route traffic through best-performing site)
+*   Disaster recovery (continue operations if one site is compromised)
+
+**Site Coordination Requirements:**
+*   Shared frequency coordination (ITU filings cover all sites)
+*   Network Operations Center oversight (traffic routing)
+*   Identical equipment configurations (modems, frequencies, etc.)
+*   Synchronized timing references (GPS at all sites)
+*   Communication channels between sites and NOC
+
+**Handover Types:**
+*   **Planned/Weather**: This scenario (known timeline, prepared)
+*   **Emergency/Equipment**: Immediate switch due to failure
+*   **Optimization**: Shift to better-performing site
+*   **Maintenance**: Planned outage at primary site
+
+### Equipment Configuration Reference
+
+**LNB Settings (Both Sites):**
+*   Local Oscillator: 5,150 MHz
+*   Gain: 55 dB
+*   Thermal stabilization: Required (~3 minutes from cold)
+*   External reference: Locked to GPSDO
+
+**Receiver Modem Settings:**
+*   Frequency: 3,952.5 MHz (customer carrier)
+*   Symbol Rate: 5 Msps (5,000,000 symbols/sec)
+*   Modulation: 16APSK
+*   FEC: 3/4
+*   Required C/N: Greater than 7 dB (10+ dB target for margin)
+
+**Antenna Pointing:**
+*   **Vermont (VT-01)**: Az: 214.2°, El: 24.8°
+*   **Maine (ME-02)**: Az: 215.8°, El: 23.1°
+*   **Tolerance**: ±0.5° for successful acquisition
+
+**Beacon vs Customer Carrier:**
+*   Beacon: 3,947.8 MHz (CW, always present)
+*   Customer carrier: 3,952.5 MHz (16APSK, 5 MHz bandwidth)
+*   Both must be visible for full link verification
+
+### Success Criteria
+
+*   ✅ Maine equipment verified operational
+*   ✅ Maine antenna pointed accurately (Az: 215.8°, El: 23.1°)
+*   ✅ Maine LNB powered and thermally stabilized
+*   ✅ Maine receiver modem configured correctly
+*   ✅ Maine receiver modem achieved carrier lock
+*   ✅ Maine C/N ratio greater than or equal to 10 dB
+*   ✅ NOC coordination completed
+*   ✅ Traffic handover executed successfully
+*   ✅ Zero packet loss during handover (less than 0.1%)
+*   ✅ Handover completed with time buffer before weather (5+ minutes)
+*   ✅ Vermont site safely in standby status
+
+### Common Mistakes to Avoid
+
+*   ❌ Forgetting to switch to ME-02 view (configuring wrong site)
+*   ❌ Using Vermont antenna angles for Maine (geometry is different)
+*   ❌ Attempting handover before LNB thermal stabilization
+*   ❌ Configuring modem for beacon instead of customer carrier
+*   ❌ Not verifying carrier lock before requesting handover
+*   ❌ Executing handover without NOC coordination
+*   ❌ Rushing through thermal stabilization (causes frequency errors)
+*   ❌ Not monitoring both sites during handover execution
+
+### Weather Impact on RF Links
+
+**Atmospheric Attenuation:**
+*   Rain/snow absorbs RF energy (higher at Ku/Ka bands, moderate at C-band)
+*   Heavy precipitation: 4-6 dB loss at C-band
+*   Snow accumulation on antenna: 2-3 dB loss (until cleared)
+*   Combined effect: 6-9 dB total degradation
+
+**Link Budget Margin:**
+*   Normal operations: 12 dB margin above threshold
+*   During heavy weather: 4 dB margin (too close to failure)
+*   Acceptable minimum: 6 dB margin (includes safety factor)
+*   Decision point: Hand over when projected margin less than 6 dB
+
+**Why C-band is Weather-Resistant:**
+Lower frequencies (3.7-6.4 GHz) are less affected by precipitation than higher bands:
+*   Ku-band (12-18 GHz): 10-15 dB rain fade in heavy storms
+*   Ka-band (26-40 GHz): 15-25 dB rain fade
+*   C-band (3.7-6.4 GHz): 4-6 dB rain fade
+
+This is why maritime and critical services often use C-band.
+
+### Time Management
+
+**30-Minute Timeline:**
+*   Phase 1-2 (Assessment + Switch): 2 minutes
+*   Phase 3-4 (Verify + Point Antenna): 3 minutes
+*   Phase 5 (LNB Configuration): 1 minute
+*   Phase 5 (LNB Thermal Stabilization): 3 minutes
+*   Phase 6 (Modem Configuration): 2 minutes
+*   Phase 7 (Verify Lock): 1 minute
+*   Phase 8 (NOC Coordination): 2 minutes
+*   Phase 9 (Execute Handover): 3 minutes
+*   Phase 10 (Verification): 1 minute
+*   **Total**: ~18 minutes (12-minute buffer before weather)
+
+**Time Pressure:**
+This scenario has mild time pressure. You have adequate time if you work methodically, but rushing or making errors could consume your buffer. The key is to wait for thermal stabilization rather than skip that critical step.
+
+### Learning Objectives
+
+By completing this scenario, you should understand:
+
+1. **Multi-Site Operations**: Managing multiple ground stations simultaneously
+2. **Geographic Diversity**: Why backup sites at different locations matter
+3. **Weather Effects**: How precipitation degrades RF link margins
+4. **Thermal Stabilization**: Why cold equipment needs time to reach operating temperature
+5. **Modem Configuration**: Setting frequency, symbol rate, and FEC parameters
+6. **Make-Before-Break**: Verifying backup before switching traffic
+7. **NOC Coordination**: Network operations role in traffic management
+8. **Service Continuity**: Zero packet loss during professional handovers
+
+<Aside type="note">
+**Tutorial Phase Complete**
+
+This is the final tutorial scenario. You've now learned all basic equipment operations, safety procedures, and multi-site coordination. Future scenarios will require you to calculate frequency values yourself and handle more complex situations.
+</Aside>
+
+### Real-World Context
+
+**Weather Operations in Northeast:**
+Commercial satellite operators in northern latitudes deal with winter weather regularly:
+*   Snow loads on antennas (mechanical de-icing systems)
+*   Ice buildup on radomes (heated enclosures)
+*   Atmospheric attenuation during storms
+*   Access issues (roads, tower climbing safety)
+
+**Geographic Redundancy:**
+Major satellite operators maintain diverse site portfolios:
+*   Primary sites optimized for performance
+*   Backup sites for weather/equipment resilience
+*   Automated monitoring and handover systems
+*   24/7 NOC coordination
+
+**Customer Expectations:**
+Service Level Agreements (SLAs) typically require:
+*   99.5-99.9% uptime (maritime/enterprise services)
+*   Planned outages with advance notice
+*   Weather resilience through site diversity
+*   Zero unplanned service interruptions
+
+### Next Scenario
+
+**Level 4: First Independent Operation** - Charlie's training period is complete. You'll handle a routine contact establishment on your own, calculating all frequency values from scratch. No hand-holding - just you, the equipment, and the procedures you've learned.
+
+The tutorial wheels come off. Time to prove you've been paying attention.
+
+### Additional Resources
+
+*   **NATS Operations Manual**: Section 7 - Multi-Site Operations
+*   **Weather Operations Guide**: Section 3 - Link Margin Management
+*   **NOC Coordination Procedures**: Handover protocols and communication
+*   **RF Propagation Guide**: Atmospheric effects on satellite links
+
+### Key Takeaways
+
+1. **Geographic Diversity**: Backup sites prevent weather-related service interruptions
+2. **Site-Specific Geometry**: Antenna pointing angles differ by ground station location
+3. **Thermal Stabilization**: Cold equipment needs warm-up time for frequency stability
+4. **Make-Before-Break**: Always verify backup before switching traffic
+5. **NOC Coordination**: Network operations manages traffic routing, not ground segment
+6. **Time Management**: Work methodically with adequate buffers for emergencies
+7. **Service Continuity**: Professional handovers achieve zero packet loss
+
+**Charlie's Final Message:**
+*"Next mission, I'm not giving you the frequency values. You'll need to calculate them yourself. Time to see if you've been paying attention."*
+
+You've completed the tutorial phase. Ready for independent operations?
