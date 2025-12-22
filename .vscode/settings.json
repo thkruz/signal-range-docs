@@ -1,4 +1,8 @@
 {
+  "github.copilot.enable": {
+    "markdown": true,
+    "plaintext": true
+  },
   "github.copilot.chat.commitMessageGeneration.instructions": [
     {
       "text": "Use Conventional Commits: <type>[optional scope]: :emoji: description"
