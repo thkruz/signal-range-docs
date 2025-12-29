@@ -1,11 +1,319 @@
 ---
 title: Contributing
-description: Guidelines for contributing to the KeepTrack project.
-lastUpdated: 2024-08-11
+description: Guidelines for contributing to the SignalRange project.
+lastUpdated: 2025-12-29
 ---
 
-import { Aside } from '@astrojs/starlight/components';
+import { Steps, Aside, Tabs, TabItem } from '@astrojs/starlight/components';
 
-<Aside>
-  This documentation is a work in progress...
+Thank you for your interest in contributing to SignalRange! This guide will help you get started with development, understand our code conventions, and submit your contributions effectively.
+
+## Development Setup
+
+<Steps>
+1. **Prerequisites**
+
+   Ensure you have the following installed:
+   - Node.js 18.x or 20.x (LTS recommended)
+   - npm 9.x or later
+   - Git
+
+2. **Clone the Repository**
+
+   ```bash
+   git clone https://github.com/thkruz/SignalRange.git
+   cd SignalRange
+   ```
+
+3. **Install Dependencies**
+
+   ```bash
+   npm install
+   ```
+
+4. **Configure Environment**
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   For local development without authentication features, the default values work out of the box. See the [Environment Variables](#environment-variables) section for details.
+
+5. **Download Assets**
+
+   Campaign assets (audio files, character images) are stored separately:
+
+   ```bash
+   npm run r2:pull
+   ```
+
+6. **Start Development Server**
+
+   ```bash
+   npm run dev
+   ```
+
+   The app will be available at `http://localhost:3000`.
+</Steps>
+
+### Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `PUBLIC_SUPABASE_URL` | For auth features | Your Supabase project URL |
+| `PUBLIC_SUPABASE_ANON_KEY` | For auth features | Supabase anonymous/public key |
+| `PUBLIC_USER_API_URL` | No | User API endpoint (has default) |
+| `PUBLIC_ASSETS_BASE_URL` | No | Leave empty for local dev |
+
+### Available Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start webpack dev server with hot reload |
+| `npm run build` | Production build to `dist/` |
+| `npm run preview` | Preview production build with Wrangler |
+| `npm run r2:pull` | Download campaign assets from R2 |
+| `npm run test` | Run Jest test suite |
+| `npm run type-check` | TypeScript type checking |
+| `npm run lint` | Run ESLint |
+
+## Code Conventions
+
+### Naming Conventions
+
+- **Private properties and methods** end with underscore suffix:
+  ```typescript
+  private domCache_: Map<string, HTMLElement>;
+  private syncDomWithState_(): void { }
+  ```
+
+- **Readonly properties** for values set in constructor that should never change:
+  ```typescript
+  private readonly containerEl: HTMLElement;
+  private readonly boundHandlers: Map<string, Function>;
+  ```
+
+- **Protected access** (not private) for properties that subclasses or UI layers need:
+  ```typescript
+  protected state_: EquipmentState;
+  ```
+
+### TypeScript Guidelines
+
+- **Branded types** (`Hertz`, `dB`, `Degrees`) require explicit casting—check type definitions early in your work
+- **State handlers** typed as `(state: Partial<T>) => void`, never `Function | null`
+- **Avoid bracket notation** (`obj['method']()`) to access methods—make them public instead
+
+### CSS and Styling
+
+SignalRange uses [Tabler](https://tabler.io/) for UI components with custom extensions.
+
+- CSS custom properties use `--mc-*` namespace for Mission Control semantics
+- Import order: `@tabler/core` → `tabler-overrides.css` → `index.css`
+- Use Tabler utility classes: `d-flex`, `justify-content-between`, `mb-2`, `fw-bold`, `font-monospace`
+- Cards: `card h-100` for equal heights, with `card-header` and `card-body`
+- Forms: `form-range` for sliders, `form-check form-switch` for toggles
+
+## Architecture Patterns
+
+### Core/UI Separation
+
+Equipment modules follow a Core/UI separation pattern:
+
+- `*-core.ts` — Business logic, state management, RF physics
+- `*-ui-standard.ts` — DOM manipulation, event handling, visual updates
+
+This separation enables testing business logic independently and supports different UI implementations.
+
+### Adapter Pattern
+
+UI adapters manage DOM interaction with these patterns:
+
+<Tabs>
+<TabItem label="DOM Caching">
+```typescript
+private domCache_: Map<string, HTMLElement> = new Map();
+
+private cacheElement_(htmlId: string, cacheKey?: string): void {
+  const key = cacheKey ?? htmlId;
+  const el = qs(`#${htmlId}`, this.dom_);
+  this.domCache_.set(key, el);
+}
+```
+</TabItem>
+<TabItem label="Event Handler Binding">
+```typescript
+private readonly boundUpdateHandler_: () => void;
+
+constructor() {
+  this.boundUpdateHandler_ = this.syncDomWithState_.bind(this);
+  EventBus.getInstance().on(Events.UPDATE, this.boundUpdateHandler_);
+}
+
+dispose(): void {
+  EventBus.getInstance().off(Events.UPDATE, this.boundUpdateHandler_);
+}
+```
+</TabItem>
+<TabItem label="Throttled Updates">
+```typescript
+private static readonly UPDATE_INTERVAL_MS = 1000;
+private lastSyncTime_: number = 0;
+
+private throttledSync_(): void {
+  const now = Date.now();
+  if (now - this.lastSyncTime_ < ClassName.UPDATE_INTERVAL_MS) return;
+  this.lastSyncTime_ = now;
+  this.syncDomWithState_();
+}
+```
+</TabItem>
+</Tabs>
+
+### Protecting Input Fields
+
+When `syncDomWithState_()` updates input fields, check `document.activeElement` to avoid overwriting user input:
+
+```typescript
+const input = qs<HTMLInputElement>('#my-input', this.dom_);
+if (input && document.activeElement !== input) {
+  input.value = state.someValue.toString();
+}
+```
+
+### EventBus Events
+
+- `Events.UPDATE` — Fires on each simulation tick; use for periodic state sync in adapters
+- `Events.DRAW` — Fires for canvas rendering only; do NOT use for DOM updates
+
+<Aside type="caution">
+Direct user actions (button clicks, toggles) should bypass throttling for immediate feedback. Only throttle background sync operations.
 </Aside>
+
+## Equipment Controls
+
+For numeric equipment controls (frequency, gain, power), use the staged values pattern:
+
+```typescript
+private stagedValue_: number = DEFAULT;
+
+private adjustStagedValue_(delta: number): void {
+  this.stagedValue_ = Math.max(MIN, Math.min(MAX, this.stagedValue_ + delta));
+  const input = this.domCache_.get('valueInput') as HTMLInputElement;
+  if (input) input.value = this.stagedValue_.toString();
+}
+
+private applyHandler_(): void {
+  this.module.handleValueChange(this.stagedValue_);
+  this.syncDomWithState_(this.module.state);
+}
+```
+
+This prevents accidental RF equipment changes by requiring explicit Apply button confirmation.
+
+## Submitting Contributions
+
+### Before You Start
+
+1. Check existing [GitHub Issues](https://github.com/thkruz/SignalRange/issues) for related discussions
+2. For significant changes, open an issue first to discuss your approach
+3. Fork the repository and create a feature branch
+
+### Pull Request Process
+
+<Steps>
+1. **Create a Feature Branch**
+
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+
+2. **Make Your Changes**
+
+   - Follow the code conventions described above
+   - Write tests for new functionality
+   - Update documentation if needed
+
+3. **Verify Your Changes**
+
+   ```bash
+   npm run type-check  # Check TypeScript types
+   npm run lint        # Check code style
+   npm run test        # Run test suite
+   npm run build       # Verify production build
+   ```
+
+4. **Commit with Clear Messages**
+
+   Use descriptive commit messages that explain what and why:
+   ```
+   feat: Add polarization offset control to ACU adapter
+
+   Adds staged value controls for polarization fine-tuning,
+   following the equip-adjust-control pattern.
+   ```
+
+5. **Submit Pull Request**
+
+   - Provide a clear description of changes
+   - Reference any related issues
+   - Include screenshots for UI changes
+</Steps>
+
+### What We Look For
+
+- **Code quality** — Clean, readable code following project conventions
+- **Testing** — New features should include appropriate tests
+- **Documentation** — Complex changes should update relevant docs
+- **Focused scope** — PRs should address one concern; avoid unrelated changes
+
+<Aside type="tip">
+Keep pull requests focused and reasonably sized. Large PRs are harder to review and more likely to have issues. If your change is large, consider breaking it into smaller, incremental PRs.
+</Aside>
+
+## Types of Contributions
+
+### Equipment Models
+
+RF equipment modules need accurate physics models. If you have expertise in satellite communications, we welcome improvements to:
+
+- Noise temperature calculations
+- Frequency stability modeling
+- Amplifier compression characteristics
+- Antenna gain patterns
+
+### Scenarios
+
+New training scenarios help expand the learning experience. Good scenarios:
+
+- Teach specific skills or concepts
+- Have clear success criteria
+- Provide appropriate guidance for the target difficulty level
+- Include realistic mission context
+
+### Documentation
+
+Help improve documentation by:
+
+- Fixing errors or unclear explanations
+- Adding examples and diagrams
+- Expanding equipment guides with operational tips
+- Translating content for international users
+
+### Bug Fixes
+
+When fixing bugs:
+
+- Include steps to reproduce the issue
+- Explain the root cause
+- Describe your solution approach
+
+## Getting Help
+
+- **GitHub Issues** — Report bugs or request features
+- **Discord** — Join our [community server](https://discord.gg/G4tJfSkmzx) for discussion
+- **Email** — Contact [theodore.kruczek@gmail.com](mailto:theodore.kruczek@gmail.com) for other inquiries
+
+## License
+
+By contributing to SignalRange, you agree that your contributions will be licensed under the [AGPL v3 license](/contributing/license). This ensures that improvements benefit the entire community.
