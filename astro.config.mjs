@@ -41,40 +41,9 @@ export default defineConfig({
       ]
     }, {
       label: 'Equipment',
-      items: [
-        {
-          label: 'Real-Time Spectrum Analyzer',
-          slug: 'equipment/real-time-spectrum-analyzer'
-        },
-        {
-          label: 'Low Noise Block Downconverter',
-          slug: 'equipment/low-noise-block-downconverter'
-        },
-        {
-          label: 'GPS Disciplined Oscillator',
-          slug: 'equipment/gps-disciplined-oscillator'
-        },
-        {
-          label: 'High Power Amplifier',
-          slug: 'equipment/high-power-amplifier'
-        },
-        {
-          label: 'Antenna Control Unit',
-          slug: 'equipment/antenna-control-unit'
-        },
-        {
-          label: 'Block Upconverter',
-          slug: 'equipment/block-upconverter'
-        },
-        {
-          label: 'Orthomode Transducer',
-          slug: 'equipment/orthomode-transducer'
-        },
-        {
-          label: 'IF Filter Bank',
-          slug: 'equipment/if-filter-bank'
-        },
-      ]
+      autogenerate: {
+        directory: 'equipment'
+      }
     },
     {
       label: 'Campaign 1: North Atlantic Teleport Services',
