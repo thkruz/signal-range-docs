@@ -1,0 +1,225 @@
+---
+title: Receiver
+description: A beginner's guide to using the Receiver in SignalRange
+lastUpdated: 2025-12-29
+---
+
+import { Steps } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+
+The Receiver is a multi-modem case that demodulates IF (Intermediate Frequency) signals from the satellite downlink chain. Each receiver case contains 4 independent modems, allowing you to receive multiple carriers simultaneously. The receiver sits at the end of your downlink chain, after the antenna, LNB (Low Noise Block), and RF front-end have captured and processed the satellite signal. Think of the receiver as the final decoder - it extracts the data, voice, or video content from the modulated carrier.
+
+### Key controls
+
+*   **POWER** - enables or disables the selected modem. When powered on, the modem can receive and demodulate signals. When off, no signal processing occurs. The power-on sequence takes approximately 4 seconds to allow the modem's internal oscillators and PLLs to stabilize.
+
+### Configuration parameters
+
+Each modem has configurable parameters that are staged in input fields and applied with the Apply button:
+
+*   **Antenna** - selects which antenna's (1 or 2) downlink path this modem receives from. This determines which antenna feed, dish, and RF front-end chain provides signals to the modem.
+*   **Freq (MHz)** - the IF center frequency in MHz (typically 1400 MHz for IF band). The modem will tune to this frequency and demodulate signals centered there.
+*   **BW (MHz)** - receiver bandwidth in MHz (typically 20 MHz). The modem will capture signals within this bandwidth around the center frequency. Must match or exceed the transmitted signal's bandwidth.
+*   **Modulation** - the expected modulation scheme (BPSK, QPSK, 8QAM, 16QAM). Must match the transmitter's modulation for successful demodulation.
+*   **FEC** - Forward Error Correction rate (1/2, 2/3, 3/4, 5/6, 7/8). Must match the transmitter's FEC rate. Higher redundancy rates (1/2) provide more error protection but lower throughput.
+
+### Modem selection buttons
+
+The four numbered buttons (1, 2, 3, 4) at the top select which modem you're configuring and monitoring. The button styling indicates modem status:
+
+*   **Active (highlighted)** - the currently selected modem whose configuration is displayed
+*   **modem-found (color indicator)** - a valid signal matching all parameters has been detected
+*   **modem-degraded** - a signal is present but quality is degraded
+*   **modem-denied** - signal present but cannot be properly demodulated
+
+Click a modem button to switch the control panel to that modem's configuration.
+
+### LED indicators
+
+*   **Status LED (header)** - overall receiver case status based on signal quality:
+    *   **Green** - good signal detected and locked
+    *   **Amber** - degraded signal or multiple signals causing interference
+    *   **Red** - multiple interfering signals detected (denied)
+    *   **Gray** - modem powered off
+*   **Online** - power status for the selected modem:
+    *   **On (lit)** - modem is powered on and operational
+    *   **Off** - modem is powered off
+
+### Video monitor
+
+The receiver includes a video monitor display that shows:
+
+*   **Signal found** - when a valid signal matching all parameters is detected, the monitor displays the received video/image feed
+*   **NO SIGNAL** - when no matching signal is detected
+*   **Degraded (glitch effect)** - when signal is present but quality is poor, a visual glitch effect is applied
+*   **Blank** - when modem is powered off
+
+The monitor provides visual feedback on whether your receiver configuration matches an incoming signal and the quality of that signal.
+
+### Understanding signal detection
+
+For a signal to be detected and demodulated, several conditions must be met:
+
+1. **Frequency match** - the signal's IF frequency must fall within the modem's configured bandwidth
+2. **Bandwidth compatibility** - the signal's bandwidth must fit within the modem's bandwidth (can be equal or smaller)
+3. **Modulation match** - the signal's modulation scheme must match the modem's configured modulation
+4. **FEC match** - the signal's FEC rate must match the modem's configured FEC rate
+5. **Power above noise floor** - the signal power must exceed the noise floor by sufficient margin
+
+If any of these conditions fail, the modem cannot lock onto and demodulate the signal.
+
+### Signal quality and C/N ratio
+
+The receiver calculates the Carrier-to-Noise (C/N) ratio for detected signals. Different modulation schemes require different minimum C/N ratios for reliable demodulation:
+
+| Modulation | Required C/N (dB) |
+|------------|-------------------|
+| BPSK       | ~7 dB             |
+| QPSK       | ~10 dB            |
+| 8QAM       | ~13 dB            |
+| 16QAM      | ~16 dB            |
+
+Higher-order modulations (more bits per symbol) require cleaner signals. If the C/N ratio falls below the threshold for the selected modulation, the signal is marked as degraded.
+
+### ADC degradation effects
+
+The receiver includes realistic ADC (Analog-to-Digital Converter) modeling. When signal levels are too high or too low, ADC effects degrade performance:
+
+*   **Clipping** - when signal level exceeds ADC input range, causing distortion
+*   **Quantization noise** - when signal level is too low, reducing effective bits of resolution
+
+The RF front-end's AGC (Automatic Gain Control) helps maintain optimal levels into the ADC.
+
+### Bandwidth clipping and FEC tolerance
+
+When a signal's bandwidth is clipped by upstream IF filters, the FEC rate determines whether the signal can still be demodulated:
+
+| FEC Rate | Min Bandwidth Ratio | Tolerance |
+|----------|---------------------|-----------|
+| 1/2      | 40%                 | Excellent |
+| 2/3      | 50%                 | Very good |
+| 3/4      | 60%                 | Good      |
+| 5/6      | 75%                 | Moderate  |
+| 7/8      | 85%                 | Fragile   |
+
+Lower FEC rates (more redundancy) can recover from more severe bandwidth clipping because the redundant data allows reconstruction of lost symbols.
+
+### Interference detection
+
+The receiver monitors for interfering signals in the modem's bandwidth:
+
+*   **Single signal** - normal operation, LED green
+*   **Multiple signals** - interference detected, performance degrades:
+    *   **2 signals or 1 degraded** - LED amber, quality reduced
+    *   **More than 2 signals** - LED red, signal denied
+
+The notch filter module (if present in the RF front-end) can be used to suppress interfering signals.
+
+### The receive chain
+
+A typical downlink signal path is:
+
+1. **Antenna/Feed** - captures RF from satellite
+2. **LNB** - low noise amplification and downconversion to IF
+3. **RF Front-End** - IF filtering, AGC, notch filtering
+4. **Receiver modem** - demodulation and data output (this equipment)
+
+Each component must be properly configured. The receiver is the final destination - it can only work with what the upstream chain delivers.
+
+### Staged values and Apply button
+
+The receiver uses a "staged values" pattern for configuration changes:
+
+1. Adjust input fields (antenna, frequency, bandwidth, modulation, FEC) - these are "staged" changes
+2. The current values are displayed in the gray labels next to each input
+3. Click **Apply** to commit the staged values to the modem
+4. Only after Apply are the new settings active
+
+This pattern allows you to set up a complete configuration before committing it.
+
+<Aside type="note" title="Developer Note: IQ Constellation Data">
+The receiver provides detailed signal information for IQ constellation displays:
+
+*   **hasCarrier** - whether any RF signal is present in bandwidth (even without lock)
+*   **hasLock** - whether the modem can demodulate (modulation + FEC match)
+*   **actualModulation** - what modulation the signal actually uses
+*   **configuredModulation** - what modulation the modem expects
+*   **cnRatio_dB** - carrier-to-noise ratio before ADC effects
+*   **effectiveCnRatio_dB** - C/N ratio after ADC penalty
+*   **frequencyOffset_Hz** - how far the signal is from center frequency
+*   **modulationMismatch** / **fecMismatch** - configuration mismatches
+
+This allows IQ displays to show signal presence even when configuration doesn't match.
+</Aside>
+
+### Alarms and status conditions
+
+The system monitors and reports:
+
+*   **Signal(s) Detected** - informational message when signals are present in the modem's bandwidth
+
+The status bar at the bottom shows system status. "SYSTEM NORMAL" indicates no alarm conditions.
+
+### Simple troubleshooting steps
+
+1.  **No signal displayed** - Check that the modem is powered (Online LED lit). Verify frequency, bandwidth, modulation, and FEC match the transmitted signal. Check that the antenna selection matches your antenna chain. Verify the RF front-end (LNB, AGC, etc.) is powered and configured.
+2.  **Signal shows "degraded" (glitch effect)** - The signal is detected but quality is poor. Check C/N ratio - may need to adjust antenna pointing or increase transmit power. Verify frequency is within 10% of center (larger offsets cause degradation). Check for interference from other signals.
+3.  **LED shows amber or red** - Multiple signals detected in bandwidth. Use narrower bandwidth to exclude interfering signals, or use the notch filter to suppress interference. Check that you're tuned to the correct frequency.
+4.  **Configuration changes not taking effect** - Remember to click the Apply button. The gray "current value" labels show active settings; input fields show staged changes.
+5.  **Modem won't power on** - The power-on sequence takes 4 seconds. Wait for the Online LED to light. If it doesn't, check for system-level power issues.
+6.  **Signal quality fluctuates** - Check AGC settings in RF front-end. May indicate signal level is too high (clipping) or too low (quantization noise). Check antenna tracking if using a moving target.
+
+### Short examples
+
+*   **Example A - Good reception:** Modem 1 powered, Freq = 1400 MHz, BW = 20 MHz, Mod = QPSK, FEC = 1/2, matching signal detected, LED green, video displays clearly. Perfect lock with good C/N ratio.
+*   **Example B - Degraded signal:** Modem 2 powered, signal detected, but C/N ratio is 8 dB (below 10 dB QPSK threshold). LED amber, video shows glitch effect. Need to improve link margin - increase transmit power, improve antenna pointing, or switch to more robust modulation (BPSK).
+*   **Example C - Wrong modulation:** Modem configured for QPSK, but incoming signal is 8QAM. Carrier detected (IQ shows signal presence) but no lock. Change modulation setting to 8QAM and Apply.
+*   **Example D - Interference:** Two signals detected in bandwidth, LED red. Narrow the bandwidth to exclude the interferer, or enable notch filter at the interferer's frequency. Once interference is suppressed, LED returns to green.
+*   **Example E - Bandwidth mismatch:** Signal bandwidth is 30 MHz but modem bandwidth is 20 MHz. Signal is partially clipped. If using FEC 1/2 (40% minimum), may still work. If using FEC 7/8 (85% minimum), signal will fail. Increase modem bandwidth or use stronger FEC.
+*   **Example F - Powered off:** Power switch off, Online LED off, monitor blank, no signal processing occurring.
+
+<Aside type="tip" title="Developer Note: Noise Floor Calculation">
+The receiver calculates noise floor based on modem bandwidth:
+
+*   Narrower bandwidth = lower noise floor = better sensitivity
+*   Wider bandwidth = higher noise floor = captures more of the signal
+
+The thermal noise floor is combined with any interference power (from other signals in bandwidth) to determine the effective noise floor used for C/N calculation.
+</Aside>
+
+<Aside type="note" title="Developer Note: Interference Power Calculation">
+When multiple signals occupy the modem's bandwidth, interference power is calculated using proportional overlap:
+
+1. For each signal other than the target (strongest/widest signal)
+2. Calculate frequency overlap with modem bandwidth
+3. Apply proportional power based on overlap fraction
+4. Sum all interference contributions in linear (mW) domain
+5. Add to thermal noise for effective noise floor
+
+This accurately models partial overlap scenarios where an interferer's edge enters your bandwidth.
+</Aside>
+
+<Aside type="note" title="Developer Note: Signal Path Integration">
+The receiver integrates with the RF front-end system:
+
+*   **AGC module** - provides output signals with all chain gains applied
+*   **Coupler module** - provides tap points for signal analysis
+*   **Notch filter module** - can suppress interfering signals before the receiver
+*   **Signal path manager** - tracks total receive chain gain and noise figure
+
+The receiver reads signals from the AGC output, which represents what the ADC sees after all analog processing.
+</Aside>
+
+### Final notes
+
+The Receiver is where your downlink signal is finally decoded. Proper configuration requires matching all signal parameters: frequency, bandwidth, modulation, and FEC. Key best practices:
+
+*   Verify all parameters match the transmit side before expecting signal lock
+*   Use the IQ constellation data to troubleshoot - it shows signals even without lock
+*   The video monitor provides immediate visual feedback on signal quality
+*   Higher-order modulations (8QAM, 16QAM) require cleaner signals with higher C/N
+*   Lower FEC rates (1/2, 2/3) provide more error protection at the cost of throughput
+*   Monitor for interference - multiple signals in bandwidth degrade performance
+*   The Apply button commits staged changes - don't forget to click it
+
+Remember that the receiver can only work with what the upstream chain delivers. Poor antenna pointing, LNB issues, or RF front-end misconfiguration will all manifest as signal problems at the receiver. Work through the receive chain systematically when troubleshooting.
