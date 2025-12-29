@@ -1,0 +1,265 @@
+---
+title: 'Scenario 1: First Day'
+description: Equipment familiarization walkthrough with Charlie Brooks. Learn what each indicator means on an already-operational system serving TIDEMARK-1.
+lastUpdated: 2025-12-29
+---
+
+import { Steps } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+
+**Duration:** 25-35 minutes
+
+**Difficulty:** Beginner
+
+**Mission Type:** Routine Operations
+
+### Mission Briefing
+
+Welcome to North Atlantic Teleport Services (NATS). This is your first day as a Ground Station Operator at the Vermont Ground Station (VT-01), a commercial satellite communications facility providing ground segment services for GEO communication satellites.
+
+Charlie Brooks, the senior operator who will be training you before his departure to Europe next month, is walking you through a routine health check of the facility. TIDEMARK-1, a C-band maritime communications satellite operated by SeaLink Global Communications, is already online and serving customer traffic at its operational slot at 53°W geostationary orbit.
+
+You won't be establishing contact today or touching any controls - just learning where everything is, what each indicator means, and what "normal operations" looks like. This is pure observation and familiarization with no time pressure and no failure states.
+
+**Mission Context:**
+- **TIDEMARK-1**: Eight-year-old C-band maritime satellite serving Newfoundland to Caribbean
+- **Current Status**: Fully operational, serving active customer traffic
+- **Your Role**: Shadow Charlie and learn the equipment
+- **Today's Goal**: Understand what healthy, operational equipment looks like
+
+**Who's Training You:**
+- **Charlie Brooks**: Senior Ground Station Operator with 15 years of experience. Former Navy communications technician. Known for being thorough but patient. He's training three new hires (including you) before his transfer to NATS Europe operations next month. "Better to understand it now than guess later when you're solo on console."
+
+<Aside type="tip">
+This is a no-pressure learning scenario. Take your time to understand each subsystem. Charlie will guide you through each step and explain what you're seeing.
+</Aside>
+
+### Equipment Overview
+
+**Ground Station: Vermont Ground Station (VT-01)**
+
+*   **Antenna**: 9-meter C-band Earth Station (Vortek model)
+*   **Current Pointing**: Az: 161.8°, El: 34.2° (locked on TIDEMARK-1)
+*   **Tracking Mode**: Program-track (following ephemeris predictions)
+*   **Polarization**: 14° (matched to TIDEMARK-1)
+
+**Satellite: TIDEMARK-1**
+
+*   **Orbital Slot**: GEO
+*   **Service**: Maritime broadband communications
+*   **Downlink Beacon**: 4,175.5 MHz RF (C-band, CW carrier) → 1,074.5 MHz IF after LNB
+*   **Status**: Fully operational, serving customer traffic
+
+### System Status - All Systems Operational
+
+*   **GPSDO (GPS Disciplined Oscillator)**: ✅ LOCKED
+    *   GPS satellites: 8 in view
+    *   Frequency accuracy: 2×10⁻¹¹
+    *   Lock duration: 2 hours (stable)
+    *   Temperature: 70°C (stable operating temp)
+    *   Output: 3× 10 MHz references active
+*   **LNB (Low Noise Block)**: ✅ OPERATIONAL
+    *   Local oscillator: 5,250 MHz
+    *   Gain: 60 dB
+    *   Noise temperature: 43 K (excellent performance)
+    *   Temperature: 28°C (thermally stable)
+    *   External reference: Locked to GPSDO
+*   **Antenna Control**: ✅ ON TARGET
+    *   Azimuth: 161.8°
+    *   Elevation: 34.2°
+    *   Polarization: 14°
+    *   Tracking: Program-track mode active
+    *   Target: TIDEMARK-1
+*   **BUC (Block Upconverter)**: ✅ ACTIVE
+    *   LO frequency: 6,425 MHz
+    *   Gain: 23 dB
+    *   Status: Transmitting (not muted)
+    *   External reference: Locked to GPSDO
+*   **HPA (High Power Amplifier)**: ✅ ENABLED
+    *   Output power: 50 dBm (100 Watts)
+    *   Backoff: 10 dB
+    *   Status: Transmitting
+*   **Spectrum Analyzer**: ✅ DISPLAYING
+    *   Center frequency: 1,074.5 MHz (IF)
+    *   Span: 2 kHz
+    *   RBW: 1 kHz
+    *   Reference level: -91 dBm
+*   **Receiver Modem**: ✅ LOCKED
+    *   Modulation: QPSK
+    *   FEC: 3/4
+    *   C/N ratio: Above 8 dB (healthy margin)
+    *   Status: Clean lock, zero errors
+
+### Equipment Familiarization Phases
+
+Charlie will walk you through ten phases of equipment observation:
+
+<Steps>
+
+1. **Phase 1: GPSDO Status Check**
+
+   **What to Observe:**
+   *   Lock indicator status (locked, holdover, unlocked, or off)
+   *   Satellite count: 8 satellites in view
+   *   Three 10 MHz outputs active (feeding other equipment)
+   *   Temperature stable at 70°C
+   *   No holdover warnings
+
+   **Key Learning:**
+   The GPSDO is the timing heart of the ground station. The green "Locked" indicator means the GPSDO is receiving GPS timing signals and providing a stable 10 MHz reference to all equipment in the rack. If it drops to holdover mode, you've got maybe twenty minutes before frequency drift becomes a problem.
+
+2. **Phase 2: LNB Status Check**
+
+   **What to Observe:**
+   *   Power: ON
+   *   Noise temperature: 43 K (lower is better - under 100K is good for C-band)
+   *   Temperature: 28°C (thermally stable)
+   *   External reference: Locked to GPSDO
+
+   **Key Learning:**
+   The LNB (Low Noise Block downconverter) downconverts high-frequency satellite signals to intermediate frequency while adding minimal noise. The noise temperature of 43K is excellent - lower noise temperature means better receive sensitivity. Equipment doesn't fail all at once - it degrades. Your job is to catch it before the customer does.
+
+3. **Phase 3: HPA Status Check**
+
+   **What to Observe:**
+   *   Power state (transmitting, muted, powered off, or faulted)
+   *   Backoff: 10 dB (normal operating condition)
+   *   Output power: 50 dBm (100 Watts)
+
+   **Key Learning:**
+   The HPA (High Power Amplifier) takes your milliwatt signal and turns it into real power to reach the satellite. Running with 10 dB backoff is normal ops - we run with headroom so we're not stressing the amplifier. Never assume the HPA is muted - always verify before any maintenance.
+
+4. **Phase 4: Antenna Tracking Status**
+
+   **What to Observe:**
+   *   Azimuth: 161.8°
+   *   Elevation: 34.2°
+   *   Tracking mode: Program-track, Step-track, Manual, or Stow
+   *   Status: ON TARGET
+
+   **Key Learning:**
+   Program-track mode follows the predicted orbital position of the satellite based on ephemeris data. For a GEO satellite like TIDEMARK-1 that sits in essentially the same spot, we follow the math instead of constantly hunting. Different tracking modes are used for different situations - step-track hunts for peak signal, manual is operator-controlled, stow parks it safe.
+
+5. **Phase 5: ACU Polarization Check**
+
+   **What to Observe:**
+   *   Polarization angle: 14° (matched to TIDEMARK-1)
+   *   Cross-polarization would show near-zero signal
+
+   **Key Learning:**
+   Polarization determines how the electromagnetic wave is oriented. It must match what the satellite expects or you lose signal. The 14° setting is matched to TIDEMARK-1's polarization angle. Wrong polarization costs you dBs, and dBs are the difference between link and no link in bad weather.
+
+6. **Phase 6: Spectrum Analyzer Reading**
+
+   **What to Observe:**
+   *   Beacon signal: Clear spike rising above the noise floor
+   *   CW (continuous wave) carrier visible at center
+   *   Clean noise floor: No interference visible
+
+   **Key Learning:**
+   The spectrum analyzer shows the RF environment in real time. The beacon signal appears as a narrow spike rising above the noise floor. This CW carrier is your canary - if you can see it, the receive path is working. If it disappears or goes ragged, something changed.
+
+7. **Phase 7: Spectrum Analyzer Settings**
+
+   **What to Observe:**
+   *   Center frequency: 1,074.5 MHz (IF frequency after LNB downconversion)
+   *   Reference level: -91 dBm (set to properly display weak beacon signal)
+   *   Span and RBW appropriate for beacon observation
+
+   **Key Learning:**
+   The beacon comes down at 4,175.5 MHz RF and the LNB shifts it to 1,074.5 MHz IF. The reference level is set to see weak signals without clipping. Get these settings wrong and you're either staring at the wrong frequency or your signal's buried in the noise floor.
+
+8. **Phase 8: Receiver Modem Check**
+
+   **What to Observe:**
+   *   Carrier lock: LOCKED
+   *   Modulation: QPSK
+   *   FEC: 3/4
+   *   C/N ratio: ≥8 dB indicates healthy link with good margin
+   *   Bit errors: Zero
+
+   **Key Learning:**
+   The receiver modem is where RF becomes data. C/N (Carrier-to-Noise) ratio is your primary health metric. Above 8 dB for QPSK means healthy margin - that headroom is what keeps you online when a storm rolls through. Know it, watch it, respect it.
+
+9. **Phase 9: I&Q Constellation Check**
+
+   **What to Observe:**
+   *   Four symbol points (QPSK constellation)
+   *   Tight clusters at each symbol point indicate clean demodulation
+   *   Scattered points would indicate noise or phase problems
+
+   **Key Learning:**
+   The I&Q constellation diagram is a visual representation of the demodulated symbols. QPSK gives you four clusters, one per symbol. Tight clusters mean clean demod with good signal-to-noise ratio. Spread or scattered points indicate noise, interference, or phase problems. After a while you'll glance at that diagram and know instantly if something's off.
+
+10. **Phase 10: Dashboard Alarm Check**
+
+    **What to Observe:**
+    *   Alarm status: No active alarms (all systems nominal)
+    *   No warning indicators
+    *   No critical faults
+
+    **Key Learning:**
+    The alarm dashboard aggregates everything into one view - your early warning system. A clean alarm dashboard with no active alarms confirms all equipment is operating within normal parameters. This is the final confirmation of a healthy ground station.
+
+</Steps>
+
+### Key Equipment Concepts
+
+**Signal Chain - Receive Path:**
+1. Satellite transmits downlink signal (3.4-4.2 GHz C-band)
+2. 9-meter antenna receives and focuses signal
+3. LNB downconverts to IF and amplifies
+4. Signal splits via coupler to spectrum analyzer and modem
+5. Modem demodulates IF back to digital data
+
+**Signal Chain - Transmit Path:**
+1. Modem generates digital signal at IF
+2. BUC upconverts IF to RF (5.85-6.725 GHz C-band)
+3. HPA amplifies to transmission power (100W)
+4. Signal couples through OMT (Orthomode Transducer) to antenna
+5. Antenna transmits uplink to satellite
+
+**Critical Dependencies:**
+*   All RF equipment must lock to GPSDO 10 MHz reference
+*   LNB must reach thermal stability (3+ minutes after power-on)
+*   Antenna must be accurately pointed before transmitting
+*   Spectrum analyzer provides visual verification of all signals
+
+### What "Normal" Looks Like
+
+Charlie is showing you healthy, operational equipment so you'll recognize problems later:
+
+**Healthy Indicators:**
+*   ✅ GPSDO: Green lock, satellites in view, stable frequency reference
+*   ✅ LNB: Thermally stable, noise temp under 100K, locked to external reference
+*   ✅ HPA: Transmitting with backoff, not overdriven
+*   ✅ Antenna: On target, program-track active, correct polarization
+*   ✅ Beacon: Strong, stable CW carrier at expected IF frequency
+*   ✅ Modem: Locked, C/N above 8 dB, zero errors
+*   ✅ Constellation: Tight clusters at symbol points
+*   ✅ Dashboard: No active alarms
+
+**Warning Signs:**
+*   ⚠️ GPSDO in holdover mode (frequency drifting)
+*   ⚠️ LNB temperature unstable (frequency errors)
+*   ⚠️ Antenna tracking errors (pointing drift)
+*   ⚠️ Beacon level dropping (satellite or propagation issue)
+*   ⚠️ C/N ratio near threshold (link degradation)
+*   ⚠️ Interference visible on spectrum (RFI)
+*   ⚠️ Constellation points scattered (noise or phase problems)
+
+### Learning Objectives
+
+By the end of this familiarization session, you should understand:
+
+1. **GPSDO Function**: Provides stable frequency reference for all equipment
+2. **LNB Operation**: Downconverts and amplifies weak satellite signals
+3. **HPA Function**: Amplifies transmit signal with safe operating margins
+4. **Antenna Tracking**: Maintains optimal pointing using program-track mode
+5. **Polarization Alignment**: Matching antenna polarization to satellite requirements
+6. **Spectrum Analysis**: Visual representation of RF signals in frequency domain
+7. **Analyzer Configuration**: Proper settings to observe beacon signals at IF
+8. **Modem Telemetry**: Link quality metrics (C/N, lock status, errors)
+9. **Constellation Diagrams**: Visual indicator of demodulation quality
+10. **Alarm Monitoring**: Aggregated view of system health
+

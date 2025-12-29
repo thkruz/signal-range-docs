@@ -1,0 +1,424 @@
+---
+title: Scenario 4 - New Bird on the Block
+description: Satellite switchover operations - learn the systematic process of transitioning ground station operations from one satellite to another
+lastUpdated: 2025-12-29
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+**Duration:** 25-30 minutes
+
+**Difficulty:** Intermediate
+
+**Mission Type:** Operations Phase
+
+### Mission Briefing
+
+TIDEMARK-2 has completed station-keeping at 45°W and the spacecraft operations team in Halifax has handed over the communications payload to ground operations. This is the sister satellite to TIDEMARK-1, providing redundancy and additional capacity for SeaLink's maritime communications network.
+
+VT-01 is currently locked on TIDEMARK-1, with ME-02 maintaining primary communications. Your task is to switch VT-01 from monitoring TIDEMARK-1 to establishing full uplink and downlink capability with TIDEMARK-2.
+
+**Mission Context:**
+- **Current State**: VT-01 tracking TIDEMARK-1 at Az: 161.8°, El: 34.2°
+- **Target Satellite**: TIDEMARK-2 at 45°W GEO (Az: 219.7°, El: 26.3°)
+- **Backup Coverage**: ME-02 maintains primary on TIDEMARK-1
+- **Success Criterion**: Uplink and downlink operational with TIDEMARK-2
+
+**Who's Involved:**
+- **Charlie Brooks**: Your supervisor at VT-01, guiding the switchover
+- **Marcus Chen**: Halifax spacecraft operations, confirms payload status
+- **Catherine Vega**: ME-02 operator, maintaining backup coverage
+
+---
+
+## Understanding Satellite Switchovers
+
+### Why Switchovers Happen
+
+In commercial satellite operations, ground stations rarely operate with just one satellite permanently. Operators must be able to transition between satellites for several reasons:
+
+**Fleet Management**
+- New satellites enter service and need ground segment activation
+- Older satellites reach end-of-life and traffic migrates to replacements
+- Traffic load balancing across multiple satellites in a fleet
+
+**Operational Continuity**
+- Primary satellite anomalies require quick transition to backup
+- Scheduled maintenance windows on spacecraft
+- Testing backup paths during exercises
+
+**This Scenario**
+TIDEMARK-2 represents a new satellite entering service. The spacecraft team in Halifax has completed the space segment work (station-keeping, payload checkout), and now ground operations must bring up communications. This is a routine but critical operation - done incorrectly, it could leave customers without service or cause interference.
+
+### The Switchover Sequence
+
+A satellite switchover follows a deliberate sequence. Each step validates the previous one before proceeding:
+
+```
+┌─────────────────┐
+│   PREPARATION   │  Understand requirements, verify starting state
+└────────┬────────┘
+         ▼
+┌─────────────────┐
+│  ANTENNA MOVE   │  Repoint to new satellite
+└────────┬────────┘
+         ▼
+┌─────────────────┐
+│ BEACON ACQUIRE  │  Confirm correct satellite
+└────────┬────────┘
+         ▼
+┌─────────────────┐
+│ RECEIVE CONFIG  │  Set up downlink path
+└────────┬────────┘
+         ▼
+┌─────────────────┐
+│ RECEIVE VERIFY  │  Confirm signal lock and quality
+└────────┬────────┘
+         ▼
+┌─────────────────┐
+│ TRANSMIT CONFIG │  Set up uplink path
+└────────┬────────┘
+         ▼
+┌─────────────────┐
+│ TRANSMIT ENABLE │  Bring up HPA, go operational
+└────────┬────────┘
+         ▼
+┌─────────────────┐
+│   OPERATIONAL   │  Full duplex communications
+└─────────────────┘
+```
+
+**Why This Order Matters**
+
+You always verify receive before enabling transmit. The reasons are practical:
+
+1. **Safety**: Transmitting toward the wrong satellite could cause interference to other operators
+2. **Verification**: If you can't receive, you can't verify your uplink is working
+3. **Troubleshooting**: Receive problems are easier to diagnose than transmit problems
+
+<Aside type="caution">
+**Never Enable Transmit Without Receive Lock**
+
+In real operations, enabling an HPA pointed at the wrong satellite can cause harmful interference to other operators sharing that orbital arc. Always confirm you're looking at the correct satellite (via beacon) and have verified downlink before transmitting.
+</Aside>
+
+---
+
+## Beacon Acquisition: Your Reference Signal
+
+### What Is a Satellite Beacon?
+
+Every communications satellite transmits one or more beacon signals. These are simple, unmodulated carriers (CW - Continuous Wave) that serve as reference signals for ground stations.
+
+**Beacon Characteristics:**
+- **Frequency**: Fixed, known value published in satellite documentation
+- **Modulation**: None (CW carrier)
+- **Bandwidth**: Very narrow (~1 kHz)
+- **Power**: Constant, predictable level
+- **Purpose**: Ground station pointing reference and frequency calibration
+
+### Why Beacons Matter
+
+The beacon is your first confirmation that everything is working:
+
+| What Beacon Confirms | How It Confirms It |
+|---------------------|-------------------|
+| Antenna pointing | Signal appears when pointed correctly |
+| LNB operation | Downconversion produces expected IF |
+| Frequency accuracy | Beacon appears at calculated IF frequency |
+| Receive chain health | Signal level matches predictions |
+
+**If the beacon doesn't appear** at the expected frequency with expected signal level, something is wrong. Stop and troubleshoot before proceeding.
+
+### Beacon IF Calculation
+
+For TIDEMARK-2 in this scenario:
+
+```
+Beacon RF (from satellite):     4180 MHz
+LNB Local Oscillator:           5250 MHz
+─────────────────────────────────────────
+Beacon IF = LO - RF:            1070 MHz
+```
+
+The beacon will appear at **1070 MHz** on your spectrum analyzer. If your math is wrong or the LNB is misconfigured, the beacon won't appear where you expect it.
+
+<Aside type="tip">
+**CW Beacon Observation**
+
+CW beacons are extremely narrow signals. On a spectrum analyzer:
+- Use narrow span (10 kHz or less) to see the signal clearly
+- Use narrow RBW (1 kHz) to resolve the carrier
+- The beacon appears as a sharp spike, not a broad hump
+
+If you're using wide span/RBW, the beacon may be invisible in the noise floor even when present.
+</Aside>
+
+---
+
+## The Antenna Slew
+
+### Understanding the Move
+
+In this scenario, you're moving the antenna from TIDEMARK-1 to TIDEMARK-2:
+
+| Parameter | TIDEMARK-1 | TIDEMARK-2 | Change |
+|-----------|-----------|-----------|--------|
+| Azimuth | 161.8° | 219.7° | +57.9° |
+| Elevation | 34.2° | 26.3° | -7.9° |
+
+This is a significant move - nearly 58 degrees in azimuth. Large slews take time (antenna motors have speed limits) and require careful verification that the antenna reached the correct position.
+
+### Tracking Modes
+
+Ground station antennas typically support multiple tracking modes:
+
+**Program Track**
+- Antenna follows pre-calculated positions based on orbital elements
+- Used for geostationary satellites with known, stable positions
+- Operator enters target coordinates; antenna drives to position
+
+**Step Track**
+- Antenna makes small movements to maximize signal strength
+- Used to refine pointing once approximately on target
+- Compensates for small orbital variations or atmospheric effects
+
+**Auto Track**
+- Antenna continuously follows a received signal
+- Used for moving targets (LEO satellites, inclined-orbit GEO)
+- Requires strong, stable signal to track
+
+For a geostationary satellite switchover like this one, **program track** is appropriate - you know exactly where TIDEMARK-2 should be.
+
+---
+
+## Receive Path Configuration
+
+### Modem Frequency and Bandwidth
+
+Once the beacon confirms you're pointed at the correct satellite, configure the receiver modem for the actual communications signal.
+
+**Key Concept: Transponder Translation**
+
+The satellite doesn't just relay your signal - it translates it in frequency. TIDEMARK-2's transponder:
+- Receives uplink signals in the 5.9-6.4 GHz range
+- Translates them down by 2.225 GHz
+- Retransmits in the 3.7-4.2 GHz range
+
+For the TIDEMARK-2 downlink you'll be receiving:
+```
+Transponder output (RF):        3792 MHz
+LNB Local Oscillator:           5250 MHz
+─────────────────────────────────────────
+Downlink IF = LO - RF:          1458 MHz
+```
+
+Your receiver modem needs to be tuned to **1458 MHz** to demodulate this signal.
+
+### Modulation and FEC
+
+The receiver must also match the signal's modulation format:
+
+**Modulation: QPSK**
+- Quadrature Phase Shift Keying
+- Encodes 2 bits per symbol
+- Robust modulation suitable for satellite links
+- Standard for many maritime and enterprise VSAT services
+
+**FEC: 3/4**
+- Forward Error Correction rate
+- For every 3 bits of data, 1 bit of error correction is added
+- 3/4 rate provides good balance of throughput and error resilience
+- Higher rates (7/8) = more throughput but less error protection
+- Lower rates (1/2) = more protection but less throughput
+
+<Aside type="note">
+**Why Modulation Must Match**
+
+If the modem is set for the wrong modulation or FEC rate, it cannot decode the signal. The modem will either fail to lock or produce garbage data. These parameters must match what the satellite signal actually contains.
+</Aside>
+
+### Signal Lock and SNR
+
+After configuring frequency and modulation, the modem searches for and locks to the signal. Two indicators confirm successful reception:
+
+**Lock Status**
+- Modem has synchronized to the signal's carrier and symbol timing
+- Without lock, no data can be demodulated
+
+**SNR (Signal-to-Noise Ratio)**
+- Measures signal quality in dB
+- Higher is better
+- **10 dB threshold** provides adequate margin for reliable operation
+- Below 10 dB, bit error rate increases significantly
+
+---
+
+## Transmit Path Configuration
+
+### Why Receive First?
+
+Before configuring transmit, you verified:
+1. Antenna is pointed at the correct satellite (beacon confirmed)
+2. Downlink is working (modem locked with good SNR)
+
+Now you have confidence that enabling transmit will send your signal to the intended satellite, not somewhere else.
+
+### Uplink IF Frequency
+
+The transmitter modem generates an IF signal that the BUC (Block Upconverter) translates to RF:
+
+```
+Transmit IF (from modem):       1020 MHz
+BUC Local Oscillator:           Configured for TIDEMARK-2 uplink
+─────────────────────────────────────────
+Uplink RF:                      Appropriate for TIDEMARK-2 transponder input
+```
+
+### The HPA: Handle With Care
+
+The HPA (High Power Amplifier) is the final stage before the antenna. It amplifies your signal to the power level needed to reach the satellite - often hundreds or thousands of watts.
+
+**HPA Considerations:**
+
+| Concern | Why It Matters |
+|---------|---------------|
+| Overdriving | Pushing HPA too hard causes distortion and interference |
+| Pointing | High power aimed at wrong satellite = interference |
+| Sequencing | HPA should be last thing enabled, first thing disabled |
+| Thermal | HPAs generate significant heat; need warmup/cooldown |
+
+**In This Scenario**
+
+The HPA starts disabled and the BUC starts muted. You'll:
+1. Configure the TX modem parameters
+2. Unmute the BUC (allows IF signal to reach upconverter)
+3. Enable the HPA (amplifies and transmits)
+4. Verify HPA is not overdriven (output within limits)
+
+<Aside type="caution">
+**HPA Safety**
+
+In real ground stations, accidentally enabling an HPA pointed at the wrong satellite can result in:
+- Interference complaints from other operators
+- Regulatory violations and fines
+- Loss of operating license in severe cases
+
+The receive-before-transmit discipline exists to prevent these scenarios.
+</Aside>
+
+---
+
+## Full Duplex Operations
+
+### What Full Duplex Means
+
+With both receive and transmit paths operational, you have **full duplex** communications:
+- You can receive data from the satellite continuously
+- You can transmit data to the satellite continuously
+- Both directions operate simultaneously and independently
+
+This is the normal operating state for a ground station providing communications services.
+
+### The Complete Signal Path
+
+**Receive Path (Downlink):**
+```
+Satellite → Antenna → LNB → Filter → Receiver Modem → Data Out
+     4180 MHz RF  →  5250 MHz LO  →  1070/1458 MHz IF  →  Baseband
+```
+
+**Transmit Path (Uplink):**
+```
+Data In → Transmitter Modem → BUC → HPA → Antenna → Satellite
+     Baseband  →  1020 MHz IF  →  RF  →  Amplified  →  Transmitted
+```
+
+---
+
+## Starting Configuration
+
+**Ground Station: Vermont (VT-01)**
+*   **Current Satellite**: TIDEMARK-1 (Az: 161.8°, El: 34.2°)
+*   **Antenna Mode**: Program-track, beacon locked
+*   **LNB LO Frequency**: 5250 MHz
+*   **GPSDO**: Locked and stable
+*   **HPA**: Disabled (receive-only mode)
+*   **BUC**: Muted
+
+**Target: TIDEMARK-2**
+*   **Orbital Position**: 45°W GEO
+*   **Antenna Position**: Az: 219.7°, El: 26.3°
+*   **Beacon RF**: 4180 MHz → **Beacon IF: 1070 MHz**
+*   **Downlink RF**: 3792 MHz → **Downlink IF: 1458 MHz**
+*   **Uplink IF**: 1020 MHz
+*   **Modulation**: QPSK, FEC 3/4
+
+---
+
+## What to Expect
+
+This mission follows the standard switchover sequence outlined above. You'll work through preparation, antenna repositioning, beacon acquisition, receive configuration, and finally transmit enablement.
+
+Charlie will guide you through each phase. Marcus from Halifax spacecraft ops will confirm payload status, and Catherine at ME-02 will maintain backup coverage while you complete the switchover.
+
+**Time pressure:** Individual phases have time limits, but ME-02 has primary coverage - take your time to get each step right rather than rushing.
+
+---
+
+## Key Concepts Summary
+
+### Frequency Reference
+
+| Signal | RF Frequency | LO | IF Frequency |
+|--------|-------------|-----|--------------|
+| Beacon | 4180 MHz | 5250 MHz | 1070 MHz |
+| Downlink | 3792 MHz | 5250 MHz | 1458 MHz |
+| Uplink | (calculated from IF) | BUC LO | 1020 MHz |
+
+### Equipment Configuration
+
+**Spectrum Analyzer (Beacon):**
+- Center: 1070 MHz
+- Span: 10 kHz
+- RBW: 1 kHz
+- Reference: -90 dBm
+
+**Receiver Modem:**
+- Frequency: 1458 MHz
+- Bandwidth: 36 MHz
+- Modulation: QPSK
+- FEC: 3/4
+
+**Transmitter Modem:**
+- Frequency: 1020 MHz
+- Bandwidth: 36 MHz
+- Power: -7 dBm
+- Modulation: QPSK
+- FEC: 3/4
+
+---
+
+## Pitfalls to Avoid
+
+| Pitfall | Why It's a Problem |
+|---------|-------------------|
+| Enabling HPA before RX lock | Can't verify you're transmitting to the right satellite |
+| Wrong spectrum analyzer settings | Beacon invisible even when present |
+| Mismatched modulation | Modem won't lock to signal |
+| Skipping beacon verification | Might configure for wrong satellite |
+| Rushing the antenna slew | May command before verifying position reached |
+
+---
+
+## Industry Context
+
+Satellite switchovers are routine in commercial ground segment operations. Some context on how this works in practice:
+
+- Switchovers are pre-planned with documented procedures
+- Backup coverage (like ME-02) maintains service during transition
+- Communication between ground ops and spacecraft ops is continuous
+- Operations logs document all configuration changes
+- Some organizations require two-person verification for critical steps
+
+The careful sequencing you'll practice here - verify receive before enabling transmit - reflects real operational discipline that protects against interference and service disruption.
