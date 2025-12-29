@@ -1,7 +1,7 @@
 ---
 title: SignalRange Overview
 description: An introduction to SignalRange, a professional satellite ground station operations training platform.
-lastUpdated: 2025-11-15
+lastUpdated: 2025-12-29
 ---
 
 import { Steps } from '@astrojs/starlight/components';
@@ -31,8 +31,10 @@ SignalRange provides a complete RF signal chain with professional-grade equipmen
 - **Low Noise Block Downconverter (LNB)** - Amplify and downconvert weak satellite signals with minimal added noise. Experience the importance of noise temperature, thermal stabilization, frequency stability, and reference locking in real-world reception.
 - **IF Filter Bank** - Select the optimal bandwidth for your signals while rejecting interference and noise. Learn the fundamental trade-offs between filter bandwidth, insertion loss, and noise floor that determine receive sensitivity.
 - **Real-Time Spectrum Analyzer (RTSA)** - Your window into the invisible world of RF signals. Master spectral density plots, waterfall displays, marker measurements, and signal analysis techniques essential for diagnosing problems and optimizing performance.
+- **Receiver Modem** - A multi-modem case containing 4 independent modems for demodulating IF signals from the satellite downlink. Configure frequency, bandwidth, modulation (BPSK/QPSK/8QAM/16QAM), and FEC rates. Learn about C/N ratio requirements, interference detection, and signal quality assessment through IQ constellation displays.
 
 ### Transmit Chain
+- **Transmitter Modem** - A multi-modem case containing 4 independent modems for generating IF signals. Configure carrier frequency, bandwidth, and power while managing the transmitter's power budget. Learn about staged configuration values, loopback testing modes, and multi-carrier operations.
 - **Block Upconverter (BUC)** - Upconvert IF signals to RF frequencies for satellite transmission. Understand frequency translation, mixer theory, phase-locked loops, and the critical importance of frequency accuracy when transmitting.
 - **High Power Amplifier (HPA)** - Provide the final amplification needed to reach satellites in orbit. Learn about P1dB compression, back-off settings, intermodulation distortion, and the balance between transmit power and signal quality.
 
@@ -72,24 +74,28 @@ SignalRange teaches both fundamental concepts and practical skills:
 - Interpreting carrier-to-noise (C/N) and Eb/No measurements
 - Verifying adequate link margin for reliable operation
 
-## Training Scenarios
+## Training Campaign
 
-SignalRange includes progressive scenarios that build your skills step-by-step:
+SignalRange features a progressive training campaign set at North Atlantic Teleport Services (NATS), where you join the Vermont Ground Station (VT-01) as a new ground station operator. Charlie Brooks, a senior operator with 15 years of experience, trains you through increasingly complex scenarios before his transfer to NATS Europe operations.
 
-### Scenario 1: HELIOS-7 Initial Contact
-You're a ground station operator at a Pacific communications facility conducting the first link test with a newly-launched geostationary satellite. This critical milestone scenario teaches you:
+The campaign follows your journey from complete beginner to independent operator, serving the TIDEMARK satellite constellation for SeaLink Global Communications - a C-band maritime communications network covering the Atlantic.
 
-- Complete equipment power-up and warmup procedures
-- GPS reference acquisition and verification
-- Antenna pointing and beacon signal acquisition
-- Low-power transmit tests with satellite operations coordination
-- Receive path verification and link quality assessment
-- Power ramping procedures and link margin validation
-- Success criteria evaluation and operational handover
+### Campaign 1: North Atlantic Teleport Services
 
-**Duration:** 25-30 minutes | **Difficulty:** Beginner | **Mission Type:** Commercial Communications
+**Scenario 1: First Day** (Beginner)
+Your first day at NATS. Charlie walks you through a routine health check of the facility while TIDEMARK-1 serves active customer traffic. Pure observation and familiarization - learn what healthy, operational equipment looks like with no time pressure.
 
-This hands-on scenario walks you through every step with detailed explanations of what you're doing and why it matters, building confidence through successful completion of real operational procedures.
+**Scenario 2: Scheduled Maintenance** (Beginner)
+Execute your first equipment controls. Power down the RF chain for antenna feed maintenance, then restore the link following proper safety sequences. Learn why procedure order matters for personnel safety.
+
+**Scenario 3: Weather Emergency Handover** (Beginner)
+A blizzard approaches Vermont. Transfer TIDEMARK-1 operations to the Maine backup station (ME-02) before weather degrades the link. Learn multi-site operations and make-before-break handover procedures.
+
+**Scenario 4: New Bird on the Block** (Intermediate)
+TIDEMARK-2 has completed station-keeping. Switch VT-01 from TIDEMARK-1 to establish full uplink and downlink capability with the new satellite. Master the satellite switchover sequence.
+
+**Scenario 5: Interference Hunt** (Intermediate)
+Customer reports degraded service. The spectrum analyzer is configured for beacon tracking - reconfigure it to find the interference source affecting the main downlink carrier. Learn systematic RF troubleshooting.
 
 ## Key Capabilities
 
@@ -121,39 +127,39 @@ All equipment modules use authentic RF physics models:
 
 ## Who Should Use SignalRange?
 
-### Students and Educators
-Perfect for university courses in:
-- Satellite communications and systems
-- RF engineering and microwave systems
-- Telecommunications engineering
-- Aerospace engineering
-- Electrical engineering fundamentals
+SignalRange is built for students aged 14-25 who are curious about space, engineering, and how technology actually works. If you've ever wondered what happens between a satellite dish and the satellite 36,000 km above Earth, this is your chance to find out by doing it yourself.
 
-SignalRange transforms abstract concepts from lectures into tangible, interactive experiences. Students can see exactly how the equations they're learning manifest in real signal behavior.
+### High School Students
+No prior experience required. SignalRange lets you:
+- Explore real engineering concepts through hands-on simulation
+- See physics and math come alive in practical applications
+- Build skills that stand out on college applications
+- Discover if aerospace or telecommunications engineering is right for you
+- Get a head start on concepts you'll encounter in AP Physics and engineering courses
 
-### New Ground Station Operators
-Ideal for:
-- Pre-deployment training before operating real equipment
-- Learning proper procedures without risk of equipment damage
-- Building confidence through successful scenario completion
-- Understanding the "why" behind operational checklists
-- Practicing troubleshooting skills in a safe environment
+### College and University Students
+Whether you're studying engineering, physics, or computer science:
+- Bridge the gap between textbook equations and real equipment behavior
+- Practice operating professional equipment before internships or first jobs
+- Understand satellite communications for aerospace, EE, or telecom coursework
+- Build practical troubleshooting skills employers value
+- Experiment freely without the cost or risk of real hardware
 
-### Experienced Engineers
-Valuable for:
-- Refreshing skills during transitions between positions
-- Cross-training on different equipment configurations
-- Teaching junior staff with interactive demonstrations
-- Experimenting with configurations before implementing on live systems
-- Understanding equipment behavior for better troubleshooting
+### Career Explorers
+Considering a career in the space industry? SignalRange shows you:
+- What satellite ground station operators actually do day-to-day
+- The technical skills needed for teleport and NOC positions
+- How RF engineering principles apply in commercial operations
+- Whether you'd enjoy the methodical, detail-oriented nature of the work
 
-### Space Enthusiasts
-Accessible to anyone interested in:
-- How satellite ground stations actually work
-- The engineering behind satellite communications
-- Hands-on learning about RF and microwave systems
-- Understanding what happens "behind the scenes" of satellite TV, GPS, and communications
-- Building foundational knowledge for amateur satellite operations
+### Anyone Curious About Space Tech
+You don't need to be in school to learn. If you're fascinated by:
+- How GPS, satellite internet, or satellite TV actually work
+- The engineering behind space communications
+- What "ground control" does when they talk to spacecraft
+- Building skills for amateur radio satellite operations
+
+SignalRange welcomes you. The scenarios start from zero assumptions and build your knowledge step by step.
 
 ## Getting Started
 
@@ -166,15 +172,19 @@ Accessible to anyone interested in:
 
    If you're new to RF engineering, pay special attention to the "Understanding" sections in each equipment guide that explain noise temperature, gain, frequency accuracy, and other core concepts.
 
-3. **Begin Scenario 1: HELIOS-7 Initial Contact**
+3. **Begin Scenario 1: First Day**
 
-   This beginner scenario provides step-by-step guidance through a complete satellite link test. Follow the detailed procedures, read the explanations, and verify you meet each success criterion.
+   This beginner scenario is pure observation - Charlie Brooks walks you through a routine health check of fully operational equipment. Learn what "normal" looks like before you start touching controls.
 
-4. **Use the Spectrum Analyzer Extensively**
+4. **Progress Through the Campaign**
+
+   Each scenario builds on the previous one. The tutorial scenarios (1-3) guide you with detailed explanations. Intermediate scenarios (4-5) reduce guidance. Advanced scenarios (6-8) test your ability to work independently under pressure.
+
+5. **Use the Spectrum Analyzer Extensively**
 
    The RTSA is your diagnostic tool for understanding signal behavior. Practice using different display modes, marker functions, and tap points to see signals at each stage of your signal chain.
 
-5. **Experiment and Troubleshoot**
+6. **Experiment and Troubleshoot**
 
    Try intentional mistakes: power equipment in the wrong order, use incorrect frequencies, select mismatched filters. Learn to recognize problems and develop troubleshooting instincts.
 </Steps>
@@ -223,29 +233,19 @@ The platform is designed to be accessible on standard laptops and desktops witho
 We're committed to helping you succeed with SignalRange:
 
 - **Documentation** - Comprehensive guides for every equipment module and scenario
-- **GitHub** - Report issues, request features, and contribute to development
-- **Direct Contact** - Reach out with questions or feedback at [admin@SignalRange.space](mailto:admin@SignalRange.space)
-
-## Open Source
-
-SignalRange is open-source software developed with the goal of making satellite communications education accessible worldwide. We welcome contributions from:
-
-- RF engineers who can improve equipment models
-- Educators who can develop new scenarios
-- Developers who can enhance the platform
-- Users who can provide feedback and testing
-
-Visit our [GitHub repository](https://github.com/thkruz/SignalRange.space) to get involved.
+- **GitHub** - Report issues, request features, and [contribute to development](https://github.com/thkruz/SignalRange)
+- **Discord** - Join our [community server](https://discord.gg/G4tJfSkmzx) for discussion, questions, and support
 
 ## Looking Forward
 
 SignalRange continues to evolve with:
 
-- Additional scenarios covering different mission types and complexity levels
-- More equipment modules (modems, encoding/decoding, network interfaces)
-- Expanded frequency bands (L-band, Ka-band, X-band)
-- Advanced topics (interference mitigation, adaptive coding, rain fade compensation)
-- Multi-site operations and network coordination
+- Additional campaigns covering different ground station types and mission profiles
+- Enhanced modem features (encoding/decoding visualization, network interfaces)
+- Expanded frequency bands (Ku-band, Ka-band, X-band scenarios)
+- Advanced topics (adaptive coding and modulation, rain fade compensation)
+- LEO satellite tracking and non-geostationary operations
+- Emergency response and disaster recovery scenarios
 
 ## Conclusion
 
