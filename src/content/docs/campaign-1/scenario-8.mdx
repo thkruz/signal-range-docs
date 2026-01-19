@@ -1,183 +1,396 @@
 ---
-title: 'Scenario 8 - First Light Solo'
-description: 'Final evaluation - conduct complete first light procedure for TIDEMARK-4 independently while Charlie observes in silence'
+title: 'Scenario 8 - Night Shift'
+description: 'Solo operations evaluation - troubleshoot AURORA-7 connectivity issues at 2 AM with minimal support'
+lastUpdated: 2025-01-19
 ---
 
 import { Steps } from '@astrojs/starlight/components';
 import { Aside } from '@astrojs/starlight/components';
 
-**Duration:** 45-50 minutes
+**Duration:** 30-40 minutes
 
-**Difficulty:** Expert
+**Difficulty:** Advanced
 
 **Mission Type:** Final Evaluation
 
-**Time Limit:** 45 minutes (realistic first light timeline)
+**Time Limit:** 40 minutes
 
 ### Mission Briefing
 
-**FINAL EVALUATION - CHARLIE'S LAST DAY**
+It's 2 AM on a Saturday night - your first solo night shift at the Vermont station. Charlie is visiting family out of state. Dana is on-call but sleeping; she's made it clear she only wants to be woken for genuine emergencies.
 
-Tomorrow is Charlie Brooks' last day at North Atlantic Teleport Services. After three years as senior ground station operator at the Vermont facility, he's transferring to NATS Europe operations in Amsterdam. He's spent the last month training you and two other operators to take over his responsibilities.
+A text message arrives from Dana: *"NOC just forwarded a trouble ticket. Customer reports intermittent connectivity on AURORA-7, signal dropouts every few minutes. I'm on-call but heading back to sleep. You've got this."*
 
-Today is your final evaluation.
+AURORA-7 is an aging C-band satellite with an inclined orbit - you worked with it in Scenario 6. Something is causing intermittent connectivity, and you need to figure out what.
 
-TIDEMARK-4, the fourth and final satellite in SeaLink's constellation, just reached its operational slot at 29°W. The spacecraft operations team in Halifax has confirmed station-keeping and handed the communications payload over to ground operations. You will conduct the complete "first light" procedure - the initial RF contact with a newly launched satellite - from cold equipment to bidirectional link establishment.
+**Mission Context:**
+- **Time**: 2:17 AM Saturday
+- **Satellite**: AURORA-7 (inclined orbit, C-band)
+- **Ground Station**: Vermont (VT-01)
+- **Problem**: Customer reports intermittent connectivity
+- **Support**: Dana on-call (sleeping), Charlie out of state
 
-This is not a test scenario with hidden tricks. This is a realistic first light operation with realistic complications. Charlie will be present in the operations room but silent unless you're about to make a critical safety error. He's evaluating whether you can handle solo operations professionally and safely.
+**Who's Available:**
+- **Dana Torres**: On-call, sleeping - only wake for genuine emergencies
+- **Charlie Brooks**: Out of state visiting family - unavailable
 
-You have 45 minutes, which is standard for first light. The equipment won't be perfect - nothing ever is in real operations. Handle complications appropriately. Show Charlie you're ready.
-
-**Satellite: TIDEMARK-4**
-- **Orbital slot**: 29°W GEO
-- **Beacon frequency**: 4,023.7 MHz (provided in ops note)
-- **Expected signal level**: -95 dBm ± 2 dB
-- **Polarization**: Horizontal
-- **Target IF**: 1,247.5 MHz (standard)
-- **Antenna pointing**: Az 224.8°, El 25.9° (from VT-01)
-
-**Your Mission:**
-- Calculate all RF parameters independently
-- Configure all equipment from cold start
-- Establish downlink reception (beacon acquisition)
-- Enable uplink transmission (bidirectional link)
-- Handle any complications professionally
-- Complete within 45-minute timeline
-- No safety violations
-
-**Charlie's Instructions:**
-- **Silent observation**: Charlie will not provide guidance unless safety-critical
-- **Evaluation criteria**: Technical competence, decision-making, time management, safety
-- **Outcome**: Determines qualification for independent operations
+**This is your graduation exam.** Everything you learned in Scenarios 1-7 comes together here. No one will walk you through each step. Make good decisions, work methodically, and prove you're ready for solo operations.
 
 <Aside type="caution">
-**FINAL EVALUATION MODE**
+**SOLO OPERATIONS EVALUATION**
 
-This is your final test before solo operations. Charlie is watching but not helping. You must:
-- **Calculate frequencies** yourself (no pre-filled values)
-- **Configure equipment** in correct sequence
-- **Handle complications** independently
-- **Maintain safety** at all times
-- **Manage time** efficiently (45 minutes total)
+This scenario tests your ability to:
+- **Diagnose independently**: No hints, no hand-holding
+- **Apply previous knowledge**: IF calculations, tracking modes, fault diagnosis
+- **Make operational decisions**: Weather assessment, escalation judgment
+- **Work under time pressure**: 40 minutes to resolve
 
-Real first light operations have complications. Equipment isn't perfect. Satellites don't always match predictions. Handle it professionally.
+You have the skills. Trust your training.
 </Aside>
 
-### Operations Note
+---
 
-**TIDEMARK-4 First Light**
-**Orbital Slot:** 29°W GEO
-**Commissioning Phase:** Initial RF contact critical
+## Background: The Solo Night Shift
 
-**Provided Parameters:**
-- **Beacon Frequency (RF)**: 4,023.7 MHz
-- **Expected Signal Level**: -95 dBm ± 2 dB
-- **Polarization**: Horizontal (linear)
-- **Target IF**: 1,247.5 MHz (company standard)
-- **Antenna Pointing** (from VT-01): Az 224.8°, El 25.9°
+### Why Night Shifts Matter
 
-**Notes:**
-- Final TIDEMARK constellation satellite
-- Standard C-band configuration
-- Report any anomalies to spacecraft team
-- First light is critical commissioning milestone
+Satellite ground stations operate 24/7. Night shifts are typically quieter, but when problems occur, fewer people are available to help. Solo night operators must:
 
-**Your Responsibility:**
-- Calculate LNB LO frequency
-- Configure all equipment
-- Establish and verify link
-- Document signal levels
-- Report completion to spacecraft team
+- **Self-triage**: Determine severity without second opinions
+- **Diagnose independently**: No senior operator watching over shoulder
+- **Make escalation decisions**: Know when to wake on-call staff vs. handle alone
+- **Document thoroughly**: Day shift needs to know what happened
 
-### Initial Equipment Status
+### AURORA-7 Characteristics
 
-**Ground Station: Vermont (VT-01)**
+AURORA-7 is a legacy satellite you encountered in Scenario 6:
 
-*   **Antenna**: 9-meter C-band, stowed
-    *   Position: Az 0°, El 90° (zenith/stow)
-    *   Power: ON
-    *   Tracking: Manual mode
-    *   Status: Ready for operation
+| Parameter | Value | Notes |
+|-----------|-------|-------|
+| Orbit Type | Inclined GEO | Stopped N-S station-keeping |
+| Beacon RF | 4,165 MHz | C-band |
+| Beacon IF | 1,085 MHz | With 5,250 MHz LNB LO |
+| Uplink RF | 5,830 MHz | C-band |
+| Uplink IF | 905 MHz | With 4,925 MHz BUC LO |
+| Bandwidth | 24 MHz | QPSK 3/4 |
+| Tracking | Step-track required | Program-track insufficient |
 
-*   **GPSDO**: Operational
-    *   GNSS lock: Active (11 satellites)
-    *   Frequency accuracy: 1×10⁻¹² (excellent)
-    *   Lock duration: 2 days (stable)
-    *   10 MHz outputs: Available
+**Key Challenge:** AURORA-7's inclined orbit means it drifts in a figure-8 pattern. Program-track cannot compensate for this drift - step-track is required for reliable tracking.
 
-*   **LNB**: Powered off
-    *   Status: Cold (18°C)
-    *   Configuration: Required
-    *   LO frequency: Must calculate
+---
 
-*   **BUC/HPA**: Powered off
-    *   Status: Standby
-    *   RF mute: Enabled (safe)
+## Skills Integration
 
-*   **Spectrum Analyzer**: Powered, needs configuration
-*   **Modems**: Powered, need configuration
+This scenario integrates skills from all previous scenarios:
 
-**Everything starts from cold. You build the link from scratch.**
+### From Scenario 1: System Health Check
+- Dashboard alarm review
+- GPSDO status verification
+- Systematic troubleshooting approach
 
-### Calculation Worksheet
+### From Scenario 2: Power Sequencing
+- HPA enable sequence
+- Proper equipment startup order
+- Safety protocols
 
-Before starting equipment configuration, calculate required parameters:
+### From Scenario 3: Weather Operations
+- Weather alert assessment
+- Feed heater management
+- Operational decision-making
 
-**Given Information:**
+### From Scenario 4: IF Calculations (Downlink)
+- LNB LO and RF to IF conversion
+- Spectrum analyzer configuration
+- Beacon acquisition
+
+### From Scenario 5: Spectrum Analysis
+- Signal identification
+- Interference recognition
+- Using spectrum analyzer for troubleshooting
+
+### From Scenario 6: Step-Track Operations
+- Inclined orbit understanding
+- Step-track vs program-track selection
+- Beacon lock acquisition
+
+### From Scenario 7: Fault Diagnosis & Loopback
+- Equipment fault identification
+- Power cycling for fault recovery
+- BUC loopback validation
+- TX chain verification
+
+---
+
+## Initial Equipment Status
+
+### Vermont Ground Station (VT-01) at 2:17 AM
+
+| Equipment | Status | Issue |
+|-----------|--------|-------|
+| Antenna | Program-track on AURORA-7 | **Wrong mode for inclined orbit** |
+| GPSDO | Locked, operational | OK |
+| LNB | Powered, **reference unlocked** | **Fault - needs diagnosis** |
+| BUC | Powered, muted, 4,925 MHz LO | OK |
+| HPA | Powered, disabled | Ready for enable sequence |
+| Spectrum Analyzer | 1,000 MHz center | Needs reconfiguration |
+
+### Fault Conditions Present
+
+**LNB Reference Unlock:**
+- The LNB shows "reference unlocked" status
+- The GPSDO is operational (locked to GPS)
+- This indicates the LNB is not receiving or cannot lock to the 10 MHz reference
+- Common fix: Power cycle the LNB to force re-acquisition
+
+**Tracking Mode Mismatch:**
+- Antenna is in program-track mode
+- AURORA-7 has an inclined orbit
+- Program-track predictions cannot follow orbital drift
+- Step-track is required for reliable tracking
+
+---
+
+## Frequency Calculations Reference
+
+### AURORA-7 Beacon (Receive)
+
+| Parameter | Value |
+|-----------|-------|
+| Beacon RF | 4,165 MHz |
+| LNB LO | 5,250 MHz |
+| Beacon IF | 1,085 MHz |
+
+**Calculation:**
 ```
-Beacon RF Frequency:  4,023.7 MHz
-Target IF Frequency:  1,247.5 MHz
+IF = LO - RF
+IF = 5,250 - 4,165
+IF = 1,085 MHz
 ```
 
-**LNB LO Calculation:**
-```
-Formula: LO = RF_input - IF_target
+### AURORA-7 Uplink (Transmit)
 
-LO = 4,023.7 MHz - 1,247.5 MHz
-LO = _______ MHz
+| Parameter | Value |
+|-----------|-------|
+| Uplink RF | 5,830 MHz |
+| BUC LO | 4,925 MHz |
+| TX IF | 905 MHz |
 
-Answer: 2,776.2 MHz
+**Calculation:**
 ```
-
-**Verification:**
-```
-Check: IF = RF - LO
-       IF = 4,023.7 MHz - 2,776.2 MHz  
-       IF = 1,247.5 MHz ✓
+IF = RF - LO
+IF = 5,830 - 4,925
+IF = 905 MHz
 ```
 
-### Expected Complications
+<Aside type="tip">
+**Remember the Formulas**
 
-Real first light operations include complications. Handle them professionally:
+- **Receive (LNB)**: IF = LO - RF (high-side injection)
+- **Transmit (BUC)**: IF = RF - LO (low-side injection)
 
-**Complication 1: Weak Beacon Signal (Will occur at beacon acquisition)**
-- Expected: -95 dBm
-- Actual: -98 dBm (3 dB weaker)
-- Cause: Spacecraft team's prediction slightly off (common)
-- Solution: Increase LNB gain to compensate
-- Not a failure: This is normal operations
+Both subtract, but the operand order differs.
+</Aside>
 
-**Complication 2: Slow Antenna Slew (Will occur during pointing)**
-- Specified rate: 1.0°/second
-- Actual rate: 0.75°/second (25% slower)
-- Cause: Antenna performance degradation (age/maintenance)
-- Effect: Takes longer to reach position (~8 minutes vs 5 minutes)
-- Solution: Wait for completion, don't rush
-- Not a fault: Equipment within acceptable limits
+---
 
-**Charlie's Evaluation:**
-He's watching how you handle these. Real operators encounter variations from specs regularly. The question is: Do you adapt appropriately?
+## Escalation Guidelines
 
-### Complete First Light Procedure
+### When NOT to Wake Dana
+
+- Equipment faults you can diagnose and resolve
+- Routine tracking issues
+- Weather precautions (feed heater, monitoring)
+- Customer issues with clear technical causes
+
+### When to Wake Dana
+
+- Equipment failures requiring physical intervention
+- Safety-critical situations
+- Issues beyond your authorization level
+- Multiple simultaneous major failures
+- Customer escalations demanding supervisor involvement
+
+**This scenario:** The LNB reference fault and tracking mode issue are both resolvable without escalation. Handle them yourself.
+
+---
+
+## Mission Phases Overview
 
 <Steps>
 
-1. **Phase 1: Review Operations Note**
-   ...
+1. **Review Customer Trouble Ticket**
+
+   Understand the problem: intermittent connectivity on AURORA-7.
+
+2. **Access Ground Station**
+
+   Select Vermont Ground Station to begin investigation.
+
+3. **Check Dashboard for Alarms**
+
+   Identify the LNB reference unlock alarm.
+
+4. **Verify GPSDO Status**
+
+   Confirm the 10 MHz reference source is operational.
+
+5. **Diagnose LNB Reference Fault**
+
+   Navigate to RX Analysis and investigate the LNB.
+
+6. **Resolve LNB Reference Fault**
+
+   Power cycle the LNB to restore reference lock.
+
+7. **Verify Fault Cleared**
+
+   Confirm Dashboard shows no alarms.
+
+8. **Calculate AURORA-7 Beacon IF**
+
+   Determine beacon IF: 5,250 - 4,165 = 1,085 MHz.
+
+9. **Configure Spectrum Analyzer for Beacon**
+
+   Set center frequency to 1,085 MHz with narrow span.
+
+10. **Identify Tracking Problem**
+
+    Recognize that program-track is inadequate for inclined orbit.
+
+11. **Enable Step-Track Mode**
+
+    Switch antenna to step-track for active beacon following.
+
+12. **Verify Beacon Acquisition**
+
+    Confirm beacon lock and signal visible on spectrum analyzer.
+
+13. **Weather Alert Assessment**
+
+    Evaluate weather alert and decide on appropriate action.
+
+14. **Enable Feed Heater**
+
+    Proactively enable feed heater as weather precaution.
+
+15. **Calculate AURORA-7 Uplink IF**
+
+    Determine TX IF: 5,830 - 4,925 = 905 MHz.
+
+16. **Configure TX Modem**
+
+    Set frequency, bandwidth, modulation, and FEC for AURORA-7.
+
+17. **Verify TX Chain with Loopback**
+
+    Enable BUC loopback to test TX signal path.
+
+18. **Verify Loopback Signal**
+
+    Confirm TX signal visible on spectrum analyzer.
+
+19. **Prepare for Live Uplink**
+
+    Disable loopback and mute BUC for HPA enable.
+
+20. **Enable HPA**
+
+    Power on and enable HPA output stage.
+
+21. **Unmute BUC - Go Live**
+
+    Begin live transmission to AURORA-7.
+
+22. **Verify Link Operational**
+
+    Confirm all systems operational on Dashboard.
+
+23. **Document Resolution**
+
+    Summarize root cause and actions taken.
 
 </Steps>
 
-### First Light Procedure - Standard Workflow
-...
+---
 
+## Troubleshooting Approach
 
+### Systematic Problem Solving
+
+When faced with "intermittent connectivity," work through the signal chain:
+
+**1. Timing Reference**
+- Is GPSDO locked?
+- Are all devices receiving 10 MHz reference?
+
+**2. Receive Chain**
+- Is LNB powered and locked?
+- Is antenna pointing correctly?
+- Is beacon visible on spectrum analyzer?
+
+**3. Tracking**
+- What tracking mode is active?
+- Is it appropriate for this satellite?
+- Is beacon lock achieved?
+
+**4. Transmit Chain (if bidirectional)**
+- Is TX modem configured correctly?
+- Does loopback test pass?
+- Is HPA enabled and not overdriven?
+
+### The Diagnostic Mindset
+
+Don't assume. Verify.
+
+- **Check the Dashboard first** - alarms tell you where to look
+- **Verify the timing source** - GPSDO is the foundation
+- **Follow the signal chain** - systematic is faster than guessing
+- **Use loopback testing** - validate before radiating
+
+---
+
+## What You'll Need to Know
+
+This scenario draws on all concepts from Scenarios 1-7:
+
+- **System Health Checks**: Dashboard review, alarm interpretation
+- **Timing Reference**: GPSDO status verification
+- **Fault Diagnosis**: LNB reference unlock identification and resolution
+- **IF Calculations**: Both receive and transmit frequency conversion
+- **Spectrum Analysis**: Beacon acquisition and signal verification
+- **Tracking Modes**: Step-track selection for inclined orbit satellites
+- **Weather Operations**: Proactive feed heater management
+- **Loopback Testing**: TX chain validation before going live
+- **Power Sequencing**: Proper HPA enable sequence
+
+<Aside type="tip">
+**Graduation Exam**
+
+This is your final evaluation. You will receive minimal guidance. The scenario tests whether you can independently:
+
+1. Identify problems from symptoms and alarms
+2. Diagnose root causes systematically
+3. Apply correct solutions
+4. Make appropriate operational decisions
+5. Work efficiently under time pressure
+
+You've done all of this before in individual scenarios. Now do it all together.
+</Aside>
+
+---
+
+## Key Takeaways
+
+1. **Dashboard First**: Always check for active alarms before diving into troubleshooting
+2. **Verify the Foundation**: GPSDO lock is the timing reference for everything
+3. **Power Cycling Works**: Many equipment faults clear with a power cycle
+4. **Match Tracking to Orbit**: Inclined orbit satellites require step-track
+5. **Validate Before Radiate**: Loopback testing catches TX errors safely
+6. **Escalate Appropriately**: Know what you can handle vs. what needs supervisor involvement
+7. **Document Everything**: The next shift needs to know what happened
+
+**Dana's Final Message:**
+*"Saw the ticket resolution come through. LNB reference issue and tracking mode - good catches. You handled it right. No need to wake me for that. Charlie will be proud. See you at shift change."*
+
+**Congratulations. You've demonstrated the skills for solo operations.**
