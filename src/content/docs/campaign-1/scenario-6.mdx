@@ -1,676 +1,404 @@
 ---
-title: 'Scenario 6 - Interference Hunt'
-description: 'Troubleshoot and resolve RF interference causing service degradation with 15-minute SLA deadline - solo operations under pressure'
+title: 'Scenario 6 - Old Faithful'
+description: 'Practice step-track mode on an inclined-orbit satellite - understanding why legacy satellites require active tracking and how to establish a full-duplex link'
+lastUpdated: 2025-01-19
 ---
 
 import { Steps } from '@astrojs/starlight/components';
 import { Aside } from '@astrojs/starlight/components';
 
-**Duration:** 20-25 minutes (15-minute hard deadline)
+**Duration:** 25-30 minutes
 
-**Difficulty:** Advanced
+**Difficulty:** Beginner
 
-**Mission Type:** Pressure Phase - Solo Troubleshooting
+**Mission Type:** Training Exercise
 
-**Time Limit:** 15 minutes until SLA breach (clock already running)
+**Time Limit:** 30 minutes
 
 ### Mission Briefing
 
-**CRITICAL SITUATION - CUSTOMER IMPACT IN PROGRESS**
+AURORA-7 is a legacy C-band satellite that's been in service for over 15 years. To conserve fuel, the operators stopped north-south station-keeping years ago, so the orbit is now inclined. The satellite traces a figure-8 pattern in the sky throughout the day - you can't just point the antenna and forget about it.
 
-A customer has reported degraded service on TIDEMARK-1. Their maritime vessel communications are experiencing packet loss climbing to 2-3%, and they're seeing intermittent connection drops. Something is interfering with the downlink carrier.
+This is a training exercise to practice step-track mode. Unlike program-track, which follows predicted orbital elements, step-track uses the beacon signal to continuously adjust antenna pointing. It's essential for tracking satellites with inclined orbits.
 
-The SLA (Service Level Agreement) terms are clear: service must be restored within 15 minutes of the customer's initial report, or financial penalties apply automatically. The clock started when they called - three minutes ago. **You have 12 minutes remaining.**
+**Mission Context:**
+- **Satellite**: AURORA-7 (legacy C-band, inclined orbit)
+- **Ground Station**: Vermont (VT-01)
+- **Objective**: Establish a full-duplex link using step-track
+- **Pre-Configuration**: Charlie has already configured beacon frequency, encryption, and payload settings
 
-Charlie is stuck on another emergency call with a different customer and can only provide brief support via intercom. You are solo on console. This is not a training scenario - this is real operations with real consequences.
+**Who's Guiding You:**
+- **Charlie Brooks**: Will walk you through the step-track process and verify your understanding
 
-**Current Status:**
-- **C/N Ratio**: Down to 6 dB (normal: 12 dB) - 6 dB degradation
-- **Packet Loss**: 2.5% (SLA requires less than 0.5%)
-- **Customer Impact**: Service degraded, complaints logged
-- **SLA Deadline**: 12 minutes remaining when you start
-- **Financial Penalty**: Triggers automatically if not resolved in time
-- **Support Available**: Minimal - Charlie is unavailable for 10+ minutes
+---
 
-**Your Mission:**
-1. Identify the interference source
-2. Determine interference characteristics (frequency, type, power)
-3. Calculate the Carrier-to-Interference (C/I) ratio
-4. Implement mitigation solution
-5. Verify service quality restored
-6. Complete before SLA deadline expires
+## Background: Inclined Orbit Satellites
 
-**Who's Available (Barely):**
-- **Charlie Brooks**: Tied up on another call, stressed, can only respond to emergencies via intercom
+### Why Satellites Drift
 
-<Aside type="danger">
-**HIGH PRESSURE SCENARIO - SLA CLOCK RUNNING**
+Geostationary satellites maintain their position through active station-keeping. Small thrusters fire periodically to counteract gravitational perturbations from the Sun, Moon, and Earth's equatorial bulge. This keeps the satellite in a fixed position relative to ground stations.
 
-This is your first solo emergency. The clock is ticking, the customer is watching, and financial penalties loom. Work fast but work smart. Rushing causes mistakes, but taking too long causes penalties.
+Station-keeping consumes fuel. When a satellite's fuel reserves run low, operators face a choice:
+- **Decommission**: End operations and move to graveyard orbit
+- **Extend life**: Stop station-keeping and operate with an inclined orbit
 
-You've been trained for this. Trust your skills. Execute.
-</Aside>
+Many operators choose extended operations. The satellite still functions - it just moves.
 
-### Initial Assessment
+### The Figure-8 Pattern
 
-**Ground Station: Vermont (VT-01)**
+When north-south station-keeping stops, the satellite's orbital plane begins to tilt relative to the equator. From a ground station's perspective, the satellite appears to drift north and south over a 24-hour period, tracing a figure-8 pattern in the sky.
 
-*   **Antenna**: 9-meter C-band, locked on TIDEMARK-1
-*   **Position**: Az: 214.2°, El: 24.8° (on target)
-*   **Tracking**: Step-track mode, locked
-*   **GPSDO**: Stable
-*   **LNB**: Operational, 5,150 MHz LO, 55 dB gain
-*   **BUC/HPA**: Powered off (receive-only service)
-*   **Current Filter**: 10 MHz bandwidth (wide, currently selected)
+**The Motion:**
+- **Daily cycle**: North-south excursion repeats every 24 hours
+- **Inclination growth**: Typically 0.7-0.9 degrees per year without correction
+- **Position variation**: A 5-degree inclined orbit creates significant pointing error
 
-**Satellite: TIDEMARK-1**
+For AURORA-7, years without station-keeping have resulted in substantial orbital inclination. The apparent motion is enough that program-track predictions - based on a fixed geostationary position - are too inaccurate for reliable operations.
 
-*   **Orbital Position**: 53°W GEO
-*   **Beacon**: 3,947.8 MHz, -95 dBm (visible, normal)
-*   **Customer Carrier**: 3,952.5 MHz, 16APSK, 5 Msps
-*   **Expected Signal Level**: -87 dBm (normal)
-*   **Service**: Maritime communications (currently degraded)
+### Station-Keeping Economics
 
-**Degraded Performance Indicators:**
+Fuel represents mission life. The decision to stop station-keeping extends revenue-generating operations:
 
-*   **C/N Ratio**: 6.2 dB (should be 12 dB) → **6 dB degradation**
-*   **Packet Loss**: 2.5% (should be less than 0.5%) → **SLA violation**
-*   **Modem Status**: Carrier lock maintained, but error correction overloaded
-*   **Customer Report**: Intermittent disconnections, slow data rates
+| Fuel Status | Operator Decision | Ground Station Impact |
+|-------------|------------------|----------------------|
+| Normal reserves | Full station-keeping | Program-track works fine |
+| Low reserves | Reduced station-keeping | Minor pointing drift |
+| Critical reserves | Stop N-S station-keeping | Inclined orbit, requires step-track |
+| Depleted | End of mission | Satellite decommissioned |
 
-**Charlie's Last Words (Intercom):**
-*"I'm stuck on this call with another customer for at least ten minutes. You need to handle this solo."*
+Many commercial satellites operate in inclined orbit mode for years beyond their original design life, continuing to generate revenue while requiring more sophisticated ground tracking.
 
-*"SLA terms say we've got fifteen minutes to restore service or we're paying penalties. Clock started when they called - three minutes ago."*
+---
 
-*"Use the wide-span sweep to find the interferer. Check the filter bank settings - you might be able to notch it out. Page me if you absolutely need help, but I trust you can handle this."*
+## Tracking Modes Explained
 
-### Interference Troubleshooting Process
+### Program-Track
+
+Program-track uses Two-Line Element (TLE) data to predict satellite position. The antenna control unit calculates where the satellite should be at any moment and points accordingly.
+
+**How It Works:**
+```
+1. Load TLE orbital elements for target satellite
+2. Propagate orbit to current time
+3. Calculate azimuth and elevation
+4. Point antenna to computed position
+5. Repeat continuously
+```
+
+**Advantages:**
+- No signal required - can point before acquiring
+- Works for any satellite with published TLEs
+- Simple implementation
+
+**Limitations:**
+- Accuracy depends on TLE freshness and orbit stability
+- Geostationary assumptions break down for inclined orbits
+- No feedback loop to correct pointing errors
+
+**Best For:** Acquisition of geostationary satellites, initial pointing for any satellite.
+
+### Step-Track
+
+Step-track actively optimizes antenna pointing by measuring beacon signal strength. The algorithm makes small adjustments to find and maintain the peak signal level.
+
+**How It Works:**
+```
+1. Start from approximate position (from program-track)
+2. Measure beacon C/N ratio
+3. Make small step in azimuth
+4. If C/N improved, continue that direction
+5. If C/N degraded, reverse direction
+6. Repeat for elevation
+7. Continuously hunt for peak signal
+```
+
+**Advantages:**
+- Self-correcting - follows the actual satellite position
+- Compensates for orbital drift, atmospheric refraction, antenna mechanical errors
+- Achieves maximum signal through continuous optimization
+
+**Limitations:**
+- Requires beacon signal for tracking
+- Needs beacon receiver tuned to correct frequency
+- Slight signal variation during optimization steps
+
+**Best For:** Inclined orbit satellites, maximizing signal quality, long-term tracking.
+
+### The Handoff Pattern
+
+Professional operations typically use both modes:
 
 <Steps>
 
-1. **Phase 1: Assess Service Degradation**
-   
-   **Objective:** Quantify the problem and confirm interference is the cause.
-   
-   **Time Remaining:** 12 minutes (starting point)
-   
-   **Checks to Perform:**
-   
-   **Current C/N Ratio:**
-   *   Observe receiver modem C/N display
-   *   Current value: 6.2 dB
-   *   Normal value: 12 dB
-   *   Degradation: 6 dB (significant)
-   
-   **Packet Loss Rate:**
-   *   Check modem error statistics
-   *   Current packet loss: 2.5%
-   *   SLA requirement: less than 0.5%
-   *   Status: **SLA VIOLATION ACTIVE**
-   
-   **Beacon Status:**
-   *   Check spectrum analyzer for beacon at 3,947.8 MHz
-   *   Beacon level: -95 dBm (normal, stable)
-   *   Conclusion: Antenna pointing is correct, satellite is healthy
-   
-   **Carrier Power:**
-   *   Customer carrier at 3,952.5 MHz
-   *   Level: -87 dBm (normal, no satellite power issue)
-   *   Modulation: 16APSK visible and locked
-   
-   **Initial Assessment:**
-   - Satellite is healthy (beacon normal)
-   - Antenna pointing is correct
-   - Carrier power is normal
-   - BUT C/N is degraded by 6 dB
-   - **Conclusion**: External interference most likely cause
-   
-   **System Message:**
-   *"C/N down to about 6 dB. That's bad - we need at least 7 for this modulation scheme, and we usually run at 12."*
-   
-   *"Packet loss over 2 percent. Customer's definitely seeing impact."*
-   
-   *"Twelve minutes left on the SLA. Move fast."*
+1. **Initial Acquisition**: Program-track points antenna to predicted position
 
-2. **Phase 2: Perform Wide-Span Spectrum Sweep**
-   
-   **Objective:** Locate the interference source using spectrum analyzer.
-   
-   **Time Remaining:** ~10 minutes
-   
-   **Spectrum Analyzer Reconfiguration:**
-   
-   **Current Settings (Narrow View):**
-   - Center frequency: 3,952.5 MHz (carrier)
-   - Span: 10 MHz
-   - RBW: 10 kHz
-   - Issue: Can only see immediate vicinity of carrier
-   
-   **Wide-Span Mode (For Interference Hunt):**
-   - Center frequency: 3,950 MHz (slightly below carrier)
-   - Span: 50-100 MHz (wide view to find interferer)
-   - RBW: 100 kHz (wider for faster sweep)
-   - Reference level: -50 dBm
-   
-   **Procedure:**
-   1. Reconfigure spectrum analyzer to wide-span mode
-   2. Set span to 50-100 MHz to see adjacent channels
-   3. Observe entire frequency range around customer carrier
-   4. Look for unexpected signals near 3,952.5 MHz
-   
-   **What You Should See:**
-   
-   **Expected Signals:**
-   - Beacon at 3,947.8 MHz: -95 dBm (narrow CW, normal)
-   - Customer carrier at 3,952.5 MHz: -87 dBm (5 MHz wide, normal)
-   
-   **Interference Signal:**
-   - **Unexpected carrier at 3,957.5 MHz** (5 MHz above customer carrier)
-   - Power level: -83 dBm (stronger than our carrier!)
-   - Bandwidth: ~5 MHz (similar to data carrier)
-   - Modulation: Appears to be QPSK or similar
-   - Frequency offset: +5 MHz from our carrier
-   
-   **Analysis:**
-   This is an adjacent channel interferer. Someone's uplink either:
-   - Hit the wrong satellite
-   - Used wrong polarization (horizontal instead of vertical)
-   - Misconfigured their frequency
-   - Their transponder assignment overlaps with TIDEMARK-1's downlink
+2. **Beacon Detection**: Verify beacon signal is visible on spectrum analyzer
 
-3. **Phase 3: Identify and Characterize Interference**
-   
-   **Objective:** Measure interference parameters precisely.
-   
-   **Time Remaining:** ~8 minutes
-   
-   **Interference Characteristics:**
-   
-   **Frequency:**
-   - Center: 3,957.5 MHz (at RF)
-   - Offset from our carrier: +5 MHz
-   - Location: Adjacent channel (upper side)
-   
-   **Power Level:**
-   - Measured: -83 dBm
-   - Our carrier: -87 dBm
-   - Interference is 4 dB STRONGER than our signal
-   
-   **Bandwidth:**
-   - Approximately 5 MHz
-   - Overlaps with our 5 MHz carrier on adjacent channel
-   - Spectral spillover into our passband
-   
-   **Type:**
-   - Modulated carrier (QPSK or 16APSK)
-   - Continuous (not intermittent)
-   - Likely another legitimate satellite transmission
-   - Not malicious, just coordination error
-   
-   **System Message:**
-   *"There it is - adjacent channel carrier at 3,957.5 megahertz. Five megahertz above our signal."*
-   
-   *"Power's at minus-83 dBm. That's 4 dB stronger than our carrier. No wonder we're having problems."*
-   
-   *"Looks like someone's uplink hit the wrong polarization or satellite. Not our fault, but we still need to fix it."*
-   
-   *"Nine minutes remaining."*
-   
-   **Why This Causes Problems:**
-   Even though the interferer is on a different frequency (3,957.5 MHz vs our 3,952.5 MHz), it still degrades our signal because:
-   - Spectral spillover: Modulated signals have sidelobes
-   - Receiver front-end: LNB amplifies both signals
-   - Filter bandwidth: Current 10 MHz filter passes both signals
-   - Intermodulation: Non-linear amplifier products
-   - Desensitization: Receiver AGC responds to strong interferer
+3. **Mode Transition**: Switch to step-track once beacon is detected
 
-4. **Phase 4: Calculate Carrier-to-Interference Ratio**
-   
-   **Objective:** Quantify the interference impact mathematically.
-   
-   **Time Remaining:** ~7 minutes
-   
-   **C/I Calculation:**
-   
-   **Formula:**
-   ```
-   C/I (dB) = Carrier_Power (dBm) - Interference_Power (dBm)
-   ```
-   
-   **Given:**
-   - Carrier power (C): -87 dBm
-   - Interference power (I): -83 dBm
-   
-   **Calculation:**
-   ```
-   C/I = -87 dBm - (-83 dBm)
-   C/I = -87 dBm + 83 dBm
-   C/I = -4 dB
-   ```
-   
-   Wait, that's negative! This means the interference is STRONGER than our carrier by 4 dB.
-   
-   **Correct Interpretation:**
-   - C/I = 4 dB (interference is 4 dB stronger)
-   - Or stated differently: I/C = -4 dB (our carrier is 4 dB weaker)
-   
-   **Industry Standard Requirement:**
-   - Minimum C/I for clean operation: 15-20 dB
-   - Current C/I: 4 dB
-   - Shortfall: 11-16 dB below requirement
-   
-   **Combined C/(N+I) Impact:**
-   
-   When you have both thermal noise (N) and interference (I), they combine:
-   ```
-   C/N = 12 dB (without interference, normal)
-   C/I = 4 dB (with interference, current)
-   Combined C/(N+I) = ?
-   ```
-   
-   The combined effect (noise + interference) is dominated by whichever is stronger. In this case, interference is much stronger than thermal noise, so:
-   ```
-   C/(N+I) ≈ C/I = 6 dB (approximately)
-   ```
-   
-   This matches the observed 6 dB C/N reading on the modem!
-   
-   **System Message:**
-   *"C/I ratio is 4 dB. That's terrible - we need at least 15 dB for clean operation."*
-   
-   *"Combined with the thermal noise, this explains exactly why the C/N dropped 6 dB."*
-   
-   *"Check the filter bank. There should be a notch filter that can reject that adjacent carrier."*
+4. **Optimization**: Step-track algorithm finds and maintains signal peak
 
-5. **Phase 5: Implement Filter-Based Mitigation**
-   
-   **Objective:** Use notch filter to suppress interference.
-   
-   **Time Remaining:** ~5 minutes
-   
-   **Available IF Filters:**
-   
-   The filter bank has multiple options:
-   - Filter 0: 100 MHz (bypass - passes everything)
-   - Filter 1: 50 MHz (wide)
-   - Filter 2: 20 MHz (medium)
-   - Filter 3: 10 MHz (currently selected - too wide)
-   - Filter 4: 5 MHz (narrower)
-   - Filter 5: 2 MHz (narrow)
-   - **Filter 6**: 1 MHz with notch at +3 MHz offset
-   - **Filter 7**: 1 MHz with notch at +5 MHz offset ← **CORRECT CHOICE**
-   
-   **Filter Selection Logic:**
-   
-   **Our Carrier:**
-   - Frequency: 3,952.5 MHz (at RF)
-   - Bandwidth: 5 MHz
-   - Symbol rate: 5 Msps (requires ~5 MHz bandwidth)
-   
-   **Interference:**
-   - Frequency: 3,957.5 MHz (at RF)
-   - Offset: +5 MHz from our carrier
-   
-   **Solution:**
-   **Filter 7: 1 MHz with notch at +5 MHz**
-   
-   Wait - our carrier is 5 MHz wide, but this filter is only 1 MHz bandwidth. How does this work?
-   
-   **The Key:** These filters operate at IF (Intermediate Frequency), not RF. After downconversion:
-   - Our carrier at RF 3,952.5 MHz → IF 1,247.5 MHz (using LO 5,150 MHz - 3,952.5 MHz)
-   - Interferer at RF 3,957.5 MHz → IF 1,252.5 MHz (same LO)
-   - Offset at IF: 1,252.5 - 1,247.5 = 5 MHz
-   
-   So Filter 7 provides:
-   - 1 MHz passband centered at target IF (passes our carrier)
-   - Actually, checking the design - these are likely wider than label suggests
-   - Notch at +5 MHz from center rejects the interferer
-   - Notch depth: ~15-20 dB rejection
-   
-   **Application:**
-   1. Open IF filter bank controls
-   2. Select Filter 7 (1 MHz with notch at +5 MHz)
-   3. Apply filter change
-   4. Observe spectrum analyzer - interferer should be suppressed
-   5. Check modem C/N - should improve immediately
-   
-   **System Message:**
-   *"Notch filter applied. Watch the spectrum - interference is getting suppressed by the notch."*
-   
-   *"C/N should start climbing back up now."*
-   
-   **What Happens:**
-   - Notch filter attenuates interferer by 15-20 dB
-   - Interferer power drops from -83 dBm to ~-100 dBm (below noise floor)
-   - C/I improves from 4 dB to ~19 dB
-   - Combined C/(N+I) improves from 6 dB to ~11 dB
-   - Packet loss drops as error correction can handle traffic again
-
-6. **Phase 6: Verify Service Quality Restored**
-   
-   **Objective:** Confirm mitigation was successful and service is stable.
-   
-   **Time Remaining:** ~3 minutes
-   
-   **Verification Checks:**
-   
-   **C/N Ratio Improvement:**
-   - Before filter: 6.2 dB
-   - After filter: 11.0 dB
-   - Improvement: 4.8 dB (close to target 6 dB)
-   - Target achieved: greater than 10 dB ✓
-   
-   **Why not back to 12 dB?**
-   - Notch filter has some insertion loss
-   - Slightly narrower bandwidth reduces signal slightly
-   - Interferer may not be completely eliminated (notch is ~15-20 dB, not infinite)
-   - 11 dB is acceptable and well above threshold
-   
-   **Packet Loss:**
-   - Before filter: 2.5%
-   - After filter: 0.3%
-   - Improvement: Reduced by factor of 8
-   - SLA requirement: less than 0.5% ✓
-   
-   **Service Stability:**
-   - Monitor for 60 seconds continuous
-   - C/N remains stable at 11.0 ± 0.5 dB
-   - Packet loss remains below 0.5%
-   - No loss of carrier lock
-   - Modem error correction operating normally
-   
-   **System Message:**
-   *"C/N's back up to 11 dB. Packet loss dropped to near zero."*
-   
-   *"Service quality looks stable. Good work."*
-
-7. **Phase 7: SLA Compliance Verification**
-   
-   **Objective:** Confirm resolution completed before deadline.
-   
-   **Time Remaining:** ~2 minutes (or more if you worked efficiently)
-   
-   **Success Criteria:**
-   - Service quality restored ✓
-   - C/N ratio above 10 dB ✓
-   - Packet loss below 0.5% ✓
-   - Completed before 15-minute deadline ✓
-   - SLA breach avoided ✓
-   
-   **Charlie Returns (Intercom):**
-   *"Saw the C/N come back up on the monitoring dashboard. Nice work - you beat the SLA deadline with time to spare."*
-   
-   *"You identified the interference, calculated the impact, implemented a solution, and verified the fix. Exactly what I needed you to do."*
-   
-   *"That's real operations right there - time pressure, customer impact, working solo. You handled it."*
-   
-   *"I'll file a coordination request to track down whoever's transmitting on that adjacent carrier. For now, the customer's happy and we're not paying penalties."*
-   
-   **Mission Complete:**
-   You successfully:
-   - Diagnosed interference under pressure
-   - Applied correct mitigation technique
-   - Restored service quality
-   - Avoided SLA penalties
-   - Worked independently during emergency
-   - Made correct decisions with limited time
+5. **Continuous Tracking**: Step-track follows satellite throughout pass
 
 </Steps>
 
-### RF Interference Fundamentals
-
-**Types of Interference:**
-
-**Adjacent Channel Interference (This Scenario):**
-- Legitimate signal on nearby frequency
-- Caused by coordination errors, misconfiguration
-- Spectral spillover into victim channel
-- Mitigation: Filtering, coordination, power control
-
-**Co-Channel Interference:**
-- Another signal on same frequency
-- More severe than adjacent channel
-- Caused by polarization errors, wrong satellite
-- Mitigation: Polarization adjustment, antenna repositioning
-
-**Intermodulation Interference:**
-- Created by non-linear amplifiers
-- Multiple signals combine to create spurious products
-- Appears at sum/difference frequencies
-- Mitigation: Amplifier backoff, filtering
-
-**Terrestrial Interference:**
-- Ground-based transmitters (radar, 5G, other)
-- Geographic-dependent
-- May be intermittent (radar sweeping)
-- Mitigation: Shielding, filtering, site relocation
-
-### C/I (Carrier-to-Interference Ratio)
-
-**Definition:**
-```
-C/I (dB) = Carrier_Power (dBm) - Interference_Power (dBm)
-```
-
-**Interpretation:**
-- High C/I (greater than 20 dB): Interference negligible
-- Medium C/I (10-20 dB): Interference noticeable, manageable
-- Low C/I (5-10 dB): Significant degradation
-- Very Low C/I (less than 5 dB): Severe problems (this scenario: 4 dB)
-
-**Combined with Thermal Noise:**
-When both noise (N) and interference (I) present:
-```
-Total degradation = C/(N+I)
-```
-
-The stronger impairment dominates. If I much greater than N, then C/(N+I) ≈ C/I.
-
-**Industry Requirements:**
-- DVB-S2 16APSK 3/4: Requires C/N greater than 7 dB (threshold)
-- With interference: Need C/(N+I) greater than 7 dB
-- Operational margin: Target 10-12 dB for reliability
-- Coordination standards: Adjacent channel C/I greater than 20 dB
-
-### Notch Filter Technology
-
-**How Notch Filters Work:**
-
-Notch filters are band-reject filters with very narrow rejection bandwidth:
-- **Passband**: Frequencies that pass with minimal attenuation
-- **Notch**: Very narrow frequency range with high attenuation (15-30 dB)
-- **Notch width**: Typically 1-10% of center frequency
-- **Notch depth**: 15-30 dB typical, 40+ dB for specialized filters
-
-**Application Strategy:**
-
-**Requirements:**
-- Interference must be at predictable, stable frequency
-- Interference bandwidth should be narrower than or equal to notch width
-- Desired signal must not overlap with notch frequency
-
-**Trade-offs:**
-- Notch removes interference ✓
-- But also removes any desired signal energy at notch frequency ✗
-- Insertion loss: 0.5-2 dB even outside notch ✗
-- Group delay distortion near notch edges ✗
-
-**When to Use:**
-- Adjacent channel interference (like this scenario)
-- Single-frequency terrestrial interferers (radar, carriers)
-- Intermodulation products at known frequencies
-
-**When NOT to Use:**
-- Interference on same frequency as desired signal (co-channel)
-- Wideband interference (noise-like)
-- Frequency-hopping interferers
-
-### Filter Bank Configuration
-
-**Available Filters (This Scenario):**
-
-| Filter | Bandwidth | Special Feature | Use Case |
-|--------|-----------|----------------|----------|
-| 0 | 100 MHz | Bypass mode | Full transponder monitoring |
-| 1 | 50 MHz | Wide | Transponder edge monitoring |
-| 2 | 20 MHz | Medium-wide | Multi-carrier reception |
-| 3 | 10 MHz | Medium | Standard wideband (initial setting) |
-| 4 | 5 MHz | Narrow | Single 5 Msps carrier |
-| 5 | 2 MHz | Very narrow | Low symbol rate carriers |
-| 6 | 1 MHz | +3 MHz notch | Interferer at +3 MHz offset |
-| 7 | 1 MHz | +5 MHz notch | Interferer at +5 MHz offset ✓ |
-
-**Selection Logic:**
-1. Identify carrier bandwidth requirement (5 MHz for 5 Msps)
-2. Identify interference offset (+5 MHz)
-3. Select filter matching both requirements (Filter 7)
-
-### Success Criteria
-
-*   ✅ Service degradation assessed (C/N at 6 dB, packet loss 2.5%)
-*   ✅ Wide-span spectrum sweep performed
-*   ✅ Interference identified (3,957.5 MHz, -83 dBm)
-*   ✅ Interference characterized (adjacent channel, +5 MHz offset)
-*   ✅ C/I ratio calculated (4 dB - very poor)
-*   ✅ Filter 7 selected and applied (notch at +5 MHz)
-*   ✅ Interference suppressed (15+ dB rejection)
-*   ✅ C/N ratio improved (6 dB → 11 dB, improvement greater than 6 dB)
-*   ✅ Packet loss eliminated (2.5% → less than 0.5%)
-*   ✅ Service quality stable for 60+ seconds
-*   ✅ SLA deadline met (completed before 15 minutes expired)
-
-### Common Mistakes Under Pressure
-
-*   ❌ Panicking and trying random solutions without diagnosis
-*   ❌ Forgetting to switch to wide-span mode (can't see interferer)
-*   ❌ Miscalculating C/I ratio (sign errors, unit confusion)
-*   ❌ Selecting wrong notch filter (Filter 6 instead of Filter 7)
-*   ❌ Not verifying solution worked (assuming it's fixed without checking)
-*   ❌ Spending too long on analysis, running out of time
-*   ❌ Immediately calling Charlie instead of attempting solo resolution
-*   ❌ Not documenting interference characteristics for coordination filing
-
-### Time Management Under Pressure
-
-**Efficient Work Flow:**
-
-**Minutes 0-2:** Assess degradation
-- Quick C/N check
-- Quick packet loss check
-- Quick beacon verification
-- Decision: Yes, this is interference
-
-**Minutes 3-6:** Identify interference
-- Configure wide-span mode
-- Sweep spectrum
-- Locate interferer
-- Measure power level
-
-**Minutes 7-9:** Calculate and plan
-- Calculate C/I ratio
-- Identify appropriate filter
-- Prepare to execute solution
-
-**Minutes 10-12:** Implement solution
-- Select correct notch filter
-- Apply filter change
-- Observe immediate effects
-
-**Minutes 13-15:** Verify and document
-- Confirm C/N improved
-- Confirm packet loss eliminated
-- Monitor for stability
-- Complete before deadline
-
-**Buffer:** Aim to finish with 2-3 minutes remaining for unexpected issues
-
-### Real-World Context
-
-**SLA (Service Level Agreement) Penalties:**
-
-Commercial satellite operators have contractual obligations:
-- **Availability**: 99.5-99.9% uptime requirements
-- **Performance**: Minimum C/N, maximum error rates
-- **Response time**: 15-60 minutes to restore service
-- **Penalties**: Financial penalties for SLA breaches (often 1-5% of monthly service fee per incident)
-
-**This Scenario:**
-- 15-minute response time requirement
-- Penalty would be ~$5,000-$50,000 depending on customer tier
-- Multiple breaches can lead to contract termination
-- Time pressure is real and legitimate in commercial operations
-
-**Interference Coordination:**
-
-After resolution, operator must:
-- File interference report with satellite operator
-- Provide interference characteristics (frequency, power, time)
-- Request coordination to identify source
-- Work with other operators to prevent recurrence
-- May involve ITU (International Telecommunication Union) if cross-border
-
-**Adjacent Channel Protection:**
-
-ITU regulations require:
-- Minimum frequency separation between services
-- Power flux density limits
-- Coordination between operators
-- Adjacent channel protection ratios
-
-When these are violated (as in this scenario), affected operator has right to request interference mitigation from source.
-
-### Learning Objectives
-
-By completing this scenario, you should be able to:
-
-1. **Work Under Pressure**: Make correct decisions with time constraints
-2. **Diagnose Interference**: Systematic approach to identifying RF problems
-3. **Spectrum Analysis**: Use wide-span mode to locate interferers
-4. **Calculate C/I**: Quantify interference impact mathematically
-5. **Apply Mitigation**: Select and implement appropriate filters
-6. **Verify Solutions**: Confirm restoration before claiming success
-7. **Solo Operations**: Work independently during emergencies
-8. **Time Management**: Balance speed with accuracy under deadline
-
 <Aside type="tip">
-**Pressure Operations Mindset**
+**Why Start with Program-Track?**
 
-High-pressure scenarios require:
-- **Stay calm**: Panic causes mistakes, wastes time
-- **Systematic approach**: Follow troubleshooting process even when rushed
-- **Quick decisions**: Don't overanalyze, act when confident
-- **Verify results**: Always confirm solution worked
-- **Trust training**: You know this material, execute what you've learned
-
-The SLA deadline creates pressure, but it also focuses your mind. Use the adrenaline, don't let it control you.
+Program-track gets you close enough to detect the beacon. Without an initial pointing estimate, step-track would have to search the entire sky. Program-track provides the starting point; step-track provides the precision.
 </Aside>
 
-### Next Scenario
+---
 
-You've proven you can handle emergencies solo. The next scenarios will introduce additional complexity: multiple simultaneous problems, equipment failures, customer coordination, and more complex interference types.
+## Beacon Tracking Fundamentals
 
-Welcome to professional satellite ground segment operations. This is what the job looks like.
+### What is a Satellite Beacon?
 
-### Additional Resources
+Satellites transmit continuous reference signals called beacons. These serve multiple purposes:
 
-*   **RF Interference Handbook**: Types, sources, and mitigation techniques
-*   **ITU Radio Regulations**: Coordination procedures and protection criteria
-*   **Filter Design**: Band-pass, band-reject, and notch filter characteristics
-*   **SLA Management**: Contractual obligations and incident response
+**For Ground Stations:**
+- Antenna tracking reference (step-track)
+- Frequency reference for calibration
+- Power monitoring for link budget verification
+- Satellite health indicator
 
-### Key Takeaways
+**Beacon Characteristics:**
+- **Continuous Wave (CW)**: Pure tone, very narrow bandwidth
+- **Stable frequency**: Typically within a few Hz of nominal
+- **Known power**: Published in satellite documentation
+- **Always on**: Transmitting regardless of traffic load
 
-1. **Interference Diagnosis**: Systematic approach finds root cause quickly
-2. **Wide-Span Analysis**: Essential tool for locating adjacent channel interferers
-3. **C/I Calculation**: Quantifies interference impact mathematically
-4. **Notch Filters**: Effective mitigation for adjacent channel interference
-5. **Time Pressure**: Focuses mind, but requires calm systematic approach
-6. **Solo Operations**: You can handle emergencies independently
-7. **SLA Compliance**: Real financial consequences drive time requirements
-8. **Verification**: Always confirm solution worked before claiming success
+### AURORA-7 Beacon Configuration
 
-**Charlie's Final Assessment:**
-*"That's real operations right there - time pressure, customer impact, working solo. You handled it."*
+| Parameter | Value | Notes |
+|-----------|-------|-------|
+| RF Frequency | 4,165 MHz | C-band downlink |
+| LNB LO | 5,250 MHz | High-side injection |
+| IF Frequency | 1,085 MHz | Pre-configured by Charlie |
+| Bandwidth | < 1 kHz | CW signal |
 
-You've successfully completed your first high-pressure emergency scenario. Ready for more complex challenges?
+**IF Calculation:**
+```
+IF = LO - RF
+IF = 5,250 MHz - 4,165 MHz
+IF = 1,085 MHz
+```
+
+Charlie has already configured the beacon receiver to 1,085 MHz IF. When you enable step-track, the ACU will monitor this beacon to optimize antenna pointing.
+
+---
+
+## Frequency Conversion Review
+
+### The LNB: Receive Chain Downconversion
+
+The Low Noise Block downconverter (LNB) translates satellite signals from RF to IF:
+
+**C-Band Configuration (High-Side LO):**
+```
+IF = LO - RF
+```
+
+| Signal | RF Frequency | IF Frequency |
+|--------|-------------|--------------|
+| Beacon | 4,165 MHz | 1,085 MHz |
+| Downlink | 3,605 MHz | 1,645 MHz |
+
+### The BUC: Transmit Chain Upconversion
+
+The Block Upconverter (BUC) translates transmit signals from IF to RF:
+
+**C-Band Configuration (Low-Side LO):**
+```
+RF = IF + LO
+```
+
+Therefore:
+```
+IF = RF - LO
+```
+
+| Signal | RF Frequency | IF Frequency |
+|--------|-------------|--------------|
+| Uplink | 5,830 MHz | 905 MHz |
+
+<Aside type="caution">
+**TX IF Calculation**
+
+You'll need to calculate the transmit IF frequency in this scenario. Remember:
+- Uplink RF: 5,830 MHz
+- BUC LO: 4,925 MHz
+- TX IF = RF - LO = 5,830 - 4,925 = 905 MHz
+
+This is different from downlink calculation because the BUC uses low-side injection for upconversion.
+</Aside>
+
+---
+
+## Equipment Configuration
+
+### AURORA-7 Link Parameters
+
+| Parameter | Downlink (RX) | Uplink (TX) |
+|-----------|---------------|-------------|
+| RF Frequency | 3,605 MHz | 5,830 MHz |
+| IF Frequency | 1,645 MHz | 905 MHz |
+| Bandwidth | 24 MHz | 24 MHz |
+| Modulation | QPSK | QPSK |
+| FEC | 3/4 | 3/4 |
+
+### Vermont Ground Station Initial State
+
+| Equipment | Initial Configuration | Required Action |
+|-----------|----------------------|-----------------|
+| Antenna | Program-track on TIDEMARK-1 | Change to AURORA-7, then step-track |
+| LNB | 5,250 MHz LO, powered | No change needed |
+| BUC | 4,925 MHz LO, muted | Unmute after TX config |
+| HPA | Disabled | Enable for transmission |
+| Beacon Receiver | 1,085 MHz IF | Pre-configured by Charlie |
+| RX Modem | 1,200 MHz (wrong) | Configure to 1,645 MHz |
+| TX Modem | 1,050 MHz (wrong) | Configure to 905 MHz |
+| Encryption | AES-256-GCM active | Verify understanding |
+
+---
+
+## Security: Encryption Awareness
+
+### Why Encryption Matters
+
+Satellite links traverse open sky - anyone with appropriate equipment can receive transmissions. Encryption protects:
+
+- **Confidentiality**: Content cannot be read by eavesdroppers
+- **Integrity**: Tampering can be detected
+- **Authentication**: Parties can verify each other's identity
+
+### AES-256-GCM
+
+The encryption configuration for AURORA-7 uses AES-256-GCM:
+
+**AES-256:**
+- Advanced Encryption Standard
+- 256-bit key length
+- Symmetric encryption (same key for encrypt/decrypt)
+- Approved for classified information
+
+**GCM (Galois/Counter Mode):**
+- Authenticated encryption
+- Provides both confidentiality and integrity
+- Detects if ciphertext has been modified
+- High performance with hardware acceleration
+
+### Verification Before Transmission
+
+Before enabling the transmit path, always verify:
+
+1. **Encryption Status**: Is encryption enabled?
+2. **Key Status**: Is the key valid (not expired)?
+3. **Algorithm**: Is the correct algorithm configured?
+
+Never transmit sensitive traffic without verifying encryption is active.
+
+---
+
+## Mission Phases Overview
+
+<Steps>
+
+1. **Review Mission Brief**
+
+   Understand the training objectives and AURORA-7's inclined orbit characteristics.
+
+2. **Understand Inclined Orbits**
+
+   Answer a knowledge check about why step-track is necessary for AURORA-7.
+
+3. **Identify Current Target**
+
+   Check the ACU to see which satellite the antenna is currently tracking (TIDEMARK-1).
+
+4. **Acquire AURORA-7 via Program-Track**
+
+   Change the program-track target to AURORA-7 and move the antenna.
+
+5. **Understand Program-Track Limitations**
+
+   Learn why program-track alone isn't sufficient for inclined orbit satellites.
+
+6. **Verify Beacon Configuration**
+
+   Confirm Charlie's beacon IF configuration and understand how it was calculated.
+
+7. **Enable Step-Track Mode**
+
+   Switch the antenna tracking mode from program-track to step-track.
+
+8. **Acquire Beacon Lock**
+
+   Wait for the step-track algorithm to acquire and lock onto the beacon signal.
+
+9. **Configure Spectrum Analyzer**
+
+   Reconfigure to view the main downlink signal at 1,645 MHz IF.
+
+10. **Configure RX Modem**
+
+   Set the receiver modem to the correct frequency, bandwidth, and modulation.
+
+11. **Verify RX Signal Lock**
+
+   Confirm the receiver has locked with acceptable SNR.
+
+12. **Verify Encryption Understanding**
+
+   Check the Encryption card and confirm the security configuration.
+
+13. **Calculate TX IF Frequency**
+
+   Calculate the correct transmit IF using the BUC LO frequency.
+
+14. **Configure TX Modem**
+
+   Set the TX modem to the calculated 905 MHz IF.
+
+15. **Enable Transmit Path**
+
+   Unmute the BUC and enable the HPA to begin transmission.
+
+16. **Full Duplex Established**
+
+   Verify your understanding of the complete operational link.
+
+</Steps>
+
+---
+
+## What You'll Need to Know
+
+This scenario draws on the following concepts covered in this read-ahead:
+
+- **Inclined Orbits**: Why legacy satellites drift and require special tracking
+- **Program-Track vs Step-Track**: When to use each mode and their limitations
+- **Beacon Tracking**: How step-track uses the beacon signal for optimization
+- **Frequency Conversion**: Calculating IF frequencies for both receive and transmit chains
+- **TX IF Calculation**: Understanding BUC upconversion (IF = RF - LO)
+- **Encryption Awareness**: Verifying security configuration before transmission
+
+<Aside type="tip">
+**Training Focus**
+
+This is a training scenario - take your time to understand each concept. Charlie has pre-configured the beacon and encryption settings so you can focus on the core skills: understanding inclined orbits, enabling step-track, configuring the RF chain, and calculating the TX IF frequency.
+</Aside>
+
+---
+
+## Key Takeaways
+
+1. **Inclined Orbits**: Legacy satellites stop station-keeping to extend life, creating apparent north-south motion
+2. **Program-Track Limitations**: TLE-based predictions assume geostationary position, which breaks down for inclined orbits
+3. **Step-Track Advantage**: Active beacon tracking follows the actual satellite position
+4. **Acquisition Sequence**: Program-track for initial pointing, then step-track for precision
+5. **TX IF Calculation**: Different from RX - use IF = RF - LO for BUC upconversion
+6. **Encryption Verification**: Always verify security configuration before enabling transmission
+
+**Charlie's Summary:**
+*"Step-track is a critical skill for working with aging satellites. As more birds reach end-of-life and stop station-keeping, you'll use this technique more often. Today you learned the why and the how - that knowledge will serve you throughout your career in satellite operations."*
