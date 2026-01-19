@@ -1,178 +1,433 @@
 ---
-title: 'Scenario 7 - Equipment Cascade'
-description: 'Manage multiple simultaneous equipment faults during night shift - GPSDO holdover and LNB temperature alarm with 20-minute deadline'
+title: 'Scenario 7 - Uplink Validation'
+description: 'Post-maintenance transmit chain validation using BUC loopback testing before bringing the uplink online'
+lastUpdated: 2025-01-19
 ---
 
 import { Steps } from '@astrojs/starlight/components';
 import { Aside } from '@astrojs/starlight/components';
 
-**Duration:** 25-30 minutes (20-minute hard deadline)
+**Duration:** 25-35 minutes
 
-**Difficulty:** Advanced
+**Difficulty:** Beginner
 
-**Mission Type:** Pressure Phase - Cascade Failure Management
+**Mission Type:** Operations Phase
 
-**Time Limit:** 20 minutes before frequency drift causes service loss
+**Time Limit:** 35 minutes
 
 ### Mission Briefing
 
-**NIGHT SHIFT - MULTIPLE EQUIPMENT FAULTS**
+The Vermont station completed overnight maintenance on the transmit chain - waveguide inspection and HPA tube replacement. Before resuming normal operations, you need to validate the entire uplink path.
 
-It's 10 PM on a Tuesday. You're solo on the night shift at Vermont Ground Station. Charlie left for dinner 15 minutes ago - he'll be back in 45 minutes, but he's reachable by phone.
+Charlie is off-site today handling paperwork at the main office. Dana Torres, the shift supervisor, is on-site but busy with administrative tasks. She'll check in periodically, but you're expected to handle this independently.
 
-**[ALARM SOUNDS]**
+**Mission Context:**
+- **Satellite**: TIDEMARK-1
+- **Ground Station**: Vermont (VT-01)
+- **Objective**: Validate transmit chain after maintenance
+- **Status**: RX chain operational, TX chain needs validation
 
-The GPSDO (GPS Disciplined Oscillator) alarm just triggered. You check the panel: GNSS lock lost, zero satellites visible. The oscillator has entered holdover mode.
+**Who's Guiding You:**
+- **Charlie Brooks**: Off-site, brief phone call at start
+- **Dana Torres**: Shift supervisor, on-site, checks in at key decision points
 
-The GPSDO is still providing a 10 MHz reference to all the RF equipment, but the frequency accuracy is slowly degrading. Holdover stability specification is 1 part in 10⁹. Based on that degradation rate, you have approximately **20 minutes** before accumulated frequency drift causes loss of service on TIDEMARK-1.
+**Key Lesson:** Always validate before you radiate.
 
-You pull up the maintenance log. Earlier today: *"Roof crew removing snow, GPS antenna cable may have been disturbed."* That's probably your problem. Charlie is at dinner. You're on your own.
+---
 
-**5 MINUTES LATER - SECOND ALARM**
+## Background: Post-Maintenance Validation
 
-**[NEW ALARM]**
+### Why Validate After Maintenance?
 
-LNB temperature alarm. You check the display: 85°C and rising. Normal operating temperature: 45°C. Alarm threshold: 75°C. This is a completely separate failure from the GPSDO issue.
+Any time equipment is touched - replaced, adjusted, inspected, or reconfigured - you must verify it works correctly before returning to service. This is especially critical for transmit equipment because:
 
-You now have two simultaneous equipment faults:
-1. **GPSDO in holdover** - Frequency drifting, 15 minutes remaining before service loss
-2. **LNB overheating** - Risk of hardware damage if temperature continues rising
+**Risk of Interference:**
+- Incorrect frequency configuration transmits on the wrong channel
+- Excessive power violates coordination agreements
+- Misconfigured modulation corrupts the signal
 
-This is a cascade failure scenario. You need to manage multiple faults simultaneously, prioritize correctly, use backup systems, and keep the customer service online. Charlie is available by phone for guidance, but he's 25+ minutes away.
+**Risk of Equipment Damage:**
+- Mismatched impedances cause reflected power
+- Overdriven amplifiers generate excessive heat
+- Improper sequencing damages components
 
-**Who's Available:**
-- **Charlie Brooks**: At dinner, reachable by phone, 25-30 minutes away physically
+**Professional Standards:**
+- SOPs require documented validation
+- Regulatory compliance demands verification
+- Customer SLAs expect error-free service restoration
 
-<Aside type="danger">
-**CASCADE FAILURE IN PROGRESS**
+### The Validation Sequence
 
-Two unrelated equipment faults happening simultaneously. This is a test of:
-- **Triage**: Which problem to handle first
-- **Time management**: Both issues need resolution
-- **Backup systems**: When to switch to redundant equipment
-- **Priority judgment**: Hardware damage vs service degradation
-- **Solo operations**: Charlie can advise but can't physically help
-
-Work fast. Work smart. Prioritize correctly.
-</Aside>
-
-### Initial Status
-
-**Ground Station: Vermont (VT-01)**
-
-*   **Antenna**: 9-meter C-band, locked on TIDEMARK-1
-*   **Position**: Az: 214.2°, El: 24.8° (on target, tracking)
-*   **Service Status**: Currently operational, serving customer traffic
-
-**Primary RF Front End (Rack 1):**
-
-*   **GPSDO**: **FAULT - Holdover mode**
-    *   GNSS lock: LOST
-    *   GPS satellites visible: 0 (cable disconnected)
-    *   Holdover status: Active
-    *   Holdover duration: Just entered (0 minutes)
-    *   Frequency accuracy: 1×10⁻⁹ (degrading)
-    *   Time until service loss: ~20 minutes
-    *   10 MHz output: Still active (5 devices fed)
-
-*   **LNB**: Currently operational, **will fault at 5-minute mark**
-    *   Power: ON
-    *   LO frequency: 5,150 MHz
-    *   Gain: 55 dB
-    *   Temperature: 45°C (normal initially)
-    *   At 5 minutes: Temperature will jump to 85°C (ALARM)
-    *   Alarm threshold: 75°C
-    *   Thermal control: Failing
-
-*   **Modem**: Currently operational
-    *   Locked on TIDEMARK-1 carrier
-    *   C/N ratio: 12 dB (healthy)
-    *   Service: Normal
-
-**Backup RF Front End (Rack 2):**
-
-*   **Backup GPSDO**: Fully operational
-    *   GNSS lock: Active and stable
-    *   GPS antenna: Separate, unaffected
-    *   Frequency accuracy: 1×10⁻¹² (excellent)
-    *   Status: Available for switchover
-
-*   **Backup LNB**: Cold spare
-    *   Power: OFF (not currently configured)
-    *   Status: Available if needed
-
-### GPSDO Holdover Explained
-
-**What is Holdover?**
-
-A GPS Disciplined Oscillator (GPSDO) uses GPS signals to discipline (correct) an internal oven-controlled crystal oscillator (OCXO). When GPS lock is lost, the GPSDO enters "holdover mode":
-
-- **GPS lock active**: OCXO continuously corrected, accuracy ~1×10⁻¹² (excellent)
-- **GPS lock lost**: OCXO runs free using last known correction, accuracy degrades to ~1×10⁻⁹ (holdover)
-- **Holdover duration**: Time GPSDO can maintain acceptable accuracy without GPS
-
-**Why This Matters:**
-
-All RF equipment (LNB, BUC, modems) uses the GPSDO's 10 MHz reference for frequency generation:
-- LNB local oscillator: 5,150 MHz = 515 × 10 MHz
-- Any error in 10 MHz reference scales up by 515×
-- 1 Hz error at 10 MHz → 515 Hz error at 5,150 MHz
-- 515 Hz error → Carrier frequency shift → Lost lock
-
-**Frequency Drift Calculation:**
-
-```
-Holdover stability: 1×10⁻⁹ (1 part per billion)
-Time: 20 minutes = 1200 seconds
-LNB LO: 5,150 MHz = 5,150,000,000 Hz
-
-Maximum drift = 5,150,000,000 Hz × 1×10⁻⁹ × (1200 seconds / stability time constant)
-Drift ≈ 6-10 kHz over 20 minutes
-
-Modem can typically handle ±5 kHz before losing lock
-Therefore: ~20 minutes until service loss
-```
-
-**Holdover Mode Characteristics:**
-
-- 10 MHz output continues (equipment doesn't lose reference immediately)
-- Frequency accuracy degrades gradually (not sudden failure)
-- Rate of degradation depends on OCXO quality and environmental stability
-- Time limit is predictable based on specifications
-
-### LNB Temperature Management
-
-**Normal Operating Temperature:**
-- Target: 45°C (stabilized)
-- Achieved through: Internal thermal control (heater/cooling)
-- Purpose: Frequency stability requires stable temperature
-
-**Temperature Alarm (This Scenario):**
-- Normal: 45°C
-- At 5 minutes: Jumps to 85°C
-- Alarm threshold: 75°C
-- Risk: Hardware damage if continues rising
-
-**Root Cause:**
-Thermal control failure (heater stuck on or cooling failed)
-
-**Mitigation Strategy:**
-Reduce power dissipation by reducing gain:
-- Current gain: 55 dB
-- Reduced gain: 50 dB (5 dB reduction)
-- Effect: Less amplifier current → Less heat generation
-- Trade-off: C/N ratio will drop slightly (acceptable if still above threshold)
-
-### Mission Phases
+Post-maintenance validation follows a specific order:
 
 <Steps>
 
-1. **Phase 1: Initial GPSDO Alarm Assessment**
-   ...
+1. **Check for Alarms**: Review Dashboard for any active fault conditions
+
+2. **Verify RX Chain**: Confirm antenna, LNB, and beacon reception are operational
+
+3. **Configure TX Modem**: Set correct IF frequency, bandwidth, modulation, and power
+
+4. **Loopback Test**: Use BUC loopback to verify TX signal path without transmitting
+
+5. **Enable HPA**: Power on the High Power Amplifier
+
+6. **Verify Encryption**: Confirm link security before transmission
+
+7. **Go Live**: Unmute BUC to begin transmission
+
+8. **Monitor Power**: Verify HPA output is within limits
 
 </Steps>
 
-### Cascade Failure Management Principles
-...
+---
 
+## Understanding BUC Loopback
 
+### What is Loopback Mode?
+
+The Block Upconverter (BUC) includes a loopback function that routes the TX IF signal back to the receive chain instead of upconverting to RF and sending it to the antenna.
+
+**Signal Path - Normal Mode:**
+```
+TX Modem → BUC → Upconvert to RF → HPA → Antenna → Satellite
+```
+
+**Signal Path - Loopback Mode:**
+```
+TX Modem → BUC → Internal Loop → Receive Chain → Spectrum Analyzer
+```
+
+### Why Use Loopback?
+
+Loopback testing validates the low-power transmit chain (modem and BUC) without:
+
+- Engaging the High Power Amplifier
+- Transmitting RF through the antenna
+- Risk of interference to the satellite
+- Risk of coordination violations
+
+**What Loopback Verifies:**
+- TX modem is generating the correct signal
+- BUC is receiving and processing the IF
+- Signal path from modem to BUC is intact
+- Frequency, bandwidth, and modulation are correct
+
+**What Loopback Does NOT Verify:**
+- HPA operation
+- Waveguide path to antenna
+- Antenna transmission
+- Satellite transponder response
+
+<Aside type="caution">
+**Loopback Before Live**
+
+Never bring an uplink online after maintenance without first performing a loopback test. Catching configuration errors at low power is far better than discovering them after you've transmitted an out-of-spec signal toward the satellite.
+</Aside>
+
+---
+
+## TX IF Frequency Calculation
+
+### BUC Upconversion
+
+The BUC translates transmit signals from IF to RF using low-side injection:
+
+**Formula:**
+```
+RF = IF + LO
+```
+
+Therefore, to find the required IF:
+```
+IF = RF - LO
+```
+
+### TIDEMARK-1 Uplink Calculation
+
+| Parameter | Value |
+|-----------|-------|
+| Target RF | 5,943 MHz (TP-1 center) |
+| BUC LO | 4,900 MHz |
+| Required IF | ? |
+
+**Calculation:**
+```
+TX IF = RF - BUC LO
+TX IF = 5,943 MHz - 4,900 MHz
+TX IF = 1,043 MHz
+```
+
+<Aside type="tip">
+**TX vs RX Calculation**
+
+Note the difference from receive calculations:
+- **RX (LNB)**: IF = LO - RF (high-side injection, subtractive)
+- **TX (BUC)**: IF = RF - LO (low-side injection, subtractive from target)
+
+Both subtract, but the operand order is different.
+</Aside>
+
+---
+
+## Equipment Configuration
+
+### Vermont Ground Station Initial State
+
+| Equipment | Initial State | Issue |
+|-----------|--------------|-------|
+| Antenna | Program-track on TIDEMARK-1 | Operational |
+| LNB | 5,250 MHz LO, powered | Operational |
+| BUC | 4,900 MHz LO, muted, gain=35 dB | **Over-temperature (>70°C)** |
+| HPA | Disabled | Needs enable sequence |
+| TX Modem | 950 MHz IF (incorrect) | **Needs reconfiguration** |
+| Spectrum Analyzer | 950 MHz center | Needs adjustment |
+| Encryption | AES-256 active | Operational |
+
+### BUC Over-Temperature Condition
+
+The BUC is showing an over-temperature warning at startup:
+
+**Symptoms:**
+- Temperature: 75°C (threshold is 70°C)
+- Alarm: Over-temperature warning on Dashboard
+
+**Root Cause:**
+- BUC gain set to 35 dB (too high)
+- Maintenance crew left elevated gain from testing
+- High gain = higher power dissipation = more heat
+
+**Resolution:**
+- Reduce BUC gain to normal operating level (~25 dB)
+- Temperature will drop as power dissipation decreases
+- Verify alarm clears on Dashboard before proceeding
+
+### TX Modem Configuration Required
+
+| Parameter | Current | Required |
+|-----------|---------|----------|
+| IF Frequency | 950 MHz | 1,043 MHz |
+| Bandwidth | 36 MHz | 36 MHz |
+| Modulation | QPSK | QPSK |
+| FEC | 3/4 | 3/4 |
+| Power | -10 dBm | -7 dBm |
+
+---
+
+## Link Security
+
+### Encryption Requirements
+
+TIDEMARK-1 service agreements require AES-256 encryption on all uplink traffic. Before transmitting, you must verify:
+
+**Encryption Card Status:**
+- Mode: ACTIVE (not BYPASS)
+- Algorithm: AES-256
+- Key Status: Valid (not expired)
+
+**Why This Matters:**
+
+Satellite links are inherently broadcast - anyone with a dish pointed at the satellite can receive the downlink. Encryption ensures:
+
+- **Confidentiality**: Only authorized receivers can decode content
+- **Integrity**: Tampering can be detected
+- **Compliance**: Meets contractual and regulatory requirements
+
+<Aside type="danger">
+**Never Transmit Without Verification**
+
+Transmitting unencrypted traffic when encryption is required is a serious breach. Always check the Encryption card status before enabling transmission.
+</Aside>
+
+---
+
+## HPA Enable Sequence
+
+### High Power Amplifier Safety
+
+The HPA (High Power Amplifier) amplifies the BUC output to levels suitable for satellite transmission - typically 100+ watts. This power level requires careful handling:
+
+**HPA Sequencing Rules:**
+
+1. **Power On First**: Enable HPA power before RF path
+2. **Verify Ready**: Check HPA status shows ready
+3. **Enable Output**: Activate RF output stage
+4. **Check Backoff**: Verify operating point is within linear region
+5. **Then Unmute BUC**: Only after HPA is ready
+
+**Why This Order?**
+
+- HPA needs time to warm up and stabilize
+- Driving an unpowered HPA can damage input circuits
+- Proper sequencing protects expensive equipment
+
+### HPA Operating Parameters
+
+| Parameter | Target | Why |
+|-----------|--------|-----|
+| Output Power | >100 W | Meet link budget |
+| Backoff | ~3 dB | Stay in linear region |
+| Temperature | Normal | Avoid thermal shutdown |
+
+**What is Backoff?**
+
+Backoff is how far below maximum power the HPA operates:
+
+```
+Backoff (dB) = Maximum Power (dBW) - Operating Power (dBW)
+```
+
+Operating with backoff (~3 dB) keeps the amplifier in its linear region, preventing:
+- Signal distortion from compression
+- Spectral regrowth into adjacent channels
+- Intermodulation products
+
+---
+
+## Mission Phases Overview
+
+<Steps>
+
+1. **Review Mission Brief**
+
+   Understand the post-maintenance validation requirements.
+
+2. **Access Vermont Ground Station**
+
+   Select VT-01 to begin system checks.
+
+3. **Check Dashboard for Alarms**
+
+   Identify the BUC over-temperature warning before proceeding.
+
+4. **Diagnose BUC Over-Temperature**
+
+   Navigate to TX Chain and identify high gain as the cause.
+
+5. **Resolve BUC Over-Temperature**
+
+   Reduce BUC gain to normal operating level (~25 dB).
+
+6. **Verify Fault Cleared**
+
+   Confirm Dashboard shows no active alarms.
+
+7. **Verify Antenna Status**
+
+   Check ACU Control - confirm program-track on TIDEMARK-1.
+
+8. **Verify LNB Operational**
+
+   Navigate to RX Analysis and confirm LNB status.
+
+9. **Acquire TIDEMARK-1 Beacon**
+
+   Configure spectrum analyzer to view beacon at 1,074.5 MHz IF.
+
+10. **Confirm Beacon IF Frequency**
+
+    Verify understanding: IF = LO - RF = 5,250 - 4,175.5 = 1,074.5 MHz.
+
+11. **Calculate TX IF Frequency**
+
+    Determine TX IF: RF - LO = 5,943 - 4,900 = 1,043 MHz.
+
+12. **Configure TX Modem**
+
+    Set frequency (1,043 MHz), bandwidth (36 MHz), modulation (QPSK), FEC (3/4), power (-7 dBm).
+
+13. **Check BUC Status**
+
+    Verify BUC temperature is now in normal range.
+
+14. **Resolve Any Remaining BUC Issues**
+
+    Ensure temperature stays below 70°C threshold.
+
+15. **Enable BUC Loopback**
+
+    Toggle loopback ON and unmute BUC for testing.
+
+16. **Verify Loopback Signal**
+
+    Tune spectrum analyzer to 1,043 MHz and confirm 36 MHz signal visible.
+
+17. **Confirm Loopback Understanding**
+
+    Understand that loopback verifies TX modem and BUC without transmitting.
+
+18. **Disable Loopback Mode**
+
+    Disable loopback and mute BUC to prepare for HPA enable.
+
+19. **Power On HPA**
+
+    Enable HPA power.
+
+20. **Verify Encryption Status**
+
+    Confirm AES-256 encryption is active with valid key.
+
+21. **Enable HPA Output**
+
+    Activate HPA output stage.
+
+22. **Unmute BUC - Begin Transmission**
+
+    Unmute BUC to begin live transmission.
+
+23. **Verify HPA Output Power**
+
+    Confirm output power >100 W with ~3 dB backoff.
+
+24. **Final Configuration Verification**
+
+    Confirm complete uplink: TX IF 1,043 MHz, RF 5,943 MHz, QPSK 3/4, AES-256.
+
+</Steps>
+
+---
+
+## Frequency Reference Summary
+
+### TIDEMARK-1 Link Parameters
+
+| Chain | RF Frequency | LO Frequency | IF Frequency | Calculation |
+|-------|-------------|--------------|--------------|-------------|
+| RX (Beacon) | 4,175.5 MHz | 5,250 MHz | 1,074.5 MHz | 5,250 - 4,175.5 |
+| RX (Downlink) | 3,718 MHz | 5,250 MHz | 1,532 MHz | 5,250 - 3,718 |
+| TX (Uplink) | 5,943 MHz | 4,900 MHz | 1,043 MHz | 5,943 - 4,900 |
+
+---
+
+## What You'll Need to Know
+
+This scenario draws on the following concepts covered in this read-ahead:
+
+- **Post-Maintenance Validation**: Why and how to verify equipment after maintenance
+- **BUC Loopback Testing**: Using loopback to validate TX chain without transmitting
+- **TX IF Calculation**: Understanding BUC upconversion (IF = RF - LO)
+- **BUC Temperature Management**: Diagnosing and resolving over-temperature conditions
+- **HPA Enable Sequence**: Proper sequencing for high power amplifier activation
+- **Encryption Verification**: Confirming link security before transmission
+- **Beacon Acquisition**: Using beacon as RX chain health indicator
+
+<Aside type="tip">
+**Independent Operations**
+
+This scenario emphasizes working independently. Charlie is off-site and Dana is busy. You're expected to recognize problems (like the BUC over-temp), diagnose them, and resolve them without waiting for guidance. This is what professional operations looks like.
+</Aside>
+
+---
+
+## Key Takeaways
+
+1. **Always Check Alarms First**: Dashboard review catches problems before they cascade
+2. **Validate Before Radiate**: Loopback testing prevents configuration errors from reaching the satellite
+3. **Temperature Affects Performance**: High gain means high heat - monitor thermal conditions
+4. **Encryption Is Mandatory**: Never transmit without verifying security status
+5. **Proper HPA Sequencing**: Power on → Ready → Enable output → Then unmute BUC
+6. **TX IF Calculation**: IF = RF - LO (different from RX calculation operand order)
+
+**Dana's Summary:**
+*"You handled the temperature fault, used loopback correctly, brought it up clean. That's how post-maintenance validation should go - systematic, verified at each step, no surprises when you go live."*
