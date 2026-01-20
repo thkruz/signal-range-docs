@@ -78,7 +78,7 @@ export default defineConfig({
         },
         {
           label: 'Scenario 8 - Night Shift',
-          slug: 'campaign-1/debrief'
+          slug: 'campaign-1/scenario-8'
         }
       ]
       // }, {
