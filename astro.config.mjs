@@ -68,6 +68,18 @@ export default defineConfig({
           label: 'Scenario 5 - Interference Hunt',
           slug: 'campaign-1/scenario-5'
         },
+        {
+          label: 'Scenario 6 - Old Faithful',
+          slug: 'campaign-1/scenario-6'
+        },
+        {
+          label: 'Scenario 7 - Uplink Validation',
+          slug: 'campaign-1/scenario-7'
+        },
+        {
+          label: 'Scenario 8 - Night Shift',
+          slug: 'campaign-1/debrief'
+        }
       ]
       // }, {
       //   label: 'Checklists',
