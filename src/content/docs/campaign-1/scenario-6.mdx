@@ -1,7 +1,7 @@
 ---
 title: 'Scenario 6 - Old Faithful'
 description: 'Practice step-track mode on an inclined-orbit satellite - understanding why legacy satellites require active tracking and how to establish a full-duplex link'
-lastUpdated: 2025-01-19
+lastUpdated: 2026-01-19
 ---
 
 import { Steps } from '@astrojs/starlight/components';
@@ -306,67 +306,67 @@ Never transmit sensitive traffic without verifying encryption is active.
 
 1. **Review Mission Brief**
 
-   Understand the training objectives and AURORA-7's inclined orbit characteristics.
+    Understand the training objectives and AURORA-7's inclined orbit characteristics.
 
 2. **Understand Inclined Orbits**
 
-   Answer a knowledge check about why step-track is necessary for AURORA-7.
+    Answer a knowledge check about why step-track is necessary for AURORA-7.
 
 3. **Identify Current Target**
 
-   Check the ACU to see which satellite the antenna is currently tracking (TIDEMARK-1).
+    Check the ACU to see which satellite the antenna is currently tracking (TIDEMARK-1).
 
 4. **Acquire AURORA-7 via Program-Track**
 
-   Change the program-track target to AURORA-7 and move the antenna.
+    Change the program-track target to AURORA-7 and move the antenna.
 
 5. **Understand Program-Track Limitations**
 
-   Learn why program-track alone isn't sufficient for inclined orbit satellites.
+    Learn why program-track alone isn't sufficient for inclined orbit satellites.
 
 6. **Verify Beacon Configuration**
 
-   Confirm Charlie's beacon IF configuration and understand how it was calculated.
+    Confirm Charlie's beacon IF configuration and understand how it was calculated.
 
 7. **Enable Step-Track Mode**
 
-   Switch the antenna tracking mode from program-track to step-track.
+    Switch the antenna tracking mode from program-track to step-track.
 
 8. **Acquire Beacon Lock**
 
-   Wait for the step-track algorithm to acquire and lock onto the beacon signal.
+    Wait for the step-track algorithm to acquire and lock onto the beacon signal.
 
 9. **Configure Spectrum Analyzer**
 
-   Reconfigure to view the main downlink signal at 1,645 MHz IF.
+    Reconfigure to view the main downlink signal at 1,645 MHz IF.
 
 10. **Configure RX Modem**
 
-   Set the receiver modem to the correct frequency, bandwidth, and modulation.
+    Set the receiver modem to the correct frequency, bandwidth, and modulation.
 
 11. **Verify RX Signal Lock**
 
-   Confirm the receiver has locked with acceptable SNR.
+    Confirm the receiver has locked with acceptable SNR.
 
 12. **Verify Encryption Understanding**
 
-   Check the Encryption card and confirm the security configuration.
+    Check the Encryption card and confirm the security configuration.
 
 13. **Calculate TX IF Frequency**
 
-   Calculate the correct transmit IF using the BUC LO frequency.
+    Calculate the correct transmit IF using the BUC LO frequency.
 
 14. **Configure TX Modem**
 
-   Set the TX modem to the calculated 905 MHz IF.
+    Set the TX modem to the calculated 905 MHz IF.
 
 15. **Enable Transmit Path**
 
-   Unmute the BUC and enable the HPA to begin transmission.
+    Unmute the BUC and enable the HPA to begin transmission.
 
 16. **Full Duplex Established**
 
-   Verify your understanding of the complete operational link.
+    Verify your understanding of the complete operational link.
 
 </Steps>
 
