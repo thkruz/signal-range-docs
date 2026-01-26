@@ -1,7 +1,7 @@
 ---
 title: 'Scenario 8 - Night Shift'
 description: 'Solo operations evaluation - troubleshoot AURORA-7 connectivity issues at 2 AM with minimal support'
-lastUpdated: 2026-01-19
+lastUpdated: 2026-01-26
 ---
 
 import { Steps } from '@astrojs/starlight/components';
@@ -11,450 +11,254 @@ import { Aside } from '@astrojs/starlight/components';
 
 **Difficulty:** Advanced
 
-**Mission Type:** Final Evaluation
+**Mission Type:** Solo Night Operations
 
 **Time Limit:** 40 minutes
 
-### Mission Briefing
+---
 
-It's 2 AM on a Saturday night - your first solo night shift at the Vermont station. Charlie is visiting family out of state. Dana is on-call but sleeping; she's made it clear she only wants to be woken for genuine emergencies.
+## Shift Turnover Notes
 
-A text message arrives from Dana: *"NOC just forwarded a trouble ticket. Customer reports intermittent connectivity on AURORA-7, signal dropouts every few minutes. I'm on-call but heading back to sleep. You've got this."*
+**Date:** Saturday, 0215 Local
 
-AURORA-7 is an aging C-band satellite with an inclined orbit - you worked with it in Scenario 6. Something is causing intermittent connectivity, and you need to figure out what.
+**Station:** Vermont (VT-01)
 
-**Mission Context:**
-- **Time**: 2:17 AM Saturday
-- **Satellite**: AURORA-7 (inclined orbit, C-band)
-- **Ground Station**: Vermont (VT-01)
-- **Problem**: Customer reports intermittent connectivity
-- **Support**: Dana on-call (sleeping), Charlie out of state
+**Operator on Duty:** You
 
-**Who's Available:**
-- **Dana Torres**: On-call, sleeping - only wake for genuine emergencies
-- **Charlie Brooks**: Out of state visiting family - unavailable
+**On-Call Supervisor:** Dana Torres (sleeping - emergency escalation only)
 
-**This is your graduation exam.** Everything you learned in Scenarios 1-7 comes together here. No one will walk you through each step. Make good decisions, work methodically, and prove you're ready for solo operations.
+**Relieved By:** Day shift at 0700
+
+---
+
+### Turnover from Evening Shift
+
+Evening shift operator logged the following at 2300:
+
+> All systems nominal. AURORA-7 link stable at handoff. Weather radar shows a front moving in from the northwest - expected arrival 0400-0500. Freezing rain possible. Feed heater tested and operational.
+>
+> Charlie is out of state visiting family. Dana has on-call duty but she's been pulling doubles all week. Use your judgment before waking her.
+>
+> Good luck on your first solo night.
+
+---
+
+### Active Services
+
+| Satellite | Customer | Service Type | Status at Turnover |
+|-----------|----------|--------------|-------------------|
+| AURORA-7 | Meridian Shipping | Maritime VSAT | Operational |
+
+AURORA-7 is our only active service tonight. Meridian Shipping runs a fleet of cargo vessels in the North Atlantic. Their bridge crews rely on this link for weather routing, cargo manifests, and crew communications.
+
+---
+
+## AURORA-7 Operations Reference
+
+AURORA-7 is a legacy C-band satellite you've worked with before. It stopped north-south station-keeping three years ago to conserve fuel, which means its orbit is now inclined. From our perspective, it traces a figure-8 pattern in the sky over each 24-hour period.
+
+### Frequency Allocation
+
+| Parameter | RF (MHz) | LO (MHz) | IF (MHz) |
+|-----------|----------|----------|----------|
+| Beacon (Downlink) | 4,165 | 5,250 (LNB) | 1,085 |
+| Carrier (Uplink) | 5,830 | 4,925 (BUC) | 905 |
+
+### Modem Configuration
+
+| Parameter | Value |
+|-----------|-------|
+| Bandwidth | 24 MHz |
+| Modulation | QPSK |
+| FEC Rate | 3/4 |
+
+### Tracking Requirements
 
 <Aside type="caution">
-**SOLO OPERATIONS EVALUATION**
-
-This scenario tests your ability to:
-- **Diagnose independently**: No hints, no hand-holding
-- **Apply previous knowledge**: IF calculations, tracking modes, fault diagnosis
-- **Make operational decisions**: Weather assessment, escalation judgment
-- **Work under time pressure**: 40 minutes to resolve
-
-You have the skills. Trust your training.
+AURORA-7 requires step-track mode. Program-track cannot compensate for orbital inclination drift. If you see pointing errors or intermittent signal loss, verify tracking mode first.
 </Aside>
 
----
-
-## Background: The Solo Night Shift
-
-### Why Night Shifts Matter
-
-Satellite ground stations operate 24/7. Night shifts are typically quieter, but when problems occur, fewer people are available to help. Solo night operators must:
-
-- **Self-triage**: Determine severity without second opinions
-- **Diagnose independently**: No senior operator watching over shoulder
-- **Make escalation decisions**: Know when to wake on-call staff vs. handle alone
-- **Document thoroughly**: Day shift needs to know what happened
-
-### AURORA-7 Characteristics
-
-AURORA-7 is a legacy satellite you encountered in Scenario 6:
-
-| Parameter | Value | Notes |
-|-----------|-------|-------|
-| Orbit Type | Inclined GEO | Stopped N-S station-keeping |
-| Beacon RF | 4,165 MHz | C-band |
-| Beacon IF | 1,085 MHz | With 5,250 MHz LNB LO |
-| Uplink RF | 5,830 MHz | C-band |
-| Uplink IF | 905 MHz | With 4,925 MHz BUC LO |
-| Bandwidth | 24 MHz | QPSK 3/4 |
-| Tracking | Step-track required | Program-track insufficient |
-
-**Key Challenge:** AURORA-7's inclined orbit means it drifts in a figure-8 pattern. Program-track cannot compensate for this drift - step-track is required for reliable tracking.
+The antenna must actively follow the beacon signal to maintain lock. Program-track predictions assume the satellite holds perfect geostationary position - AURORA-7 does not.
 
 ---
 
-## Skills Integration
+## Trouble Ticket
 
-This scenario integrates skills from all previous scenarios:
+**Ticket #:** NOC-2026-0847
 
-### From Scenario 1: System Health Check
-- Dashboard alarm review
-- GPSDO status verification
-- Systematic troubleshooting approach
+**Opened:** 0147 Local
 
-### From Scenario 2: Power Sequencing
-- HPA enable sequence
-- Proper equipment startup order
-- Safety protocols
+**Source:** Network Operations Center (forwarded via Dana)
 
-### From Scenario 3: Weather Operations
-- Weather alert assessment
-- Feed heater management
-- Operational decision-making
+**Priority:** Medium
 
-### From Scenario 4: IF Calculations (Downlink)
-- LNB LO and RF to IF conversion
-- Spectrum analyzer configuration
-- Beacon acquisition
+**Customer Report:**
+> Meridian Shipping reports intermittent connectivity on AURORA-7 service. Signal dropouts occurring every few minutes, lasting 10-30 seconds each. Bridge crew on M/V *Northern Promise* reports loss of weather routing data during transit.
 
-### From Scenario 5: Spectrum Analysis
-- Signal identification
-- Interference recognition
-- Using spectrum analyzer for troubleshooting
-
-### From Scenario 6: Step-Track Operations
-- Inclined orbit understanding
-- Step-track vs program-track selection
-- Beacon lock acquisition
-
-### From Scenario 7: Fault Diagnosis & Loopback
-- Equipment fault identification
-- Power cycling for fault recovery
-- BUC loopback validation
-- TX chain verification
+**Dana's Note (text message, 0203):**
+> *"NOC just forwarded this ticket. Customer reports intermittent connectivity on AURORA-7, signal dropouts every few minutes. I'm on-call but heading back to sleep. You've got this."*
 
 ---
 
-## Initial Equipment Status
+## Weather Briefing
 
-### Vermont Ground Station (VT-01) at 2:17 AM
+**Current Conditions (0200):**
+- Temperature: 28°F (-2°C)
+- Wind: NW at 12 mph
+- Precipitation: None
+- Visibility: 10 miles
 
-| Equipment | Status | Issue |
-|-----------|--------|-------|
-| Antenna | Program-track on AURORA-7 | **Wrong mode for inclined orbit** |
-| GPSDO | Locked, operational | OK |
-| LNB | Powered, **reference unlocked** | **Fault - needs diagnosis** |
-| BUC | Powered, muted, 4,925 MHz LO | OK |
-| HPA | Powered, disabled | Ready for enable sequence |
-| Spectrum Analyzer | 1,000 MHz center | Needs reconfiguration |
+**Forecast (0400-0800):**
+- Frontal passage expected 0400-0500
+- Freezing rain likely, accumulation 0.1-0.3 inches
+- Temperatures falling to 22°F (-6°C)
+- Wind shifting to N at 15-20 mph
 
-### Fault Conditions Present
+**Operational Considerations:**
 
-**LNB Reference Unlock:**
-- The LNB shows "reference unlocked" status
-- The GPSDO is operational (locked to GPS)
-- This indicates the LNB is not receiving or cannot lock to the 10 MHz reference
-- Common fix: Power cycle the LNB to force re-acquisition
-
-**Tracking Mode Mismatch:**
-- Antenna is in program-track mode
-- AURORA-7 has an inclined orbit
-- Program-track predictions cannot follow orbital drift
-- Step-track is required for reliable tracking
+Ice accumulation on the antenna feed can degrade signal quality or cause mechanical binding. The feed heater prevents ice buildup but takes time to warm the components. Standard practice is to enable the feed heater proactively when freezing precipitation is forecast - don't wait until ice is already forming.
 
 ---
 
-## Understanding Reference Distribution
+## Vermont Station Quick Reference
 
-### The 10 MHz Reference Chain
+### Equipment Status at Shift Start
 
-The station's timing accuracy depends on a hierarchical reference distribution system:
+| Equipment | Expected State | Notes |
+|-----------|---------------|-------|
+| GPSDO | Locked | Master timing reference - verify first |
+| LNB | Powered, reference locked | Check for alarms |
+| BUC | Powered, muted | Unmute when TX required |
+| HPA | Powered, disabled | Enable sequence required for TX |
+| Antenna | Tracking AURORA-7 | Verify tracking mode |
+| Feed Heater | Standby | Enable before freezing precip |
+
+### 10 MHz Reference Distribution
+
+The GPSDO generates the master timing reference. All RF equipment locks to this signal:
 
 ```
-GNSS Satellites → GPSDO → 10 MHz Distribution → LNB/BUC/Modems
+GPSDO (source) → Distribution Amp → LNB, BUC, Modems
 ```
 
-**GPSDO (Source):** Generates the master 10 MHz reference by disciplining an oven-controlled crystal oscillator (OCXO) to GPS timing. When the GPSDO shows "Locked," it confirms the reference source is generating valid timing.
+If the GPSDO shows locked but a downstream device shows reference unlocked, the problem is between them - usually the device itself needs a power cycle to re-acquire lock.
 
-**Distribution Amplifier:** Splits the 10 MHz signal and drives it to downstream equipment via coaxial cables.
+### Power Sequencing
 
-**Downstream Equipment:** The LNB, BUC, and modems each have reference inputs and lock indicators. They must acquire and track this reference for frequency stability.
+When enabling the transmit chain:
 
-### Interpreting Lock Status
+1. Verify BUC reference lock
+2. Unmute BUC
+3. Enable HPA output
+4. Verify HPA power level
 
-When troubleshooting a reference unlock alarm:
+When disabling:
 
-| GPSDO Status | LNB Status | Diagnosis |
-|--------------|------------|-----------|
-| Locked | Locked | Normal operation |
-| Locked | **Unlocked** | Problem is downstream of GPSDO (cable, connector, or LNB input) |
-| Unlocked | Unlocked | Problem is at the source (GPSDO) |
-| Unlocked | Locked | Impossible - LNB cannot lock without valid reference |
+1. Disable HPA output first
+2. Mute BUC
+3. Power down as needed
 
-A locked GPSDO with an unlocked LNB indicates the reference signal is available but the LNB failed to acquire it. This is typically a transient fault at the LNB's phase-locked loop.
-
-### Why Power Cycling Resolves Reference Lock Faults
-
-RF equipment uses phase-locked loops (PLLs) to synchronize internal oscillators to the external reference. These PLLs can occasionally:
-
-- Fail to acquire lock after thermal cycling (temperature changes shift PLL capture range)
-- Lose lock due to brief reference signal interruptions (switching, cable vibration)
-- Enter a "stuck" state where the PLL algorithm cannot converge
-
-Power cycling forces the PLL to restart its acquisition sequence from a known state. This is the standard first-line response for reference lock faults when the source (GPSDO) is confirmed operational.
+Never enable the HPA with the BUC muted - you'll damage the amplifier.
 
 ---
 
-## Frequency Calculations Reference
+## Loopback Testing
 
-### AURORA-7 Beacon (Receive)
+Before transmitting live RF, validate the low-power chain using BUC loopback mode. This routes the upconverted signal internally back to the receive path without radiating through the antenna.
 
-| Parameter | Value |
-|-----------|-------|
-| Beacon RF | 4,165 MHz |
-| LNB LO | 5,250 MHz |
-| Beacon IF | 1,085 MHz |
+**What You'll See:**
 
-**Calculation:**
-```
-IF = LO - RF
-IF = 5,250 - 4,165
-IF = 1,085 MHz
-```
+- **CW Beacon:** Narrow spike (unmodulated carrier)
+- **Modulated Carrier:** Wide "haystack" shape matching configured bandwidth
+- **No Signal:** Noise floor only - indicates configuration error or equipment fault
 
-### AURORA-7 Uplink (Transmit)
-
-| Parameter | Value |
-|-----------|-------|
-| Uplink RF | 5,830 MHz |
-| BUC LO | 4,925 MHz |
-| TX IF | 905 MHz |
-
-**Calculation:**
-```
-IF = RF - LO
-IF = 5,830 - 4,925
-IF = 905 MHz
-```
-
-<Aside type="tip">
-**Remember the Formulas**
-
-- **Receive (LNB)**: IF = LO - RF (high-side injection)
-- **Transmit (BUC)**: IF = RF - LO (low-side injection)
-
-Both subtract, but the operand order differs.
-</Aside>
-
----
-
-## Inclined Orbit Operations
-
-AURORA-7's inclined orbit creates specific operational requirements that differ from standard geostationary operations.
-
-### Why AURORA-7 Drifts
-
-Geostationary satellites require active station-keeping to maintain position:
-
-- **East-West:** Compensates for solar radiation pressure and gravitational effects
-- **North-South:** Compensates for lunar/solar gravitational pull on the orbital plane
-
-When north-south station-keeping fuel is depleted, operators often cease these maneuvers to extend satellite life. The orbital plane then tilts (becomes "inclined") at approximately 0.7-0.9 degrees per year.
-
-### The Figure-8 Pattern
-
-From a ground station's perspective, an inclined-orbit satellite traces a figure-8 pattern in the sky over each 24-hour period. AURORA-7's inclination creates pointing errors of up to 0.5 degrees from predicted positions - enough to significantly degrade signal strength on a narrow-beam antenna.
-
-### Program-Track vs Step-Track
-
-| Mode | How It Works | Limitation |
-|------|--------------|------------|
-| **Program-Track** | Follows predicted orbital positions from TLE data | Predictions assume zero inclination; cannot compensate for actual drift |
-| **Step-Track** | Actively optimizes antenna position by measuring beacon signal strength | Compensates for any satellite motion, including inclined orbit drift |
-
-**Key insight:** Program-track follows where the satellite *should* be. Step-track follows where the satellite *actually* is. For inclined orbits, only step-track provides reliable tracking.
+A successful loopback confirms the TX modem and BUC are functioning. It does not test the HPA or antenna path.
 
 ---
 
 ## Escalation Guidelines
 
-### When NOT to Wake Dana
+### Handle Yourself
 
-- Equipment faults you can diagnose and resolve
-- Routine tracking issues
-- Weather precautions (feed heater, monitoring)
+- Equipment reference lock faults (power cycle usually resolves)
+- Tracking mode configuration issues
+- Feed heater activation for weather
+- Spectrum analyzer configuration
 - Customer issues with clear technical causes
 
-### When to Wake Dana
+### Wake Dana
 
 - Equipment failures requiring physical intervention
-- Safety-critical situations
-- Issues beyond your authorization level
+- Safety-critical situations (RF hazard, facility security)
 - Multiple simultaneous major failures
+- Issues beyond your authorization level
 - Customer escalations demanding supervisor involvement
 
-**This scenario:** The LNB reference fault and tracking mode issue are both resolvable without escalation. Handle them yourself.
-
-### Proactive Weather Response
-
-Weather threats at a ground station require judgment about when to act:
-
-**Feed Heater Activation:**
-
-| Condition | Action | Rationale |
-|-----------|--------|-----------|
-| Freezing rain forecast 2+ hours away | Enable feed heater now | Prevents ice accumulation; heater needs time to warm components |
-| Light rain, no freezing | Monitor only | Feed heater unnecessary for liquid precipitation |
-| Active ice accumulation | Heater + consider stow | If heater cannot keep up, protect the antenna |
-
-**Decision Framework:**
-
-1. **Is immediate action required?** (Active icing, severe weather impact on signal)
-2. **Is the link currently stable?** (If yes, avoid disruptive actions like stowing)
-3. **What preventive measures are appropriate?** (Feed heater is low-risk, proactive)
-4. **Does this warrant escalation?** (2 AM weather forecast does not; active storm damage might)
-
-Enabling the feed heater proactively when freezing conditions are forecast is standard practice. It carries no operational risk and prevents ice-related signal degradation.
+Dana made it clear she's available for genuine emergencies. An LNB reference fault and a tracking mode issue are not emergencies - they're routine troubleshooting.
 
 ---
 
-## Troubleshooting Approach
+## Diagnostic Approach
 
-### Systematic Problem Solving
+When the NOC reports "intermittent connectivity," don't guess. Work the problem systematically:
 
-When faced with "intermittent connectivity," work through the signal chain:
+**1. Check the Dashboard**
 
-**1. Timing Reference**
-- Is GPSDO locked?
-- Are all devices receiving 10 MHz reference?
+Alarms tell you where to look. Start there before diving into individual equipment panels.
 
-**2. Receive Chain**
-- Is LNB powered and locked?
-- Is antenna pointing correctly?
-- Is beacon visible on spectrum analyzer?
+**2. Verify Timing**
 
-**3. Tracking**
-- What tracking mode is active?
-- Is it appropriate for this satellite?
-- Is beacon lock achieved?
+The GPSDO is the foundation. If it's unhappy, nothing downstream will work correctly.
 
-**4. Transmit Chain (if bidirectional)**
-- Is TX modem configured correctly?
-- Does loopback test pass?
-- Is HPA enabled and not overdriven?
+**3. Check the Receive Chain**
 
-### The Diagnostic Mindset
+- LNB powered and reference locked?
+- Beacon visible on spectrum analyzer at correct IF?
+- Antenna tracking mode appropriate for this satellite?
 
-Don't assume. Verify.
+**4. Check the Transmit Chain (if bidirectional)**
 
-- **Check the Dashboard first** - alarms tell you where to look
-- **Verify the timing source** - GPSDO is the foundation
-- **Follow the signal chain** - systematic is faster than guessing
-- **Use loopback testing** - validate before radiating
+- BUC reference locked?
+- Loopback test passing?
+- HPA enabled and not faulted?
 
----
+**5. Consider External Factors**
 
-## TX Chain Verification
-
-Before enabling live transmission, operators validate the low-power transmit chain using loopback testing.
-
-### What Loopback Mode Does
-
-BUC loopback mode routes the upconverted RF signal internally back to the receive path, bypassing the HPA and antenna:
-
-```
-Normal:    TX Modem → BUC → HPA → Antenna → Satellite
-Loopback:  TX Modem → BUC → (internal routing) → LNB → Spectrum Analyzer
-```
-
-This allows testing the entire low-power transmit chain without radiating RF through the antenna.
-
-### Why Loopback Testing Matters
-
-Loopback testing catches configuration errors **before** radiating RF power:
-
-- **Wrong IF frequency:** Signal appears at unexpected frequency (or not at all)
-- **Wrong bandwidth:** Signal width doesn't match expected transponder allocation
-- **Modem fault:** No signal present despite configuration
-- **BUC fault:** Signal present but at wrong power level
-
-Catching these errors in loopback prevents:
-
-- Interference with other users on the satellite
-- Wasted transponder capacity
-- Potential regulatory violations for off-frequency transmission
-
-### Recognizing the Loopback Signal
-
-On the spectrum analyzer, different signal types have distinct appearances:
-
-| Signal Type | Appearance | Example |
-|-------------|------------|---------|
-| **CW Beacon** | Narrow spike (unmodulated carrier) | AURORA-7 beacon at 1,085 MHz IF |
-| **Modulated Carrier** | Wide "haystack" shape matching configured bandwidth | TX loopback: 24 MHz wide signal at configured IF |
-| **No Signal** | Noise floor only | Configuration error or equipment fault |
-
-The loopback signal should appear as a modulated carrier with bandwidth matching your TX modem configuration (24 MHz for AURORA-7), confirming the TX modem and BUC signal path are functioning correctly.
-
----
-
-## What You'll Need to Know
-
-This scenario draws on all concepts from Scenarios 1-7:
-
-- **System Health Checks**: Dashboard review, alarm interpretation
-- **Timing Reference**: GPSDO status verification
-- **Fault Diagnosis**: LNB reference unlock identification and resolution
-- **IF Calculations**: Both receive and transmit frequency conversion
-- **Spectrum Analysis**: Beacon acquisition and signal verification
-- **Tracking Modes**: Step-track selection for inclined orbit satellites
-- **Weather Operations**: Proactive feed heater management
-- **Loopback Testing**: TX chain validation before going live
-- **Power Sequencing**: Proper HPA enable sequence
-
-<Aside type="tip">
-**Graduation Exam**
-
-This is your final evaluation. You will receive minimal guidance. The scenario tests whether you can independently:
-
-1. Identify problems from symptoms and alarms
-2. Diagnose root causes systematically
-3. Apply correct solutions
-4. Make appropriate operational decisions
-5. Work efficiently under time pressure
-
-You've done all of this before in individual scenarios. Now do it all together.
-</Aside>
+- Weather impact on signal?
+- Interference?
+- Satellite anomaly? (Check NOC bulletins)
 
 ---
 
 ## Link Verification Checklist
 
-A fully operational satellite link requires all subsystems to be in the correct state. Use this reference to confirm link status:
+A fully operational link requires all of the following:
 
 ### Receive Path
-
-- **LNB Reference:** Locked (to GPSDO 10 MHz)
-- **LNB Thermal:** Stabilized (noise temperature nominal)
-- **Antenna Tracking:** Step-track mode (for inclined orbit satellites)
-- **Beacon Lock:** Acquired (ACU shows beacon locked)
-- **Beacon Signal:** Visible on spectrum analyzer at correct IF frequency
+- [ ] LNB reference: Locked
+- [ ] Antenna tracking: Step-track (for AURORA-7)
+- [ ] Beacon lock: Acquired
+- [ ] Beacon signal: Visible at 1,085 MHz IF
 
 ### Transmit Path
+- [ ] BUC reference: Locked
+- [ ] BUC mute: Unmuted
+- [ ] BUC loopback: Disabled
+- [ ] HPA: Enabled, nominal power
 
-- **BUC Reference:** Locked (to GPSDO 10 MHz)
-- **BUC Mute:** Unmuted (RF output enabled)
-- **BUC Loopback:** Disabled (for live transmission)
-- **HPA Power:** Enabled (output stage active)
-- **HPA Output:** Above minimum power threshold
-
-### System Status
-
-- **Dashboard Alarms:** None active
-- **Feed Heater:** Enabled if freezing conditions expected
-- **Documentation:** Trouble ticket updated with actions taken
-
-When all conditions are met, the link is operational. Any single failure point (alarm, unlock, or incorrect configuration) can degrade or interrupt service.
+### System
+- [ ] GPSDO: Locked
+- [ ] Dashboard alarms: None active
+- [ ] Feed heater: Enabled (if freezing precip expected)
 
 ---
 
-## Key Takeaways
+## End of Briefing
 
-1. **Dashboard First**: Always check for active alarms before diving into troubleshooting
-2. **Verify the Foundation**: GPSDO lock is the timing reference for everything
-3. **Power Cycling Works**: Many equipment faults clear with a power cycle
-4. **Match Tracking to Orbit**: Inclined orbit satellites require step-track
-5. **Validate Before Radiate**: Loopback testing catches TX errors safely
-6. **Escalate Appropriately**: Know what you can handle vs. what needs supervisor involvement
-7. **Document Everything**: The next shift needs to know what happened
+The customer is counting on you to diagnose and resolve this connectivity issue. Work methodically, trust your training, and document your actions in the trouble ticket.
 
-**Dana's Final Message:**
-*"Saw the ticket resolution come through. LNB reference issue and tracking mode - good catches. You handled it right. No need to wake me for that. Charlie will be proud. See you at shift change."*
+If everything goes well, Dana will see the ticket resolution in the morning and you'll have proven you're ready for solo operations.
 
-**Congratulations. You've demonstrated the skills for solo operations.**
+If it goes sideways, her number is in the on-call roster.
+
+Good luck.

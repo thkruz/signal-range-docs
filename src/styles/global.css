@@ -50,30 +50,34 @@
 
 table {
 	width: 100%;
+	text-align: center;
 	border-collapse: collapse;
+	table-layout: fixed;
 
 	thead {
 		display: table;
+		text-align: center;
+		table-layout: fixed;
 		width: 100%;
 	}
 
 	tbody {
 		display: table;
+		text-align: center;
+		table-layout: fixed;
+		width: 100%;
+	}
+
+	th {
+		text-align: center !important;
+		table-layout: fixed;
 		width: 100%;
 	}
 
 	tr {
+		text-align: center;
+		table-layout: fixed;
 		width: 100%;
-
-		td:first-of-type,
-		th:first-of-type {
-			width: 25%;
-		}
-
-		td:nth-of-type(2),
-		th:nth-of-type(2) {
-			width: 70%;
-		}
 	}
 }
 
