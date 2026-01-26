@@ -150,6 +150,47 @@ This scenario integrates skills from all previous scenarios:
 
 ---
 
+## Understanding Reference Distribution
+
+### The 10 MHz Reference Chain
+
+The station's timing accuracy depends on a hierarchical reference distribution system:
+
+```
+GNSS Satellites → GPSDO → 10 MHz Distribution → LNB/BUC/Modems
+```
+
+**GPSDO (Source):** Generates the master 10 MHz reference by disciplining an oven-controlled crystal oscillator (OCXO) to GPS timing. When the GPSDO shows "Locked," it confirms the reference source is generating valid timing.
+
+**Distribution Amplifier:** Splits the 10 MHz signal and drives it to downstream equipment via coaxial cables.
+
+**Downstream Equipment:** The LNB, BUC, and modems each have reference inputs and lock indicators. They must acquire and track this reference for frequency stability.
+
+### Interpreting Lock Status
+
+When troubleshooting a reference unlock alarm:
+
+| GPSDO Status | LNB Status | Diagnosis |
+|--------------|------------|-----------|
+| Locked | Locked | Normal operation |
+| Locked | **Unlocked** | Problem is downstream of GPSDO (cable, connector, or LNB input) |
+| Unlocked | Unlocked | Problem is at the source (GPSDO) |
+| Unlocked | Locked | Impossible - LNB cannot lock without valid reference |
+
+A locked GPSDO with an unlocked LNB indicates the reference signal is available but the LNB failed to acquire it. This is typically a transient fault at the LNB's phase-locked loop.
+
+### Why Power Cycling Resolves Reference Lock Faults
+
+RF equipment uses phase-locked loops (PLLs) to synchronize internal oscillators to the external reference. These PLLs can occasionally:
+
+- Fail to acquire lock after thermal cycling (temperature changes shift PLL capture range)
+- Lose lock due to brief reference signal interruptions (switching, cable vibration)
+- Enter a "stuck" state where the PLL algorithm cannot converge
+
+Power cycling forces the PLL to restart its acquisition sequence from a known state. This is the standard first-line response for reference lock faults when the source (GPSDO) is confirmed operational.
+
+---
+
 ## Frequency Calculations Reference
 
 ### AURORA-7 Beacon (Receive)
@@ -193,6 +234,34 @@ Both subtract, but the operand order differs.
 
 ---
 
+## Inclined Orbit Operations
+
+AURORA-7's inclined orbit creates specific operational requirements that differ from standard geostationary operations.
+
+### Why AURORA-7 Drifts
+
+Geostationary satellites require active station-keeping to maintain position:
+
+- **East-West:** Compensates for solar radiation pressure and gravitational effects
+- **North-South:** Compensates for lunar/solar gravitational pull on the orbital plane
+
+When north-south station-keeping fuel is depleted, operators often cease these maneuvers to extend satellite life. The orbital plane then tilts (becomes "inclined") at approximately 0.7-0.9 degrees per year.
+
+### The Figure-8 Pattern
+
+From a ground station's perspective, an inclined-orbit satellite traces a figure-8 pattern in the sky over each 24-hour period. AURORA-7's inclination creates pointing errors of up to 0.5 degrees from predicted positions - enough to significantly degrade signal strength on a narrow-beam antenna.
+
+### Program-Track vs Step-Track
+
+| Mode | How It Works | Limitation |
+|------|--------------|------------|
+| **Program-Track** | Follows predicted orbital positions from TLE data | Predictions assume zero inclination; cannot compensate for actual drift |
+| **Step-Track** | Actively optimizes antenna position by measuring beacon signal strength | Compensates for any satellite motion, including inclined orbit drift |
+
+**Key insight:** Program-track follows where the satellite *should* be. Step-track follows where the satellite *actually* is. For inclined orbits, only step-track provides reliable tracking.
+
+---
+
 ## Escalation Guidelines
 
 ### When NOT to Wake Dana
@@ -212,105 +281,26 @@ Both subtract, but the operand order differs.
 
 **This scenario:** The LNB reference fault and tracking mode issue are both resolvable without escalation. Handle them yourself.
 
----
+### Proactive Weather Response
 
-## Mission Phases Overview
+Weather threats at a ground station require judgment about when to act:
 
-<Steps>
+**Feed Heater Activation:**
 
-1. **Review Customer Trouble Ticket**
+| Condition | Action | Rationale |
+|-----------|--------|-----------|
+| Freezing rain forecast 2+ hours away | Enable feed heater now | Prevents ice accumulation; heater needs time to warm components |
+| Light rain, no freezing | Monitor only | Feed heater unnecessary for liquid precipitation |
+| Active ice accumulation | Heater + consider stow | If heater cannot keep up, protect the antenna |
 
-   Understand the problem: intermittent connectivity on AURORA-7.
+**Decision Framework:**
 
-2. **Access Ground Station**
+1. **Is immediate action required?** (Active icing, severe weather impact on signal)
+2. **Is the link currently stable?** (If yes, avoid disruptive actions like stowing)
+3. **What preventive measures are appropriate?** (Feed heater is low-risk, proactive)
+4. **Does this warrant escalation?** (2 AM weather forecast does not; active storm damage might)
 
-   Select Vermont Ground Station to begin investigation.
-
-3. **Check Dashboard for Alarms**
-
-   Identify the LNB reference unlock alarm.
-
-4. **Verify GPSDO Status**
-
-   Confirm the 10 MHz reference source is operational.
-
-5. **Diagnose LNB Reference Fault**
-
-   Navigate to RX Analysis and investigate the LNB.
-
-6. **Resolve LNB Reference Fault**
-
-   Power cycle the LNB to restore reference lock.
-
-7. **Verify Fault Cleared**
-
-   Confirm Dashboard shows no alarms.
-
-8. **Calculate AURORA-7 Beacon IF**
-
-   Determine beacon IF: 5,250 - 4,165 = 1,085 MHz.
-
-9. **Configure Spectrum Analyzer for Beacon**
-
-   Set center frequency to 1,085 MHz with narrow span.
-
-10. **Identify Tracking Problem**
-
-    Recognize that program-track is inadequate for inclined orbit.
-
-11. **Enable Step-Track Mode**
-
-    Switch antenna to step-track for active beacon following.
-
-12. **Verify Beacon Acquisition**
-
-    Confirm beacon lock and signal visible on spectrum analyzer.
-
-13. **Weather Alert Assessment**
-
-    Evaluate weather alert and decide on appropriate action.
-
-14. **Enable Feed Heater**
-
-    Proactively enable feed heater as weather precaution.
-
-15. **Calculate AURORA-7 Uplink IF**
-
-    Determine TX IF: 5,830 - 4,925 = 905 MHz.
-
-16. **Configure TX Modem**
-
-    Set frequency, bandwidth, modulation, and FEC for AURORA-7.
-
-17. **Verify TX Chain with Loopback**
-
-    Enable BUC loopback to test TX signal path.
-
-18. **Verify Loopback Signal**
-
-    Confirm TX signal visible on spectrum analyzer.
-
-19. **Prepare for Live Uplink**
-
-    Disable loopback and mute BUC for HPA enable.
-
-20. **Enable HPA**
-
-    Power on and enable HPA output stage.
-
-21. **Unmute BUC - Go Live**
-
-    Begin live transmission to AURORA-7.
-
-22. **Verify Link Operational**
-
-    Confirm all systems operational on Dashboard.
-
-23. **Document Resolution**
-
-    Summarize root cause and actions taken.
-
-</Steps>
+Enabling the feed heater proactively when freezing conditions are forecast is standard practice. It carries no operational risk and prevents ice-related signal degradation.
 
 ---
 
@@ -350,6 +340,50 @@ Don't assume. Verify.
 
 ---
 
+## TX Chain Verification
+
+Before enabling live transmission, operators validate the low-power transmit chain using loopback testing.
+
+### What Loopback Mode Does
+
+BUC loopback mode routes the upconverted RF signal internally back to the receive path, bypassing the HPA and antenna:
+
+```
+Normal:    TX Modem → BUC → HPA → Antenna → Satellite
+Loopback:  TX Modem → BUC → (internal routing) → LNB → Spectrum Analyzer
+```
+
+This allows testing the entire low-power transmit chain without radiating RF through the antenna.
+
+### Why Loopback Testing Matters
+
+Loopback testing catches configuration errors **before** radiating RF power:
+
+- **Wrong IF frequency:** Signal appears at unexpected frequency (or not at all)
+- **Wrong bandwidth:** Signal width doesn't match expected transponder allocation
+- **Modem fault:** No signal present despite configuration
+- **BUC fault:** Signal present but at wrong power level
+
+Catching these errors in loopback prevents:
+
+- Interference with other users on the satellite
+- Wasted transponder capacity
+- Potential regulatory violations for off-frequency transmission
+
+### Recognizing the Loopback Signal
+
+On the spectrum analyzer, different signal types have distinct appearances:
+
+| Signal Type | Appearance | Example |
+|-------------|------------|---------|
+| **CW Beacon** | Narrow spike (unmodulated carrier) | AURORA-7 beacon at 1,085 MHz IF |
+| **Modulated Carrier** | Wide "haystack" shape matching configured bandwidth | TX loopback: 24 MHz wide signal at configured IF |
+| **No Signal** | Noise floor only | Configuration error or equipment fault |
+
+The loopback signal should appear as a modulated carrier with bandwidth matching your TX modem configuration (24 MHz for AURORA-7), confirming the TX modem and BUC signal path are functioning correctly.
+
+---
+
 ## What You'll Need to Know
 
 This scenario draws on all concepts from Scenarios 1-7:
@@ -377,6 +411,36 @@ This is your final evaluation. You will receive minimal guidance. The scenario t
 
 You've done all of this before in individual scenarios. Now do it all together.
 </Aside>
+
+---
+
+## Link Verification Checklist
+
+A fully operational satellite link requires all subsystems to be in the correct state. Use this reference to confirm link status:
+
+### Receive Path
+
+- **LNB Reference:** Locked (to GPSDO 10 MHz)
+- **LNB Thermal:** Stabilized (noise temperature nominal)
+- **Antenna Tracking:** Step-track mode (for inclined orbit satellites)
+- **Beacon Lock:** Acquired (ACU shows beacon locked)
+- **Beacon Signal:** Visible on spectrum analyzer at correct IF frequency
+
+### Transmit Path
+
+- **BUC Reference:** Locked (to GPSDO 10 MHz)
+- **BUC Mute:** Unmuted (RF output enabled)
+- **BUC Loopback:** Disabled (for live transmission)
+- **HPA Power:** Enabled (output stage active)
+- **HPA Output:** Above minimum power threshold
+
+### System Status
+
+- **Dashboard Alarms:** None active
+- **Feed Heater:** Enabled if freezing conditions expected
+- **Documentation:** Trouble ticket updated with actions taken
+
+When all conditions are met, the link is operational. Any single failure point (alarm, unlock, or incorrect configuration) can degrade or interrupt service.
 
 ---
 
