@@ -1,301 +1,206 @@
 ---
 title: 'Scenario 3 - Weather Emergency Handover'
-description: 'Transfer TIDEMARK-1 operations from Vermont to Maine backup station before approaching blizzard degrades link margin'
-lastUpdated: 2025-12-29
+description: 'Execute a time-critical traffic handover from Vermont to Maine as blizzard conditions degrade the primary link'
+lastUpdated: 2026-02-02
 ---
 
-import { Steps } from '@astrojs/starlight/components';
 import { Aside } from '@astrojs/starlight/components';
 
-**Duration:** 25-30 minutes
+## Shift Turnover Notes
 
-**Difficulty:** Beginner
+**Date:** Tuesday, 1045 Local
+**Station:** Vermont (VT-01)
+**Operator on Duty:** You
+**Supervisor:** Charlie Brooks (present)
+**Maine Station:** ME-02 (unmanned, Catherine Vega en route)
 
-**Mission Type:** Tutorial - Multi-Site Operations
+> Weather service just upgraded the forecast to a blizzard warning. Snow started falling about ten minutes ago and it's coming down hard. Link margin to TIDEMARK-1 is already degrading - we've got maybe fifteen minutes before AGC runs out of compensation range.
+>
+> Maine is 150 miles northeast with clear skies. Catherine is driving in now - should arrive in about ten minutes. We need to get the backup site configured and execute the handover before Vermont goes dark.
+>
+> This is your first multi-site handover. I'll walk you through it, but you're doing the work.
+>
+> — Charlie
 
-**Time Pressure:** Mild (30 minutes before weather degrades link)
-
-### Mission Briefing
-
-Heavy snow is forecast for Vermont in 30 minutes. Weather analysis predicts the link margin to TIDEMARK-1 will degrade approximately 8 dB below operational threshold during the storm. You need to hand traffic from VT-01 (Vermont Ground Station) to the backup ground station ME-02 (Maine Backup Station) before the weather window closes.
-
-Catherine from Maine has been recalled to take over operations once the handover is complete. You'll configure the Maine site remotely, monitor both sites simultaneously during handover, and ensure graceful service continuity.
-
-**Mission Context:**
-- **Current Status**: VT-01 serving TIDEMARK-1 traffic normally
-- **Weather Threat**: Blizzard arriving in 30 minutes, 8 dB link margin degradation expected
-- **Backup Site**: ME-02 (Maine) available and ready for activation
-- **Customer Impact**: Must maintain service continuity during handover
+**Catherine (text message, 1038):**
+> On my way in. Roads are still clear up here. ETA 10-15 min depending on how the plow situation looks. Don't wait for me - get Maine configured remotely and I'll verify on-site when I arrive.
 
 ---
 
-## Background Concepts
+## Active Services
 
-### Ice Protection and Feed Heaters
+| Satellite | Customer | Service Type | Status |
+|-----------|----------|--------------|--------|
+| TIDEMARK-1 | Teleport Services Inc. | Enterprise Data | Operational (degrading) |
 
-Satellite ground station antennas use waveguide assemblies to carry RF signals between the feed horn and the electronics. These waveguides are precision-machined metal tubes where the internal dimensions are critical to RF performance.
+TIDEMARK-1 provides backbone connectivity for several enterprise customers in the northeastern corridor. Service interruptions impact multiple downstream clients - banks, hospitals, regional carriers. Every minute of downtime is visible.
 
-**Why Ice is Dangerous:**
+---
 
-Ice accumulation on the feed assembly causes several problems:
+## TIDEMARK-1 Link Parameters
 
-1. **Signal Attenuation**: Ice absorbs RF energy, particularly at higher frequencies. Even a thin layer can add 1-2 dB of loss.
+### Frequency Allocation
 
-2. **Impedance Mismatch**: Ice changes the electrical characteristics of the feed horn, causing reflections that reduce power transfer efficiency.
+| Parameter | RF (MHz) | LO (MHz) | IF (MHz) |
+|-----------|----------|----------|----------|
+| Beacon (Downlink) | 4,175.5 | 5,250 (LNB) | 1,074.5 |
+| Carrier (Downlink) | 3,718 | 5,250 (LNB) | 1,532 |
+| Carrier (Uplink) | 5,943 | 4,849 (BUC) | 1,094 |
 
-3. **Mechanical Damage**: Ice adds weight to the feed assembly. Combined with wind, this creates stress on mounting hardware and can physically damage the waveguide or feed horn.
+### Modem Configuration
 
-4. **Water Ingress**: As ice melts and refreezes, it can work its way into waveguide joints. Water inside a waveguide causes severe signal degradation and can permanently damage components.
+| Direction | Frequency (IF) | Bandwidth | Modulation | FEC | Power |
+|-----------|----------------|-----------|------------|-----|-------|
+| Receive | 1,532 MHz | 36 MHz | QPSK | 3/4 | — |
+| Transmit | 1,094 MHz | 36 MHz | QPSK | 3/4 | -7 dBm |
 
-**How Feed Heaters Work:**
+### LNB Configuration
 
-Feed heaters are resistive heating elements wrapped around the waveguide and feed horn assembly. When activated, they maintain the metal temperature above freezing, preventing ice formation. Most systems draw 200-500 watts and can keep the feed clear in temperatures down to -30°C.
+| Parameter | Value |
+|-----------|-------|
+| LO Frequency | 5,250 MHz |
+| Gain | 60 dB |
+| Reference | External (GPSDO 10 MHz) |
 
-<Aside type="tip">
-**Operational Practice**
+---
 
-Professional operators enable feed heaters proactively based on weather forecasts, not reactively after ice has formed. Removing existing ice is much harder than preventing it.
-</Aside>
+## Weather Briefing
 
-### Geographic Diversity in Satellite Operations
+**Current Conditions (1045):**
+- Temperature: 26°F (-3°C)
+- Wind: NW at 25 mph, gusts to 40
+- Precipitation: Heavy snow, 2+ inches/hour
+- Visibility: 0.25 miles
 
-Commercial satellite operators maintain multiple ground stations for several critical reasons:
+**Forecast (next 6 hours):**
+- Blizzard conditions continuing through 1700
+- Additional accumulation: 12-18 inches
+- Wind-driven snow creating significant signal attenuation
 
-**Weather Resilience:**
-
-Weather systems are geographically limited. A blizzard affecting Vermont won't simultaneously impact a site 150 miles away in Maine. By maintaining diverse sites, operators can route traffic around weather events.
-
-**The 100-Mile Rule:**
-
-Industry experience shows that sites separated by at least 100 miles rarely experience simultaneous severe weather. NATS maintains Vermont and Maine stations specifically for this diversity.
-
-**Equipment Redundancy:**
-
-Hardware failures happen. A backup site allows continued operations during repairs or maintenance at the primary facility.
-
-**Network Optimization:**
-
-Sometimes the backup site actually has better link conditions than the primary. Operators can shift traffic to optimize performance, not just recover from failures.
-
-### GPSDO: The Heartbeat of RF Systems
-
-Every piece of RF equipment in a ground station depends on a stable frequency reference. The GPS Disciplined Oscillator (GPSDO) provides this reference by locking a precision oscillator to GPS timing signals.
-
-**Why Timing Matters:**
-
-1. **Carrier Frequency Accuracy**: The modem must transmit and receive on exact frequencies. A frequency error of even a few Hertz can cause the satellite to reject your signal or cause interference to adjacent channels.
-
-2. **Symbol Timing**: Digital modulation requires precise timing to sample the signal at exactly the right moments. Timing drift causes bit errors.
-
-3. **Phase Coherence**: Many modern modulation schemes (like QPSK) encode information in phase. Without stable phase reference, the receiver can't decode the signal.
-
-**The Reference Chain:**
-
-```
-GPS Satellites → GPSDO → 10 MHz Reference → LNB, BUC, Modem
-```
-
-Every component in the RF chain locks to the GPSDO's 10 MHz output. If the GPSDO isn't locked, nothing else will work correctly.
+**Link Impact:**
+- Current weather degradation: ~4 dB
+- Projected at storm peak: 8+ dB (exceeds AGC compensation range)
 
 <Aside type="caution">
-**Critical Sequence**
-
-Always verify GPSDO lock before configuring any RF equipment. Configuring an LNB or modem without stable reference will result in incorrect frequencies and failed signal acquisition.
+The AGC indicator shows current compensation level. When it approaches maximum, link failure is imminent. Monitor this during handover preparation.
 </Aside>
 
-### LNB Thermal Stabilization
+---
 
-The Low Noise Block (LNB) converts high-frequency RF signals from the satellite to lower intermediate frequencies (IF) for processing. Its performance is highly temperature-dependent.
+## Station Reference
 
-**Why Temperature Matters:**
+### Vermont (VT-01) - Primary
 
-1. **Noise Figure**: The LNB's noise figure—how much noise it adds to the signal—varies with temperature. Cold LNBs have higher noise figures, degrading C/N ratio.
+| Equipment | Current State | Notes |
+|-----------|---------------|-------|
+| GPSDO | Locked | Timing reference stable |
+| LNB | Powered, locked | Weather degrading signal |
+| BUC | Powered, unmuted | Currently transmitting |
+| HPA | Enabled | Active uplink |
+| Antenna | Program-track on TIDEMARK-1 | |
+| Feed Heater | Needs activation | Enable for ice protection |
 
-2. **Local Oscillator Drift**: The LNB's internal oscillator frequency shifts as temperature changes. This causes the output IF frequency to drift, potentially moving the signal outside the modem's acquisition window.
+### Maine (ME-02) - Backup
 
-3. **Gain Variation**: LNB gain changes with temperature. Cold LNBs may have lower gain, reducing signal levels at the modem.
-
-**Stabilization Time:**
-
-A cold LNB (at ambient winter temperature) typically needs 2-4 minutes to reach stable operating temperature after power-on. The internal components must warm up and reach thermal equilibrium.
-
-**What "Thermally Stable" Means:**
-
-- Noise temperature has settled to its rated value
-- LO frequency drift is within specification
-- Gain is consistent and predictable
-
-### Make-Before-Break Handovers
-
-Traffic handovers between ground stations follow a critical principle: **never break the existing path until the new path is proven.**
-
-**The Sequence:**
-
-1. **Make**: Establish the new path completely. Point the backup antenna, configure the receive chain, verify carrier lock, configure the transmit chain, verify uplink.
-
-2. **Verify**: Confirm the new path meets all operational thresholds. C/N ratio, bit error rate, packet throughput—everything must be within specification.
-
-3. **Break**: Only after verification, transfer traffic from the old path to the new one.
-
-**Why This Matters:**
-
-If you disable the primary site before the backup is ready, customers experience an outage. Even a few seconds of packet loss can trigger alarms, violate SLAs, and damage customer relationships.
-
-**The Professional Standard:**
-
-Well-executed handovers achieve less than 0.1% packet loss—essentially imperceptible to end users. This requires both paths to be fully operational simultaneously during the transition.
-
-### Link Budget and Weather Margin
-
-Every satellite link has a "link budget"—an accounting of all gains and losses between transmitter and receiver. The difference between the received signal power and the minimum required power is the **link margin**.
-
-**Typical C-band Link Budget:**
-
-| Factor | Value |
-|--------|-------|
-| Clear-sky margin | 12 dB |
-| Rain/snow attenuation | 4-6 dB |
-| Antenna accumulation | 2-3 dB |
-| **Net margin in storm** | **3-5 dB** |
-
-**The Decision Point:**
-
-When projected margin drops below 6 dB, professional operators initiate handover procedures. This provides buffer for:
-- Forecast uncertainty
-- Unexpected additional degradation
-- Time needed to complete handover
-
-**Why C-band Handles Weather Better:**
-
-Lower frequencies experience less atmospheric attenuation:
-- C-band (4-6 GHz): 4-6 dB in heavy rain
-- Ku-band (12-18 GHz): 10-15 dB in heavy rain
-- Ka-band (26-40 GHz): 15-25 dB in heavy rain
-
-This is why critical services (maritime, aviation, military) often use C-band despite its larger antenna requirements.
+| Equipment | Current State | Notes |
+|-----------|---------------|-------|
+| GPSDO | Locked | Verify before configuring RF |
+| LNB | Powered off | Cold start required |
+| BUC | Muted | Will enable during handover |
+| HPA | Disabled | Will enable during handover |
+| Antenna | Stowed (El: 90°) | Point to TIDEMARK-1 |
+| Feed Heater | Standby | Clear weather, not needed |
 
 ---
 
-## Equipment Configuration
+## Weather Handover Procedure (SOP-WX-003)
 
-This scenario uses the following equipment parameters. These values must match between sites for successful handover.
+Operations rolled out this procedure last month after the January ice storm revealed gaps in our ad-hoc approach. This is the first time VT-01 has needed to execute it.
 
-### RF Front End
-
-| Parameter | Vermont (VT-01) | Maine (ME-02) |
-|-----------|-----------------|---------------|
-| LNB LO Frequency | 5,250 MHz | 5,250 MHz |
-| LNB Gain | 60 dB | 60 dB |
-| Antenna Position | Az: 161.8°, El: 34.2° | Az: 161.8°, El: 34.2° |
-| Stow Position | — | Az: 0°, El: 90° |
-
-### Receiver Modem
-
-| Parameter | Value |
-|-----------|-------|
-| IF Frequency | 1,532 MHz |
-| Bandwidth | 36 MHz |
-| Modulation | QPSK |
-| FEC Rate | 3/4 |
-| Required C/N | ≥ 10 dB |
-
-### Transmitter Modem
-
-| Parameter | Value |
-|-----------|-------|
-| IF Frequency | 1,094 MHz |
-| Power | -7 dBm |
-| Bandwidth | 36 MHz |
-| Modulation | QPSK |
-| FEC Rate | 3/4 |
-
----
-
-## Mission Phases
-
-<Steps>
-
-1. **Activate Weather Protection**
-
-   Enable the VT-01 feed heater before the storm arrives. Ice accumulation on the waveguide degrades signal quality and can damage equipment.
-
-2. **Access Backup Site Controls**
-
-   Use the asset menu to switch to ME-02. Vermont continues serving traffic while you configure Maine.
-
-3. **Verify Reference Timing**
-
-   Confirm the ME-02 GPSDO is locked before configuring any RF equipment. Without stable reference, frequency settings will be incorrect.
-
-4. **Acquire TIDEMARK-1 from Maine**
-
-   Point the Maine antenna to TIDEMARK-1 using program-track mode.
-
-5. **Power Up Receive Chain**
-
-   Power on the LNB and configure it to match Vermont's settings. Wait for thermal stabilization before proceeding.
-
-6. **Configure Receiver Modem**
-
-   Set the receiver modem parameters to match the TIDEMARK-1 carrier exactly.
-
-7. **Confirm Signal Acquisition**
-
-   Verify the receiver achieves carrier lock with C/N ratio ≥ 10 dB.
-
-8. **Enable ME-02 Transmitter**
-
-   Configure and enable the transmitter to match VT-01's uplink settings.
-
-9. **Execute Traffic Handover**
-
-   Transfer active traffic from VT-01 to ME-02. Monitor both sites during transition.
-
-10. **Protect Vermont Antenna**
-
-    Stow the Vermont antenna to protect it from wind loading and ice accumulation during the storm.
-
-</Steps>
-
----
-
-## Success Criteria
-
-*   ✅ VT-01 feed heater enabled before storm arrival
-*   ✅ ME-02 GPSDO verified locked
-*   ✅ Maine antenna on target (±0.5° tolerance)
-*   ✅ Maine LNB thermally stabilized
-*   ✅ Maine receiver locked with C/N ≥ 10 dB
-*   ✅ Maine transmitter configured and active
-*   ✅ Traffic handover completed with < 0.1% packet loss
-*   ✅ Vermont antenna stowed
-
----
-
-## Common Mistakes
-
-*   ❌ **Skipping feed heater**: Ice damage is expensive and preventable
-*   ❌ **Configuring RF before GPSDO lock**: All frequencies will be wrong
-*   ❌ **Rushing thermal stabilization**: Unstable LNB causes acquisition failures
-*   ❌ **Forgetting transmitter configuration**: Can't hand over without uplink capability
-*   ❌ **Breaking before making**: Never disable primary until backup is verified
-
----
-
-## Learning Objectives
-
-By completing this scenario, you should understand:
-
-1. **Ice Protection**: Why feed heaters matter and when to enable them
-2. **Reference Timing**: The critical role of GPSDO in RF system accuracy
-3. **Thermal Effects**: How temperature affects LNB performance
-4. **Multi-Site Operations**: Managing geographically diverse ground stations
-5. **Make-Before-Break**: The professional standard for traffic handovers
-6. **Link Margin**: How weather affects satellite link performance
-7. **Service Continuity**: Achieving zero-impact handovers
-
-<Aside type="note">
-**Tutorial Complete**
-
-This is the final tutorial scenario. You've now learned equipment operations, safety procedures, and multi-site coordination.
+<Aside type="caution">
+Maine's look angles differ from Vermont's. Program Track calculates correct pointing automatically - never manually enter Vermont's coordinates at Maine.
 </Aside>
+
+### Pre-Handover: Protect Vermont
+
+- [ ] Enable feed heater on Vermont ACU
+- [ ] Note current AGC compensation level
+
+### Backup Site Activation (Maine)
+
+**Timing Verification**
+- [ ] GPSDO locked
+- [ ] GNSS signal present
+
+**Antenna**
+- [ ] Tracking mode: Program Track
+- [ ] Target: TIDEMARK-1
+- [ ] Position reached
+
+**Receive Chain**
+- [ ] LNB powered, LO: 5,250 MHz, Gain: 60 dB
+- [ ] Thermal stabilization complete
+- [ ] Beacon visible at 1,074.5 MHz IF
+
+**Receiver (Modem)**
+- [ ] Frequency: 1,532 MHz
+- [ ] Bandwidth: 36 MHz, Mod: QPSK, FEC: 3/4
+- [ ] Carrier lock confirmed
+- [ ] C/N ≥ 10 dB
+
+**Transmitter (Modem)**
+- [ ] Frequency: 1,094 MHz, Power: -7 dBm
+- [ ] Bandwidth: 36 MHz, Mod: QPSK, FEC: 3/4
+- [ ] Transmission enabled
+
+### Traffic Transfer
+
+- [ ] Open TIDEMARK-1 satellite dashboard
+- [ ] Execute transfer: VT-01 → ME-02
+- [ ] Verify service continuity (zero packet loss target)
+
+### Post-Handover: Stow Vermont
+
+- [ ] Return to Vermont station view
+- [ ] Set tracking mode: Stow
+- [ ] Confirm antenna reaches stow position (El: 90°)
+
+---
+
+## AGC Reference
+
+| AGC Level | Status |
+|-----------|--------|
+| Low | Minimal compensation |
+| Medium | Normal operation |
+| High | Link margin shrinking |
+| Maximum | Link failure imminent |
+
+---
+
+## Escalation Guidelines
+
+**Handle Yourself:**
+- Weather handover execution (you're trained for this)
+- Feed heater activation
+- Equipment configuration at backup site
+- Traffic transfer between stations
+
+**Inform Charlie:**
+- Handover complete (so he can update NOC)
+- Any equipment faults during handover
+- Service impact beyond expected transition
+
+This is routine for winter operations. Work methodically and you'll be fine.
+
+---
+
+## End of Briefing
+
+The clock is running. Snow is degrading Vermont's link and the AGC is working harder every minute. Catherine will arrive at Maine shortly, but you need to get the station configured before she walks in the door.
+
+Charlie is watching, but he expects you to execute. This is what multi-site operations look like in the Northeast - routine procedure, but time-critical.
+
+Get Vermont's feed heater on, bring Maine online, execute the handover, and stow Vermont's antenna before the storm gets worse.
+
+Clock's ticking.

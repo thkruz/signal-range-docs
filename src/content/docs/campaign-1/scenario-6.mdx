@@ -1,404 +1,207 @@
 ---
 title: 'Scenario 6 - Old Faithful'
-description: 'Practice step-track mode on an inclined-orbit satellite - understanding why legacy satellites require active tracking and how to establish a full-duplex link'
-lastUpdated: 2026-01-19
+description: 'Establish a full-duplex link with AURORA-7, a legacy inclined-orbit satellite requiring step-track mode'
+lastUpdated: 2026-02-02
 ---
 
-import { Steps } from '@astrojs/starlight/components';
 import { Aside } from '@astrojs/starlight/components';
 
 **Duration:** 25-30 minutes
-
 **Difficulty:** Beginner
-
-**Mission Type:** Training Exercise
-
-**Time Limit:** 30 minutes
-
-### Mission Briefing
-
-AURORA-7 is a legacy C-band satellite that's been in service for over 15 years. To conserve fuel, the operators stopped north-south station-keeping years ago, so the orbit is now inclined. The satellite traces a figure-8 pattern in the sky throughout the day - you can't just point the antenna and forget about it.
-
-This is a training exercise to practice step-track mode. Unlike program-track, which follows predicted orbital elements, step-track uses the beacon signal to continuously adjust antenna pointing. It's essential for tracking satellites with inclined orbits.
-
-**Mission Context:**
-- **Satellite**: AURORA-7 (legacy C-band, inclined orbit)
-- **Ground Station**: Vermont (VT-01)
-- **Objective**: Establish a full-duplex link using step-track
-- **Pre-Configuration**: Charlie has already configured beacon frequency, encryption, and payload settings
-
-**Who's Guiding You:**
-- **Charlie Brooks**: Will walk you through the step-track process and verify your understanding
+**Mission Type:** Satellite Link Establishment
 
 ---
 
-## Background: Inclined Orbit Satellites
+## Shift Turnover Notes
 
-### Why Satellites Drift
+**Date:** Thursday, 1400 Local
+**Station:** Vermont (VT-01)
+**Operator on Duty:** You
+**Supervisor:** Charlie Brooks (present)
 
-Geostationary satellites maintain their position through active station-keeping. Small thrusters fire periodically to counteract gravitational perturbations from the Sun, Moon, and Earth's equatorial bulge. This keeps the satellite in a fixed position relative to ground stations.
-
-Station-keeping consumes fuel. When a satellite's fuel reserves run low, operators face a choice:
-- **Decommission**: End operations and move to graveyard orbit
-- **Extend life**: Stop station-keeping and operate with an inclined orbit
-
-Many operators choose extended operations. The satellite still functions - it just moves.
-
-### The Figure-8 Pattern
-
-When north-south station-keeping stops, the satellite's orbital plane begins to tilt relative to the equator. From a ground station's perspective, the satellite appears to drift north and south over a 24-hour period, tracing a figure-8 pattern in the sky.
-
-**The Motion:**
-- **Daily cycle**: North-south excursion repeats every 24 hours
-- **Inclination growth**: Typically 0.7-0.9 degrees per year without correction
-- **Position variation**: A 5-degree inclined orbit creates significant pointing error
-
-For AURORA-7, years without station-keeping have resulted in substantial orbital inclination. The apparent motion is enough that program-track predictions - based on a fixed geostationary position - are too inaccurate for reliable operations.
-
-### Station-Keeping Economics
-
-Fuel represents mission life. The decision to stop station-keeping extends revenue-generating operations:
-
-| Fuel Status | Operator Decision | Ground Station Impact |
-|-------------|------------------|----------------------|
-| Normal reserves | Full station-keeping | Program-track works fine |
-| Low reserves | Reduced station-keeping | Minor pointing drift |
-| Critical reserves | Stop N-S station-keeping | Inclined orbit, requires step-track |
-| Depleted | End of mission | Satellite decommissioned |
-
-Many commercial satellites operate in inclined orbit mode for years beyond their original design life, continuing to generate revenue while requiring more sophisticated ground tracking.
+> Maine has been carrying AURORA-7 traffic for the past month while we finished the antenna upgrades. Now that VT-01 is back online, we're taking the service back.
+>
+> AURORA-7 is a legacy bird - stopped north-south station-keeping years ago to conserve fuel. The orbit's inclined now. Maine had some signal dropouts when they first took over because they tried running program-track. Don't make the same mistake.
+>
+> I've already configured the beacon receiver and verified the encryption keys. You handle the rest - antenna, RF chain, modems. Show me you understand why this satellite needs different handling.
+>
+> — Charlie
 
 ---
 
-## Tracking Modes Explained
+## Active Services
 
-### Program-Track
+| Satellite | Customer | Service Type | Status |
+|-----------|----------|--------------|--------|
+| AURORA-7 | Pacific Rim Communications | Maritime VSAT | Transferring from ME-02 |
 
-Program-track uses Two-Line Element (TLE) data to predict satellite position. The antenna control unit calculates where the satellite should be at any moment and points accordingly.
+Pacific Rim Communications provides connectivity for fishing fleets in the North Pacific. Their vessels rely on AURORA-7 for weather data, catch reporting, and crew welfare communications. Maine has been covering the service - now it's Vermont's responsibility.
 
-**How It Works:**
-```
-1. Load TLE orbital elements for target satellite
-2. Propagate orbit to current time
-3. Calculate azimuth and elevation
-4. Point antenna to computed position
-5. Repeat continuously
-```
+---
 
-**Advantages:**
-- No signal required - can point before acquiring
-- Works for any satellite with published TLEs
-- Simple implementation
+## AURORA-7 Operations Reference
 
-**Limitations:**
-- Accuracy depends on TLE freshness and orbit stability
-- Geostationary assumptions break down for inclined orbits
-- No feedback loop to correct pointing errors
+AURORA-7 is a legacy C-band satellite that's been in service for over 15 years. To conserve fuel, the operators stopped north-south station-keeping years ago, which means its orbit is now inclined. From our perspective, it traces a figure-8 pattern in the sky over each 24-hour period.
 
-**Best For:** Acquisition of geostationary satellites, initial pointing for any satellite.
-
-### Step-Track
-
-Step-track actively optimizes antenna pointing by measuring beacon signal strength. The algorithm makes small adjustments to find and maintain the peak signal level.
-
-**How It Works:**
-```
-1. Start from approximate position (from program-track)
-2. Measure beacon C/N ratio
-3. Make small step in azimuth
-4. If C/N improved, continue that direction
-5. If C/N degraded, reverse direction
-6. Repeat for elevation
-7. Continuously hunt for peak signal
-```
-
-**Advantages:**
-- Self-correcting - follows the actual satellite position
-- Compensates for orbital drift, atmospheric refraction, antenna mechanical errors
-- Achieves maximum signal through continuous optimization
-
-**Limitations:**
-- Requires beacon signal for tracking
-- Needs beacon receiver tuned to correct frequency
-- Slight signal variation during optimization steps
-
-**Best For:** Inclined orbit satellites, maximizing signal quality, long-term tracking.
-
-### The Handoff Pattern
-
-Professional operations typically use both modes:
-
-<Steps>
-
-1. **Initial Acquisition**: Program-track points antenna to predicted position
-
-2. **Beacon Detection**: Verify beacon signal is visible on spectrum analyzer
-
-3. **Mode Transition**: Switch to step-track once beacon is detected
-
-4. **Optimization**: Step-track algorithm finds and maintains signal peak
-
-5. **Continuous Tracking**: Step-track follows satellite throughout pass
-
-</Steps>
-
-<Aside type="tip">
-**Why Start with Program-Track?**
-
-Program-track gets you close enough to detect the beacon. Without an initial pointing estimate, step-track would have to search the entire sky. Program-track provides the starting point; step-track provides the precision.
+<Aside type="caution">
+AURORA-7 requires step-track mode. Program-track cannot compensate for orbital inclination drift. Maine learned this the hard way - intermittent dropouts until they switched tracking modes.
 </Aside>
 
----
-
-## Beacon Tracking Fundamentals
-
-### What is a Satellite Beacon?
-
-Satellites transmit continuous reference signals called beacons. These serve multiple purposes:
-
-**For Ground Stations:**
-- Antenna tracking reference (step-track)
-- Frequency reference for calibration
-- Power monitoring for link budget verification
-- Satellite health indicator
-
-**Beacon Characteristics:**
-- **Continuous Wave (CW)**: Pure tone, very narrow bandwidth
-- **Stable frequency**: Typically within a few Hz of nominal
-- **Known power**: Published in satellite documentation
-- **Always on**: Transmitting regardless of traffic load
-
-### AURORA-7 Beacon Configuration
+### Orbital Characteristics
 
 | Parameter | Value | Notes |
 |-----------|-------|-------|
-| RF Frequency | 4,165 MHz | C-band downlink |
-| LNB LO | 5,250 MHz | High-side injection |
-| IF Frequency | 1,085 MHz | Pre-configured by Charlie |
-| Bandwidth | < 1 kHz | CW signal |
+| Orbital Inclination | ~5° | Accumulated since station-keeping stopped |
+| Daily Motion | Figure-8 pattern | North-south excursion over 24 hours |
+| Program-Track Accuracy | Insufficient | TLE assumes geostationary position |
 
-**IF Calculation:**
-```
-IF = LO - RF
-IF = 5,250 MHz - 4,165 MHz
-IF = 1,085 MHz
-```
+### Tracking Mode Selection
 
-Charlie has already configured the beacon receiver to 1,085 MHz IF. When you enable step-track, the ACU will monitor this beacon to optimize antenna pointing.
+| Satellite Type | Recommended Mode | Reason |
+|----------------|------------------|--------|
+| Geostationary (active S/K) | Program-track | Satellite stays at fixed position |
+| Inclined orbit | Step-track | Follows actual satellite position via beacon |
 
 ---
 
-## Frequency Conversion Review
+## AURORA-7 Link Parameters
 
-### The LNB: Receive Chain Downconversion
+### Frequency Allocation
 
-The Low Noise Block downconverter (LNB) translates satellite signals from RF to IF:
+| Parameter | RF (MHz) | LO (MHz) | IF (MHz) |
+|-----------|----------|----------|----------|
+| Beacon (Downlink) | 4,165 | 5,250 (LNB) | 1,085 |
+| Carrier (Downlink) | 3,605 | 5,250 (LNB) | 1,645 |
+| Carrier (Uplink) | 5,830 | 4,925 (BUC) | 905 |
 
-**C-Band Configuration (High-Side LO):**
+### IF Calculation Reference
+
+**Downlink (High-side LO):**
 ```
 IF = LO - RF
 ```
 
-| Signal | RF Frequency | IF Frequency |
-|--------|-------------|--------------|
-| Beacon | 4,165 MHz | 1,085 MHz |
-| Downlink | 3,605 MHz | 1,645 MHz |
-
-### The BUC: Transmit Chain Upconversion
-
-The Block Upconverter (BUC) translates transmit signals from IF to RF:
-
-**C-Band Configuration (Low-Side LO):**
-```
-RF = IF + LO
-```
-
-Therefore:
+**Uplink (Low-side LO):**
 ```
 IF = RF - LO
 ```
 
-| Signal | RF Frequency | IF Frequency |
-|--------|-------------|--------------|
-| Uplink | 5,830 MHz | 905 MHz |
-
-<Aside type="caution">
-**TX IF Calculation**
-
-You'll need to calculate the transmit IF frequency in this scenario. Remember:
-- Uplink RF: 5,830 MHz
-- BUC LO: 4,925 MHz
-- TX IF = RF - LO = 5,830 - 4,925 = 905 MHz
-
-This is different from downlink calculation because the BUC uses low-side injection for upconversion.
+<Aside type="note">
+The BUC uses low-side injection for upconversion. TX IF calculation is different from RX: IF = RF - LO, not LO - RF.
 </Aside>
+
+### Modem Configuration
+
+| Direction | IF (MHz) | Bandwidth | Modulation | FEC |
+|-----------|----------|-----------|------------|-----|
+| Receive | 1,645 | 24 MHz | QPSK | 3/4 |
+| Transmit | 905 | 24 MHz | QPSK | 3/4 |
 
 ---
 
-## Equipment Configuration
+## Station Reference
 
-### AURORA-7 Link Parameters
+### Vermont (VT-01) - Current State
 
-| Parameter | Downlink (RX) | Uplink (TX) |
-|-----------|---------------|-------------|
-| RF Frequency | 3,605 MHz | 5,830 MHz |
-| IF Frequency | 1,645 MHz | 905 MHz |
-| Bandwidth | 24 MHz | 24 MHz |
-| Modulation | QPSK | QPSK |
-| FEC | 3/4 | 3/4 |
-
-### Vermont Ground Station Initial State
-
-| Equipment | Initial Configuration | Required Action |
-|-----------|----------------------|-----------------|
-| Antenna | Program-track on TIDEMARK-1 | Change to AURORA-7, then step-track |
+| Equipment | Status | Notes |
+|-----------|--------|-------|
+| GPSDO | Locked | Timing reference stable |
+| Antenna | Program-track on TIDEMARK-1 | Change target and mode |
 | LNB | 5,250 MHz LO, powered | No change needed |
 | BUC | 4,925 MHz LO, muted | Unmute after TX config |
 | HPA | Disabled | Enable for transmission |
 | Beacon Receiver | 1,085 MHz IF | Pre-configured by Charlie |
-| RX Modem | 1,200 MHz (wrong) | Configure to 1,645 MHz |
-| TX Modem | 1,050 MHz (wrong) | Configure to 905 MHz |
-| Encryption | AES-256-GCM active | Verify understanding |
+| RX Modem | 1,200 MHz (incorrect) | Configure to 1,645 MHz |
+| TX Modem | 1,050 MHz (incorrect) | Configure to 905 MHz |
+| Encryption | AES-256-GCM | Keys verified by Charlie |
 
 ---
 
-## Security: Encryption Awareness
+## Security Configuration
 
-### Why Encryption Matters
+Charlie has verified the encryption configuration for AURORA-7:
 
-Satellite links traverse open sky - anyone with appropriate equipment can receive transmissions. Encryption protects:
+| Parameter | Value |
+|-----------|-------|
+| Algorithm | AES-256-GCM |
+| Key Status | Valid |
+| Mode | Authenticated encryption |
 
-- **Confidentiality**: Content cannot be read by eavesdroppers
-- **Integrity**: Tampering can be detected
-- **Authentication**: Parties can verify each other's identity
-
-### AES-256-GCM
-
-The encryption configuration for AURORA-7 uses AES-256-GCM:
-
-**AES-256:**
-- Advanced Encryption Standard
-- 256-bit key length
-- Symmetric encryption (same key for encrypt/decrypt)
-- Approved for classified information
-
-**GCM (Galois/Counter Mode):**
-- Authenticated encryption
-- Provides both confidentiality and integrity
-- Detects if ciphertext has been modified
-- High performance with hardware acceleration
-
-### Verification Before Transmission
-
-Before enabling the transmit path, always verify:
-
-1. **Encryption Status**: Is encryption enabled?
-2. **Key Status**: Is the key valid (not expired)?
-3. **Algorithm**: Is the correct algorithm configured?
-
-Never transmit sensitive traffic without verifying encryption is active.
-
----
-
-## Mission Phases Overview
-
-<Steps>
-
-1. **Review Mission Brief**
-
-    Understand the training objectives and AURORA-7's inclined orbit characteristics.
-
-2. **Understand Inclined Orbits**
-
-    Answer a knowledge check about why step-track is necessary for AURORA-7.
-
-3. **Identify Current Target**
-
-    Check the ACU to see which satellite the antenna is currently tracking (TIDEMARK-1).
-
-4. **Acquire AURORA-7 via Program-Track**
-
-    Change the program-track target to AURORA-7 and move the antenna.
-
-5. **Understand Program-Track Limitations**
-
-    Learn why program-track alone isn't sufficient for inclined orbit satellites.
-
-6. **Verify Beacon Configuration**
-
-    Confirm Charlie's beacon IF configuration and understand how it was calculated.
-
-7. **Enable Step-Track Mode**
-
-    Switch the antenna tracking mode from program-track to step-track.
-
-8. **Acquire Beacon Lock**
-
-    Wait for the step-track algorithm to acquire and lock onto the beacon signal.
-
-9. **Configure Spectrum Analyzer**
-
-    Reconfigure to view the main downlink signal at 1,645 MHz IF.
-
-10. **Configure RX Modem**
-
-    Set the receiver modem to the correct frequency, bandwidth, and modulation.
-
-11. **Verify RX Signal Lock**
-
-    Confirm the receiver has locked with acceptable SNR.
-
-12. **Verify Encryption Understanding**
-
-    Check the Encryption card and confirm the security configuration.
-
-13. **Calculate TX IF Frequency**
-
-    Calculate the correct transmit IF using the BUC LO frequency.
-
-14. **Configure TX Modem**
-
-    Set the TX modem to the calculated 905 MHz IF.
-
-15. **Enable Transmit Path**
-
-    Unmute the BUC and enable the HPA to begin transmission.
-
-16. **Full Duplex Established**
-
-    Verify your understanding of the complete operational link.
-
-</Steps>
-
----
-
-## What You'll Need to Know
-
-This scenario draws on the following concepts covered in this read-ahead:
-
-- **Inclined Orbits**: Why legacy satellites drift and require special tracking
-- **Program-Track vs Step-Track**: When to use each mode and their limitations
-- **Beacon Tracking**: How step-track uses the beacon signal for optimization
-- **Frequency Conversion**: Calculating IF frequencies for both receive and transmit chains
-- **TX IF Calculation**: Understanding BUC upconversion (IF = RF - LO)
-- **Encryption Awareness**: Verifying security configuration before transmission
-
-<Aside type="tip">
-**Training Focus**
-
-This is a training scenario - take your time to understand each concept. Charlie has pre-configured the beacon and encryption settings so you can focus on the core skills: understanding inclined orbits, enabling step-track, configuring the RF chain, and calculating the TX IF frequency.
+<Aside type="caution">
+Never transmit without verifying encryption status. Pacific Rim traffic includes vessel position data and crew communications - both require protection.
 </Aside>
 
 ---
 
-## Key Takeaways
+## Link Establishment Checklist
 
-1. **Inclined Orbits**: Legacy satellites stop station-keeping to extend life, creating apparent north-south motion
-2. **Program-Track Limitations**: TLE-based predictions assume geostationary position, which breaks down for inclined orbits
-3. **Step-Track Advantage**: Active beacon tracking follows the actual satellite position
-4. **Acquisition Sequence**: Program-track for initial pointing, then step-track for precision
-5. **TX IF Calculation**: Different from RX - use IF = RF - LO for BUC upconversion
-6. **Encryption Verification**: Always verify security configuration before enabling transmission
+### Antenna Acquisition
 
-**Charlie's Summary:**
-*"Step-track is a critical skill for working with aging satellites. As more birds reach end-of-life and stop station-keeping, you'll use this technique more often. Today you learned the why and the how - that knowledge will serve you throughout your career in satellite operations."*
+- [ ] Current target: Verify antenna is on TIDEMARK-1
+- [ ] Change target: Select AURORA-7
+- [ ] Tracking mode: Program-track (for initial acquisition)
+- [ ] Antenna position: Wait for slew to complete
+- [ ] Beacon signal: Visible on spectrum analyzer at 1,085 MHz IF
+
+### Step-Track Transition
+
+- [ ] Tracking mode: Switch to step-track
+- [ ] Beacon lock: Acquired (ACU shows "Tracking")
+- [ ] Signal quality: Stable (step-track optimizing)
+
+### Receive Chain
+
+- [ ] Spectrum analyzer: Reconfigure for 1,645 MHz IF, 24 MHz span
+- [ ] RX modem frequency: 1,645 MHz
+- [ ] RX modem bandwidth: 24 MHz
+- [ ] RX modem modulation: QPSK, FEC 3/4
+- [ ] Carrier lock: Confirmed
+- [ ] C/N ratio: ≥ 10 dB
+
+### Transmit Chain
+
+- [ ] TX modem frequency: 905 MHz (calculated from RF - LO)
+- [ ] TX modem bandwidth: 24 MHz
+- [ ] TX modem modulation: QPSK, FEC 3/4
+- [ ] Encryption: Verified active
+- [ ] BUC: Unmuted
+- [ ] HPA: Enabled
+
+### Full Duplex Verification
+
+- [ ] RX modem: Locked with margin
+- [ ] TX path: Active, no alarms
+- [ ] Dashboard: All indicators green
+
+---
+
+## Quick Reference
+
+### Why Step-Track?
+
+| Program-Track | Step-Track |
+|---------------|------------|
+| Uses TLE orbital predictions | Uses beacon signal strength |
+| Assumes satellite at fixed position | Follows actual satellite position |
+| No signal feedback | Continuously optimizes pointing |
+| Works for geostationary satellites | Required for inclined orbits |
+
+### Acquisition Sequence
+
+1. Program-track points antenna to approximate position
+2. Beacon becomes visible on spectrum analyzer
+3. Switch to step-track mode
+4. ACU optimizes pointing using beacon signal
+5. Configure receive and transmit chains
+
+---
+
+## End of Briefing
+
+Maine is standing by to hand over AURORA-7 traffic once you've established the link. Pacific Rim's fishing fleet doesn't know or care about our internal station transfers - they just need connectivity.
+
+Charlie configured the beacon and encryption. The rest is on you: acquire the satellite, enable step-track, configure the modems, and bring up the full duplex link.
+
+This is your first inclined-orbit satellite. Understand why step-track matters - you'll work with more aging birds as they reach end-of-life and stop station-keeping.
+
+Get the link up, and Maine can release the service to Vermont.

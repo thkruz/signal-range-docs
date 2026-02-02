@@ -1,188 +1,206 @@
 ---
-title: Scenario 2 - Scheduled Maintenance
-description: Power down and recovery procedures for TIDEMARK-1 antenna maintenance
-lastUpdated: 2025-12-29
+title: 'Scenario 2 - Scheduled Maintenance'
+description: 'Power down and recovery procedures for TIDEMARK-1 antenna maintenance'
+lastUpdated: 2026-02-02
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 
-**Duration:** 20-30 min
+**Duration:** 20-30 minutes
 
 **Difficulty:** Beginner
 
-**Mission Type:** Tutorial
-
-### Learning Objectives
-
-By the end of this scenario, you will be able to:
-- Execute a safe RF equipment shutdown sequence
-- Understand why sequence order matters for personnel safety
-- Command antenna positioning for maintenance access
-- Restore a satellite link following proper power-up procedures
-- Verify link acquisition using beacon signals
-
-### Mission Briefing
-
-It's your second day at North Atlantic Teleport Services. The maintenance crew needs to perform work on the TIDEMARK-1 antenna feed assembly - specifically replacing a waveguide flange gasket. This requires taking the link offline, moving the antenna to maintenance position for safe access, then restoring full service after the maintenance window completes.
-
-This is your first time actually controlling the equipment. Charlie Brooks will provide all frequency values and configuration settings - you just need to execute the procedures in the correct sequence.
-
-**Critical Mission Context:**
-- **Maintenance Required**: Waveguide flange gasket replacement on antenna feed
-- **Safety Priority**: RF radiation can harm personnel - proper shutdown sequence is mandatory
-- **Service Impact**: TIDEMARK-1 will be offline for approximately 15 minutes
-- **Customer Notification**: SeaLink has been notified of the maintenance window
-- **Your Role**: Execute power-down and recovery procedures under Charlie's supervision
-
-**Who's Supervising:**
-- **Charlie Brooks**: Senior operator ensuring you follow proper procedures
+**Mission Type:** Supervised Operations
 
 ---
 
-## RF Safety Brief
+## Shift Turnover Notes
+
+**Date:** Tuesday, 0930 Local
+
+**Station:** Vermont (VT-01)
+
+**Operator on Duty:** You
+
+**Supervising:** Charlie Brooks (Senior Operator)
+
+---
+
+### Morning Briefing from Charlie
+
+Charlie pulled you aside after the morning standup:
+
+> "Good timing on your second day - we've got a maintenance window this morning. Nothing complicated, just a waveguide gasket replacement on the TIDEMARK-1 feed. But it's a good chance for you to run through a full power-down and recovery sequence.
+>
+> I'll be right here if you need me, but I want you at the controls. The maintenance crew is already on site - they're waiting on us to secure the RF before they climb up.
+>
+> Take your time. Get it right. Speed comes later."
+
+---
+
+### Active Services
+
+| Satellite | Customer | Service Type | Status |
+|-----------|----------|--------------|--------|
+| TIDEMARK-1 | SeaLink Maritime | C-band VSAT | Operational |
+
+SeaLink has been notified of the maintenance window. They've scheduled non-critical traffic around our downtime, so there's no pressure - but they do expect us back online within 30 minutes.
+
+---
+
+## Maintenance Work Order
+
+**Work Order #:** VT-2026-0142
+
+**Requested By:** Facilities
+
+**Scheduled:** 1000-1030 Local
+
+**Work Description:**
+> Replace waveguide flange gasket on TIDEMARK-1 antenna feed assembly. Gasket showing signs of wear during quarterly inspection. Preventive replacement to avoid moisture ingress.
+
+**Crew:** Mike Chen (Lead), rotating apprentice
+
+**Requirements:**
+- RF transmit chain secured before crew approaches feed
+- Antenna positioned for feed access (maintenance position)
+- Two-way radio confirmation before crew ascent
+
+---
+
+## RF Safety Acknowledgment
 
 <Aside type="danger">
-**MANDATORY READING** - You must acknowledge this safety brief before maintenance work can begin.
+This safety brief is part of your operator qualification record. Read it completely before proceeding with any maintenance power-down.
 </Aside>
 
-### Hazard Overview
+### Hazard Summary
 
-The transmit chain at VT-01 operates at power levels capable of causing serious injury. The High Power Amplifier (HPA) is capable of outputs up to several hundred watts of RF energy at C-band frequencies (5.85-6.725 GHz). At these power levels:
+The transmit chain at VT-01 includes a High Power Amplifier (HPA) capable of several hundred watts at C-band frequencies (5.85-6.725 GHz). At these levels:
 
-- **Thermal burns** can occur from direct exposure to the antenna feed
-- **RF radiation exposure** can cause tissue heating, particularly dangerous to eyes and reproductive organs
-- **Induced currents** in metal objects near the feed can cause burns on contact
+- Thermal burns from direct feed exposure
+- RF radiation hazard to eyes and tissue
+- Induced currents in metal objects near the feed
 
-### Exposure Limits
+### Exclusion Zone
 
-NATS follows OSHA and FCC RF exposure guidelines:
-- **Occupational limit at C-band**: 10 mW/cm² averaged over 6 minutes
-- **Exclusion zone**: No personnel within 3 meters of feed horn while transmitting
-- **Time-weighted exposure**: Even brief exposures at high power can exceed safe limits
-
-### Required Procedures
-
-Before any personnel approach the antenna feed assembly:
-
-1. **Transmit chain must be fully de-energized** - HPA output disabled AND powered off
-2. **BUC must be muted** - Prevents any residual RF output
-3. **Lockout/Tagout** - Control room maintains positive control of transmit enable
-4. **Verbal confirmation** - Two-way radio confirmation that RF is secured before crew approaches
+No personnel within 3 meters of the feed horn while the transmit chain is energized. This applies even with the HPA disabled but BUC unmuted - residual RF can still cause injury at close range.
 
 ### Your Responsibility
 
-As the operator on console, you are the last line of defense. Never re-enable transmit equipment while maintenance personnel are in the exclusion zone. If in doubt, verify crew position before any transmit chain changes.
+As the operator on console, you control access to the exclusion zone. **Never re-enable transmit equipment while maintenance personnel are on the antenna structure.** Verbal confirmation via radio is required before any transmit chain changes.
 
 ---
 
-## Background: The RF Signal Chain
+## TIDEMARK-1 Operations Reference
 
-Understanding the equipment you're controlling helps you understand why sequence matters.
+### Frequency Allocation
 
-### Transmit Path (Uplink)
+| Parameter | RF (MHz) | LO (MHz) | IF (MHz) |
+|-----------|----------|----------|----------|
+| Beacon (Downlink) | 4,175.5 | 5,250 (LNB) | 1,074.5 |
 
-```
-Modem → BUC → HPA → Antenna → Satellite
-```
+### Antenna Position
 
-- **BUC (Block Upconverter)**: Converts the intermediate frequency (IF) signal from the modem to the RF frequency for transmission. Outputs milliwatts of power.
-- **HPA (High Power Amplifier)**: Amplifies the RF signal to hundreds of watts for transmission to the satellite. This is the dangerous component.
+| Parameter | Operational | Maintenance |
+|-----------|-------------|-------------|
+| Azimuth | 161.8° | 0° |
+| Elevation | 34.2° | 5° |
+| Tracking Mode | Program-track | Manual |
 
-The HPA is downstream from the BUC, so even if the BUC is muted, an enabled HPA could amplify noise or spurious signals. Always disable the HPA first when shutting down.
+The maintenance position (elevation 5°) tilts the dish low enough for crew access to the feed assembly while clearing horizon obstructions.
 
-### Receive Path (Downlink)
-
-```
-Satellite → Antenna → LNB → Receiver/Modem
-```
-
-- **LNB (Low Noise Block)**: Amplifies the weak satellite signal and converts it from RF to IF for the receiver. Contains sensitive electronics that need thermal stabilization.
-
-The LNB doesn't pose a safety hazard, but it needs time to thermally stabilize after power-up before measurements are accurate.
-
-### Why Sequence Matters
-
-**Shutdown sequence** (HPA → BUC → LNB → Antenna):
-- Disable highest-power components first to eliminate hazard quickly
-- Keep antenna pointed at satellite until RF is secured (maintains link until last moment)
-- Move antenna only after all RF is off
-
-**Startup sequence** (Antenna → LNB → verify → BUC → HPA):
-- Point antenna before powering receive chain (ensures signal path exists)
-- Verify beacon reception before enabling transmit (confirms pointing is correct)
-- Enable low-power stages before high-power (BUC before HPA)
-
----
-
-## Equipment Reference
-
-### Antenna Control Unit (ACU)
-
-The ACU commands antenna position and tracking mode:
-
-| Mode | Description |
-|------|-------------|
-| **Program Track** | Antenna follows calculated satellite position based on orbital data |
-| **Maintenance** | Moves antenna to stow position (Az 0°, El 5°) for safe access |
-
-The maintenance position (elevation 5°) tilts the dish low enough for crew access to the feed assembly while keeping it above horizon obstructions.
-
-### LNB Parameters for TIDEMARK-1
-
-| Parameter | Value | Purpose |
-|-----------|-------|---------|
-| LO Frequency | 5,250 MHz | Local oscillator for frequency conversion |
-| Gain | 60 dB | Signal amplification |
-| Thermal Stabilization | ~60 seconds | Time for electronics to reach stable operating temperature |
-
-**IF Frequency Calculation**: The spectrum analyzer displays IF (intermediate frequency), not RF. For C-band with a 5,250 MHz LO:
-- TIDEMARK-1 beacon transmits at 4,175.5 MHz RF
-- IF = LO - RF = 5,250 - 4,175.5 = **1,074.5 MHz IF**
-
-### Antenna Position for TIDEMARK-1
+### LNB Parameters
 
 | Parameter | Value |
 |-----------|-------|
-| Azimuth | 161.8° |
-| Elevation | 34.2° |
-| Tracking Mode | Program Track |
+| LO Frequency | 5,250 MHz |
+| Gain | 60 dB |
+| Thermal Stabilization | ~60 seconds after power-up |
 
 ---
 
-## Procedure Overview
+## Equipment Status at Shift Start
 
-### Pre-Maintenance Preparation
+| Equipment | Current State | Notes |
+|-----------|---------------|-------|
+| Antenna | Program-track on TIDEMARK-1 | Operational position |
+| LNB | Powered, reference locked | Receiving beacon |
+| BUC | Powered, muted | Standard standby |
+| HPA | Powered, output disabled | Ready state |
 
-Before any equipment changes:
+---
 
-1. **Open Mission Brief** - Review the maintenance documentation
-2. **Safety Briefing** - Acknowledge RF safety procedures
+## Power Sequencing Reference
 
-### Power-Down Sequence
+### Shutdown Sequence (Transmit → Receive → Antenna)
 
-The correct order is critical for safety:
+Disable highest-power components first to eliminate hazard quickly:
 
-1. **Disable HPA Output** - Stop RF output from the amplifier
-2. **Power Off HPA** - Completely power down the High Power Amplifier
-3. **Mute BUC** - Mute the Block Upconverter RF output
-4. **Power Down LNB** - Shutdown receive path
-5. **Move Antenna to Maintenance Position** - Command to Az 0°, El 5° for feed access
+| Step | Action | Why |
+|------|--------|-----|
+| 1 | Disable HPA output | Stop RF radiation |
+| 2 | Power off HPA | Fully de-energize amplifier |
+| 3 | Mute BUC | Secure upconverter |
+| 4 | Power down LNB | Shutdown receive path |
+| 5 | Command antenna to maintenance position | Safe access for crew |
 
-### Power-Up Sequence
+### Startup Sequence (Antenna → Receive → Transmit)
 
-Reverse order with verification steps:
+Point and verify before enabling transmit:
 
-1. **Repoint Antenna** - Return to operational position (Az 161.8°, El 34.2°) using program-track mode
-2. **Restore LNB** - Power on with LO 5,250 MHz, Gain 60 dB
-3. **Wait for Thermal Stabilization** - LNB indicator will turn green when ready
-4. **Verify Beacon** - Confirm TIDEMARK-1 beacon at 4,175.5 MHz RF (1,074.5 MHz IF)
-5. **Unmute BUC** - Enable RF path
-6. **Power On HPA** - Power up the High Power Amplifier
-7. **Enable HPA Output** - Enable output to restore full service
+| Step | Action | Why |
+|------|--------|-----|
+| 1 | Command antenna to operational position | Establish signal path |
+| 2 | Power on LNB (5,250 MHz LO, 60 dB gain) | Enable receive chain |
+| 3 | Wait for LNB thermal stabilization | Indicator turns green |
+| 4 | Verify beacon on spectrum analyzer | Confirm pointing correct |
+| 5 | Unmute BUC | Enable TX path |
+| 6 | Power on HPA | Energize amplifier |
+| 7 | Enable HPA output | Restore full service |
 
-### Success Criteria
+<Aside type="caution">
+Never enable the HPA with the BUC muted - you'll amplify noise and potentially damage the amplifier. Always verify BUC is unmuted before enabling HPA output.
+</Aside>
 
-- All safety procedures followed in correct sequence
-- Equipment restored to operational status
-- Beacon visible on spectrum analyzer at 1,074.5 MHz IF
-- Link restored within authorized maintenance window
+---
+
+## Pre-Maintenance Checklist
+
+### Before Calling "RF Secured"
+
+- [ ] HPA output: Disabled
+- [ ] HPA power: Off
+- [ ] BUC: Muted
+- [ ] LNB: Powered off
+- [ ] Antenna: At maintenance position (Az 0°, El 5°)
+- [ ] Radio confirmation: Received from maintenance lead
+
+---
+
+## Post-Maintenance Verification Checklist
+
+### Receive Path
+- [ ] LNB reference: Locked (indicator green)
+- [ ] Antenna position: 161.8° Az, 34.2° El
+- [ ] Tracking mode: Program-track
+- [ ] Beacon: Visible at 1,074.5 MHz IF
+- [ ] Signal strength: Nominal
+
+### Transmit Path
+- [ ] BUC: Unmuted
+- [ ] HPA: Powered on
+- [ ] HPA output: Enabled
+- [ ] No alarms on dashboard
+
+---
+
+## End of Briefing
+
+The maintenance crew is standing by. Mike's done this replacement dozens of times - he just needs you to secure the RF so his team can work safely.
+
+Run through the shutdown sequence, confirm with Mike on the radio, then hold position until he calls the work complete. Take your time on the recovery - SeaLink would rather wait an extra five minutes than have you rush and miss a step.
+
+Charlie's watching, but this is your show.
+
+You've got this.

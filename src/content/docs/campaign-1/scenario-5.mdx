@@ -1,10 +1,9 @@
 ---
 title: 'Scenario 5 - Interference Hunt'
 description: 'Diagnose and mitigate in-band interference affecting TIDEMARK-1 service using spectrum analysis and notch filtering'
-lastUpdated: 2025-12-29
+lastUpdated: 2026-02-02
 ---
 
-import { Steps } from '@astrojs/starlight/components';
 import { Aside } from '@astrojs/starlight/components';
 
 **Duration:** 15-20 minutes
@@ -13,483 +12,201 @@ import { Aside } from '@astrojs/starlight/components';
 
 **Mission Type:** Troubleshooting
 
-**Time Limit:** 30 minutes
+---
 
-### Mission Briefing
+## Shift Context
 
-SeaLink Global Communications has filed a trouble ticket: their customer is reporting packet errors on TIDEMARK-1. The C/N ratio has dropped significantly, but the cause isn't immediately obvious.
+**Date:** Wednesday, 1430 Local
 
-The spectrum analyzer is currently configured for beacon tracking with a narrow span. You'll need to reconfigure it to investigate the main downlink signal and find what's causing the degradation.
+**Station:** Vermont (VT-01)
 
-**Mission Context:**
-- **Satellite**: TIDEMARK-1
-- **Ground Station**: Vermont (VT-01)
-- **Reported Problem**: Degraded C/N ratio, packet errors
-- **Your Task**: Find the interference source and restore service
+**Operator on Duty:** You
 
-**Who's Guiding You:**
-- **Charlie Brooks**: Will check in as you work through the diagnosis.
+**Supervisor on Shift:** Charlie Brooks
 
 ---
 
-## Background: The Interference Problem
+### Turnover from Morning Shift
 
-Interference is one of the most common and challenging problems in satellite communications. Unlike equipment failures that produce obvious symptoms, interference often manifests subtly - degraded margins, increased error rates, or unexplained signal quality variations.
+Morning operator logged the following at 0800:
 
-### Why Interference Matters
+> TIDEMARK-1 link nominal at handoff. C/N running 14.2 dB, well within margin. No weather concerns. SeaLink Global's contract renewal meeting is scheduled for Friday - they've been happy with service quality this quarter.
 
-Satellite transponders are shared resources. Multiple operators, sometimes dozens, share the same orbital slot and frequency bands. This sharing is managed through careful coordination:
-
-- **Frequency planning**: Assigning non-overlapping frequency slots
-- **Polarization reuse**: Using H and V polarizations to double capacity
-- **Power limits**: Preventing one user from overwhelming others
-- **Antenna patterns**: Minimizing spillover to adjacent satellites
-
-When any of these coordination mechanisms fail, interference results.
-
-### The Economics of Interference
-
-Satellite capacity is expensive. A single 36 MHz transponder on a commercial satellite might cost $1-3 million per year to lease. When interference degrades that capacity:
-
-- **Service Level Agreements (SLAs)** trigger penalties
-- **Customers experience** dropped connections, slow speeds, or complete outages
-- **Reputation damage** affects future business
-- **Root cause investigation** consumes engineering resources
-
-Professional operators develop systematic approaches to interference hunting because the cost of prolonged interference far exceeds the cost of skilled troubleshooting.
+Nothing unusual. You've been monitoring routine operations all afternoon when the trouble ticket comes in.
 
 ---
 
-## Understanding Signal Quality: C/N Ratio
+## Trouble Ticket
 
-### What is C/N?
+**Ticket #:** NOC-2026-0612
 
-Carrier-to-Noise ratio (C/N) measures how much stronger your desired signal is compared to the noise floor. Expressed in decibels (dB), it's the fundamental metric of signal quality in satellite communications.
+**Opened:** 1425 Local
 
-**The Math:**
-```
-C/N (dB) = Carrier Power (dBm) - Noise Power (dBm)
-```
+**Source:** SeaLink Global Communications (customer-initiated)
 
-**Typical Values:**
-| C/N Range | Signal Quality | Service Impact |
-|-----------|---------------|----------------|
-| > 15 dB | Excellent | Full throughput, maximum modulation |
-| 10-15 dB | Good | Normal operations |
-| 6-10 dB | Marginal | Reduced modulation, increased errors |
-| < 6 dB | Poor | Service degradation or loss |
+**Priority:** High
 
-### Why C/N Drops
+**Customer Report:**
+> Packet errors on TIDEMARK-1 service starting approximately 1400. End users reporting degraded throughput and intermittent connectivity. C/N appears lower than normal.
 
-C/N can degrade for many reasons:
-
-**Reduced Carrier Power:**
-- Antenna mispointing (signal not captured efficiently)
-- Rain fade (atmospheric absorption)
-- Satellite power reduction (eclipse, load shedding)
-- Equipment degradation (LNB aging, cable losses)
-
-**Increased Noise:**
-- Thermal noise (always present, temperature-dependent)
-- Interference (unwanted signals adding to noise floor)
-- Intermodulation (equipment generating spurious signals)
-- Solar noise (during equinox sun transit)
-
-When troubleshooting C/N degradation, you must determine which factor changed - the carrier went down, or the noise went up.
+**Charlie's Note:**
+> *"Just saw this come in. The spectrum analyzer is still configured for beacon tracking from this morning's pointing verification. You'll need to widen the view to see what's happening on the main signal. Start with the receiver C/N - see how bad it actually is."*
 
 ---
 
-## Spectrum Analysis Fundamentals
+## Active Services
 
-### Reading the Spectrum Analyzer
+| Satellite | Customer | Service Type | Status at Shift Start |
+|-----------|----------|--------------|----------------------|
+| TIDEMARK-1 | SeaLink Global | Maritime Data | Operational (nominal C/N: 14+ dB) |
 
-The spectrum analyzer displays signal power (vertical axis) versus frequency (horizontal axis). Learning to interpret this display is essential for RF troubleshooting.
-
-**Key Display Elements:**
-
-| Element | What It Shows | What to Look For |
-|---------|--------------|------------------|
-| Noise floor | Minimum detectable power | Should be flat and consistent |
-| Signal peak | Carrier power | Height above noise floor = C/N |
-| Signal shape | Modulation type | QPSK/8PSK: "haystack", CW: spike |
-| Bandwidth | Occupied spectrum | Should match expected value |
-| Spurious signals | Unwanted emissions | Anything unexpected |
-
-### Signal Shapes and What They Mean
-
-**Continuous Wave (CW) Beacon:**
-A pure tone appears as a narrow spike on the spectrum. Beacons are intentionally simple - they exist only to provide a frequency and power reference for antenna tracking.
-
-**Modulated Carriers (QPSK, 8PSK, etc.):**
-Digitally modulated signals spread their energy across bandwidth, appearing as a raised "haystack" or plateau. The width depends on symbol rate; the shape depends on filtering.
-
-**Noise:**
-Random thermal noise appears as a relatively flat floor across all frequencies. Elevated noise in specific regions suggests interference.
-
-### Configuring for Different Tasks
-
-**Beacon Tracking Setup:**
-- Narrow span (few kHz) to see the CW spike clearly
-- Low RBW for maximum sensitivity to weak beacons
-- Centered on beacon IF frequency
-
-**Wideband Signal Analysis:**
-- Wide span (50-100 MHz) to see full signal and surrounding spectrum
-- Higher RBW for faster sweeps
-- Centered on signal of interest
-
-**Interference Hunting:**
-- Wide enough span to see interference source
-- RBW narrow enough to resolve interference characteristics
-- May need to scan across the full IF band
-
-<Aside type="note">
-**Resolution Bandwidth (RBW) Tradeoff**
-
-Lower RBW provides better frequency resolution and lower noise floor, but slower sweep time. Higher RBW sweeps faster but may miss narrowband interference. When hunting interference, start wide and zoom in once you've located the problem.
-</Aside>
+SeaLink Global runs maritime data services for commercial shipping. Their contract renewal meeting is Friday. Service degradation this week would be poorly timed.
 
 ---
 
-## The RF Signal Path
+## TIDEMARK-1 Operations Reference
 
-### Frequency Conversion in the Receive Chain
+### Frequency Allocation
 
-Satellite signals arrive at RF (Radio Frequency) but are processed at IF (Intermediate Frequency). Understanding this conversion is essential for spectrum analysis.
+| Parameter | RF (MHz) | LO (MHz) | IF (MHz) |
+|-----------|----------|----------|----------|
+| Beacon (Downlink) | 4,175.5 | 5,250 (LNB) | 1,074.5 |
+| Main Carrier (Downlink) | 3,718 | 5,250 (LNB) | 1,532 |
 
-**The LNB's Role:**
+### Downlink Signal Parameters
 
-The Low Noise Block downconverter (LNB) performs two functions:
-1. **Amplification**: Boosts the weak satellite signal (typically 60 dB gain)
-2. **Frequency conversion**: Translates RF to IF using a Local Oscillator (LO)
-
-**C-Band Conversion (High-Side LO):**
-
-For C-band with a 5,250 MHz LO:
-```
-IF = LO - RF
-```
-
-| Signal Type | RF Frequency | IF Frequency |
-|-------------|-------------|--------------|
-| TIDEMARK-1 Beacon | 4,175.5 MHz | 1,074.5 MHz |
-| Main Downlink | 3,718 MHz | 1,532 MHz |
-
-**Why This Matters:**
-
-When you see a signal on the spectrum analyzer at a particular IF frequency, you must convert back to RF to understand what satellite signal you're viewing. Interference that appears at one IF frequency corresponds to a specific RF frequency that may help identify its source.
-
-### Vermont Ground Station Equipment
-
-| Equipment | Key Parameters |
-|-----------|---------------|
-| **Antenna** | 9-meter C-band, program-track mode |
-| **Position** | Az: 161.8°, El: 34.2° |
-| **LNB** | 5,250 MHz LO, 60 dB gain |
-| **Receiver** | 1,532 MHz IF, 36 MHz BW, QPSK 3/4 |
-| **GPSDO** | Locked, providing 10 MHz reference |
+| Parameter | Value |
+|-----------|-------|
+| Bandwidth | 36 MHz |
+| Modulation | QPSK |
+| FEC Rate | 3/4 |
+| Nominal C/N | 14-16 dB |
+| Minimum C/N | 8 dB (threshold) |
 
 ---
 
-## Types of Satellite Interference
+## Vermont Station Equipment Status
 
-### Adjacent Channel Interference
+| Equipment | Status | Notes |
+|-----------|--------|-------|
+| Antenna | Program-track on TIDEMARK-1 | Az: 161.8°, El: 34.2° |
+| LNB | 5,250 MHz LO, powered | Reference locked |
+| GPSDO | Locked | 10 MHz reference nominal |
+| Receiver Modem | 1,532 MHz IF, 36 MHz BW | Check C/N display |
 
-Signals in neighboring frequency slots that "spill over" into your bandwidth due to imperfect filtering. Usually appears as elevated noise at the edges of your signal.
+### Spectrum Analyzer Configuration (Current)
 
-**Mitigation:** Tighter bandpass filtering, frequency coordination, guard bands.
+The spectrum analyzer is configured for beacon observation from this morning's pointing check:
 
-### Co-Channel Interference
-
-Another signal on the exact same frequency, either from an adjacent satellite or a terrestrial source. Appears as a second signal overlaid on yours.
-
-**Mitigation:** Antenna pointing optimization, polarization adjustment, regulatory action.
-
-### Cross-Polarization Interference
-
-Signals on the orthogonal polarization that "leak" into your polarization due to imperfect isolation. This is particularly relevant for this scenario.
-
-**Mitigation:** Polarization alignment, notch filtering, coordination with interfering party.
-
-### Intermodulation Interference
-
-Non-linear behavior in amplifiers creates spurious signals at predictable frequencies (sum and difference of input frequencies). Often originates in the ground station's own equipment.
-
-**Mitigation:** Reduce drive levels, improve amplifier linearity, filtering.
-
----
-
-## Cross-Polarization: A Deeper Look
-
-### How Polarization Reuse Works
-
-Electromagnetic waves oscillate in a plane. By using two orthogonal polarizations (Horizontal and Vertical, or Left-Hand and Right-Hand Circular), satellite operators can transmit two independent signals on the same frequency - effectively doubling capacity.
-
-**Ideal Isolation:**
-In theory, perfectly orthogonal polarizations are completely independent - a receiver tuned to H polarization sees zero signal from a V-polarized transmission.
-
-**Real-World Isolation:**
-In practice, isolation is limited by:
-
-| Factor | Typical Impact | Notes |
-|--------|---------------|-------|
-| Feed alignment | 25-35 dB | Mechanical precision at antenna feed |
-| Atmospheric effects | 20-30 dB | Rain depolarization in heavy storms |
-| Satellite antenna | 30-35 dB | Spacecraft feed design |
-| Cross-polar discrimination | 25-30 dB | Overall system performance |
-
-### When Cross-Pol Becomes a Problem
-
-With 25-30 dB isolation, a signal that's 10 dB stronger than yours on the orthogonal polarization will appear 15-20 dB below your signal - often visible but not problematic.
-
-However, when:
-- The interfering signal is much stronger than expected
-- Your signal is weaker than normal
-- The interfering signal is narrowband (concentrated power)
-
-...the cross-pol leakage can rise above your noise floor and cause measurable degradation.
-
-**The Scenario Setup:**
-
-Another operator is transmitting a relatively high-power narrowband signal on the orthogonal polarization. A small fraction leaks through into your polarization. Because it's narrowband (concentrated in a small frequency range), it appears as a visible spike even though the total leaked power is small.
-
----
-
-## Automatic Gain Control (AGC)
-
-### Why Receivers Use AGC
-
-Satellite signal levels vary significantly:
-- **Rain fade**: Can cause 10+ dB variation
-- **Antenna pointing**: Small errors reduce received power
-- **Satellite variations**: Eclipse seasons, load changes
-
-The receiver must handle this dynamic range while maintaining optimal performance. AGC automatically adjusts gain to keep the signal at the ideal level for demodulation.
-
-### How AGC Works
-
-```
-1. Measure total power in the passband
-2. Compare to target level
-3. If too high → reduce gain
-4. If too low → increase gain
-5. Repeat continuously
-```
-
-**AGC Parameters:**
-
-| Parameter | Purpose | Typical Value |
-|-----------|---------|---------------|
-| Target level | Optimal demodulator input | -30 dBm |
-| Attack time | How fast to reduce gain | 10 ms |
-| Release time | How fast to increase gain | 100 ms |
-| Gain range | Min/max adjustment | -60 to +10 dB |
-
-### The AGC Problem with In-Band Interference
-
-AGC measures **total power** - it cannot distinguish between your wanted signal and interference. When a strong interference spike appears:
-
-1. AGC sees increased total power
-2. AGC reduces gain to prevent overload
-3. **Both** your signal and the interference are attenuated equally
-4. Your signal-to-noise ratio degrades
-5. Demodulator performance suffers
-
-**The Counterintuitive Result:**
-
-A narrowband spike affecting only 3% of your bandwidth can degrade your **entire** signal because AGC responds to total power, not spectral distribution.
-
-<Aside type="caution">
-**This is Why C/N Drops**
-
-In this scenario, the interference spike tricks the AGC into reducing gain. Your wanted carrier power drops, but thermal noise remains constant. The result: reduced C/N across the entire signal, even though the interference only occupies a small portion of the bandwidth.
-</Aside>
-
----
-
-## Notch Filters: Surgical Interference Removal
-
-### What is a Notch Filter?
-
-A notch filter (band-stop or band-reject filter) attenuates a narrow frequency range while passing frequencies above and below with minimal loss.
-
-**Frequency Response:**
-```
-     │ Pass    ┌──────┐    Pass
-Power│ Band    │Notch │    Band
-     │ ────────┘      └────────
-     └──────────────────────────▶
-            Frequency
-```
-
-### Key Notch Filter Parameters
-
-| Parameter | Description | Considerations |
-|-----------|-------------|----------------|
-| **Center Frequency** | Where the notch is placed | Must match interference precisely |
-| **Bandwidth** | Width of the attenuation region | Wide enough to cover interference, narrow enough to preserve signal |
-| **Depth** | Amount of attenuation | 40+ dB typically needed |
-| **Insertion Loss** | Loss in passband | Should be minimal (< 1 dB) |
-| **Group Delay** | Phase variation across frequency | Can cause signal distortion if excessive |
-
-### When to Use Notch Filters
-
-**Good Candidates for Notching:**
-- Narrowband interference (CW tones, narrowband carriers)
-- Stable interference (not frequency-hopping)
-- Interference at known, fixed frequency
-- Interference not centered on your carrier
-
-**Poor Candidates for Notching:**
-- Broadband interference (spread across your signal)
-- Interference at your carrier center frequency
-- Intermittent or frequency-varying interference
-- Multiple interference sources at different frequencies
-
-### Filter Precision Requirements
-
-**Too Narrow:**
-- Interference "shoulders" leak around the notch
-- Interference power still affects AGC
-- Incomplete mitigation
-
-**Too Wide:**
-- Removes wanted signal along with interference
-- Increased insertion loss
-- Potential phase distortion from steep filter edges
-
-**Just Right:**
-- Covers interference bandwidth with small margin
-- Minimal impact on wanted signal
-- AGC normalizes, C/N recovers
-
----
-
-## Systematic Troubleshooting Approach
-
-### The Interference Hunting Process
-
-Professional operators follow a systematic approach:
-
-**1. Verify the Problem**
-- Confirm customer complaints with measurements
-- Establish baseline expectations (what should C/N be?)
-- Document current conditions
-
-**2. Characterize the Symptom**
-- What parameter is degraded? (C/N, BER, packet loss)
-- When did it start? (sudden or gradual)
-- Is it constant or intermittent?
-
-**3. Visualize the Spectrum**
-- Configure analyzer for appropriate span and RBW
-- Compare to known-good baseline
-- Identify anomalies
-
-**4. Characterize the Interference**
-- Frequency (convert IF to RF)
-- Bandwidth (narrowband spike vs. broadband elevation)
-- Power level (how far above noise floor)
-- Stability (constant, drifting, intermittent)
-
-**5. Identify the Source**
-- Frequency suggests origin (satellite band, terrestrial, intermod)
-- Bandwidth suggests type (CW beacon, modulated carrier, noise)
-- Timing correlates with events (satellite maneuvers, weather, time of day)
-
-**6. Apply Mitigation**
-- Notch filter for narrowband
-- Coordination for satellite sources
-- Regulatory action for illegal transmissions
-
-**7. Verify Restoration**
-- Confirm C/N returned to expected level
-- Verify customer service restored
-- Document the solution
-
----
-
-## Equipment Quick Reference
-
-### Initial Spectrum Analyzer State
-
-The spectrum analyzer starts configured for beacon observation:
-
-| Parameter | Initial Value | Purpose |
-|-----------|--------------|---------|
+| Parameter | Current Value | Notes |
+|-----------|--------------|-------|
 | Center Frequency | 1,074.5 MHz | Beacon IF |
 | Span | 2 kHz | Narrow for CW beacon |
 | RBW | 1 kHz | High sensitivity |
 
-This configuration cannot show the main 36 MHz signal or wideband interference.
-
-### TIDEMARK-1 Signal Information
-
-| Signal | RF Frequency | IF Frequency | Bandwidth |
-|--------|-------------|--------------|-----------|
-| Beacon | 4,175.5 MHz | 1,074.5 MHz | CW (< 1 kHz) |
-| Main Downlink | 3,718 MHz | 1,532 MHz | 36 MHz |
+This configuration cannot show the 36 MHz main signal or wideband interference. You'll need to reconfigure.
 
 ---
 
-## Mission Phases Overview
+## Interference Mitigation Equipment
 
-<Steps>
+### Notch Filter Quick Reference
 
-1. **Confirm Signal Degradation**
+The receive chain includes a configurable notch filter for narrowband interference removal.
 
-   Verify the customer complaint by checking the receiver modem's C/N ratio display.
+| Parameter | Range | Notes |
+|-----------|-------|-------|
+| Center Frequency | 950-2150 MHz | Set to interference IF frequency |
+| Bandwidth | 100 kHz - 10 MHz | Match interference width |
+| Depth | 40+ dB | Fixed attenuation in notch |
+| State | Enabled/Disabled | Filter bypassed when disabled |
 
-2. **Widen Spectrum View**
-
-   Reconfigure the spectrum analyzer to see the full signal bandwidth rather than just the beacon.
-
-3. **Center on Downlink Signal**
-
-   Move the display to observe the main 36 MHz downlink signal.
-
-4. **Identify Interference**
-
-   Look for anything within the signal bandwidth that shouldn't be there.
-
-5. **Characterize the Interference**
-
-   Determine the interference bandwidth and compare to your main signal.
-
-6. **Understand the Interference Source**
-
-   Based on characteristics observed, determine the likely cause.
-
-7. **Understand the AGC Impact**
-
-   Connect the interference to the C/N degradation mechanism.
-
-8. **Configure Notch Filter**
-
-   Apply surgical filtering to remove the interference while preserving the signal.
-
-9. **Verify Service Restored**
-
-   Confirm C/N has recovered and customer service is restored.
-
-</Steps>
-
----
-
-## What You'll Need to Know
-
-This scenario draws on the following concepts covered in this read-ahead:
-
-- **C/N Ratio**: How to interpret receiver signal quality measurements
-- **Spectrum Analysis**: Configuring the analyzer span, RBW, and center frequency for different tasks
-- **Frequency Conversion**: Converting between RF and IF frequencies using the LNB LO
-- **Interference Recognition**: What different types of interference look like on the spectrum
-- **Cross-Polarization**: Why signals on the orthogonal polarization can leak into your receive path
-- **AGC Behavior**: How the receiver's automatic gain control responds to total power
-- **Notch Filtering**: When and how surgical frequency removal can mitigate narrowband interference
-
-<Aside type="tip">
-**Professional Context**
-
-Interference hunting is a core skill in satellite operations. NOC operators deal with interference cases daily, often under time pressure from SLA penalties. The systematic approach covered here - verify, characterize, identify, mitigate, verify - is the same process used in professional operations centers worldwide.
+<Aside type="caution">
+Notch filters remove signal energy at the configured frequency. If placed incorrectly, you'll remove wanted signal instead of interference. Verify the interference frequency on the spectrum analyzer before configuring the notch.
 </Aside>
+
+### When Notching Works
+
+Notch filters are effective against:
+- Narrowband interference (CW tones, narrow carriers)
+- Stable, non-hopping interference
+- Interference not centered on your carrier
+
+They cannot help with broadband interference or interference centered on your signal.
+
+---
+
+## C/N Degradation Quick Reference
+
+| C/N Range | Signal Quality | Service Impact |
+|-----------|---------------|----------------|
+| > 15 dB | Excellent | Full throughput |
+| 10-15 dB | Good | Normal operations |
+| 6-10 dB | Marginal | Reduced throughput, errors |
+| < 6 dB | Poor | Service degradation or loss |
+
+C/N drops when carrier power decreases OR when in-band noise/interference increases. The receiver's AGC responds to total power in the passband - a strong interference spike can cause AGC to reduce gain on the entire signal.
+
+---
+
+## Diagnostic Checklist
+
+### Initial Assessment
+- [ ] Check receiver modem C/N display
+- [ ] Compare to nominal (14+ dB expected)
+- [ ] Note current degradation severity
+
+### Spectrum Analysis
+- [ ] Reconfigure analyzer: widen span to 50+ MHz
+- [ ] Center on main signal IF (1,532 MHz)
+- [ ] Look for anomalies in or near the signal bandwidth
+- [ ] Characterize any interference: frequency, bandwidth, power
+
+### Interference Identification
+- [ ] Determine interference IF frequency
+- [ ] Calculate RF frequency using LO (IF = LO - RF for high-side conversion)
+- [ ] Assess whether narrowband or broadband
+- [ ] Evaluate if notch filtering is appropriate
+
+### Mitigation
+- [ ] Configure notch filter center frequency
+- [ ] Set notch bandwidth (cover interference with minimal margin)
+- [ ] Enable notch filter
+- [ ] Verify C/N recovery on receiver modem
+
+### Service Verification
+- [ ] Confirm C/N returned to nominal range
+- [ ] Monitor for stability
+- [ ] Update trouble ticket with resolution
+
+---
+
+## Escalation Guidelines
+
+### Handle Yourself
+
+- Spectrum analyzer configuration
+- Interference characterization
+- Notch filter configuration
+- Standard troubleshooting with clear technical causes
+
+### Escalate to Charlie
+
+- Interference source identification requiring coordination
+- Equipment failures beyond filter configuration
+- Customer communication requirements
+- Situations requiring regulatory involvement
+
+Charlie is on shift and available. This is a troubleshooting scenario - work the problem, but don't hesitate to ask if you hit a wall.
+
+---
+
+## End of Briefing
+
+SeaLink Global is experiencing degraded service, and their contract renewal meeting is in two days. The cause isn't immediately obvious from the current spectrum analyzer view - you'll need to reconfigure to see the full picture.
+
+Work methodically: verify the problem, visualize the spectrum, characterize what you find, and apply the appropriate mitigation. The tools are available; you just need to use them correctly.
+
+Charlie's watching, but this one's yours.
+
+Find it. Fix it.
