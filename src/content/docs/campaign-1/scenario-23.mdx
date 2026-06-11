@@ -1,0 +1,109 @@
+---
+title: 'Scenario 23 - Emergency Bypass: Manual Operations During Automation Failure'
+description: 'The ACU automation controller crashes mid-shift - program-track, target slewing, and step-track are gone. Keep TIDEMARK-1 alive on manual pointing while IT works the root cause.'
+lastUpdated: 2026-06-11
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Thursday, 1402 Local
+**Station:** Vermont (VT-01)
+**Operator on Duty:** You
+**Supervisor:** Dana Torres (on-site, coordinating with IT)
+**IT Status:** Ticket NOC-2026-2231 open - ACU automation controller crashed, root cause unknown, **no ETA**
+
+> The ACU's automation processor faulted at 1358 - program-track, move-to-target,
+> and step-track are all offline. The dish is exactly where automation left it,
+> which for now is on TIDEMARK-1. Servos and manual mode still work; it's the
+> brains that died, not the muscles.
+>
+> IT owns the controller. You own the link. TM-1 is GEO and well-behaved - the
+> pointing solution doesn't change. Get into manual cleanly, prove you're on the
+> bird with the spectrum, and hold it there. Do not experiment with the broken
+> automation while IT is mid-diagnosis.
+>
+> — Dana (at your console, 1404)
+
+---
+
+## Active Services
+
+| Satellite | Carried By | Customer | Status |
+|-----------|-----------|----------|--------|
+| TIDEMARK-1 | VT-01 | SeaLink Maritime | Operational - **tracking automation failed** |
+
+---
+
+## What the Automation Was Doing For You
+
+| Function | Automated (normal) | Manual (today) |
+|----------|--------------------|----------------|
+| Pointing solution | Ephemeris -> az/el continuously | **You, from the prediction sheet** |
+| Slewing to target | Move-to-target button | **Manual axis inputs** |
+| Beacon peak hold | Step-track loop | Not available - GEO stability is your friend |
+| Lock status logic | ACU lock indicator | **Spectrum analyzer is your truth source** |
+
+### TIDEMARK-1 Pointing Solution (prediction sheet, valid all shift)
+
+| Parameter | Value |
+|-----------|-------|
+| Azimuth | 161.8° |
+| Elevation | 34.2° |
+| Polarization | 14.0° |
+| Beacon proof | CW spike at 1,074.5 MHz IF (5,250 LO - 4,175.5 RF) |
+| Carrier proof | 36 MHz carrier at 1,532 MHz IF, receiver locked |
+
+<Aside type="caution">
+With the automation's lock logic offline, the ACU panel cannot tell you whether
+you are on the satellite. The beacon at the right IF is the only pointing proof
+that does not depend on the failed controller. Verify on the spectrum after
+every manual input - fly instruments, not feel.
+</Aside>
+
+---
+
+## Manual Operations Procedure (SOP-MN-001)
+
+- [ ] Acknowledge the automation fault; confirm servos/manual mode healthy
+- [ ] Record current position BEFORE touching anything (the dish is on the bird - do not lose that)
+- [ ] Switch tracking mode to MANUAL deliberately (a faulted controller in a half-automatic state is worse than honest manual)
+- [ ] Confirm/refine pointing against the prediction sheet
+- [ ] Prove pointing: beacon at 1,074.5 MHz IF, then carrier lock at the receiver
+- [ ] Hold and spot-check periodically; GEO drift over one shift is negligible
+- [ ] Log the timeline: fault time, manual entry, every position input, IT updates
+
+### Why Not Just Reboot It?
+
+The controller holds calibration state. An uncoordinated power cycle can come
+back with stale or defaulted axis calibration - and IT loses the crash state
+they need for root cause. Bypass first, stabilize the service, let IT do
+diagnosis on their schedule. (GPS-adjacent lesson from S8 applies: you cycle
+equipment YOU own; you coordinate cycles on equipment someone else is debugging.)
+
+---
+
+## Escalation Guidelines
+
+### Handle Yourself
+
+- Manual entry, pointing verification, link hold
+- Periodic spectrum spot-checks and timeline logging
+
+### Dana / IT
+
+- Servo faults (the muscles failing too - that changes everything)
+- Beacon cannot be found at the prediction values (pointing solution suspect)
+- IT requests any action at the ACU - they drive, you execute
+
+---
+
+## End of Briefing
+
+Automation is a colleague, not a guarantee. Today you find out which parts of
+the job you actually understand and which parts you had merely delegated.
+
+Manual, deliberate, verified on the spectrum. The link stays up because you
+know where the satellite is - with or without the computer that usually
+remembers it for you.

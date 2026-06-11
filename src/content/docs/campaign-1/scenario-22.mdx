@@ -1,0 +1,111 @@
+---
+title: 'Scenario 22 - End-of-Life Planning: AURORA-7 Sunset Recommendation'
+description: 'AURORA-7 beacon power has been declining for months. Run the final data collection, build the trend assessment, and produce the retirement recommendation the board asked for.'
+lastUpdated: 2026-06-11
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Monday, 0930 Local
+**Station:** Vermont (VT-01)
+**Operator on Duty:** You
+**Supervisor:** Dana Torres (on-site)
+**Spacecraft Liaison:** Marcus Chen (SeaLink Halifax)
+**Requesting:** Francis Martin (SeaLink board)
+
+> The board is doing budget planning and Francis wants a recommendation on
+> AURORA-7 retirement timing - from operations, not from a spreadsheet. You've
+> flown that bird more than anyone on this shift pattern.
+>
+> Run one more data-collection pass this morning, then build the assessment.
+> The Working Document panel is set up as the report template - it fills in as
+> you make your calls. I want a recommendation I can forward without editing.
+>
+> — Dana (text, 0921)
+
+**Francis Martin (email, forwarded):**
+> *"What I need from operations: how long can we responsibly sell service on
+> this spacecraft, what degrades first, and what does the migration window look
+> like. Not a number with false precision - a defensible recommendation."*
+
+---
+
+## AURORA-7 Status
+
+| Parameter | Value |
+|-----------|-------|
+| Age | 19 years (design life: 15) |
+| Orbit | Inclined GEO ~3°, station-keeping N-S suspended years ago |
+| Beacon EIRP trend | **Declining - see table** |
+| Transponder | TP-1 operational, 24 MHz |
+| Customer base | SeaLink maritime sync windows (S10-style passes), declining usage |
+
+### Beacon Power History (monthly medians, ME/VT combined)
+
+| Month | Relative beacon level (dB) |
+|-------|----------------------------|
+| 24 months ago | 0.0 (reference) |
+| 18 months ago | -0.4 |
+| 12 months ago | -1.1 |
+| 9 months ago | -1.6 |
+| 6 months ago | -2.4 |
+| 3 months ago | -3.1 |
+| This month | **-4.0** |
+
+The decline is consistent with solar array / power subsystem aging: the bus is
+running out of watts, and the spacecraft sheds load by reducing RF output. The
+slope has been **steepening** - the last 6 months lost as much as the previous 12.
+
+<Aside type="note">
+Step-track needs a usable beacon. The operational cliff is not "the transponder
+dies" - it is "the beacon gets too weak to track an inclined bird," at which
+point every pass becomes a manual-pointing exercise and service quality falls
+off fast. The recommendation hinges on when the trend crosses that line, with
+margin for the months you cannot see yet.
+</Aside>
+
+---
+
+## Today's Data Collection (final ops run)
+
+- [ ] Acquire AURORA-7, program-track then step-track (standard SOP-TK-002)
+- [ ] Measure current beacon level at 1,085 MHz IF against the reference table
+- [ ] Verify step-track still holds lock at current beacon power
+- [ ] Note C/N margin on the carrier at 1,422 MHz IF
+- [ ] Confirm with Marcus what the vehicle telemetry says about power trend
+
+---
+
+## Assessment Framework (the report you are building)
+
+| Section | Question it answers |
+|---------|--------------------|
+| Data | What did today's run actually measure? |
+| Trend | What is the decline rate, and is it accelerating? |
+| Risk | What fails first, and what does failure look like for customers? |
+| Recommendation | Sunset window with migration plan and decision points |
+
+A defensible recommendation names its assumptions: the trend continues or
+steepens, no single-event failures, and tracking - not the payload - is the
+binding constraint.
+
+---
+
+## Escalation Guidelines
+
+This is an analysis shift; the escalation risk is overstating confidence.
+Numbers you measured, you state. Numbers you extrapolated, you label. The board
+can handle uncertainty; it cannot handle false precision that unravels in a
+quarter.
+
+---
+
+## End of Briefing
+
+Nineteen years is a good run for a fifteen-year bird. The job today is to give
+it an honest ending: enough runway for the customers to move, no runway sold
+that the spacecraft cannot deliver.
+
+Measure, extrapolate carefully, recommend like you'll be quoted.

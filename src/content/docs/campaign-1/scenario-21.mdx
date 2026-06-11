@@ -1,0 +1,150 @@
+---
+title: 'Scenario 21 - Hostile RF: Suspected Intentional Interference'
+description: 'An intermittent interferer appears on TIDEMARK-2 - characterize the signature, discriminate jamming from benign interference, mitigate receive-side, and file the regulator report.'
+lastUpdated: 2026-06-11
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Tuesday, 1030 Local
+**Station:** Maine (ME-02)
+**Operator on Duty:** You
+**Supervisor:** Dana Torres (incident-handling support, on-site VT-01)
+**Spacecraft Liaison:** Marcus Chen (SeaLink Halifax)
+
+> Catherine's day shift flagged something before she left: intermittent
+> wideband noise riding the TM-2 downlink, on-off-on, gone before she could
+> characterize it. It's back this morning. It doesn't look like our usual
+> cross-pol neighbors and it doesn't look like weather.
+>
+> Treat it as an interference incident from the first minute: characterize,
+> discriminate, mitigate what you can on the receive side, and build the
+> regulator package as you go. If it turns out to be somebody's misaligned
+> uplink, the same evidence resolves it. If it's deliberate, the evidence IS
+> the response.
+>
+> — Dana (call, 1022)
+
+---
+
+## Active Services
+
+| Satellite | Carried By | Customer | Status |
+|-----------|-----------|----------|--------|
+| TIDEMARK-2 | ME-02 | SeaLink Maritime | Operational - **interference event in progress** |
+
+---
+
+## TIDEMARK-2 Link Reference (ME-02, LNB LO 5,250 MHz)
+
+| Parameter | RF (MHz) | IF (MHz) |
+|-----------|----------|----------|
+| Beacon (Downlink) | 4,180 | 1,070 |
+| Carrier (Downlink) | 3,792 | 1,458 |
+| TP-1 downlink passband | 3,774 - 3,810 | 1,440 - 1,476 |
+
+---
+
+## Interference Discrimination Matrix (SOP-IX-004)
+
+The single most valuable question: **is the interference on the transponder, or
+is it local to our site?**
+
+| Test | Seen at ME-02 only | Seen by every station on TP-1 |
+|------|--------------------|-------------------------------|
+| Implication | Terrestrial / local RX problem | The interferer is in the **uplink** - it is being relayed by the satellite |
+| Examples | Radar, 5G OOB emissions, our own equipment | Misaligned partner uplink, carrier-under-carrier, deliberate uplink jamming |
+| Cross-check | Compare with VT-01 / Halifax view of the same transponder | Same |
+
+Then the signature questions, in order of diagnostic power:
+
+1. **Duty cycle.** Natural and accidental sources are continuous or random.
+   Regular on/off timing (e.g., minutes on, minutes off, repeating) implies
+   either rotating machinery (radar - seconds, not minutes) or a hand on a
+   transmit switch.
+2. **Bandwidth and shape.** Cross-pol leakage mirrors a known neighbor's
+   carrier. An errant uplink looks like a modulated carrier. Broadband noise
+   centered on OUR allocation, sized to OUR carrier, matches nothing in the
+   coordination database - that is what deliberate denial looks like.
+3. **Frequency behavior.** Drifting = cheap oscillator (accidental). Parked
+   dead-center on the victim carrier = aimed.
+4. **Correlation with our traffic.** Interference that starts when your carrier
+   does, or follows a retune, is watching you.
+
+<Aside type="caution">
+Discrimination is a confidence call, not a verdict. The log language is
+"signature consistent with deliberate uplink interference" - attribution (who,
+from where) belongs to the regulator and the geolocation providers, not the
+ground operator. What you own is the evidence quality.
+</Aside>
+
+---
+
+## Denial vs Intrusion (security reference)
+
+Jamming is a **denial** attack on the RF layer. It does not touch the data
+layer. Two separate verifications, never conflated:
+
+- [ ] RF layer: interference characterized, C/N impact quantified
+- [ ] Data layer: crypto status ACTIVE, key status Valid, no unexplained frame
+      events outside the jamming windows
+
+If the crypto state changes during an RF incident, you no longer have an
+interference event - you have a security incident, and the escalation path
+changes (Dana immediately, then the security officer; nothing gets power-cycled
+that holds keys).
+
+---
+
+## Receive-Side Mitigation Options
+
+| Option | When | Cost |
+|--------|------|------|
+| Notch filter on the interferer | Narrowband interferer inside our passband | Notch bandwidth comes out of our carrier's SNR |
+| Tighten IF filtering | Interferer at passband edge | Slight group-delay penalty |
+| Ride it out, document windows | Duty-cycled interferer, link survives the bursts | Customer sees periodic margin dips |
+
+There is no transmit-side mitigation for uplink jamming available to a ground
+station: power escalation ("burn through") degrades neighbors, violates
+coordination, and feeds the incident. Do not raise power.
+
+---
+
+## Regulator Report Fields (ITU-R / national authority practice)
+
+Build the package as you observe; every field timestamped:
+
+- Victim: satellite, transponder, polarization, center frequency, bandwidth
+- Interference: center frequency, bandwidth, measured duty cycle, first/last seen
+- Evidence: spectrum captures at documented analyzer settings
+- Cross-station confirmation: which other sites see it (transponder vs local)
+- Service impact: C/N degradation, demod events, customer effect
+- Mitigation applied and its cost
+
+---
+
+## Escalation Guidelines
+
+### Handle Yourself
+
+- Characterization, discrimination, receive-side mitigation
+- Regulator package assembly
+- Customer impact notation
+
+### Dana, Immediately
+
+- Any data-layer anomaly (crypto, keys, frame events outside jam windows)
+- Interference escalates in power or starts tracking our changes
+- Demod loss exceeds what mitigation can hold
+
+---
+
+## End of Briefing
+
+Most interference is an accident wearing a scary mask. The discipline of
+characterizing it honestly is what lets you recognize the day it isn't - and
+makes your evidence worth something when that day comes.
+
+Measure first. Conclude carefully. Never transmit your frustration.

@@ -1,0 +1,115 @@
+---
+title: 'Scenario 24 - Constellation Crisis: Campaign Capstone'
+description: 'Weather inbound on Vermont, a thermal fault at Maine, AURORA-7 marginal on a dying beacon, two customers escalating, and a board notification cycle - the whole job, all at once.'
+lastUpdated: 2026-06-11
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Friday, 0658 Local
+**Stations:** VT-01 and ME-02 - **you have incident command of both**
+**Operator on Duty:** You
+**Supervisor:** Dana Torres (on-site VT-01, working the phones)
+**Also on the net:** Catherine Vega (ME-02 hands available), Marcus Chen (Halifax), James Okafor (SeaLink fleet ops), Francis Martin (board)
+
+> Everything at once this morning. Storm front tracking onto Vermont inside the
+> hour. Maine's BUC is running hot again - same signature as the S13 unit, and
+> the swap never made it through procurement. AURORA-7 has a SeaLink sync pass
+> booked at 0800 on a beacon that's four dB weaker than the day you qualified.
+> James is already calling, and Francis wants a board note by end of morning.
+>
+> You've done every piece of this before. Today you do all of it, in the right
+> order, while everyone watches. Incident command is yours - I'm your resource,
+> not your safety net.
+>
+> — Dana (at the door, 0700)
+
+---
+
+## The Board (as of 0658)
+
+| # | Item | System | Severity | Trend |
+|---|------|--------|----------|-------|
+| 1 | Storm front, ETA ~30 min | VT-01 / TIDEMARK-1 | Building | Worsening |
+| 2 | BUC thermal trend, current elevated | ME-02 / TIDEMARK-2 | Pre-alarm | Worsening |
+| 3 | Beacon margin for 0800 customer pass | VT-01 / AURORA-7 | Marginal | Fixed window |
+| 4 | Customer escalation | SeaLink (James) | - | Hourly calls |
+| 5 | Board notification | Francis | - | Due end of morning |
+
+Five tracks. Three are clocks you do not control (storm, pass window, board
+deadline). Two are trends you can bend (BUC heat, customer confidence).
+
+<Aside type="note">
+Nothing on this board is new. The storm is S3/S14/S20. The BUC trend is S13.
+The weak-beacon step-track pass is S6/S10/S22. The customer is S10/S14/S16.
+The board note is S22. The capstone skill is not any of these - it is holding
+five tracks without dropping one, and writing it all down while you do it.
+</Aside>
+
+---
+
+## Reference Data
+
+### VT-01 / TIDEMARK-1
+
+| Parameter | Value |
+|-----------|-------|
+| Beacon | 4,175.5 MHz -> 1,074.5 MHz IF |
+| Weather plan | Feed heater BEFORE the front; ride unless AGC maxes with continued fade (S14 thresholds) |
+
+### ME-02 / TIDEMARK-2 (Catherine's hands, your call)
+
+| Parameter | Value |
+|-----------|-------|
+| Beacon | 4,180 MHz -> 1,070 MHz IF |
+| BUC | Gain 10 dB above operating value, temp climbing ~0.3°C/min, current elevated |
+| Fix | S13 playbook: de-rate to operating gain, verify linearity, swap ticket |
+
+### VT-01 / AURORA-7 (0800-0820 customer pass)
+
+| Parameter | Value |
+|-----------|-------|
+| Beacon | 4,165 MHz -> 1,085 MHz IF - **weak (end-of-life decline)** |
+| Pass config | Step-track required; 1,422 MHz IF down / 1,447 MHz IF up (BUC LO 7,500) |
+| Go/no-go | Step-track must hold the beacon; if it cannot, the pass scrubs - tell the customer BEFORE 0800, not during |
+
+---
+
+## Incident Command Log (Working Document)
+
+The Working Document panel is configured as your incident log. Triage calls,
+go/no-go decisions, customer commitments, and the board note build in it as you
+work. At end of shift it IS the after-action report - Dana forwards it as-is.
+
+---
+
+## Communication Cadence
+
+| Audience | What they need | When |
+|----------|----------------|------|
+| James (customer) | Cause, action, next update time - 30 seconds each | At each state change, before he calls you |
+| Marcus (Halifax) | Pass go/no-go, anything vehicle-relevant | Pre-pass + on change |
+| Francis (board) | One paragraph: impact, exposure, posture | Once, end of morning, via the log |
+| Dana | Escalations only - she is watching the log | When a track exceeds your authority |
+
+---
+
+## Escalation Guidelines
+
+You hold command. Hand a track to Dana only when it needs authority you do not
+have (SLA concessions, vendor emergency call-out, abandoning a booked pass
+without customer agreement). Handing over a track is a decision, not a failure -
+but it goes in the log with a reason, like everything else today.
+
+---
+
+## End of Briefing
+
+Twenty-three scenarios taught the pieces. The job was never the pieces.
+
+Order the board. Bend the trends. Keep five promises at once, and write it down
+so the next operator could pick up your shift cold.
+
+This is the exam. Fly it like a Tuesday.
