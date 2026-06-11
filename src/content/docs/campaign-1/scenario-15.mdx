@@ -1,0 +1,300 @@
+---
+title: 'Scenario 15 - Frequency Coordination'
+description: 'Confirm RedSky Teleport can light up an adjacent V-pol carrier without colliding with our active SeaLink uplink on TIDEMARK-3'
+lastUpdated: 2026-05-25
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+**Duration:** 25-30 minutes
+
+**Difficulty:** Intermediate
+
+**Mission Type:** Spectrum Coordination
+
+**Time Limit:** 30 minutes
+
+---
+
+## Shift Turnover Notes
+
+**Date:** Tuesday, 0912 Local
+
+**Station:** Vermont (VT-01)
+
+**Operator on Duty:** You
+
+**On-Site Supervisor:** Dana Torres (at her desk, available by text)
+
+**Sister Station:** Maine (ME-02) - Catherine Vega, carrying TIDEMARK-1 and TIDEMARK-2
+
+---
+
+### Turnover from Night Shift
+
+> SeaLink TIDEMARK-3 carrier running clean all night. No alarms, no customer
+> tickets. HPA back-off was nudged down to 5 dB around 0300 to claw back a bit of
+> EIRP after a brief rain attenuation event; the weather has since cleared but
+> the back-off was not restored. Flag it next time you're in the TX panel.
+
+The 5 dB back-off is the latent issue: nothing on our own link cares, but it
+matters to the neighbor that is about to light up beside us.
+
+---
+
+### Active Services
+
+| Satellite | Station | Customer | Service Type | Status at 0912 |
+|-----------|---------|----------|--------------|----------------|
+| TIDEMARK-3 | VT-01 | SeaLink Maritime (TP-1, H-pol) | Maritime VSAT | Operational |
+| TIDEMARK-1 | ME-02 | SeaLink Maritime | Maritime VSAT | Operational |
+| TIDEMARK-2 | ME-02 | SeaLink Cargo Fleet | Maritime VSAT | Operational |
+
+ME-02 is unaffected. Catherine has Maine. Your focus is VT-01 and the inbound
+coordination notice.
+
+---
+
+## Inbound Coordination Notice
+
+**From:** RedSky Teleport - Spectrum Coordination Desk
+
+**Received:** 0908 Local
+
+**Reference:** RST-COORD-2026-0331
+
+> Per ITU coordination procedure, we are notifying NATS VT-01 that RedSky Teleport
+> will bring a new uplink online at **0937 Local** on TIDEMARK-3 TP-2 (cross-pol
+> slot).
+>
+> | Parameter | Value |
+> |-----------|-------|
+> | Center Frequency | 5,961 MHz |
+> | Bandwidth | 8 MHz |
+> | Polarization | V |
+> | Satellite | TIDEMARK-3 (47W) |
+> | Start Time | 0937 Local |
+>
+> Please confirm by 0930 Local that your active TP-1 H-pol carrier produces
+> adjacent-channel emissions below the coordination floor in the 5957-5965 MHz
+> band. A clean response is sufficient; no SLA-grade reply required.
+>
+> Reply: rst-coord@redsky.example
+
+**Dana's Text (0911):**
+
+> *"RedSky notice in your inbox. They're 2 MHz off our edge. Verify our
+> spectrum is clean and send confirmation back. Don't drop the SeaLink carrier."*
+
+---
+
+## TIDEMARK-3 Frequency Plan
+
+### Our Active Carrier (TP-1, H-pol)
+
+| Parameter | RF (MHz) | LO (MHz) | IF (MHz) |
+|-----------|----------|----------|----------|
+| Uplink Carrier | 5,985 | 7,000 (BUC) | 1,015 |
+| Downlink Carrier | 3,760 | 5,250 (LNB) | 1,490 |
+| Beacon (Downlink) | 4,172 | 5,250 (LNB) | 1,078 |
+
+| Bandwidth | 36 MHz |
+|-----------|--------|
+| Modulation | QPSK |
+| FEC Rate | 3/4 |
+| TX Power | -7 dBm (modem IF) |
+
+Carrier occupies 5,967 - 6,003 MHz at RF.
+
+### RedSky's Planned Carrier (TP-2, V-pol)
+
+| Parameter | Value |
+|-----------|-------|
+| Center Frequency | 5,961 MHz |
+| Bandwidth | 8 MHz |
+| Polarization | V (cross-pol of ours) |
+| Occupied Range | 5,957 - 5,965 MHz |
+| Start Time | 0937 Local (T+25 min) |
+
+### Guard Band
+
+| Metric | Value |
+|--------|-------|
+| RedSky upper edge | 5,965 MHz |
+| Our lower edge | 5,967 MHz |
+| Edge-to-edge gap | **2 MHz** |
+| Cross-pol isolation (OMT spec) | 28 dB nominal |
+
+---
+
+## Vermont Station Status
+
+| Equipment | Current State | Notes |
+|-----------|--------------|-------|
+| GPSDO | Locked, 10 MHz reference distributed | Nominal |
+| Antenna | Program-track on TIDEMARK-3 (Az 140.5°, El 37.8°) | Locked |
+| LNB | 5,250 MHz LO, reference locked, thermally stable | Nominal |
+| BUC | 7,000 MHz LO, unmuted, reference locked | Nominal |
+| TX Modem 1 | 1,015 MHz IF, 36 MHz BW, QPSK 3/4, transmitting | SeaLink TP-1 traffic |
+| HPA | Enabled, **back-off 5 dB** | Drifted overnight from standard 10 dB |
+| Spectrum Analyzer | Centered on beacon (1,078 MHz IF, 2 kHz span) | Routine watch config |
+
+<Aside type="caution">
+HPA back-off at 5 dB is marginal. With a 36 MHz QPSK carrier driven that close to
+saturation, third-order IMD products extend several MHz beyond the carrier edges.
+The 28 dB cross-pol isolation alone is not enough to keep those products below
+the coordination floor in RedSky's slot.
+</Aside>
+
+---
+
+## Coordination Reference
+
+### Standard Operating Margins
+
+| Parameter | Nominal | Coordination-Sensitive Threshold |
+|-----------|---------|----------------------------------|
+| HPA Back-off | 10 dB | < 7 dB (IMD rises above coord floor) |
+| Carrier Center Stability | ± 50 kHz | ± 200 kHz |
+| Spectral Skirts (at edge + 2 MHz) | < -40 dBc | < -30 dBc |
+
+### Reading the Adjacent-Channel Picture
+
+To inspect both our carrier and the partner's planned slot in one view, retune
+the spectrum analyzer to the TIDEMARK-3 downlink IF region:
+
+| Setting | Value |
+|---------|-------|
+| Center Frequency | 1,490 MHz IF |
+| Span | 75 MHz (covers our 36 MHz carrier plus the adjacent slot) |
+| RBW | Auto |
+| Amplitude Range | -100 to -30 dBm |
+
+The partner's planned uplink, after satellite transponder offset (2,225 MHz),
+would land near 3,736 MHz RF on V-pol, which is 1,514 MHz IF through our LNB.
+Our LNB picks up the V-pol downlink path, so any RedSky energy will be visible
+in the same window once they come up - but they have not started yet, so the
+slot should be empty noise.
+
+---
+
+## Mitigation Approach
+
+Back-off is the right lever here. It linearizes the amplifier, suppresses IMD by
+roughly 2x the back-off delta in dBc, and does not require touching the customer
+carrier or coordinating with SeaLink.
+
+| Option | Trade-off | Recommended? |
+|--------|-----------|--------------|
+| Raise HPA back-off to 10 dB | Drops TX power ~5 dB, suppresses IMD substantially | **Yes** |
+| Reduce TX modem power | Kills the customer link or drops margin below SLA | No |
+| Retune carrier center | Requires SeaLink coordination and a service window | No |
+| Add an RX notch at 5,961 MHz | Protects our receiver, does nothing for the neighbor | No |
+
+The customer link must remain operational throughout. SeaLink does not need to
+know this happened.
+
+---
+
+## Coordination Workflow Checklist
+
+### Inspect
+- [ ] Read RedSky notice and confirm partner band
+- [ ] Confirm our carrier band (RF lower/upper edges)
+- [ ] Compute edge-to-edge guard band
+- [ ] Decide whether 2 MHz with current HPA setting is acceptable
+
+### Inspect TX Chain
+- [ ] Verify TX modem on expected 1,015 MHz IF, 36 MHz BW
+- [ ] Note current HPA back-off and reason about IMD spectrum impact
+- [ ] Confirm understanding of IMD mechanism (HPA nonlinearity near saturation)
+
+### Mitigate
+- [ ] Raise HPA back-off to 10 dB
+- [ ] Confirm HPA stays enabled, not overdriven, customer modem still transmitting
+
+### Verify
+- [ ] Spectrum analyzer retuned to TIDEMARK-3 downlink IF (1,490 MHz, 75 MHz span)
+- [ ] SeaLink carrier still nominal at reduced power
+- [ ] Receiver modem still locked
+
+### Respond
+- [ ] Compose and send confirmation to RedSky
+- [ ] Log the coordination event with frequencies, action taken, and timestamp
+
+---
+
+## Coordination Reply
+
+A correct reply to RedSky looks like:
+
+> *"Confirmed clear. TIDEMARK-3 TP-1 carrier holds 5,967 - 6,003 MHz H-pol with
+> adjacent-channel emissions well below coordination floor in your planned slot.
+> Proceed with 5,961 MHz V-pol uplink at 0937 as scheduled."*
+
+What it does **not** look like:
+
+- *"We have muted to give you the spectrum."* (Wrong - SeaLink is still up.)
+- *"Cannot confirm - recommend delay."* (Wrong - the mitigation is local and quick.)
+- *"We are retuning to give wider margin."* (Wrong - back-off is the right tool, not retune.)
+
+State your occupied band. Confirm cleanliness. Clear them to proceed. Done.
+
+---
+
+## Escalation Guidelines
+
+### Handle Yourself
+
+- HPA back-off correction
+- Spectrum verification
+- Coordination reply to a peer teleport
+- Log entry
+
+### Wake Dana / Loop In Catherine
+
+- RedSky requests we drop the SeaLink carrier or move frequencies
+- Our HPA cannot be brought to 10 dB back-off (mechanical/electrical fault)
+- A second coordination notice arrives before this one is closed
+- Anything that requires SLA renegotiation with SeaLink
+
+Dana is at her desk. A clean coordination check is not an escalation - it is
+the work.
+
+---
+
+## Documentation
+
+Frequency-coordination events are logged so the next shift inherits the
+back-off change and the coordination commitment. A correct entry captures:
+
+- Time and station
+- Partner identity and reference number
+- Frequencies (ours and theirs)
+- Action taken and reasoning
+- Reply sent
+
+Example:
+
+> *"0937 - VT-01. RedSky coordination notice RST-COORD-2026-0331 received and
+> confirmed. TIDEMARK-3 TP-1 HPA back-off raised from 5 to 10 dB to suppress
+> adjacent-channel IMD into RedSky's planned 5,957 - 5,965 MHz V-pol slot.
+> SeaLink carrier remains nominal. RedSky cleared for 0937 uplink."*
+
+If RedSky's carrier behaves unexpectedly after they come up, the next operator
+will know we touched the back-off and why.
+
+---
+
+## End of Briefing
+
+This is good neighbor work. No customer is in pain, no equipment is broken, no
+supervisor is escalating. A partner teleport is being courteous enough to tell
+us they are about to use spectrum near ours, and they expect us to be courteous
+enough to confirm we will not step on them.
+
+Verify the math. Inspect the TX chain. Move the back-off lever. Confirm the
+customer is fine. Send the reply. Log it.
+
+Dana will read the log entry. RedSky's coordinator will read the reply. Neither
+of them will say anything about it - and that is the point.

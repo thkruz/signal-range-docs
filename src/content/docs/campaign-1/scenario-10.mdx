@@ -1,0 +1,183 @@
+---
+title: 'Scenario 10 - Customer Pass: High-Throughput Window on AURORA-7'
+description: 'Run a 30-minute high-priority SeaLink data window on AURORA-7 with step-track and optimized HPA backoff while Marcus Chen watches payload telemetry from Halifax'
+lastUpdated: 2026-05-25
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Tuesday, 0945 Local
+**Station:** Vermont (VT-01)
+**Operator on Duty:** You
+**Supervisor:** Dana Torres (on-site)
+**Customer Liaison:** Marcus Chen (SeaLink Halifax - on the line throughout the window)
+**Pass Window:** 1000-1030 Local
+
+> SeaLink has a paid 30-minute high-priority window on AURORA-7 starting at 1000. Marcus will be watching payload telemetry on his end the whole time. The link's already up from the overnight shift on program-track with 10 dB HPA backoff - that's fine for a quiet night, but it's not what a paying customer is buying.
+>
+> Switch to step-track before the window opens, tighten the backoff for the pass duration, hold margin while Marcus runs his data, then bring the amp back to resting when the window closes.
+>
+> Standard work. Just don't break it with a customer watching.
+>
+> — Dana
+
+**Marcus (call note, 0930):**
+> *"Marcus here from Halifax. We're spun up on our end - payload's nominal, watching the spacecraft side telemetry now. Customer's expecting clean throughput from 10:00 to 10:30 sharp. Whenever you've got the ground side in pass configuration, give me a wave."*
+
+---
+
+## Active Services
+
+| Satellite | Customer | Service Type | Status at Turnover |
+|-----------|----------|--------------|-------------------|
+| AURORA-7 | SeaLink Maritime (anchor) | High-Throughput Maritime Sync | Operational (VT-01) |
+
+This is not the routine AURORA-7 maritime VSAT traffic. SeaLink scheduled a 30-minute high-priority window for a bulk synchronization burst - new vessel charter data, regulatory filings, and engineering bundles for the SeaLink fleet. Pass-only, time-bounded. After 1030 the link returns to baseline.
+
+---
+
+## Pass Booking
+
+**Booking #:** SL-PASS-2026-0184
+
+**Opened:** Friday last week (Halifax customer ops)
+
+**Window:** 1000-1030 Local Tuesday
+
+**SLA Requirement:** Sustained margin C/N ≥ 9 dB across the window
+
+**Customer-Side Watcher:** Marcus Chen (SeaLink Halifax) - live payload telemetry
+
+**Acceptance:** No dropouts, no overdrive events, no manual handover
+
+<Aside type="note">
+This is a paid pass window. The customer expects measurable additional margin over baseline operations - not just "the link works." Tightening HPA backoff during the window buys them real EIRP. Returning backoff to baseline after the window protects the amp between passes.
+</Aside>
+
+---
+
+## AURORA-7 Link Parameters
+
+### Frequency Allocation
+
+| Parameter | RF (MHz) | LO (MHz) | IF (MHz) |
+|-----------|----------|----------|----------|
+| Beacon (Downlink) | 4,165 | 5,250 (LNB) | 1,085 |
+| Carrier (Downlink) | 3,828 | 5,250 (LNB) | 1,422 |
+| Carrier (Uplink) | 6,053 | 7,500 (BUC) | 1,447 |
+
+### Modem Configuration
+
+| Direction | Frequency (IF) | Bandwidth | Modulation | FEC | Power |
+|-----------|----------------|-----------|------------|-----|-------|
+| Receive | 1,422 MHz | 24 MHz | QPSK | 3/4 | — |
+| Transmit | 1,447 MHz | 24 MHz | QPSK | 3/4 | -7 dBm |
+
+### Tracking Requirements
+
+<Aside type="caution">
+AURORA-7 is inclined - program-track will bleed C/N off across a sustained pass. Step-track is the right mode for any window longer than a few minutes. The link is currently on program-track from the overnight shift; switch it before the window opens.
+</Aside>
+
+---
+
+## Station Reference (VT-01)
+
+### State at Turnover
+
+| Equipment | Current State | Required for Pass |
+|-----------|---------------|-------------------|
+| GPSDO | Locked | Locked (no change) |
+| LNB | Powered, LO 5,250 MHz, locked | No change |
+| BUC | Powered, unmuted, LO 7,500 MHz | No change |
+| HPA | Enabled, **10 dB backoff** | **6 dB backoff during window** |
+| Antenna | **Program-track on AURORA-7** | **Step-track on AURORA-7** |
+| RX Modem 1 | Tuned 1,422 MHz IF, 24 MHz BW | Verify lock + C/N ≥ 8 dB |
+| TX Modem 1 | Tuned 1,447 MHz IF, 24 MHz BW | Verify transmitting |
+| Spectrum Analyzer | Center 1,085 MHz (beacon) | No change |
+
+---
+
+## Pass Execution Procedure (SOP-CX-007)
+
+This is the SeaLink high-priority pass SOP. It is shorter than the post-maintenance validation SOP because every chain element is already up - the only operator actions are tracking-mode change, HPA backoff adjustment, sustained monitoring, and a clean return-to-baseline.
+
+### Pre-Pass Setup (0945-1000)
+
+- [ ] VT-01 dashboard: no active alarms
+- [ ] Antenna in **step-track** on AURORA-7
+- [ ] Beacon lock held under step-track for ≥ 15 seconds
+- [ ] RX modem locked, C/N ≥ 8 dB
+- [ ] Uplink return path verified (BUC unmuted, HPA enabled, not overdriven)
+- [ ] Marcus confirms payload acquisition on his end
+
+### Window Open (1000)
+
+- [ ] HPA backoff reduced to **6 dB** for the window
+- [ ] HPA not overdriven after backoff change
+- [ ] Sustained C/N ≥ 9 dB observed for ≥ 30 seconds
+- [ ] Step-track holds beacon lock under sustained operation
+- [ ] No spurious alarms
+
+### Window Close (1030)
+
+- [ ] HPA backoff restored to **10 dB** resting value
+- [ ] HPA still healthy at resting backoff
+- [ ] Marcus confirms clean pass delivery on his end
+- [ ] Operations log entry filed
+
+<Aside type="caution">
+**Backoff discipline.** A 6 dB backoff is acceptable for a 30-minute scheduled window. It is not the right resting state. Returning the amp to 10 dB between passes protects the amplifier and matches the configuration the next operator expects to inherit. Forgetting this step is a paper cut that compounds across shifts.
+</Aside>
+
+---
+
+## EIRP vs Linearity (Reference)
+
+Lowering HPA backoff moves the amplifier closer to saturation. The tradeoff:
+
+| Backoff | EIRP | IMD | Linearity |
+|---------|------|-----|-----------|
+| 10 dB (resting) | Conservative | Low | Excellent |
+| 6 dB (pass window) | +4 dB | Modestly elevated | Good - within spec |
+| 3 dB (aggressive) | +7 dB | High | Marginal - overdrive risk |
+| 1 dB (saturation) | Max | Very high | Compressed - **do not run here** |
+
+The 6 dB target for the SeaLink window is the standard high-throughput backoff for AURORA-7. Watch the overdrive indicator across the pass; if it ever trips, raise backoff before doing anything else.
+
+---
+
+## Escalation Guidelines
+
+### Handle Yourself
+
+- Step-track engagement and beacon hold
+- HPA backoff adjustment within the 6-10 dB window
+- Sustained margin monitoring
+- Return-to-resting at window close
+- Operations log entry
+
+### Inform Dana
+
+- Marcus reports any payload-side anomaly
+- C/N falls below 9 dB during the window
+- HPA overdrive event at any backoff
+- Customer requests anything beyond the booked window scope
+
+### Wake the Senior Engineer (Off-Shift)
+
+- Equipment fault during a customer-watched window
+- HPA hardware damage event
+- Any reason the window cannot be completed inside its scheduled 30 minutes
+
+This is a routine paid pass. Marcus is friendly. Work methodically and the customer gets exactly what they're paying for.
+
+---
+
+## End of Briefing
+
+Marcus is on the line. Dana wants a clean window and a quiet return-to-baseline. The link is already up - your job is to put it in the right configuration for what the customer booked, hold it there for 30 minutes, then put it back the way you found it.
+
+Switch to step-track, tighten the backoff, watch the margin, restore the backoff, log it.

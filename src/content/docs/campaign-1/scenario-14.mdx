@@ -1,0 +1,270 @@
+---
+title: 'Scenario 14 - Rain Fade'
+description: 'Hold VT-01 through a moderate rain front rather than execute a handover the customer SLA penalizes'
+lastUpdated: 2026-05-25
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+**Duration:** 25-35 minutes
+
+**Difficulty:** Intermediate
+
+**Mission Type:** Weather Contingency
+
+**Time Limit:** 35 minutes
+
+---
+
+## Shift Turnover Notes
+
+**Date:** Wednesday, 1318 Local
+
+**Station:** Vermont (VT-01)
+
+**Operator on Duty:** You
+
+**On-Site Supervisor:** Dana Torres
+
+**Sister Station:** Maine (ME-02) - Catherine Vega, carrying TIDEMARK-2
+
+---
+
+### Turnover from Morning Shift
+
+> Routine morning. TIDEMARK-1 link nominal, customer traffic at SLA. Weather radar shows
+> a moderate rain front moving in from the west - arrival around 1325, twenty minutes
+> through. No freezing, just rain. Feed heater off; bring it up before the front lands.
+> SeaLink left a note for the next shift on the customer portal - check it before the
+> rain hits.
+
+---
+
+### Active Services
+
+| Satellite | Station | Customer | Service Type | Status at 1318 |
+|-----------|---------|----------|--------------|----------------|
+| TIDEMARK-1 | VT-01 | SeaLink Maritime (James Okafor) | Maritime VSAT | Operational |
+| TIDEMARK-2 | ME-02 | SeaLink Cargo Fleet | Maritime VSAT | Operational |
+
+ME-02 is busy with its own SeaLink traffic. Taking ME-02 to back up TIDEMARK-1 would
+require Catherine to drop her own customers - not free.
+
+---
+
+## Customer Note
+
+**Source:** SeaLink customer portal, posted 1247
+
+**From:** James Okafor (SeaLink Fleet Captain)
+
+**Priority:** Advisory - operator discretion
+
+> *"Saw your weather advisory. Heads up - our SLA penalties are weighted heavily on
+> handover events, much more than on a few dB of margin loss. Vessel telemetry survives
+> short fades fine; what trips our contract alarms is the carrier-change record on every
+> uplink switch.*
+>
+> *If you can hold us on Vermont through this front, please do. If the link won't make
+> it, we'll wear the outage - your call, not a marketing call. Will be at my desk all
+> afternoon if you need me."*
+
+---
+
+## TIDEMARK-1 Operations Reference
+
+### Frequency Plan
+
+| Parameter | RF (MHz) | LO (MHz) | IF (MHz) |
+|-----------|----------|----------|----------|
+| Beacon (Downlink) | 4,175.5 | 5,250 (LNB) | 1,074.5 |
+| Carrier (Uplink) | 5,943 | 7,000 (BUC) | 1,057 |
+
+### Modem Configuration
+
+| Parameter | Value |
+|-----------|-------|
+| Bandwidth | 36 MHz |
+| Modulation | QPSK |
+| FEC Rate | 3/4 |
+| TX Power | -7 dBm |
+| HPA Back-off | 10 dB (nominal) |
+
+---
+
+## Weather Briefing
+
+**Current Conditions (1318):**
+- Temperature: 54°F (12°C)
+- Wind: W at 8 mph
+- Precipitation: None yet
+- Visibility: 10 miles
+
+**Forecast (1325-1545):**
+- Moderate rain front passing overhead, ~20 minutes peak
+- No freezing - temperatures stay well above 32°F
+- Expected link margin impact: ~3 dB fade at peak
+- AGC compensation range available
+
+**Operational Considerations:**
+
+Rain attenuates C-band signals roughly in proportion to rain intensity along the
+slant path. A 3 dB fade is well within AGC compensation range for a healthy link.
+The feed heater is not just for ice - it also keeps water from beading and sheeting
+on the feed assembly. Dry surfaces attenuate less than wet ones. Bring it up
+before the rain lands.
+
+---
+
+## Vermont Station Quick Reference
+
+### Equipment Status at Shift Start
+
+| Equipment | Expected State | Notes |
+|-----------|---------------|-------|
+| GPSDO | Locked | Master timing - verify on dashboard sweep |
+| LNB | Powered, reference locked | Stable, no action needed |
+| BUC | Powered, transmitting | TIDEMARK-1 uplink carrying SeaLink traffic |
+| HPA | Enabled, 10 dB back-off | Nominal - do not adjust during the fade |
+| Antenna | Program-track on TIDEMARK-1 | Locked |
+| Feed Heater | Off (standby) | **Enable before the front arrives** |
+
+### Standard Operating Margins
+
+| Parameter | Nominal | Watch Threshold | Action Threshold |
+|-----------|---------|-----------------|------------------|
+| Beacon C/N | 10+ dB | 7-10 dB | < 7 dB |
+| AGC compensation in use | < 2 dB | 2-6 dB | At max gain |
+| Modem lock | Locked | Brief drops | Sustained unlock |
+| HPA back-off | 10 dB | - | - |
+
+---
+
+## Handover Decision Framework
+
+The customer prefers no handover. The customer does not get the last word on RF
+reality. The standing trigger conditions for flipping the call from "hold" to
+"hand off" are operational, not contractual.
+
+### Hold When
+
+- AGC has headroom remaining (compensation in use is well below max).
+- Modem lock is maintained.
+- Beacon C/N is above the watch threshold.
+- Customer has stated SLA preference for hold.
+- A fallback station is not available without impact (ME-02 is busy on TM-2).
+
+### Hand Off When
+
+- AGC is at or near max compensation **and** fade is still deepening.
+- Modem drops lock for more than a brief dip.
+- C/N falls below the action threshold and is not recovering.
+- The forecast is going to outlast AGC's remaining cushion.
+
+<Aside type="caution">
+"Hold" is a positive decision, not an absence of decision. State the trigger
+conditions you are watching for so you know when to flip. That discipline is what
+distinguishes holding from inertia.
+</Aside>
+
+---
+
+## HPA Back-off During a Fade
+
+It is technically possible to reduce HPA back-off to push more uplink power. For a
+3 dB rain fade with downlink AGC compensating cleanly, **don't.**
+
+| Action | Benefit | Cost |
+|--------|---------|------|
+| Reduce back-off from 10 dB to 7 dB | +3 dB uplink margin you don't need | IMD into adjacent transponders; amplifier stress; spurious emissions risk |
+| Hold back-off at 10 dB | Nominal IMD; nominal amplifier wear | None - link is healthy without it |
+
+Optimization is not "turn every dial to max." If the link has margin you don't need,
+the responsible move is to not spend it. Keep back-off nominal through the front.
+
+---
+
+## Monitoring Checklist
+
+### Before the Front (1318-1325)
+
+- [ ] Feed heater enabled
+- [ ] Dashboard clean, no pre-existing alarms
+- [ ] Beacon C/N noted at baseline (write it down)
+- [ ] Modem locked with margin
+
+### Through the Fade (1325-1545)
+
+- [ ] Receiver lock maintained
+- [ ] C/N held above 7 dB (action threshold)
+- [ ] AGC compensation in use - tracking, not at max
+- [ ] Antenna still locked on TIDEMARK-1
+- [ ] HPA back-off unchanged at 10 dB
+
+### After the Front
+
+- [ ] C/N recovering toward baseline
+- [ ] AGC gain backing down
+- [ ] Customer notified that service held
+- [ ] Log entry captures decision, thresholds watched, recovery
+
+---
+
+## Escalation Guidelines
+
+### Handle Yourself
+
+- Feed heater enable.
+- AGC and link margin monitoring.
+- The hold-or-hand-off decision.
+- Customer notification on a successful hold.
+
+### Loop In Dana
+
+- Modem dropping lock during the fade.
+- AGC reaching max compensation while the front is still building.
+- A second weather event arriving before this one clears.
+- Customer escalation (James calling rather than emailing).
+
+Dana is on-site this shift, not on-call - she would rather you check in mid-fade
+than discover after the fact that you held a link you shouldn't have.
+
+---
+
+## Documentation
+
+A weather event that the operator chose to ride out must be logged so the next
+shift knows the call was deliberate and what triggers were being watched. A correct
+entry captures:
+
+- Time, station, weather event characterization.
+- Customer SLA preference (hold) and that it was honored.
+- Peak AGC compensation in use; minimum C/N observed.
+- The handover triggers that were being watched but did not fire.
+- Whether the customer was notified post-event.
+
+Example:
+
+> *"1325-1545 - Moderate rain over VT-01, ~3 dB peak fade. Held TM-1 service per
+> SeaLink SLA preference. Peak AGC gain 3 dB (of 10 dB available), beacon C/N
+> minimum 7.8 dB. Triggers watched: AGC at max with continued fade; modem unlock.
+> Neither fired. SeaLink notified by reply on customer portal."*
+
+If the hold had failed - if the call had flipped to handover - the same entry
+records the trigger that fired and the time it did.
+
+---
+
+## End of Briefing
+
+S3 taught you that when the weather is bad enough, you hand the link off. S14 is
+the other half of the lesson: when the weather is not that bad, you don't.
+
+Escape is a tool, not a reflex. The customer told you what they value. The link
+will tell you whether their preference is operationally supportable. Match the
+two.
+
+Bring the feed heater up before the rain lands. Watch the margins. Hold or hand
+off on the trigger conditions, not on the customer's wishes alone.
+
+Dana will read the log entry at the end of shift.

@@ -1,0 +1,283 @@
+---
+title: 'Scenario 16 - Cascade Failure'
+description: 'Phase 2 capstone - prioritize and recover three concurrent unrelated faults on VT-01 with the customer on the line'
+lastUpdated: 2026-05-25
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+**Duration:** 35-45 minutes
+
+**Difficulty:** Advanced
+
+**Mission Type:** Incident Response
+
+**Time Limit:** 45 minutes
+
+---
+
+## Shift Turnover Notes
+
+**Date:** Friday, 0934 Local
+
+**Station:** Vermont (VT-01)
+
+**Operator on Duty:** You
+
+**On-Site Supervisor:** Dana Torres (admin office, 20 min unavailable)
+
+**Sister Station:** Maine (ME-02) - Catherine Vega, carrying TIDEMARK-2
+
+---
+
+### Turnover from Night Shift
+
+> All systems nominal at 0700 handover. Routine night, no anomalies. TIDEMARK-1 customer
+> traffic at SLA. BUC and HPA performance trending normal across the shift. Feed heater
+> off. Weather clear for the next 24 hours.
+
+Nothing in the log to suggest what is about to happen.
+
+---
+
+### Active Services
+
+| Satellite | Station | Customer | Service Type | Status at 0934 |
+|-----------|---------|----------|--------------|----------------|
+| TIDEMARK-1 | VT-01 | SeaLink Maritime (James Okafor) | Maritime VSAT | **DEGRADED** |
+| TIDEMARK-2 | ME-02 | SeaLink Cargo Fleet | Maritime VSAT | Operational |
+
+ME-02 is unaffected. Catherine has the Maine side under control - your focus is VT-01.
+
+---
+
+## Incident Report
+
+**Ticket #:** NOC-2026-1428
+
+**Opened:** 0932 Local
+
+**Source:** Automated alarm correlation + SeaLink customer call
+
+**Priority:** High - SLA exposure
+
+**Customer Report:**
+
+> SeaLink: Multiple vessels on the North Atlantic route reporting dropouts and degraded
+> throughput on the TIDEMARK-1 service over the last ten minutes. Customer impact is
+> active. James Okafor on the line.
+
+**Dana's Text (0934):**
+
+> *"Board over here is lit up - BUC, LNB, HPA all yelling. James Okafor's on the line
+> about TM-1 service. I'm in admin and can't break free for the next twenty minutes.
+> Take the lead. Triage before you touch anything."*
+
+---
+
+## Alarm Snapshot
+
+Three concurrent, unrelated alarms have appeared simultaneously on VT-01:
+
+| Subsystem | Alarm | Likely Cause |
+|-----------|-------|--------------|
+| BUC | Over-temperature (>70°C) + high current draw | Thermal event; output should be muted to allow cooldown |
+| LNB | Reference unlocked | Sticky reference-lock fault; clears on power cycle |
+| HPA | Overdriven (back-off below 3 dB) | Back-off has drifted from the standard 10 dB margin |
+
+<Aside type="caution">
+The faults are independent. Do not assume one is causing the others. Treat each on its
+own merits and recover them in the order that protects equipment and the spectrum first.
+</Aside>
+
+---
+
+## Recovery Priority Framework
+
+When multiple unrelated faults converge, the order of operations matters more than the
+speed of any individual fix. The standing framework is:
+
+1. **RF Safety First** - Stop anything that is putting a dirty signal on the air or
+   damaging equipment. An overdriven HPA spills IMD products into neighboring
+   transponders and stresses the amplifier. An over-temperature BUC running unmuted
+   continues to heat and risks failure.
+2. **Customer Impact Next** - Restore the customer's receive path. Once you are not
+   actively making things worse, get the link healthy again.
+3. **Equipment Health and Verification** - Methodically validate each subsystem is back
+   within spec. Confirm the alarm board is clean before notifying the customer.
+
+For this incident the order resolves to:
+
+- Disable the HPA output (takes the overdriven uplink off the air immediately).
+- Mute the BUC (begins thermal recovery - safe now that the HPA is down).
+- Restore HPA back-off to 10 dB while the chain is cold.
+- Wait for BUC temperature and current to return to nominal.
+- Power cycle the LNB to clear the sticky reference-lock fault.
+- Verify receiver lock and C/N on TIDEMARK-1.
+- Unmute the BUC, then re-enable the HPA, and confirm clean TX output.
+- Final dashboard sweep, customer notification, log entry.
+
+<Aside type="caution">
+**Sequencing rule (same as every power-down):** the HPA comes down before its
+drive does, and comes back up only after drive is restored. An enabled HPA with
+the BUC muted amplifies raw noise into the feed - that is an equipment-damage
+event, not a judgment call.
+</Aside>
+
+---
+
+## Vermont Station Quick Reference
+
+### TIDEMARK-1 Frequency Plan
+
+| Parameter | RF (MHz) | LO (MHz) | IF (MHz) |
+|-----------|----------|----------|----------|
+| Beacon (Downlink) | 4,175.5 | 5,250 (LNB) | 1,074.5 |
+| Carrier (Uplink, TP-2) | 5,906 | 7,000 (BUC) | 1,094 |
+
+### Standard Operating Margins
+
+| Parameter | Nominal | Alarm Threshold |
+|-----------|---------|-----------------|
+| BUC Temperature | 25-45°C | > 70°C |
+| BUC Current Draw | < 3.0 A | > 4.5 A |
+| HPA Back-off | 10 dB | < 3 dB (overdriven) |
+| LNB Reference | Locked | Any unlock |
+
+---
+
+## BUC Over-Temperature
+
+The BUC's thermal protection is intended to mute the output if it reaches the
+over-temperature threshold. When that protection does not fire on its own, the operator
+mutes manually. **Muting is the action that allows cooling to begin** - an unmuted BUC
+continues to dissipate power and the temperature will not fall.
+
+### Recovery
+
+1. Disable the HPA output FIRST - never mute the BUC under an enabled HPA.
+2. Mute the BUC.
+3. Confirm temperature trending downward.
+4. Wait for temperature `< 70°C` and current draw `< 4.5 A`.
+5. Do not unmute until both conditions hold.
+
+---
+
+## LNB Reference Unlock
+
+The GPSDO is locked and the 10 MHz reference is available upstream. The LNB itself has
+a sticky reference-lock fault - a transient that the LNB's internal phase-lock circuitry
+cannot recover from without a power cycle.
+
+### Recovery
+
+1. Power OFF the LNB.
+2. Wait for state to update.
+3. Power ON the LNB.
+4. Confirm reference lock acquired.
+5. Confirm thermal stabilization complete before relying on the link.
+
+<Aside type="note">
+Power cycling the LNB briefly drops your receive path. While you are mid-recovery on a
+muted TX chain anyway, this is a natural moment to do it. If the BUC were still up, you
+would coordinate the LNB cycle with the customer or wait for a low-traffic window.
+</Aside>
+
+---
+
+## HPA Back-off Drift
+
+Back-off measures how far below saturation the HPA is operating. The standard for
+TIDEMARK-1 service is 10 dB - enough margin to keep IMD products below the coordination
+floor while delivering SLA-grade power.
+
+Below 3 dB the amplifier is overdriven: IMD products rise sharply, adjacent-channel
+emissions exceed coordination limits, and the amplifier's tube wears prematurely.
+
+### Recovery
+
+1. Restore back-off to 10 dB.
+2. Confirm the `overdriven` indicator clears.
+3. Verify on the spectrum after restoration that the output is clean.
+
+The back-off setting can be corrected while the HPA output is disabled and the BUC
+muted - the value applies when the amplifier comes back up. The amplifier will be
+ready when you unmute the BUC and re-enable the output.
+
+---
+
+## Customer Communication
+
+James Okafor (SeaLink Fleet Captain) is on the line throughout. He does not want a
+technical lecture; he wants to know:
+
+- That you are working it.
+- That you understand the impact.
+- When the link will be back.
+- That there will be a written follow-up.
+
+A correct message looks like:
+
+> *"Three concurrent faults identified and cleared in priority order. Link is operational.
+> Will follow up with a written impact report within the hour."*
+
+What it does **not** look like:
+
+- *"Probably a problem on your side."* (Wrong - the faults are at VT-01.)
+- *"No ETA."* (You have an ETA. State it.)
+- *"Equipment failure - escalating to vendor."* (You can recover this yourself.)
+
+---
+
+## Escalation Guidelines
+
+### Handle Yourself
+
+- All three faults in this incident are within your authorization to recover.
+- Customer notification to James Okafor.
+- Impact-report drafting.
+
+### Wake Dana
+
+- Equipment that does not respond to recovery action (e.g., LNB still unlocked after a
+  full power cycle).
+- A second cascade event before this one is closed.
+- A safety-critical condition (RF hazard to personnel, facility security).
+
+Dana said *"Take the lead."* Take her at her word. She will be back in twenty minutes
+and will read the log entry.
+
+---
+
+## Documentation
+
+Concurrent unrelated faults must be logged so the next operator inherits the full
+picture. A correct entry captures:
+
+- Time and station.
+- Each fault, **separately** identified.
+- The order of recovery actions and the reasoning.
+- Customer impact and customer notification status.
+
+Example:
+
+> *"0934 - VT-01 cascade event. Concurrent unrelated faults: BUC over-temp (72°C, high I),
+> LNB ref unlock (sticky), HPA back-off drift (2 dB). Recovery in order: BUC mute, HPA
+> 10 dB, LNB power cycle, BUC unmute. SeaLink (Okafor) notified. Impact report to
+> follow."*
+
+Trend the BUC temperature and HPA back-off readings against prior shifts - if either
+fault recurs, the next event is no longer "unrelated."
+
+---
+
+## End of Briefing
+
+This is the Phase 2 capstone. You have done multi-fault recovery before (S8 on AURORA-7),
+but that was three related faults on one bird. This is three unrelated faults on one
+station with a customer on the line and a supervisor who trusts you to handle it.
+
+Triage. Prioritize. Recover in order. Notify. Log.
+
+If everything goes well, Dana will close the ticket without comment. That is the highest
+compliment a qualified operator gets at this stage.

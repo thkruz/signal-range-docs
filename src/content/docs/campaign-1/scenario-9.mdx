@@ -1,0 +1,122 @@
+---
+title: 'Scenario 9 - Morning Rounds: Multi-Satellite Health Check'
+description: 'First qualified shift - compressed morning health checks across TIDEMARK-1 (VT-01), TIDEMARK-2 (ME-02), and a beacon spot-check on the newly commissioned TIDEMARK-3'
+lastUpdated: 2026-06-10
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Monday, 0642 Local
+**Stations:** Vermont (VT-01) and Maine (ME-02)
+**Operator on Duty:** You
+**Supervisor:** Dana Torres (on-site)
+**Relieved By:** Swing shift at 1500
+
+> Welcome to your first qualified shift. Three birds today - TM-1, TM-2, TM-3. Overnight commissioning crew brought TM-3 up a few hours ago; just need a beacon spot-check before customers light it up. Standard morning rounds. Coffee's in the kitchen.
+>
+> — Dana (text, 0642)
+
+**Overnight log (commissioning crew, 0410):**
+> *"TIDEMARK-3 commissioning complete. Bird live at 47°W, TP-1 active, beacon nominal from our reference antenna. Day shift to perform independent beacon verification from VT-01 before first customer carrier. Sister teleport briefed to carry TM-1 traffic during the spot-check window."*
+
+---
+
+## Active Services
+
+| Satellite | Carried By | Customer | Status at Turnover |
+|-----------|-----------|----------|--------------------|
+| TIDEMARK-1 | VT-01 | SeaLink Maritime | Operational, nominal |
+| TIDEMARK-2 | ME-02 | SeaLink Maritime | Operational, nominal (Catherine's station) |
+| TIDEMARK-3 | — | None yet | Commissioned overnight - beacon verification pending |
+| SES-10 | — | Other operator | Visible neighbor, not ours |
+
+ME-02 has carried TIDEMARK-2 since the weather handover. Catherine runs the station day-to-day; the morning round is an independent set of eyes, not a takeover.
+
+---
+
+## Constellation Reference
+
+### Pointing (from VT-01)
+
+| Satellite | Slot | Azimuth | Elevation | Pol Skew |
+|-----------|------|---------|-----------|----------|
+| TIDEMARK-1 | 53°W | 161.8° | 34.2° | 14° |
+| TIDEMARK-3 | 47°W | 140.5° | 37.8° | 8° |
+
+### Beacon Frequencies (LNB LO 5,250 MHz at both stations)
+
+| Satellite | Beacon RF (MHz) | Beacon IF (MHz) |
+|-----------|-----------------|-----------------|
+| TIDEMARK-1 | 4,175.5 | 1,074.5 |
+| TIDEMARK-2 | 4,180 | 1,070 |
+| TIDEMARK-3 | 4,172 | 1,078 |
+
+All TIDEMARK beacons are V-pol CW carriers. The constellation clusters its beacon IFs in the 1,070-1,085 MHz range by design - one analyzer configuration sweeps all three with a center-frequency change only.
+
+---
+
+## Morning Round Sequence (SOP-OPS-001)
+
+### VT-01 / TIDEMARK-1
+
+- [ ] Dashboard: no active alarms
+- [ ] GPSDO: locked, stable reference
+- [ ] RX: TM-1 beacon present at 1,074.5 MHz IF, receiver locked, healthy C/N
+- [ ] TX: HPA enabled, standard 10 dB backoff, no overdrive
+
+### ME-02 / TIDEMARK-2
+
+- [ ] Dashboard: no active alarms
+- [ ] RX: LNB powered and thermally stable, TM-2 beacon present at 1,070 MHz IF
+- [ ] Antenna: locked on TIDEMARK-2 in program-track
+- [ ] Payload spot-check: frame sync, CRC, FEC indicators
+
+### TIDEMARK-3 Spot-Check (from VT-01)
+
+- [ ] Sister teleport confirms it has TM-1 customer traffic (already coordinated)
+- [ ] Repoint VT-01 to TIDEMARK-3 in program-track (Az 140.5°, El 37.8°)
+- [ ] Spectrum analyzer to 1,078 MHz IF - beacon present and clean
+- [ ] Return VT-01 to TIDEMARK-1, retune analyzer to 1,074.5 MHz IF
+- [ ] Final alarm sweep, log the round
+
+<Aside type="note">
+The TM-3 check is receive-only. No transmit configuration is required - the only question this morning is whether the bird's beacon is where the commissioning crew says it is, seen independently from our own antenna.
+</Aside>
+
+<Aside type="caution">
+TM-1 customer traffic rides on the sister teleport only while VT-01 is off-pointed. Do not begin the TM-3 spot-check until the round on TM-1 is complete, and bring VT-01 back to TIDEMARK-1 promptly when the beacon check is done.
+</Aside>
+
+---
+
+## Why the Beacon Check Matters
+
+A clean CW spike at the expected IF confirms two things at once: the antenna is pointed at the right bird, and the LNB LO is converting where it should. Wrong pointing produces no signal; wrong LO puts the signal at the wrong IF. One observation, two verifications.
+
+---
+
+## Escalation Guidelines
+
+### Handle Yourself
+
+- Routine round checks and analyzer retuning
+- VT-01 repoint to TM-3 and back (pre-coordinated)
+- Log entries
+
+### Inform Dana
+
+- Any active alarm on either station
+- TM-3 beacon missing, off-frequency, or degraded
+- Sister teleport reports any TM-1 customer impact during the spot-check window
+
+A missing TM-3 beacon is not yours to troubleshoot this morning - it goes back to the commissioning crew through Dana. Your job is the independent observation, not the repair.
+
+---
+
+## End of Briefing
+
+Eight scenarios of training and one night-shift evaluation got you here. Nobody is standing behind you this morning - the rounds are yours, the log entries are yours, and the next operator inherits whatever picture you leave them.
+
+Three birds. Verify each one is healthy, log it, move on. This is what most days look like.

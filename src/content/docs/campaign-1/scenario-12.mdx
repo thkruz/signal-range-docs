@@ -1,0 +1,223 @@
+---
+title: 'Scenario 12 - Planned Maintenance: Return to Service'
+description: 'Bring VT-01 back online after waveguide gasket inspection and pull TM-1 traffic home from ME-02'
+lastUpdated: 2026-05-25
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+**Duration:** 25-35 minutes
+
+**Difficulty:** Intermediate
+
+**Mission Type:** Maintenance Recovery
+
+---
+
+## Shift Turnover Notes
+
+**Date:** Tuesday, 0914 Local
+
+**Station:** Vermont (VT-01) — restoring · Maine (ME-02) — releasing
+
+**Operator on Duty:** You
+
+**On-Site Supervisor:** Dana Torres
+
+**ME-02 Operator:** Catherine Vega
+
+---
+
+### Dana's Note (text message, 0914):
+
+> *"Crew's clear. Gasket replaced, signed off. Catherine has TM-1 on Maine — she's good for another hour but no reason to make her wait. Bring Vermont back, pull traffic home, ping Marcus when done. Standard restoration."*
+
+---
+
+### Maintenance Window Summary
+
+| Item | Value |
+|------|-------|
+| Work Performed | TX waveguide flange gasket inspection and replacement |
+| Window Opened | 0700 Local |
+| Window Closed | 0905 Local |
+| Crew Signed Off | 0908 Local |
+| Antenna Position | Stowed (Az 0°, El 90°) since 0655 |
+| RF Chain State at Handoff | LNB / BUC / HPA all powered down |
+
+---
+
+## Active Services
+
+| Satellite | Customer | Current Owner | Status |
+|-----------|----------|---------------|--------|
+| TIDEMARK-1 | SeaLink Maritime | ME-02 (Catherine) | Operational on Maine — no impact reported |
+
+SeaLink is on Catherine's uplink right now. Marcus Chen (Halifax spacecraft side) was notified when traffic moved last night and will want a similar notification when it comes back.
+
+---
+
+## TIDEMARK-1 Operations Reference
+
+### Antenna Pointing (from VT-01)
+
+| Parameter | Value |
+|-----------|-------|
+| Tracking Mode | Program-track (TIDEMARK-1 is a stable GEO bird) |
+| Azimuth | 161.8° |
+| Elevation | 34.2° |
+| Polarization | 14° |
+
+### Frequency Allocation
+
+| Parameter | RF (MHz) | LO (MHz) | IF (MHz) |
+|-----------|----------|----------|----------|
+| Beacon (Downlink) | 4,175.5 | 5,250 (LNB) | 1,074.5 |
+| Carrier (Uplink, TP-2) | 5,906 | 7,000 (BUC) | 1,094 |
+
+### Modem Configuration (preserved from pre-maintenance)
+
+| Parameter | Value |
+|-----------|-------|
+| Bandwidth | 36 MHz |
+| Modulation | QPSK |
+| FEC Rate | 3/4 |
+| TX Power | -7 dBm |
+
+---
+
+## VT-01 Equipment Status at Restoration Start
+
+| Equipment | State | Notes |
+|-----------|-------|-------|
+| GPSDO | Locked | Stayed up through the window for timing continuity |
+| Antenna | Stowed | Az 0°, El 90° — repoint required |
+| LNB | Powered off | LO and gain preserved at operational values |
+| BUC | Powered off | **Bench-test gain value left in place — see Aside below** |
+| HPA | Powered off, output disabled | |
+| TX Modem | Configured, not transmitting | IF 1,094 MHz, QPSK 3/4, 36 MHz |
+| Feed Heater | Off | Not required — clear weather forecast |
+
+<Aside type="caution">
+Maintenance crews leave bench-test values behind. The S7 incident (BUC unmuted in loopback, high current alarm) was the same crew. Inspect the TX chain panel before energizing — anything outside the operating baseline gets corrected first.
+</Aside>
+
+---
+
+## Restoration Sequence
+
+The standard restoration order — reverse of shutdown — is RX before TX, low-power before high-power. Power up only after you've inspected each panel's current state.
+
+### Receive Path
+
+1. Repoint antenna to TIDEMARK-1 (program-track)
+2. Power up LNB → wait for thermal stability + reference lock
+3. Tune spectrum analyzer to the TM-1 beacon IF
+4. Verify RX modem regains lock with healthy C/N margin
+
+### Transmit Path
+
+1. Inspect TX chain panel — identify anything outside the operating baseline
+2. Power up BUC → confirm reference lock (BUC stays muted from the safed state)
+3. Correct the maintenance leftover — BUC gain back to 23 dB (powered + muted = safe to adjust)
+4. Power up HPA → output stays disabled
+5. Enable TX modem transmit — the modem drives into a muted BUC
+6. **Stop there.** The chain stays staged cold until the handover return
+
+<Aside type="caution">
+Do not unmute the BUC or enable the HPA output before the handover executes.
+Maine is still radiating at TIDEMARK-1 — a second uplink on the same
+transponder is dual illumination and an immediate mission failure. The
+transfer stands Maine down and brings Vermont up in one coordinated swap.
+</Aside>
+
+---
+
+## Handover Return Coordination
+
+### Catherine's Constraints
+
+Catherine has been holding TM-1 since the maintenance window opened. She's not under any time pressure but a clean planned handover is the grade.
+
+**Pre-release criteria for VT-01 — confirm all before requesting traffic back:**
+
+- [ ] Antenna locked on TIDEMARK-1 in program-track
+- [ ] LNB powered, reference locked, thermally stable
+- [ ] Spectrum analyzer shows TM-1 beacon at 1,074.5 MHz IF
+- [ ] RX modem locked with C/N ≥ 10 dB
+- [ ] BUC powered, reference locked, gain at operating value — muted
+- [ ] HPA powered, output disabled (staged)
+- [ ] TX modem transmitting (into the muted BUC)
+
+Anything short of all of the above is reason to stay on Maine until the gap is closed.
+
+### Executing the Return
+
+Select TIDEMARK-1 in the asset tree from the Maine console, set VT-01 as the handover target, and execute. The traffic control manager coordinates the BUC/HPA state on both ends — Catherine's uplink stands down as yours comes up.
+
+---
+
+## Customer Notification
+
+After traffic ownership confirms on VT-01, ping Marcus on the Halifax spacecraft channel. He'll have seen the uplink source change on the payload side — confirmation closes the loop.
+
+**Standard restoration message:**
+
+> *VT-01 restored, TM-1 traffic returned to primary station, no service interruption observed.*
+
+Customers (vessel operators) never saw the swap and don't need a separate notification. Marcus will fold it into his next shift summary on the SeaLink side.
+
+---
+
+## Link Verification Checklist
+
+### Receive Path
+- [ ] Antenna tracking: Program-track on TIDEMARK-1
+- [ ] LNB reference: Locked
+- [ ] LNB thermal: Stable
+- [ ] Beacon signal: Visible at 1,074.5 MHz IF
+- [ ] RX modem: Locked, C/N ≥ 10 dB
+
+### Transmit Path
+- [ ] BUC reference: Locked
+- [ ] BUC gain: 23 dB (operating value)
+- [ ] HPA: Enabled, not overdriven
+- [ ] TX modem: Transmitting at 1,094 MHz IF
+
+### Traffic
+- [ ] TIDEMARK-1 owner: VT-01
+- [ ] ME-02 TX: Stood down
+- [ ] Service continuity: No packet loss reported
+- [ ] Marcus notified: Halifax payload-side confirmed
+
+---
+
+## Escalation Guidelines
+
+### Handle Yourself
+
+- BUC or LNB reference lock that comes up clean after power-on
+- Any maintenance-leftover values that match the bench-test pattern from prior tickets
+- Routine handover return coordination with Catherine
+
+### Call Catherine Directly
+
+- Anything that delays the return past her shift-end window
+- C/N or beacon discrepancies between stations
+- Any sign the handover transfer didn't land clean
+
+### Wake Dana
+
+- Equipment fault that prevents bringing VT-01 back at all
+- Customer-impact event during the restoration
+- Anything outside the standard restoration sequence
+
+The S11-S12 cycle is a planned maintenance procedure. There is no time pressure. Procedural cleanliness is what gets logged.
+
+---
+
+## End of Briefing
+
+Catherine's been holding the link clean since 0700. Marcus is waiting for the all-clear from our side. The maintenance crew left a small surprise in the BUC gain field — catch it before you energize the chain.
+
+Bring Vermont back the way you'd want the next operator to bring it back if it were you handing off.

@@ -1,0 +1,191 @@
+---
+title: 'Scenario 13 - Thermal Anomaly'
+description: 'Mid-shift trend assessment - BUC temperature climbing on VT-01 TIDEMARK-1 carrier, no alarm yet, judgment call on action'
+lastUpdated: 2026-06-10
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+**Duration:** 25-30 minutes
+
+**Difficulty:** Medium
+
+**Mission Type:** Trend Assessment
+
+**Time Limit:** 30 minutes
+
+---
+
+## Shift Notes
+
+**Date:** Wednesday, 1003 Local
+
+**Station:** Vermont (VT-01)
+
+**Operator on Duty:** You
+
+**Shift Supervisor:** Dana Torres (on-site, in the back office)
+
+**Relieved By:** Day-2 swing shift at 1500
+
+---
+
+### Dana's Text (1003)
+
+> *"Trend display flagged BUC temp on VT-01. Up from 57 to 62 over the last fifteen, no alarm yet. Carrier is fine. Take a look at it and decide what you want to do - I trust your read."*
+
+The flag is not an alarm. The over-temperature trip is at 70°C. You have time. Use it.
+
+---
+
+## Active Services
+
+| Satellite | Customer | Service Type | Status |
+|-----------|----------|--------------|--------|
+| TIDEMARK-1 | SeaLink Maritime | C-band trunk | Operational, nominal carrier |
+
+SeaLink has not reported anything. The customer is unaware. Whatever you do, the goal is to keep it that way.
+
+---
+
+## TIDEMARK-1 Link Reference
+
+### Frequency Allocation
+
+| Parameter | RF (MHz) | LO (MHz) | IF (MHz) |
+|-----------|----------|----------|----------|
+| Beacon (Downlink) | 4,175.5 | 5,250 (LNB) | 1,074.5 |
+| Carrier (Uplink, TP-2) | 5,906 | 7,000 (BUC) | 1,094 |
+
+### Modem Configuration
+
+| Parameter | Value |
+|-----------|-------|
+| Bandwidth | 36 MHz |
+| Modulation | QPSK |
+| FEC Rate | 3/4 |
+| TX IF Power | -7 dBm |
+
+---
+
+## BUC Thermal Trend Log
+
+Trend display readings, last 15 minutes (sampled every 3 min):
+
+| Time | Temp (°C) | Current (A) | Notes |
+|------|-----------|-------------|-------|
+| 0948 | 57.2 | 4.0 | First flag - above caution floor |
+| 0951 | 58.1 | 4.1 | Current already stepped up, holding |
+| 0954 | 59.0 | 4.1 | Continued climb |
+| 0957 | 60.1 | 4.1 | Slope steady |
+| 1000 | 61.0 | 4.1 | Sustained +0.3°C/min, no flattening |
+| 1003 | 62.0 | 4.1 | Current reading |
+
+**Slope:** ~+0.3°C/min (~+1°C every 3 minutes, sustained over 15 min, no flattening)
+
+**Headroom to trip (70°C):** ~25-30 minutes at current slope if uncorrected
+
+Note the shape: current draw stepped up first and held flat; temperature is following it with thermal lag. Cause precedes effect.
+
+---
+
+## Vermont Station Status
+
+| Equipment | Current State | Notes |
+|-----------|---------------|-------|
+| GPSDO | Locked | Stable reference, no holdover |
+| Antenna | Program-track on TIDEMARK-1 | Locked, nominal Az/El |
+| LNB | 5,250 MHz LO, powered | Reference locked, thermally stable |
+| BUC | Unmuted, gain 33 dB | **Temp 62°C, current 4.1A - trending up** |
+| HPA | Enabled, backoff 8 dB | Within linear region |
+| TX Modem 1 | Transmitting, IF 1,094 MHz | Customer carrier active |
+| Dashboard | No active alarms | Trend pre-alarm only |
+
+---
+
+## BUC Operating Reference
+
+### Nominal Ranges
+
+| Parameter | Nominal | Caution | Alarm Trip |
+|-----------|---------|---------|------------|
+| Temperature | 35-55°C | 55-70°C | > 70°C |
+| Current Draw | 2.5-3.2 A | 3.2-4.5 A | > 4.5 A |
+| Gain | 23 dB (operating value) | > 25 dB - investigate | n/a |
+
+### Heat Source
+
+The BUC dissipates electrical power as heat in proportion to its drive level minus its useful RF output. Excess gain that the HPA does not need turns into chassis heat instead of useful radiated power. Higher current + higher temperature with no other anomaly is one story, not two.
+
+<Aside type="caution">
+The 70°C trip will mute the BUC automatically and drop the carrier hard. If the trend reaches the trip point, the decision has been made for you - and the customer notices.
+</Aside>
+
+---
+
+## Response Options
+
+Four operational responses are available for a pre-alarm thermal trend. Each has a cost. Choose the one that matches the situation, not the most aggressive option available.
+
+| Option | What It Does | Customer Cost | When It Fits |
+|--------|--------------|---------------|--------------|
+| **De-rate** | Reduce BUC gain ~10 dB, let HPA backoff increase, monitor trend reverse | None (within SLA margin) | Trend is real, root cause is excess gain, time is available |
+| **Swap now** | Take carrier down hard, hot-swap BUC module | Full outage during swap | BUC is failing fast or already past trip |
+| **Mute + switch backup** | Mute primary, transition to backup modem chain | Brief carrier interruption | Primary is suspect across the chain, not just BUC |
+| **Hold and monitor** | Take no action, watch the curve | None unless trip | Trend is flattening on its own (it is not, here) |
+
+---
+
+## De-Rate Sequence
+
+If the de-rate is the right call, execute it live - no mute, no theater:
+
+1. Lower BUC gain in a single adjustment (target 23 dB operating value, down from 33 dB)
+2. Verify HPA still in linear region (backoff increases as drive drops)
+3. Verify BUC not saturated
+4. Watch 5-10 minutes: slope flattens, then trends down, current draw normalizes
+5. Open maintenance ticket for BUC swap on next planned window
+6. Log the action
+
+---
+
+## Escalation Guidelines
+
+### Handle Yourself
+
+- Pre-alarm thermal trends with clear root cause
+- BUC gain adjustments within the operating range
+- Maintenance ticket creation for planned-window swaps
+- Customer carriers remaining within SLA margin throughout
+
+### Notify Dana
+
+- Trend reaches the 70°C trip with no time to react
+- Carrier degrades below SLA floor during any adjustment
+- Multiple unrelated anomalies appear during the response
+- You judge a hot swap or emergency switchover is warranted
+
+Dana is in the back office. She does not need to be flagged for routine in-shift judgment calls. She does need to be flagged before anything affects the customer.
+
+---
+
+## Maintenance Ticket Reference
+
+Tickets are handoffs. The next person reads them cold. Include:
+
+- The trend record (timestamps, temperatures, currents - the curve, not just the verdict)
+- The action you took on-shift (de-rate to specific gain, time of action)
+- The recommendation (swap module during next planned VT-01 maintenance window)
+- Carrier impact (none / minor / outage)
+
+A ticket that says "BUC running hot" is not a ticket. It is a complaint.
+
+---
+
+## End of Briefing
+
+The trend is real, pre-alarm, and isolated to one module on one station. There is no customer impact yet, and no reason there should be one before end of shift if the response is deliberate.
+
+Catch it on the curve, not at the alarm. Document what you did and why. Hand the next crew a clear story.
+
+That is what qualified ops looks like.

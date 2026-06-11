@@ -1,0 +1,211 @@
+---
+title: 'Scenario 11 - Planned Maintenance: Hand Off'
+description: 'Execute a coordinated TIDEMARK-1 traffic transfer to Maine, then safe Vermont for the HPA waveguide inspection crew'
+lastUpdated: 2026-05-25
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Wednesday, 0930 Local
+**Station:** Vermont (VT-01)
+**Operator on Duty:** You
+**Supervisor:** Dana Torres (on-site)
+**Maine Station:** ME-02 (Catherine Vega - pre-staged)
+**Maintenance Window:** 1000-1200 Local
+
+> Catherine has ME-02 already tracking TIDEMARK-1 in parallel - RX hot, beacon clean, modem locked. She's waiting on your commit. Stage her TX cold - the transfer brings it up when you execute.
+>
+> The maintenance crew is rolling up at 1000 to pull the HPA waveguide and inspect the flange gasket. They need RF energy off the chain and the dish at maintenance position before they touch anything.
+>
+> No fire today. Planned work, pre-coordinated. The grade is procedural cleanliness.
+>
+> — Dana
+
+**Catherine (text message, 0915):**
+> ME-02 is hot on TM-1 RX, C/N holding above 10. Pre-coord done with NOC. When you're ready, verify my side, bring my TX up, and pull the trigger on the dashboard. I've got it from there for the window.
+
+---
+
+## Active Services
+
+| Satellite | Customer | Service Type | Status at Turnover |
+|-----------|----------|--------------|-------------------|
+| TIDEMARK-1 | Teleport Services Inc. | Enterprise Data | Operational (VT-01) |
+
+Same enterprise traffic that runs through TM-1 every day. Customers do not need to be notified of the handover - the transfer is designed to be transparent. They will see no service event if you execute cleanly.
+
+---
+
+## Work Order
+
+**Order #:** MX-2026-0419
+
+**Opened:** 0800 Local (Maintenance Planning)
+
+**Window:** 1000-1200 Local
+
+**Scope:** HPA waveguide flange inspection and gasket replacement (VT-01)
+
+**Crew Lead:** Pete Hollis (RF Tech III)
+
+**Required Station State:**
+- Antenna at maintenance position (El: 5°)
+- HPA disabled
+- BUC muted
+- Personnel-safe RF chain (no radiating energy on the feed)
+
+**Return to Service:** Next shift (S12)
+
+<Aside type="caution">
+The crew will physically access the feed assembly and waveguide run. Verify the HPA is disabled and the BUC is muted before the antenna reaches maintenance position. RF energy at the feed during crew access is a personnel-safety event.
+</Aside>
+
+---
+
+## TIDEMARK-1 Link Parameters
+
+### Frequency Allocation
+
+| Parameter | RF (MHz) | LO (MHz) | IF (MHz) |
+|-----------|----------|----------|----------|
+| Beacon (Downlink) | 4,175.5 | 5,250 (LNB) | 1,074.5 |
+| Carrier (Downlink) | 3,718 | 5,250 (LNB) | 1,532 |
+| Carrier (Uplink) | 5,943 | 4,849 (BUC) | 1,094 |
+
+### Modem Configuration
+
+| Direction | Frequency (IF) | Bandwidth | Modulation | FEC | Power |
+|-----------|----------------|-----------|------------|-----|-------|
+| Receive | 1,532 MHz | 36 MHz | QPSK | 3/4 | — |
+| Transmit | 1,094 MHz | 36 MHz | QPSK | 3/4 | -7 dBm |
+
+ME-02's LNB LO is set to 5,250 MHz for this coordination window. Receive IFs match Vermont exactly, which means downstream configurations are identical at both sites. This is by design - it removes ME-02-specific values from the operator's head during the commit.
+
+---
+
+## Station Reference
+
+### Vermont (VT-01) - Handing Off
+
+| Equipment | Current State | Required State After Handover |
+|-----------|---------------|-------------------------------|
+| GPSDO | Locked | Locked (no change) |
+| LNB | Powered, locked | Powered (no change) |
+| BUC | Powered, unmuted, transmitting | **Muted** |
+| HPA | Enabled, switch on | **Disabled** |
+| Antenna | Program-track on TIDEMARK-1 | **Maintenance position (El: 5°)** |
+| Feed Heater | Standby | Standby |
+
+### Maine (ME-02) - Receiving
+
+| Equipment | Current State (Pre-Staged) | Required Action |
+|-----------|----------------------------|-----------------|
+| GPSDO | Locked | Verify |
+| LNB | Powered, LO 5,250 MHz, locked | Verify |
+| Antenna | Program-track on TIDEMARK-1 | Verify lock |
+| RX Modem 1 | Tuned to 1,532 MHz IF, locked | Verify C/N ≥ 10 dB |
+| TX Modem 1 | Configured for TM-1 uplink, not transmitting | **Enable transmission (drives into muted BUC)** |
+| BUC | Powered, muted | **Leave muted - the transfer unmutes it** |
+| HPA | Disabled | **Leave disabled - the transfer enables it** |
+
+---
+
+## Planned Handover Procedure (SOP-MX-002)
+
+This SOP differs from the weather-handover procedure (SOP-WX-003) used in S3. There is no time pressure, no need to enable the source-station feed heater, and the source-station antenna goes to maintenance position rather than stow. Read the checklists carefully - the muscle memory from weather handovers will get the sequence almost right but not exactly.
+
+### Pre-Handover: Source Station Baseline
+
+- [ ] VT-01 dashboard: no active alarms
+- [ ] VT-01 antenna: locked on TIDEMARK-1
+- [ ] VT-01 traffic ownership: confirmed
+
+### Receive-Side Verification (Maine)
+
+- [ ] Antenna locked on TIDEMARK-1 (program-track)
+- [ ] TIDEMARK-1 beacon visible at 1,074.5 MHz IF
+- [ ] RX modem locked
+- [ ] C/N ≥ 10 dB
+
+### Transmit-Side Staging (Maine)
+
+- [ ] TX modem: transmitting (into the muted BUC)
+- [ ] BUC: still muted
+- [ ] HPA: still disabled
+
+<Aside type="caution">
+Never bring the receiving station's RF up by hand while the source is still
+radiating. Two uplinks on the same transponder is dual illumination - an
+immediate, customer-visible violation. The traffic transfer stands VT-01 down
+and brings ME-02 up in one coordinated swap; your job is to have Maine staged
+so that swap lands on a ready chain.
+</Aside>
+
+### Traffic Transfer
+
+- [ ] Open TIDEMARK-1 satellite dashboard
+- [ ] Execute transfer: VT-01 → ME-02
+- [ ] Verify ME-02 is the new traffic owner
+- [ ] Service continuity confirmed (zero packet loss target)
+
+### Post-Handover: Safe Vermont for Crew
+
+- [ ] Return to VT-01 station view
+- [ ] HPA: disabled
+- [ ] BUC: muted
+- [ ] Antenna tracking mode: Maintenance
+- [ ] Antenna position: El 5° reached
+
+---
+
+## Crew Hand-Off Reference
+
+Before Pete and his crew approach the feed assembly, walk the floor and confirm the station is safe:
+
+| Check | Pass Criteria |
+|-------|---------------|
+| HPA output | Disabled - no green output indicator |
+| BUC | Muted - no transmit indicator |
+| Antenna position | El 5°, dish accessible from the catwalk |
+| RF energy on feed | None - no transmit chain active |
+
+A maintenance-position dish (5°) is different from a stow-position dish (90°). Stow protects against weather; maintenance lets a human work the feed. Confirm the antenna is at maintenance, not stow.
+
+---
+
+## Escalation Guidelines
+
+### Handle Yourself
+
+- Pre-handover verification at either station
+- Transmit-side staging on ME-02 (modem on, BUC muted, HPA disabled)
+- Traffic transfer execution
+- VT-01 safing for the crew
+- Operations log entry
+
+### Inform Dana
+
+- Catherine reports any anomaly on the ME-02 receive side
+- Service-continuity check fails (packet loss > threshold)
+- Crew lead requests anything beyond the planned scope
+- Any reason the window may slip past 1200
+
+### Wake the Senior Engineer (Off-Shift)
+
+- Dual-uplink event (both stations actively transmitting on TM-1)
+- ME-02 traffic instability after transfer that you cannot recover
+- Safety event during crew access
+
+This is routine for our maintenance cadence. Work methodically and you will be fine.
+
+---
+
+## End of Briefing
+
+Pete's crew is at the gate. Catherine has her side ready. Dana wants the handover clean and the station safed before the window opens at 1000.
+
+Verify Maine, stage Maine, transfer traffic, verify Vermont safed. Log it. Meet Dana in the conference room to walk through the gasket procedure before the crew starts work.
+
+Next shift you bring it back.
