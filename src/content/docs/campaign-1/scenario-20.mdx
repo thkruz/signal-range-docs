@@ -1,0 +1,129 @@
+---
+title: 'Scenario 20 - Dual Outage: Concurrent Site Loss, Prioritized Recovery'
+description: 'A winter storm degrades VT-01 receive while ME-02 takes an HPA fault - two sites, two unrelated causes, one operator deciding which fire to fight first.'
+lastUpdated: 2026-06-11
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Friday, 0712 Local
+**Stations:** Vermont (VT-01) and Maine (ME-02) - you have both this morning
+**Operator on Duty:** You
+**Supervisor:** Dana Torres (driving in - roads are bad, 40+ minutes out)
+**Customer Contact:** James Okafor (SeaLink fleet ops)
+
+> Two boards lit at once. Vermont's in the front edge of a winter storm - feed
+> icing faster than the forecast said, RX margin bleeding. And Maine just threw
+> an HPA overdrive with a temperature alarm on top - back-off looks like it
+> walked. Unrelated problems, same shift.
+>
+> I'm 40 minutes out. Triage them: SLA exposure first, recovery time second.
+> Don't give me hero sequencing - give me the order that costs the customers
+> least.
+>
+> — Dana (call, 0709)
+
+**James (text, 0714):**
+> *"Seeing margin alerts on both our trunks at once. Two stations at the same
+> time - should I be worried this is something other than bad luck? Call when
+> you know."*
+
+---
+
+## Active Services
+
+| Satellite | Carried By | Customer | Status |
+|-----------|-----------|----------|--------|
+| TIDEMARK-1 | VT-01 | SeaLink Maritime | **Degrading - feed icing, RX margin falling** |
+| TIDEMARK-2 | ME-02 | SeaLink Maritime | **Degraded - HPA overdriven, over-temperature** |
+
+---
+
+## Fault Summary
+
+### VT-01 - Weather (slow, environmental)
+
+| Parameter | State |
+|-----------|-------|
+| Event | Severe winter storm over the site, in progress |
+| Symptom | Ice accumulating on feed - RX loss growing toward ~10 dB if unchecked |
+| Feed heater | **OFF** (the failure: it should have been on before the front arrived) |
+| Recovery | Heater ON -> ice melts ~1 dB/min; margin recovers gradually |
+| Time to recover | Minutes to tens of minutes, weather-dependent |
+
+### ME-02 - Equipment (fast, deterministic)
+
+| Parameter | State |
+|-----------|-------|
+| Symptom | HPA back-off at 1 dB - overdriven, IMD elevated, temperature above the 85°C alarm |
+| Cause | Back-off setting drift (config, not hardware) |
+| Recovery | Disable HPA output -> restore back-off to 10 dB -> re-enable; temperature falls with output power |
+| Time to recover | Under five minutes, fully in your control |
+
+<Aside type="caution">
+RF-safety sequencing applies at Maine: the BUC is unmuted and carrying traffic,
+so disable the HPA output first, fix the back-off, then re-enable. Do not touch
+the BUC mute - an enabled HPA without drive is an instant equipment-damage
+event, and Maine's drive is fine.
+</Aside>
+
+---
+
+## Triage Reference
+
+| Factor | VT-01 weather | ME-02 HPA |
+|--------|---------------|-----------|
+| Getting worse on its own? | Yes (ice accumulates) | Yes (overdriven + hot) |
+| Polluting the spectrum? | No | **Yes - IMD into adjacent transponders** |
+| Damaging equipment? | Slowly (ice load) | **Yes - amplifier stress at temperature** |
+| Recovery time | Slow either way | Fast |
+| Operator leverage | Start the heater, then wait | Full - config fix |
+
+The classic answer: start the slow recovery (heater) the moment you understand
+it, then fix the fast deterministic fault while the slow one heals - **unless**
+the fast fault is actively dangerous, in which case it goes first outright. Both
+orderings get the customer back; one of them also protects the spectrum and the
+amplifier. Look at the table again.
+
+---
+
+## "Is This an Attack?" (adversarial check)
+
+Two sites degrading simultaneously is exactly what a coordinated interference
+or sabotage event would look like - and also exactly what a Friday in January
+looks like. Before you tell James "bad luck," be able to defend it:
+
+- [ ] Causes are independent and each fully explains its own symptoms
+- [ ] VT-01 degradation tracks the storm (weather radar agrees, precip sensor agrees)
+- [ ] ME-02 fault is a config value with a mundane history (back-off drift), not an RF anomaly
+- [ ] No unexplained signals on either spectrum, no carrier anomalies satellite-side
+
+Document the rule-out in the log. The day the answer ISN'T bad luck, the value
+of having done this honestly every other time is that someone believes you.
+
+---
+
+## Escalation Guidelines
+
+### Handle Yourself
+
+- Triage order and both recoveries
+- Customer status call to James (cause, order, ETA)
+- Adversarial rule-out documentation
+
+### Call Dana (she's driving - voice only, keep it short)
+
+- Either site is NOT recovering after your corrective action
+- Evidence that the simultaneity is NOT coincidental
+- Any third fault appears
+
+---
+
+## End of Briefing
+
+Two fires, one operator. The skill being graded is not firefighting - it's the
+thirty seconds of thinking before you pick up the extinguisher.
+
+Cost the customers least. Protect the spectrum and the hardware. Write down why.

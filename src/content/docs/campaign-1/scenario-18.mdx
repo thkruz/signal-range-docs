@@ -1,0 +1,113 @@
+---
+title: 'Scenario 18 - Satellite Anomaly: TIDEMARK-2 Station-Keeping Drift'
+description: 'TIDEMARK-2 thruster degradation reported by Halifax - hold the link from ME-02 with step-track while the spacecraft team works the vehicle.'
+lastUpdated: 2026-06-11
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Monday, 0915 Local
+**Station:** Maine (ME-02) - you are covering for Catherine (training day)
+**Operator on Duty:** You
+**Supervisor:** Dana Torres (remote from VT-01, incident-handling support)
+**Spacecraft Liaison:** Marcus Chen (SeaLink Halifax) - **primary voice this shift**
+
+> Marcus called the ops line at 0850. TIDEMARK-2's north-south station-keeping
+> burns have been coming up short - thruster degradation, vehicle team
+> investigating. The bird is drifting more than the ephemeris predicts and
+> Halifax expects it to get worse over the next several hours.
+>
+> Your job is the ground side: keep the link alive while they work the
+> spacecraft. The vehicle is their problem. The lock is yours.
+>
+> — Dana (text, 0907)
+
+**Marcus (call note, 0850):**
+> *"Halifax here. TM-2's station-keeping is degraded - we're seeing residual
+> inclination building, which means a growing daily figure-eight from your
+> perspective. Program-track will fall off the bird because the ephemeris no
+> longer matches reality. You've flown AURORA-7 - same playbook. I'll feed you
+> vehicle status as we have it."*
+
+---
+
+## Active Services
+
+| Satellite | Carried By | Customer | Status |
+|-----------|-----------|----------|--------|
+| TIDEMARK-2 | ME-02 | SeaLink Maritime | Operational - **vehicle anomaly in progress** |
+| TIDEMARK-1 | VT-01 | SeaLink Maritime | Nominal (Dana watching) |
+
+---
+
+## TIDEMARK-2 Link Reference (ME-02, LNB LO 5,250 MHz)
+
+| Parameter | RF (MHz) | LO (MHz) | IF (MHz) |
+|-----------|----------|----------|----------|
+| Beacon (Downlink) | 4,180 | 5,250 (LNB) | 1,070 |
+| Carrier (Downlink) | 3,792 | 5,250 (LNB) | 1,458 |
+
+### Vehicle Anomaly Data (Halifax, 0850)
+
+| Parameter | Nominal | Current |
+|-----------|---------|---------|
+| Nominal slot position | Az 219.7°, El 26.3° | Drifting ±1.5° (figure-8, growing) |
+| Ephemeris validity | Good | **Stale - drift exceeds prediction** |
+| Station-keeping | Automatic N-S burns | **Degraded thrusters - burns suspended** |
+| Transponders / beacon | Nominal | Nominal (payload unaffected) |
+
+<Aside type="note">
+The payload is healthy - this is a propulsion problem, not a communications
+problem. The carrier and beacon are as strong as ever; they are just not where
+the ephemeris says they should be. That distinction drives everything: you are
+compensating for pointing, not for signal.
+</Aside>
+
+---
+
+## Tracking Strategy (SOP-TK-002)
+
+Program-track follows the ephemeris. When the ephemeris is wrong, program-track
+points at where the satellite *should* be. Step-track follows the beacon - where
+the satellite actually *is*.
+
+### Transition Checklist
+
+- [ ] Confirm beacon C/N degradation under program-track (document the baseline first)
+- [ ] Enable step-track optimization (requires program-track engaged underneath)
+- [ ] Confirm beacon lock recovers and holds
+- [ ] Verify carrier C/N stabilizes at or near baseline
+- [ ] Hold and monitor - the drift grows slowly; step-track keeps up
+
+<Aside type="caution">
+Do not chase the bird manually. Manual pointing against a growing figure-eight
+is a losing game and risks driving the dish off the beacon entirely. Step-track
+exists precisely for a satellite whose ephemeris cannot be trusted.
+</Aside>
+
+---
+
+## Roles During a Vehicle Anomaly
+
+| Decision | Owner |
+|----------|-------|
+| Vehicle recovery (burns, thruster isolation, ephemeris updates) | Halifax spacecraft team |
+| Ground tracking mode, link maintenance | **You** |
+| Customer impact assessment input (ground view) | **You** -> Marcus |
+| Service rerouting / handover if the link becomes untenable | Dana, on your recommendation |
+
+Escalate to Dana if: beacon lock cannot be held in step-track, C/N trends below
+demod threshold despite good tracking, or Halifax declares the vehicle unsafe to
+operate. Otherwise: keep the link, feed observations to Halifax, log everything
+with timestamps - your ground-side track history is data the vehicle team uses.
+
+---
+
+## End of Briefing
+
+A satellite you cannot trust the ephemeris on is just an inclined bird you
+didn't plan for. You have flown one of those for years.
+
+Keep the lock. Report what you see. Let Halifax fly the vehicle.

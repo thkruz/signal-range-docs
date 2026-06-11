@@ -1,0 +1,94 @@
+---
+title: 'Scenario 19 - Train the New Hire: Producing the Quick-Reference Card'
+description: 'Fly the AURORA-7 step-track procedure cleanly while choosing which callouts, formulas, and common-mistake warnings belong on the new-hire quick-reference card.'
+lastUpdated: 2026-06-11
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Wednesday, 1300 Local
+**Station:** Vermont (VT-01)
+**Operator on Duty:** You
+**Supervisor:** Dana Torres (on-site)
+
+> We have a new hire starting ground school next month. I want a one-page
+> quick-reference card for the AURORA-7 acquisition and step-track procedure -
+> written by someone who actually flies it, not copied from the vendor manual.
+>
+> Here's how we'll do it: run the procedure end-to-end this afternoon, and at
+> each step pick the one callout that belongs on the card. The card builds as
+> you work - you'll see it grow in the Working Document panel. When you're done
+> I want to be able to hand that card to someone on day one.
+>
+> — Dana (text, 1255)
+
+---
+
+## The Assignment
+
+**Deliverable:** AURORA-7 Quick-Reference Card (in-game Working Document)
+
+**Method:** Perform the live procedure on AURORA-7. At each phase, a knowledge
+check asks which callout, formula, or warning belongs on the card. Correct
+choices are appended to the document automatically.
+
+**Audience:** A trained-but-green operator on their first solo shift. They know
+what an LNB is. They do not yet know which mistakes this station's history says
+they will make.
+
+<Aside type="note">
+A quick-reference card is not a procedure. The procedure lives in the SOP. The
+card is what someone tapes to the console: the numbers they will need under
+pressure, and the three mistakes that have actually happened here. Selecting
+what to leave OFF the card is most of the work.
+</Aside>
+
+---
+
+## AURORA-7 Reference (the procedure being taught)
+
+| Parameter | Value |
+|-----------|-------|
+| Orbit | Inclined GEO (~3°), figure-8 drift, Az 190° ± 3°, El 32° ± 3° |
+| Beacon RF | 4,165 MHz (V-pol, CW, weak - aging bird) |
+| Beacon IF (LNB LO 5,250) | 1,085 MHz |
+| Carrier (Downlink) | 3,828 MHz -> 1,422 MHz IF |
+| Carrier (Uplink) | 6,053 MHz; BUC LO 7,500 -> 1,447 MHz IF |
+| Bandwidth | 24 MHz (narrower than TIDEMARK - legacy) |
+| Required tracking | Program-track to acquire, step-track to hold |
+
+---
+
+## Station History (instructor notes - candidate "common mistakes")
+
+These have all actually happened at VT-01. Some belong on the card; some are
+too rare to spend card space on. Your call.
+
+- New operator engaged step-track from MANUAL mode; step-track rides program-track and the dish wandered off the bird.
+- Beacon "missing" at 1,085 MHz - LNB LO was set to 6,080 (Maine default) instead of 5,250 after a cross-site shift.
+- Operator chased the figure-8 with manual nudges for twenty minutes instead of trusting step-track.
+- Spectrum span left at 2 kHz from a beacon check; operator concluded the 24 MHz carrier was "gone."
+- TX IF computed against BUC LO 7,000 instead of AURORA-7's 7,500 - carrier landed 500 MHz off.
+
+---
+
+## Card Structure (target)
+
+| Section | Contents |
+|---------|----------|
+| Acquire | Pointing values, beacon IF formula with the actual numbers |
+| Track | Step-track engagement rule, what "working" looks like |
+| Verify | The minimum set of indicators that prove the link |
+| Watch Out | The 2-3 mistakes with the highest local base rate |
+
+---
+
+## End of Briefing
+
+Anyone can execute a procedure. Teaching it means knowing which three of the
+fifty things you do are the ones a new operator will get wrong.
+
+Fly it clean, choose well, and hand Dana a card you would have wanted on your
+own first day.
