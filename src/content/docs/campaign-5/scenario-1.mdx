@@ -1,0 +1,194 @@
+---
+title: 'Scenario 1 - First Fix'
+description: 'Incident EW-27-0244 - an intermittent carrier is hurting the allied net on SENTRY-7 TP-1; find it, time it, cross-fix it from Peterson Annex'
+lastUpdated: 2026-09-10
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+**Shift:** Wednesday 01 Sep 2027, 0000 Local (0600Z)
+
+**Station:** Peterson Annex (PA-22), 22nd Electronic Warfare Squadron
+
+**Operator:** You
+
+**Incident Cell Lead:** TSgt Marisol Quintero (on the floor, working two other tickets)
+
+**Ops Director:** Maj. Holt (0100Z sync - wants a fix, not a status)
+
+---
+
+## Shift Turnover Notes
+
+Swing shift logged the following at 2350Z:
+
+> Receive chain nominal, dish program-tracking SENTRY-7, service carrier locked at 1365 IF with C/N 12 dB. No alarms.
+>
+> Customer opened a ticket at 2231Z for bursty packet loss on the TP-1 logistics net. We put the analyzer on RX IF with a max-hold trace and left it. Clear-write shows nothing wrong - the service carrier looks fine every time you look at it, which is the problem. Something in that passband is not there all the time.
+>
+> Correlator is warmed up and SENTRY-9 is selected as the collector. It has not been tuned to anything. Do not retune the receive chain - the customer is live.
+
+---
+
+### Active Services
+
+| Satellite | Transponder | Customer | Service | Status at Turnover |
+|-----------|-------------|----------|---------|--------------------|
+| SENTRY-7 | TP-1 (H) | JTF-South logistics net | 8 MHz QPSK 3/4 data carrier | Degraded - bursty packet loss |
+| SENTRY-9 | - | 22 EWS (collector) | Sidelobe correlation pair for SENTRY-7 | Available |
+
+The logistics net moves resupply manifests and medevac routing for a forward element. Forty seconds of loss every couple of minutes is enough to break every transfer they start.
+
+---
+
+## Trouble Ticket
+
+**Ticket #:** EW-27-0244
+
+**Opened:** 2231Z by 22 EWS NOC (forwarded to PA-22 incident cell)
+
+**Priority:** High
+
+**Customer Report:**
+> JTF-S J6 reports TP-1 data carrier dropping in bursts since approximately 2140Z. Each burst lasts 30-45 seconds; interval between bursts roughly two minutes. Modem shows C/N collapse during bursts, recovers on its own. No weather in the beam. No changes on the customer side.
+
+**NOC Note:**
+> Unable to confirm on a clear-write trace from the monitor site. Recommend max-hold on the victim downlink and a duty-cycle characterization. If it is an uplink interferer, PA-22 has the correlation pair to fix it.
+
+**TSgt Quintero (ops chat, 2358Z):**
+> *"It's yours. I need three things before Holt's 0100Z sync: what it is, how it behaves, and where it is. Find the carrier, time it, then go to the correlator and get me six clean captures - inside the on-window only. The correlator throws NO CORRELATION on any capture the interferer walks out of, and every failed capture is time we don't have. Twenty-five kilometres or better. Log the characterization in the incident report as you go."*
+
+---
+
+## SENTRY-7 / SENTRY-9 Operations Reference
+
+Both are inclined-orbit GEO birds - they stopped north-south station-keeping and now trace a daily figure-8 around their slots. From PA-22 they sit high and close together in the southern sky. Program-track handles the drift for SENTRY-7; the correlator handles it for both.
+
+| Satellite | NORAD | Slot | Inclination | Az / El from PA-22 (0600Z) | Role |
+|-----------|-------|------|-------------|----------------------------|------|
+| SENTRY-7 | 71001 | 100.2° W | 3.0° | 172.5° / 47.1° | Victim - carries the affected transponder |
+| SENTRY-9 | 71002 | 98.1° W | 4.5° | 168.7° / 48.1° | Adjacent collector - hears the same uplink through its sidelobes |
+
+### Transponder Plan
+
+| Satellite | Transponder | Uplink Passband (MHz) | Translation (MHz) | Downlink Passband (MHz) | Polarization |
+|-----------|-------------|-----------------------|-------------------|-------------------------|--------------|
+| SENTRY-7 | TP-1 | 5,990 - 6,030 (40 MHz) | -2,225 | 3,765 - 3,805 | H |
+| SENTRY-9 | TP-1 | 6,232 - 6,268 (36 MHz) | -2,225 | 4,007 - 4,043 | H |
+
+Anything uplinked into a TP-1 passband on the right polarization is relayed to the downlink, whoever sent it. TP-1 rejects cross-pol uplinks by roughly 28 dB.
+
+### Frequency Reference (PA-22 receive chain)
+
+| Signal | Uplink RF (MHz) | Downlink RF (MHz) | LNB LO (MHz) | IF (MHz) |
+|--------|-----------------|-------------------|--------------|----------|
+| SENTRY-7 TP-1 service carrier | 6,010 | 3,785 | 5,150 | 1,365 |
+| SENTRY-9 beacon (CW) | - | 4,005 | 5,150 | 1,145 |
+| Unidentified carrier | *(derive)* | *(derive)* | 5,150 | *(measure)* |
+
+Conversion notes for the incident report: **IF = LO - RF (downlink)** and **uplink = downlink RF + 2,225**. The correlator is tuned to the *uplink* frequency.
+
+---
+
+## Peterson Annex Equipment Status
+
+| Equipment | State at Turnover | Notes |
+|-----------|-------------------|-------|
+| Antenna | Program-track on SENTRY-7 (71001) | Beacon locked, C/N 12 dB. Leave it |
+| LNB | 5,150 MHz LO, powered, reference locked | 65 dB gain |
+| GPSDO | Locked, 15 ns UTC accuracy | Timing reference for the correlator - verify it stays locked |
+| Spectrum analyzer | RX IF tap, center 1,364 MHz, span 30 MHz, RBW 100 kHz | Trace 1 clear-write, trace 2 max-hold |
+| Receiver modem 1 | 1,365 MHz, 8 MHz, QPSK 3/4 | Customer carrier - do not retune |
+| BUC / HPA | Muted / disabled | PA-22 is receive-only for this incident |
+| Geolocation console | Idle, SENTRY-9 selected | Untuned. 12 s integration window |
+
+<Aside type="caution">
+The analyzer is a tap on the receive IF. Nothing you do on it or on the Geolocation console affects the customer's carrier. Retuning the LNB, the antenna, or receiver modem 1 does, and the customer is live. If you find yourself touching the receive chain, stop.
+</Aside>
+
+---
+
+## Correlator Reference
+
+The Geolocation console cross-correlates the SENTRY-7 downlink against the SENTRY-9 downlink and produces one TDOA/FDOA measurement per capture. It does not know what it is looking for until you tell it.
+
+| Parameter | Value | Notes |
+|-----------|-------|-------|
+| Integration window | 12 s | Interferer must be transmitting for at least 70% of it (8.4 s) |
+| Target frequency | Interferer **uplink**, MHz | Must be within half the interferer's bandwidth of its center |
+| Correlation bandwidth | Match the interferer | Accepted within a factor of two of the carrier's occupied bandwidth |
+| Adjacent collector | SENTRY-9 | Pre-selected |
+| CAPTURE | One 12 s integration | Result line reports TDOA (µs) and FDOA (Hz), or NO CORRELATION |
+| AUTO | Back-to-back captures | Retries through off-windows; each miss still burns 12 s |
+| COMPUTE FIX | Solves all captures on the pair | Reports lat/lon and a 95% error ellipse as ±major×minor km |
+
+Measurement noise on this pair is about 1.5 µs TDOA and 3 Hz FDOA. Six captures will get you inside 25 km most nights. The birds drift between on-windows, and every new window rotates the FDOA line of position - so captures spread across cycles tighten the ellipse faster than captures crammed into one.
+
+<Aside type="caution">
+NO CORRELATION - interferer not transmitting during integration means you started the capture too late in the on-window or during the off-window. It is not a fault. Time the cadence before you touch CAPTURE.
+</Aside>
+
+---
+
+## Incident Report EW-27-0244 - Required Fields
+
+The Working Document panel holds the report. The cell needs these fields filled before the sync:
+
+| Field | What the cell needs |
+|-------|---------------------|
+| 3. Frequency | Uplink center, MHz (with downlink RF and IF) |
+| 4. Duty cycle | On-seconds / period, and the percentage |
+| 5. Occupied bandwidth | MHz, from the analyzer |
+| 6. Polarization | Uplink polarization and the basis for the call |
+| 7. Fix | Lat/lon and the 95% error ellipse from COMPUTE FIX |
+
+Field 6 is not a measurement you can make from a downlink. It is an inference from which transponder relayed the signal.
+
+---
+
+## Capture Discipline Checklist
+
+### Before the correlator
+- [ ] Unidentified carrier observed on RX Analysis (max-hold holds it between bursts)
+- [ ] IF center and occupied bandwidth read off the analyzer
+- [ ] Uplink frequency derived (IF → downlink RF → +2,225 MHz)
+- [ ] Cadence timed against the mission clock through at least two full cycles
+
+### On the correlator
+- [ ] Adjacent collector: SENTRY-9
+- [ ] Target frequency: interferer uplink
+- [ ] Correlation bandwidth: matched to the carrier, not the transponder
+- [ ] Captures started only inside the on-window
+- [ ] At least six successful captures, across at least two cycles
+- [ ] COMPUTE FIX - ellipse reported
+
+### Report
+- [ ] Fields 4, 5, 6 logged in the Working Document
+- [ ] Fix and ellipse ready for the 0100Z sync
+
+---
+
+## Escalation Guidelines
+
+**Handle Yourself:**
+- Analyzer configuration, trace modes, timing the cadence
+- Correlator tuning and capture timing
+- Fix refinement (more captures, more cycles)
+
+**Tell Quintero:**
+- Fix will not close inside 25 km after twelve or more captures
+- GPSDO drops lock (the correlator's timing goes with it)
+- Anything that touches the customer's receive chain
+
+**Maj. Holt gets:**
+- A fix and an ellipse at 0100Z. Not a status.
+
+---
+
+## End of Briefing
+
+Somebody is keying an uplink into an allied transponder on a schedule, and they picked a duty cycle that hides from anyone who only looks at a live trace. The forward element on the other end of that carrier has stopped getting manifests.
+
+You have the victim bird, the neighbor that hears the same uplink, a timing reference good to fifteen nanoseconds, and about an hour. Find the carrier, time it, and put an ellipse on the map small enough that a team can drive to it.
+
+Quintero has two other tickets. Holt has a sync at 0100Z. The first fix is yours.

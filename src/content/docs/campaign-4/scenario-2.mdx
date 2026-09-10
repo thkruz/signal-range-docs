@@ -1,0 +1,183 @@
+---
+title: 'Scenario 2 - Failover'
+description: 'Second night on COBALT-4 - hold the X-band denial through two transmit-string trips on a shared amplifier, with the friendly MILSATCOM band protected the whole window'
+lastUpdated: 2026-09-10
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Saturday 6 November 2027, 0330 Local (1030Z)
+**Site:** SANDSTORM (SS-01), transportable X-band EA site, high desert
+**Operator on Console:** You
+**Crew Chief:** MSgt Delgado (maintenance tent, radio on channel 2)
+**Mission Direction:** 9 EWS ops floor, callsign RAMPART
+
+> Second night on the same bird. Last night's sandbox pass proved the chain; tonight the tasking is scored and the window is 1030Z to 1100Z, no gaps.
+>
+> Monitor dish is stowed - we had a wind hold at 0100 and I did not want the 3-metre riding it out at 50 degrees. Put it back on the bird before you key anything. The jam dish stayed up; it is on target.
+>
+> Read the note about JAM-A before you trust it.
+>
+> - Delgado (turnover, 0318)
+
+---
+
+## Tasking Order Extract
+
+**Ref:** RAMPART EA-TASK 2027-310-04
+**Effect:** DENY - COBALT-4 X-band service link, full window
+**Window:** 1030Z - 1100Z
+**Threshold:** J/S at or above 6 dB at the transponder, reported by the EA Assessment console
+**Recall:** RAMPART will call CEASE FIRE at end of window
+
+**ROE (unchanged from last night):**
+
+> FRIENDLY MILSATCOM uplinks in 8175-8225 MHz through the same slot of sky. No jam waveform touches that band, at any power, for any duration. A hit is fratricide and terminates the tasking. There is no warning and no second chance.
+
+---
+
+## Crew Chief's Note (taped to the transmitter rack)
+
+> JAM-A tripped on over-temperature twice during acceptance and the tent swapped its fan yesterday. Nobody has run it hot for thirty minutes since. If it goes, it goes on temperature, and it will go while you are busy.
+>
+> JAM-B is the spare. It has the same tune loaded. Both exciters drive the ONE amplifier - there is no second HPA on this trailer. The amplifier does not care which exciter is behind it.
+>
+> A tripped exciter latches. FAULT RESET only takes with the string un-keyed and needs about three seconds to clear. Do not stand there keying a red light.
+>
+> - D.
+
+---
+
+## COBALT-4 Operations Reference
+
+COBALT-4 is the adversary X-band SATCOM relay at 115.1 W. From SANDSTORM it sits at azimuth 175, elevation 50, and it does not move on your timescale. Its TP-X1 transponder relays whatever arrives in the 8100-8150 MHz uplink passband on H-pol - the adversary's service carrier, and yours.
+
+### Link Reference
+
+| Signal | RF (MHz) | LO (MHz) | IF (MHz) | Notes |
+|--------|----------|----------|----------|-------|
+| COBALT-4 service uplink (target) | 8,125 | 7,000 (BUC, low-side) | 1,125 | H-pol, 5 MHz QPSK |
+| TP-X1 uplink passband | 8,100 - 8,150 | - | - | Jam must sit inside this |
+| Victim downlink (monitor) | 7,475 | 8,925 (LNB, high-side) | 1,450 | Receiver 3, monitor chain |
+| COBALT-4 telemetry beacon | 7,290 | 8,925 (LNB) | 1,635 | CW, V-pol, target ID |
+| **FRIENDLY MILSATCOM (protected)** | **8,175 - 8,225** | - | - | **Never radiate here** |
+
+### Jam Waveform (both strings, pre-loaded)
+
+| Parameter | Value |
+|-----------|-------|
+| Centre | 1,125 MHz IF (8,125 MHz RF) |
+| Bandwidth | 5 MHz (8,122.5 - 8,127.5 MHz) |
+| Modulation | QPSK, 3/4 |
+| Clearance to protected edge | 47.5 MHz |
+| Victim carrier at transponder | +6 dBm |
+| Denial threshold | J/S >= 6 dB |
+
+---
+
+## SANDSTORM Transmit Chain
+
+One amplifier, two exciters. That is the whole story of tonight.
+
+| Position | Module | Panel | Role |
+|----------|--------|-------|------|
+| Exciter 1 | JAM-A (modem 1) | Transmitter, string 1 | Primary - thermal history |
+| Exciter 2 | JAM-B (modem 2) | Transmitter, string 2 | Backup - identical tune |
+| Upconverter | BUC, 7,000 MHz LO | RF Front End 1 | Shared; only pulls a string that is keyed and not faulted |
+| Amplifier | HPA | RF Front End 1 | Shared; enable before the first key, leave enabled through a string change |
+| Aperture | 5 m jam antenna (antenna 1) | ACU | On target at turnover |
+| Look-through | 3 m monitor antenna (antenna 2) | ACU | Stowed at turnover - slew to az 175 / el 50 |
+| Assessment | EA Assessment tab | Mission Control | J/S, victim C/N, DENIED / DEGRADED / NOMINAL |
+
+### Equipment Status at Turnover
+
+| Equipment | State | Notes |
+|-----------|-------|-------|
+| Jam antenna (1) | Powered, az 175 / el 50, manual | On COBALT-4 |
+| Monitor antenna (2) | Powered, az 90 / el 10, manual | Stowed for wind hold |
+| BUC | Powered, unmuted, ref locked | 7,000 MHz LO |
+| HPA | Powered, **output disabled** | Enable before keying |
+| JAM-A (modem 1) | Powered, un-keyed, active string | See crew chief's note |
+| JAM-B (modem 2) | Powered, un-keyed | Spare |
+| Monitor receiver (3) | Powered, 1,450 MHz | Victim downlink |
+| GPSDO | Locked | 9 satellites |
+
+---
+
+## Fault Response Card
+
+How we work a transmit-chain alarm on this trailer. Read the panel first; the alarm tells you which module, and which module tells you what to do.
+
+| What the panel shows | What it is | Response |
+|----------------------|------------|----------|
+| Exciter FAULT lit; HPA nominal; BUC ref locked | Exciter trip (latched) | Leave the HPA enabled. Select the other string, key it, confirm DENIED on assessment. |
+| Exciter FAULT lit on both strings | Out of spares | Select the string that has had time to cool. FAULT RESET with it un-keyed, wait for the light to clear, key it. |
+| HPA alarm (over-temp, overdrive, no output) | Amplifier trouble | Disable HPA, un-key the exciter, call Delgado. Do not attempt a restart from console. |
+| BUC reference unlock | Timing | Un-key, power-cycle BUC, re-verify lock before re-keying. |
+| Assessment drops to DEGRADED, no alarms | Pointing or power | Check the jam antenna on the ACU before touching the chain. |
+
+<Aside type="caution">
+The amplifier is shared. Disabling the HPA to change exciters drops the effect for the whole re-enable sequence, and the assessment clock does not stop for you. Change strings behind an enabled amplifier.
+</Aside>
+
+<Aside type="danger">
+Whatever you do to recover a string, the waveform stays at 8,125 MHz and 5 MHz wide. Widening or retuning toward 8,175 MHz to "make up for lost time" is the one recovery that ends the tasking outright.
+</Aside>
+
+---
+
+## Escalation Guidelines
+
+### Handle Yourself
+
+- Exciter trips and fault resets
+- String changes behind the shared amplifier
+- Monitor aperture pointing
+- Assessment lapses with a clear cause
+
+### Call Delgado (channel 2)
+
+- Any HPA alarm
+- A string that will not clear on reset
+- Anything that needs a hand on the rack
+
+### Call RAMPART
+
+- Loss of effect you cannot restore within three minutes
+- Any protected-band question, before you radiate, not after
+
+---
+
+## Window Checklist
+
+### Before First Key
+- [ ] Shift package read, ROE acknowledged
+- [ ] Monitor antenna: az 175 / el 50, on COBALT-4
+- [ ] Jam antenna: still on target
+- [ ] HPA: enabled
+- [ ] Active string: JAM-A, keyed
+- [ ] EA Assessment: DENIED, J/S >= 6 dB
+
+### Through the Window
+- [ ] Assessment status watched continuously - the adversary will step his carrier up
+- [ ] Any exciter FAULT: diagnosed from the panel before acting
+- [ ] String changed behind an enabled HPA
+- [ ] Latched fault cleared with FAULT RESET, string un-keyed, before re-keying
+- [ ] Effect restored and held after every trip
+
+### On Recall
+- [ ] HPA: disabled first
+- [ ] Active string: un-keyed
+- [ ] Nothing radiating
+
+---
+
+## End of Briefing
+
+The tasking is scored on the effect, not on the number of things that broke. Every second the adversary's link is back up is a second his traffic gets through, and RAMPART's log will show exactly how long each lapse ran.
+
+The chain has one amplifier and two exciters, one of which the crew chief does not trust. Read the panel before you touch it, keep the amplifier up, and put the effect back.
+
+Delgado is on channel 2. RAMPART calls cease fire at 1100Z.

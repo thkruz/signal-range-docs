@@ -175,6 +175,22 @@ export default defineConfig({
         }
       ]
     }, {
+      label: 'Campaign 4: Counter Communications',
+      items: [
+        {
+          label: 'Scenario 2 - Failover',
+          slug: 'campaign-4/scenario-2'
+        }
+      ]
+    }, {
+      label: 'Campaign 5: Signal Hunter',
+      items: [
+        {
+          label: 'Scenario 1 - First Fix',
+          slug: 'campaign-5/scenario-1'
+        }
+      ]
+    }, {
       label: 'Contributing',
       items: [{
         label: 'Contributing',
