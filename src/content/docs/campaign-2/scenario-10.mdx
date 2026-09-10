@@ -1,0 +1,171 @@
+---
+title: 'Scenario 10 - Priority Tasking'
+description: 'Urgent collect on an 18 degree pass - budget the low-elevation link, raise uplink EIRP without overdriving the HPA, task MERIDIAN-SAR-1 by command, and pull the imagery down on the same pass'
+lastUpdated: 2026-09-10
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Thursday 18 March, 1530 Local (Galway runs UTC in March)
+**Station:** GW-01 Galway, Ireland - NATS Europe
+**Operator on Duty:** You, solo
+**Constellation Ops:** Anneke Visser, MERIDIAN Constellation Operations (Rotterdam; on the line for the pass)
+**Customer:** Erik Halvorsen, Nordic Maritime Watch (urgent tasking, waiting on an answer)
+
+> Routine afternoon until 15:25, when Nordic Maritime Watch rang with a vessel that stopped reporting off the Faroes. Erik has a box and he has one pass that covers it, and that pass is a low one. Tasking request is below; Rotterdam has released the bird.
+>
+> Everything on this shift is arithmetic done in advance. Do the worksheet and set the amplifier before the horizon, because there is no time to do either after it.
+>
+> - Turnover note, 1528
+
+---
+
+## Urgent Tasking Request NMW-URG-2027-0318
+
+| Item | Value |
+|------|-------|
+| Requester | Erik Halvorsen, Nordic Maritime Watch |
+| Target box | 62.5° N, 7.5° W, 40 km square (Faroes) |
+| Requirement | SAR imagery of the box today, before the vessel moves |
+| Only window covering the box | MERIDIAN-SAR-1, Galway horizon, 15:35 to 15:44 UTC |
+| Method | Collect tasked by command early in the pass; imagery downlinked on the same pass |
+
+**Constellation Ops release (A. Visser, 15:27):**
+> "MER-OPS-2027-0421. SAR-1 released to GW-01 for the 15:35 pass: imaging block free, command link keyed, key Valid on your console. Be aware of the geometry. At 18 degrees the range at closest approach is 1,040 km and the uplink needs more EIRP than any pass you have flown from Galway. The amplifier stays linear. A splattered band costs me more than a missed collect."
+
+---
+
+## Pass Plan and Command Window (epoch 15:30:00 UTC)
+
+| Item | Time |
+|------|------|
+| MERIDIAN-SAR-1 AOS | 15:34:59 (az 27°, north-northeast) |
+| Command window opens | 15:35:19 |
+| Max elevation 17.8°, slant range 1,040 km | 15:39:31 |
+| Command window closes | 15:43:43 |
+| MERIDIAN-SAR-1 LOS | 15:44:03 (az 159°) |
+
+Southbound, 9.1 minutes horizon to horizon. MERIDIAN-SAR-2 rises at 16:24:59 (25.0° at 16:29:43, LOS 16:34:26) and is not tasked; it does not cover the box.
+
+### Command Request MER-OPS-2027-0421
+
+| Item | Value |
+|------|-------|
+| Target | MERIDIAN-SAR-1 (NORAD 61701) |
+| Command | SAR-TASK-URGENT |
+| Timing | Early in the window; the imaging block arms before closest approach and needs the lead time |
+| Requirements | Uplink Doppler compensation engaged; key Valid; ACK inside the window |
+
+| Command | Mnemonic | Tasked This Pass |
+|---------|----------|------------------|
+| Task urgent SAR collect | SAR-TASK-URGENT | **Yes** |
+| Start recorder playback | REC-PLAYBACK | No |
+| Payload to safe mode | PLD-SAFE | No |
+
+---
+
+## Low-Pass Link Budget (worksheet inputs)
+
+| Parameter | Value | Note |
+|-----------|-------|------|
+| Satellite EIRP | 28 dBm | Unchanged |
+| Slant range at max elevation | 1,040 km | Acceptance was 761 km |
+| Free-space path loss at 11,686 MHz | 174.1 dB | Acceptance was 171.4 dB |
+| GW-01 receive antenna gain | 51.8 dBi | |
+| System noise temperature | 88 K | |
+| Occupied bandwidth | 36 MHz | QPSK 3/4 imagery carrier |
+| Miscellaneous losses | 1.2 dB | Longer atmospheric path at 18° |
+| Design figure, predicted C/N | ~8.1 dB | Worksheet must agree within 1.0 dB |
+| Demodulator threshold | 6.0 dB | |
+| Required margin at Commit Link | 1.0 dB, measured live | |
+
+Reference: C/N = EIRP + G<sub>rx</sub> − FSPL − L<sub>impl</sub> − 10 log<sub>10</sub>(k · T<sub>sys</sub> · B), k = −228.6 dBW/K/Hz. EIRP is quoted in dBm.
+
+| Segment | Approximate time |
+|---------|------------------|
+| C/N at or above 7 dB | 15:38:15 to 15:40:45 |
+| C/N at or above 8 dB | About 40 s either side of 15:39:31 |
+
+<Aside type="caution">
+Commit Link reads the live receiver C/N when pressed. On this pass the margin exists for about two and a half minutes, centred on 15:39:31. Commit on the shoulder and the margin is not there.
+</Aside>
+
+---
+
+## Uplink EIRP Plan
+
+| Item | Now | For this pass |
+|------|-----|---------------|
+| HPA back-off | 10 dB | 4 dB (6 dB more EIRP) |
+| HPA overdrive limit | | Below 3 dB back-off the amplifier is overdriven and the IMD alarm trips |
+| HPA rating | 50 dBm, gain 44 dB | |
+| BUC gain | 23 dB | Unchanged. Output −10 dBm against 15 dBm saturation; the BUC is not the limit |
+
+The back-off is the only EIRP control on this chain. It can be set before AOS and it should be.
+
+---
+
+## Link Parameters
+
+LNB high-side: **IF = LO − RF** (13,100 MHz). BUC low-side: **RF = IF + LO** (12,600 MHz).
+
+| Signal | IF (MHz) | RF (MHz) | Format |
+|--------|----------|----------|--------|
+| SAR-1 telecommand uplink | 1,405 | 14,005 | QPSK 3/4, 36 MHz, −7 dBm modem |
+| SAR-1 telemetry beacon | 1,389 | 11,711 | CW; visible from the horizon |
+| SAR-1 imagery downlink | 1,414 | 11,686 | QPSK 3/4, 36 MHz |
+
+Doppler: up to ±270 kHz on the downlink (receiver follows), up to ±325 kHz on the uplink (compensated at the TT&C console, required for an ACK).
+
+---
+
+## GW-01 Equipment Status
+
+| Equipment | Status | Notes |
+|-----------|--------|-------|
+| 4 m Ku tracker | Powered, manual, parked az 5° / el 3° | AOS is at az 27°; program-track available, elements current |
+| LNB | 13,100 MHz LO, reference locked | Stable |
+| GPSDO | Locked, 9 satellites | Disciplined |
+| RX modem 1 | 1,414 MHz / 36 MHz / QPSK 3/4 | Pre-tuned for SAR-1 imagery |
+| TX modem 1 | 1,405 MHz / 36 MHz / QPSK 3/4 / −7 dBm | Not transmitting |
+| BUC | 12,600 MHz LO, reference locked, 23 dB gain | No drive present |
+| HPA | Powered, output disabled, 10 dB back-off | Modem on air before this goes live; off before the carrier stops |
+| COMSEC key | Valid | No rotation scheduled |
+| Link Analysis console | Low-pass card loaded, worksheet blank | Predicted panel reads NO SOLUTION until computed |
+
+<Aside type="danger">
+Order on the transmit chain is unchanged by urgency: modem on air first, then HPA output. An HPA enabled with nothing driving the BUC amplifies the noise floor into the feed and ends the shift.
+</Aside>
+
+---
+
+## Tasking Checklist
+
+### Before AOS (15:34:59)
+- [ ] Link Analysis: worksheet computed, prediction agrees with the card
+- [ ] HPA back-off 4 dB; no overdrive alarm; BUC out of compression
+- [ ] TT&C: uplink Doppler compensation engaged
+- [ ] Antenna: program-track on MERIDIAN-SAR-1
+
+### In the Window
+- [ ] SAR-1 beacon on RX analysis as she clears the horizon
+- [ ] TX modem on air, then HPA enabled
+- [ ] SAR-TASK-URGENT sent early; ACK in Command History
+- [ ] RX modem locked on 1,414 MHz; C/N above 6 dB held for 30 s
+- [ ] Commit Link pressed at max elevation with live margin at or above 1 dB
+
+### After LOS
+- [ ] Transmit chain secured, amplifier first
+- [ ] Report to Erik: what he got, and what this geometry means for the next box
+
+---
+
+## End of Briefing
+
+Every pass this station has flown so far had margin to waste. This one has about two decibels and a customer who needs all of them.
+
+The numbers say it closes. Set the amplifier, do the worksheet, and be pointed at the horizon when she comes over it. Anneke is listening, Erik is waiting, and there is no second window.
+
+Good luck.

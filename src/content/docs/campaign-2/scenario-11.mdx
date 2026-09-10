@@ -1,0 +1,154 @@
+---
+title: 'Scenario 11 - LEOP: Launch Day'
+description: 'MERIDIAN-SAR-3 first acquisition - test readiness review on a new frequency plan, load the refined element set before AOS, acquire the beacon, and record state of health for Rotterdam'
+lastUpdated: 2026-09-10
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Monday 22 March, 0900 Local (Galway runs UTC in March)
+**Station:** GW-01 Galway, Ireland - NATS Europe (first commercial station on the SAR-3 ground track)
+**Operator on Duty:** You, solo
+**LEOP Lead:** Anneke Visser, MERIDIAN Constellation Operations (Rotterdam; LEOP room open, whole team on the floor)
+
+> Launch went at 06:50 and the upper stage released MERIDIAN-SAR-3 at 07:26. No ground station has heard from her. Rotterdam's LEOP card is on the console and it is the only document this shift runs on.
+>
+> SAR-1 and SAR-2 are on the board later in the morning and are not tasked. This morning the station has one job, and it is a bird nobody has ever pointed at.
+>
+> - Turnover note, 0855
+
+---
+
+## LEOP Card MER-LEOP-SAR3-001
+
+**Cover note (A. Visser, 08:40):**
+> Separation confirmed 07:26 UTC. Everything on this card comes from the launch provider's injection estimate, which they quote with a 20 s one-sigma along-track uncertainty. I am solving the first ranging arc now and will push refined elements to your console the moment it closes; expect them shortly after you open this card.
+>
+> Flight rules for the pass: readiness review, refined elements loaded, beacon, state of health. Nothing goes up. The uplink stays cold whatever the link looks like. Log every line in the LEOP log as you go; the room reads it live.
+
+### Spacecraft
+
+| Item | Value |
+|------|-------|
+| Spacecraft | MERIDIAN-SAR-3 |
+| NORAD / COSPAR | 61703 / 2027-031A |
+| Separation | 07:26 UTC, 94 min before shift start |
+| Orbit | Sun-synchronous, ~360 km, 97.6° inclination, new plane |
+| Contacts to date | None |
+
+### Element Sets
+
+| Set | Source | Predicted AOS | Max Elevation | LOS |
+|-----|--------|---------------|---------------|-----|
+| Injection estimate (loaded at shift start) | Launch provider; 20 s 1-sigma along-track | 09:08:30 (az 142°) | 30.3° at 09:13:16 (719 km) | 09:18:02 (az 354°) |
+| Refined (first ranging arc) | Rotterdam; arrives on the console after the card is closed | 09:08:59 (az 143°) | 31.6° at 09:13:44 (696 km) | 09:18:33 (az 353°) |
+
+The two sets differ by about 30 s along-track and 0.3° in RAAN. Northbound pass, 9.6 minutes. Her second Galway pass is at 10:40:48 and is not on this card.
+
+<Aside type="caution">
+A LEO spacecraft covers about 7.5 km every second. On a 0.45° beam at 700 km, 20 s along-track is several beamwidths. Program-track on the injection set will slew smoothly and hold with every indicator green; the beacon is the only thing that tells you whether it is pointed at her. The flight rule is that a new spacecraft is not acquired on a set you know is stale: refined elements before AOS, or the SOH call carries a qualifier.
+</Aside>
+
+### Ephemeris Panel (Pass Schedule tab)
+
+| Display | Meaning |
+|---------|---------|
+| STALE | The refined set has reached the console and the loaded SAR-3 elements pre-date it |
+| Load Updated Ephemeris | Replaces the injection estimate; predictions and program-track update immediately |
+| UPDATED | Refined elements loaded; pointing solution is Rotterdam's, not the launch provider's |
+
+### Flight Rules, This Pass
+
+| Rule | Value |
+|------|-------|
+| Commanding | **None.** No command is sent until SOH is on record and the station has demonstrated tracking |
+| Uplink chain | TX modem off air, HPA disabled, throughout |
+| Sequence | TRR, then elements, then beacon, then SOH, then handover |
+| Record | LEOP log, sections Readiness and State of Health |
+
+---
+
+## SAR-3 Frequency Plan
+
+LNB high-side: **IF = LO − RF** (13,100 MHz). BUC low-side: **RF = IF + LO** (12,600 MHz). SAR-3 does not share SAR-1's numbers, and the station boots on SAR-1's numbers.
+
+| Signal | RF (MHz) | IF (MHz) | Format | This pass |
+|--------|----------|----------|--------|-----------|
+| SAR-3 telemetry beacon | 11,785 | 1,315 | CW, 0 dBm | Acquire and lock |
+| SAR-3 imagery downlink | 11,760 | 1,340 | QPSK 3/4, 36 MHz, 28 dBm | Recorded on the TRR; not decoded |
+| SAR-3 TT&C uplink | 14,065 | 1,465 | QPSK 3/4, 36 MHz | Cold |
+| SAR-3 transponded downlink | 11,810 | 1,290 | | Not used |
+| SAR-1 telemetry beacon (for contrast) | 11,711 | 1,389 | CW | What the ACU is set to now |
+
+Downlink Doppler runs to about ±270 kHz across the pass, closing at AOS, zero at culmination, opening to LOS. Rotterdam wants that curve as part of the SOH: a beacon on frequency with the right Doppler profile is the transmitter, the reference, and the orbit confirmed in one measurement.
+
+---
+
+## Test Readiness Review
+
+| Item | Required for a first acquisition |
+|------|----------------------------------|
+| ACU beacon frequency | 11,785 MHz (SAR-3), search bandwidth 1 MHz |
+| Receiver video IF | 1,340 MHz, recorded; no decode is called for |
+| Element set | Injection set loaded and flagged provisional; refined set to replace it before AOS |
+| Spectrum analyzer | Framing the SAR-3 IF plan |
+| Uplink | Cold, and stays cold |
+
+Selecting MERIDIAN-SAR-3 as the program-track target copies her beacon frequency into the ACU field; typing it does the same. Either way it is the operator configuring the station for a bird it has never seen, and it goes in the log.
+
+---
+
+## Other Traffic (not tasked)
+
+| Contact | AOS | Max Elevation | LOS |
+|---------|-----|---------------|-----|
+| MERIDIAN-SAR-1 | 09:47:59 | 25.1° | 09:57:27 |
+| MERIDIAN-SAR-2 | 10:06:01 | 25.1° | 10:15:22 |
+
+---
+
+## GW-01 Equipment Status
+
+| Equipment | Status | Notes |
+|-----------|--------|-------|
+| 4 m Ku tracker | Powered, manual, parked az 5° / el 3° | ACU beacon field **11,711 MHz** (SAR-1); AOS is at az 143° |
+| LNB | 13,100 MHz LO, reference locked | Stable |
+| GPSDO | Locked, 9 satellites | Disciplined |
+| Spectrum analyzer | Centre 1,414 MHz, span 60 MHz | The SAR-3 beacon at 1,315 MHz is outside this span |
+| RX modem 1 | 1,414 MHz / 36 MHz / QPSK 3/4 | SAR-1 imagery; not used for a decode this pass |
+| TX modem 1 / BUC / HPA | 1,405 MHz, not transmitting / no drive / disabled | Stays that way |
+| Pass Schedule | SAR-3 on the injection estimate | Ephemeris panel flags when the refined set arrives |
+| LEOP log | Readiness, State of Health | Blank |
+
+---
+
+## First Acquisition Checklist
+
+### Before AOS (09:08:59 on the refined set)
+- [ ] LEOP card read; the along-track uncertainty and the 0.45° beam understood together
+- [ ] ACU beacon frequency 11,785 MHz
+- [ ] TRR line in the LEOP log
+- [ ] Pass Schedule: SAR-3 flagged STALE, refined elements loaded, reads UPDATED
+- [ ] Antenna: program-track on MERIDIAN-SAR-3, on the refined solution
+
+### During the Pass
+- [ ] SAR-3 beacon on RX analysis at 1,315 MHz IF
+- [ ] ACU beacon lock
+- [ ] Doppler curve consistent with the refined set
+- [ ] SOH line in the LEOP log
+
+### After LOS
+- [ ] Handover to Anneke: what she has, and why nothing was sent
+- [ ] Uplink chain confirmed cold for the whole pass
+
+---
+
+## End of Briefing
+
+On a new spacecraft every first is evidence. The first beacon, the first lock, the first Doppler curve: each one either matches the model or it does not, and if something is sent before those are on record then a rejected command explains nothing.
+
+Anneke has a room full of people waiting on one sentence from Galway. Load the elements, find her, and give them the sentence.
+
+Good luck.

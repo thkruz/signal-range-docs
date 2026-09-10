@@ -120,6 +120,22 @@ export default defineConfig({
         {
           label: 'Scenario 8 - Night Passes',
           slug: 'campaign-2/scenario-8'
+        },
+        {
+          label: 'Scenario 9 - Morning Constellation',
+          slug: 'campaign-2/scenario-9'
+        },
+        {
+          label: 'Scenario 10 - Priority Tasking',
+          slug: 'campaign-2/scenario-10'
+        },
+        {
+          label: 'Scenario 11 - LEOP: Launch Day',
+          slug: 'campaign-2/scenario-11'
+        },
+        {
+          label: 'Scenario 12 - LEOP: Commissioning',
+          slug: 'campaign-2/scenario-12'
         }
       ]
     }, {

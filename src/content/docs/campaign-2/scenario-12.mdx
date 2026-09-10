@@ -1,0 +1,178 @@
+---
+title: 'Scenario 12 - LEOP: Commissioning'
+description: 'SAR-3 payload acceptance - predict the acceptance C/N, power the payload and command the test pattern inside the window, decode the first imagery at IF 1340, and sign the test card'
+lastUpdated: 2026-09-10
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Wednesday 24 March, 1000 Local (Galway runs UTC in March)
+**Station:** GW-01 Galway, Ireland - NATS Europe
+**Operator on Duty:** You, solo
+**LEOP Lead:** Anneke Visser, MERIDIAN Constellation Operations (Rotterdam; countersigns the card)
+**Customer:** Erik Halvorsen, Nordic Maritime Watch (copied on the card; takes delivery of SAR-3 capacity when it is signed)
+
+> Morning SAR-1 tasking passes done, RX modem left on 1,414. Rotterdam released the SAR-3 payload acceptance test plan at 09:40; the card is loaded on the console. Beacon receiver and TT&C modem are still on SAR-3 from Monday. The pedestal is parked at her AOS azimuth.
+>
+> One pass, 10:06, nine and a half minutes. The worksheet has to be done before she rises; the scheduler will not offer a skip with the pass this close.
+>
+> - Turnover note, 0952
+
+---
+
+## Acceptance Test Plan MER-ATP-SAR3-PLD-001
+
+**Cover note (A. Visser, 09:40):**
+> Bus telemetry has been clean since Monday's acquisition, so today is the payload. Four things on your 10:06 pass, in this order: PLD-ON, PLD-TEST-PATTERN, first decode on the video IF, results on the card. The TT&C console will accept those commands in any order. The card will not.
+>
+> The predicted number goes on the card before AOS and the measured number goes beside it. Erik is copied. Whatever is in the Payload section when I countersign is the contract number.
+
+### Test Card (Working Document)
+
+| Section | Records |
+|---------|---------|
+| Command | Checkout result: which commands, in what order, what the ACK pair proves |
+| Payload | Measured C/N beside the prediction, and the difference |
+| Verdict | Accepted or not, at what tested performance, with residual risk stated |
+
+### Sequence
+
+| Step | Action | Evidence |
+|------|--------|----------|
+| 1 | Predict C/N at maximum elevation | Link Analysis prediction agrees with the card |
+| 2 | Acquire: program-track, beacon on 1,315 MHz IF, uplink Doppler compensation | Beacon on RX analysis |
+| 3 | PLD-ON | ACK inside the window |
+| 4 | PLD-TEST-PATTERN | ACK inside the window |
+| 5 | First decode: RX modem to 1,340 MHz | Lock; C/N at or above 8 dB; Commit Link near max elevation with 2 dB margin |
+| 6 | Record: Command, Payload, Verdict | Three lines on the card |
+| 7 | Deliver | Erik told what acceptance transfers |
+
+---
+
+## Pass Plan and Command Window (epoch 10:00:00 UTC)
+
+| Item | Time |
+|------|------|
+| MERIDIAN-SAR-3 AOS | 10:06:01 (az 140°) |
+| Command window opens | 10:06:22 |
+| Commit Link segment (2 dB margin available) | About 10:09:00 to 10:12:30 |
+| Max elevation 27.9°, slant range 764 km | 10:10:45 |
+| Command window closes | 10:15:08 |
+| MERIDIAN-SAR-3 LOS | 10:15:29 (az 355°) |
+
+Northbound, 9.5 minutes. Two commands, a retune, a lock and a commit all sit inside it.
+
+| Other traffic | AOS | Max Elevation | LOS |
+|---------------|-----|---------------|-----|
+| MERIDIAN-SAR-1 | 10:50:01 | 25.2° | 10:59:30 |
+| MERIDIAN-SAR-2 | 11:10:01 | 24.7° | 11:19:28 |
+
+Neither is part of the card. The scheduler offers a skip only after the SAR-3 pass.
+
+### Command Request
+
+| Item | Value |
+|------|-------|
+| Target | MERIDIAN-SAR-3 (NORAD 61703) |
+| Commands, in order | PLD-ON, then PLD-TEST-PATTERN once PLD-ON is acknowledged |
+| Requirements | Uplink Doppler compensation engaged; key Valid; both ACKs inside the window |
+
+| Command | Mnemonic | On the card |
+|---------|----------|-------------|
+| Payload power on | PLD-ON | **Yes, first** |
+| Transmit payload test pattern | PLD-TEST-PATTERN | **Yes, second** |
+| Start recorder playback | REC-PLAYBACK | No |
+| Payload to safe mode | PLD-SAFE | No; not exercised on this card |
+
+<Aside type="caution">
+The console does not sequence commands. PLD-TEST-PATTERN sent to an unpowered payload returns an ACK exactly like one sent to a powered payload; the ACK is receipt of the command, and the decode is the only evidence of its effect. Send them in the card's order and record them in the card's order.
+</Aside>
+
+---
+
+## Acceptance Prediction (worksheet inputs)
+
+| Parameter | Value |
+|-----------|-------|
+| Satellite EIRP | 28 dBm |
+| Slant range at max elevation | 764 km |
+| Free-space path loss at 11,760 MHz | 171.5 dB |
+| GW-01 receive antenna gain | 51.8 dBi |
+| System noise temperature | 88 K |
+| Occupied bandwidth | 36 MHz |
+| Miscellaneous losses | 1 dB |
+| Design figure, predicted C/N | ~10.9 dB (worksheet must agree within 1.0 dB) |
+| Demodulator threshold | 6.0 dB (QPSK 3/4) |
+| Required margin at Commit Link | 2.0 dB, measured live |
+
+Reference: C/N = EIRP + G<sub>rx</sub> − FSPL − L<sub>impl</sub> − 10 log<sub>10</sub>(k · T<sub>sys</sub> · B), k = −228.6 dBW/K/Hz. EIRP is quoted in dBm.
+
+---
+
+## SAR-3 Link Parameters
+
+LNB high-side: **IF = LO − RF** (13,100 MHz). BUC low-side: **RF = IF + LO** (12,600 MHz).
+
+| Signal | IF (MHz) | RF (MHz) | Format |
+|--------|----------|----------|--------|
+| SAR-3 telemetry beacon | 1,315 | 11,785 | CW |
+| SAR-3 imagery downlink (test pattern) | 1,340 | 11,760 | QPSK 3/4, 36 MHz |
+| SAR-3 TT&C uplink | 1,465 | 14,065 | QPSK 3/4, 36 MHz, −7 dBm modem |
+| SAR-1 imagery downlink (for contrast) | 1,414 | 11,686 | What the RX modem is on now |
+
+Doppler: up to ±270 kHz on the downlink, up to ±325 kHz on the uplink; compensation at the TT&C console is required for an ACK.
+
+---
+
+## GW-01 Equipment Status
+
+Partly on SAR-3 from Monday, partly on SAR-1 from this morning.
+
+| Equipment | Status | Notes |
+|-----------|--------|-------|
+| 4 m Ku tracker | Powered, manual, parked az 140° / el 3° | At the SAR-3 AOS azimuth; ACU beacon field preset 11,785 MHz |
+| Spectrum analyzer | Centre 1,330 MHz, span 60 MHz | Frames the 1,315 MHz beacon and the 1,322 to 1,358 MHz test-pattern band |
+| TX modem 1 | 1,465 MHz / 36 MHz / QPSK 3/4 / −7 dBm, target 61703 | On the SAR-3 uplink IF; not transmitting |
+| BUC | 12,600 MHz LO, reference locked | No drive present |
+| HPA | Powered, output disabled, 10 dB back-off | Modem on air before this goes live; off before the carrier stops |
+| RX modem 1 | **1,414 MHz** / 36 MHz / QPSK 3/4 | Still on SAR-1 from the morning tasking; the first decode is a retune to 1,340 MHz |
+| LNB | 13,100 MHz LO, reference locked | Stable |
+| GPSDO | Locked, 9 satellites | Disciplined |
+| COMSEC key | Valid | No rotation scheduled |
+| Link Analysis console | Acceptance card loaded, worksheet blank | |
+| Test card | Command, Payload, Verdict | Blank |
+
+---
+
+## Acceptance Checklist
+
+### Before AOS (10:06:01)
+- [ ] Test plan read; the order understood as the test, not a preference
+- [ ] Link Analysis: worksheet computed, prediction agrees with the card
+- [ ] Antenna: program-track on MERIDIAN-SAR-3
+- [ ] TT&C: uplink Doppler compensation engaged
+
+### In the Window
+- [ ] SAR-3 beacon on RX analysis at 1,315 MHz
+- [ ] TX modem on air, then HPA enabled
+- [ ] PLD-ON acknowledged
+- [ ] PLD-TEST-PATTERN acknowledged, after PLD-ON
+- [ ] RX modem 1 retuned to 1,340 MHz; locked on the pattern; C/N at or above 8 dB
+- [ ] Commit Link pressed near max elevation with live margin at or above 2 dB
+
+### After LOS
+- [ ] Transmit chain secured, amplifier first
+- [ ] Card: Command, Payload, Verdict, in that order
+- [ ] Erik told what the signed card transfers
+
+---
+
+## End of Briefing
+
+Two passes from Galway, one on Monday and one today, and MERIDIAN-SAR-3 goes from a launch provider's estimate to a number on a contract. The number on the Payload line is the one every pass after this is measured against, and the Verdict line is what turns a bad pass next month into a ticket instead of an argument.
+
+Anneke countersigns what you write. Erik tasks against it. Do the card in order.
+
+Good luck.

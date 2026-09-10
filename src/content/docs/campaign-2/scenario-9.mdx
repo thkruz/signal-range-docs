@@ -1,0 +1,155 @@
+---
+title: 'Scenario 9 - Morning Constellation'
+description: 'First qualified shift - health-check both sites from the Galway console, build the six-contact day plan across GW-01 and SH-02, and work the two morning MERIDIAN passes back to back'
+lastUpdated: 2026-09-10
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Wednesday 17 March, 0610 Local (Galway runs UTC in March)
+**Station:** GW-01 Galway, Ireland - NATS Europe (planning authority for the network)
+**Operator on Duty:** You, qualified, solo
+**Site Lead:** Not on shift. The qualified operator holds the console.
+**SH-02 Shetland:** Fiona MacLeod, on console, working her own morning
+**Customer:** Erik Halvorsen, Nordic Maritime Watch (standing collect on the 06:18 SAR-1 window)
+
+> Overnight quiet, no contacts worked. GW-01 reference locked all night, no holdover, amplifier idle. Six contacts on the board for the day, none allocated. The Nordic Maritime Watch standing collect is on the board as priority 1 at 06:18.
+>
+> Both sites want a health check before anything is committed. Plan is unbuilt. First window is in eight minutes.
+>
+> - Night shift (turnover log, 0604)
+
+**Fiona (text, 0558):**
+> "On console since half five. SH-02 is powered and I've not touched the equipment, so what your console shows for my site is what I've got. Nothing's allocated. I'll take whatever validates, but if you book me against yourself I will notice, and then I'll ring."
+
+---
+
+## Standing Tasking NMW-STD-2027-03
+
+| Item | Value |
+|------|-------|
+| Customer | Erik Halvorsen, Nordic Maritime Watch |
+| Requirement | MERIDIAN-SAR-1 imagery from the 06:18 Galway window, every day this week |
+| Priority | 1 |
+| Delivery | Decoded frames on the pass; customer status at the end of the morning windows |
+| Customer preference | Coverage and commitment. He does not read C/N figures. |
+
+---
+
+## Today's Contacts (epoch 06:10:00 UTC)
+
+| Contact ID | Satellite | Horizon | Opens | Closes | Priority |
+|------------|-----------|---------|-------|--------|----------|
+| M-SAR1-GW | MERIDIAN-SAR-1 | Galway, 30° pass | 06:18:00 | 06:27:30 | 1 |
+| M-SAR1-SH | MERIDIAN-SAR-1 | Shetland | 06:19:30 | 06:30:00 | 2 |
+| M-SAR2-GW | MERIDIAN-SAR-2 | Galway, 25° pass | 06:32:00 | 06:41:20 | 1 |
+| M-SAR2-SH | MERIDIAN-SAR-2 | Shetland | 06:33:30 | 06:43:50 | 1 |
+| M-SAR1-GW-2 | MERIDIAN-SAR-1 | Galway, second orbit, 18° | 07:49:50 | 07:59:00 | 3 |
+| M-SAR2-SH-2 | MERIDIAN-SAR-2 | Shetland, second orbit | 08:06:20 | 08:11:40 | 3 |
+
+Priority 1 and 2 contacts must be assigned for the plan to read VALID. The two priority 3 second-orbit contacts may be assigned or left unassigned; that is a planning decision, and the customer will be told which way it went.
+
+### Overlaps
+
+| Pair | Overlap | Constraint |
+|------|---------|------------|
+| M-SAR1-GW and M-SAR1-SH | 06:19:30 to 06:27:30 | Cannot both sit on one site |
+| M-SAR2-GW and M-SAR2-SH | 06:33:30 to 06:41:20 | Cannot both sit on one site |
+
+Galway-horizon contacts are worked from this console. Shetland-horizon contacts are allocated here and flown by Fiona.
+
+---
+
+## Pass Plan (Galway horizon)
+
+| Contact | AOS | Max Elevation | LOS | Track |
+|---------|-----|---------------|-----|-------|
+| MERIDIAN-SAR-1 #1 | 06:18:00 (az 143°) | 30.5° at 06:22:48 | 06:27:36 (az 355°) | Northbound, 9.5 min |
+| MERIDIAN-SAR-2 #1 | 06:32:00 (az 6°) | 25.2° at 06:36:42 | 06:41:24 (az 224°) | Southbound, 9.4 min |
+| MERIDIAN-SAR-1 #2 | 07:49:54 | 18.3° at 07:54:24 | 07:59:00 | Second orbit |
+| MERIDIAN-SAR-2 #2 | 08:04:54 | 2.1° | 08:09:12 | Graze; below the Galway 5° mask |
+
+The second-orbit contacts are ninety minutes out. Once the morning passes are worked the scheduler will offer to skip ahead; the skip stops two minutes before the next pass. A skip taken before the 06:18 window is worked forfeits the window.
+
+---
+
+## Morning Health Checks
+
+Both sites are checked from this console before the first window. SH-02 is checked with Shetland selected as the station; Fiona has not touched her equipment, so its panels show what she has.
+
+| Check | Reads on | Nominal |
+|-------|----------|---------|
+| GPSDO | GPS Timing | Locked, 9 satellites, holdover clear, disciplined since 04:10 |
+| LNB | RX Analysis | 13,100 MHz LO, reference locked, 60 K, thermally stable |
+| HPA (GW-01) | TX Chain | Output disabled, 10 dB back-off, no overdrive, no IMD alarm |
+| BUC (SH-02) | TX Chain | 12,600 MHz LO, no drive, temperature under 70 °C (idle reads about 25 °C) |
+
+<Aside type="caution">
+The checks and the plan do not depend on a spacecraft being in view. The 06:18 pass is the customer's, and the part of it worth decoding is about four minutes. Anything that can be finished before AOS should be.
+</Aside>
+
+---
+
+## Link Parameters
+
+LNB high-side: **IF = LO − RF** (13,100 MHz LO).
+
+| Signal | RF (MHz) | IF (MHz) | Format |
+|--------|----------|----------|--------|
+| SAR-1 imagery downlink | 11,686 | 1,414 | QPSK 3/4, 36 MHz |
+| SAR-1 telemetry beacon | 11,711 | 1,389 | CW |
+| SAR-2 imagery downlink | 11,730 | 1,370 | QPSK 3/4, 36 MHz |
+| SAR-2 telemetry beacon | 11,703 | 1,397 | CW |
+
+Both passes are receive-only. C/N peaks near 11 dB at culmination on this geometry; the delivery standard is 8 dB or better, held, with the modem locked. The receiver is retuned between the two passes; the pedestal is retargeted.
+
+---
+
+## GW-01 Equipment Status
+
+| Equipment | Status | Notes |
+|-----------|--------|-------|
+| 4 m Ku tracker | Powered, manual, parked az 5° / el 3° | This morning's AOS is at az 143°; program-track slews there |
+| LNB | 13,100 MHz LO, reference locked | Stable |
+| GPSDO | Locked, 9 satellites | Verify, do not assume |
+| RX modem 1 | 1,414 MHz / 36 MHz / QPSK 3/4 | Pre-tuned for SAR-1 imagery |
+| BUC / HPA | No drive / output disabled | No uplink tasking this shift |
+| Contact Plan console | Six contacts, none allocated | Reads UNALLOCATED |
+
+SH-02 reports identical configuration at the last handover. Confirm it; do not inherit it.
+
+---
+
+## Shift Checklist
+
+### Before AOS (06:18:00)
+- [ ] Brief read; six contacts and the plan rule understood
+- [ ] GW-01: GPSDO, LNB, HPA all nominal on their own panels
+- [ ] SH-02 selected: GPSDO, BUC temperature, LNB all nominal
+- [ ] Plan: Galway-horizon contacts on GW-01, Shetland-horizon on SH-02, no overlap on one site, reads VALID
+- [ ] Second-orbit contacts: decision made, either way
+- [ ] Antenna: program-track on MERIDIAN-SAR-1
+
+### SAR-1 Window
+- [ ] RX modem 1 locked on 1,414 MHz
+- [ ] C/N at or above 8 dB, held through culmination
+
+### SAR-2 Window (06:32:00)
+- [ ] RX modem 1 retuned to 1,370 MHz
+- [ ] Antenna target MERIDIAN-SAR-2, program-track
+- [ ] Modem locked, C/N at or above 8 dB
+
+### After LOS
+- [ ] Customer status to Erik: what was captured, what is committed, what is best-effort
+
+---
+
+## End of Briefing
+
+Nobody built this plan for you and nobody is going to check it before Fiona flies it. The health checks are the difference between a plan and a hope; the plan is the difference between two sites and one.
+
+Erik wants one sentence at 06:45. Make sure it is true.
+
+Good luck.
