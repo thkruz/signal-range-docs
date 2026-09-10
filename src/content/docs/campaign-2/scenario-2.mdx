@@ -1,0 +1,133 @@
+---
+title: 'Scenario 2 - Proving the Link'
+description: 'GW-01 acceptance test - predict the MERIDIAN-SAR-1 downlink C/N from the site survey, measure it on the pass, and sign the test card'
+lastUpdated: 2026-09-10
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Tuesday, 1400 Local (Galway runs UTC in March)
+**Station:** GW-01 Galway, Ireland - NATS Europe
+**Operator on Duty:** You
+**Site Lead:** Charlie Brooks (on-site, front office, on the phone to Rotterdam)
+
+> Yesterday counted as first light. It does not count as acceptance. Rotterdam wants a number on a signed card before they schedule us for real tasking, and the number has to be predicted before it is measured or it is not a test, it is a guess that happened to work.
+>
+> Survey figures are on the Link Analysis console. Do the arithmetic before AOS. The pass is seven minutes and the part you can measure on is about three.
+>
+> - Charlie (turnover note, 1350)
+
+GW-01 remains in commissioning. Yesterday's contacts proved the chain can decode a MERIDIAN downlink; today's test card GW-01-ATP-002 proves the station performs to the figure on the contract.
+
+---
+
+## Current Operations
+
+| Satellite | Type | Owner/Ops | Status at Turnover |
+|-----------|------|-----------|--------------------|
+| MERIDIAN-SAR-1 | LEO SAR imager (sun-sync) | MERIDIAN Constellation Operations (Rotterdam) | Healthy; acceptance pass this shift |
+| MERIDIAN-SAR-2 | LEO SAR imager (sun-sync, offset plane) | MERIDIAN Constellation Operations (Rotterdam) | Healthy; not tasked today |
+
+---
+
+## Acceptance Test Card GW-01-ATP-002
+
+**Test:** MERIDIAN-SAR-1 imagery downlink, C/N at maximum elevation
+**Method:** Predict from link budget; measure on the live receiver; accept if measured margin clears the demodulator threshold.
+
+### Site Survey Inputs (as loaded on the Link Analysis console)
+
+| Parameter | Value | Source |
+|-----------|-------|--------|
+| Satellite EIRP | 28 dBm | MERIDIAN payload data sheet |
+| Slant range at max elevation | 761 km | Pass geometry, 28° culmination |
+| Free-space path loss at 11,686 MHz | 171.4 dB | From the range above |
+| GW-01 receive antenna gain | 51.8 dBi | 4 m Ku, measured at feed |
+| System noise temperature | 88 K | LNB 60 K plus sky and feed contribution |
+| Occupied bandwidth | 36 MHz | QPSK 3/4 imagery carrier |
+| Implementation loss | 1 dB | Pointing, polarization, modem |
+
+Reference: C/N = EIRP + G<sub>rx</sub> − FSPL − L<sub>impl</sub> − 10 log<sub>10</sub>(k · T<sub>sys</sub> · B), with k = −228.6 dBW/K/Hz. Mind the EIRP unit; the survey quotes dBm.
+
+### Pass Criteria
+
+| Check | Criterion |
+|-------|-----------|
+| Predicted C/N | Within 1.0 dB of the design figure on the card (~11 dB) |
+| Demodulator threshold | 6.0 dB (QPSK 3/4) |
+| Required margin at acceptance | 2.0 dB over threshold, measured live |
+| Measurement point | On boresight under program-track, near culmination |
+
+<Aside type="caution">
+The Accept Link button reads the active RX modem's live C/N at the moment you press it. Press it on the shoulder of the pass and you will accept a number that does not represent the station. The useful window is roughly 14:05:10 to 14:08:20.
+</Aside>
+
+---
+
+## Pass Plan (from the scheduler, epoch 14:00:00 UTC)
+
+| Contact | AOS | Max Elevation | LOS |
+|---------|-----|---------------|-----|
+| MERIDIAN-SAR-1 | 14:03:12 | 28° at 14:06:48 | 14:10:18 |
+| MERIDIAN-SAR-2 | 14:18:42 | ~25° at 14:22 | 14:25:42 |
+
+SAR-2 is on the horizon later in the shift but is not part of the test card. Confirm AOS azimuth on the **Pass Schedule** tab before committing the antenna.
+
+---
+
+## Link Parameters
+
+LNB is high-side injection: **IF = LO − RF** (13,100 MHz LO).
+
+| Signal | RF (MHz) | IF (MHz) | Format |
+|--------|----------|----------|--------|
+| SAR-1 imagery downlink | 11,686 | 1,414 | QPSK 3/4, 36 MHz |
+| SAR-1 telemetry beacon | 11,711 | 1,389 | CW |
+| SAR-2 imagery downlink | 11,730 | 1,370 | QPSK 3/4, 36 MHz |
+| SAR-2 telemetry beacon | 11,703 | 1,397 | CW |
+
+Downlink Doppler runs to about ±270 kHz across the pass. The beacon on RX analysis is your confirmation that the antenna is on the right bird before you trust a C/N reading.
+
+---
+
+## GW-01 Equipment Status
+
+| Equipment | Status | Notes |
+|-----------|--------|-------|
+| 4 m Ku tracker | Powered, manual, parked az 5° / el 3° | Program-track available; ephemeris current |
+| LNB | 13,100 MHz LO, reference locked | 60 K noise temperature, stable |
+| GPSDO | Locked, 9 satellites | Disciplined |
+| RX modem 1 | 1,414 MHz / 36 MHz / QPSK 3/4 | Pre-tuned for SAR-1 imagery |
+| BUC / HPA | No drive / output disabled | No uplink tasking this shift |
+| Link Analysis console | Worksheet blank, test card loaded | Predicted panel reads NO SOLUTION until you compute |
+
+---
+
+## Acceptance Checklist
+
+### Before AOS
+- [ ] Link Analysis tab: survey inputs entered, C/N computed, predicted panel agrees with the card
+- [ ] Pass Schedule tab: SAR-1 AOS time and azimuth confirmed
+- [ ] Antenna: program-track enabled, target MERIDIAN-SAR-1
+- [ ] RX modem 1: 1,414 MHz
+
+### During the Pass
+- [ ] SAR-1 beacon visible on RX analysis
+- [ ] RX modem locked on the imagery carrier
+- [ ] Live margin on the Measured panel at or above 2.0 dB
+- [ ] Accept Link pressed near culmination, not at the horizon
+
+### After LOS
+- [ ] Test card signed: measured versus predicted, and why both are required
+
+---
+
+## End of Briefing
+
+A measurement that matches a prediction is evidence the station is performing as designed. A good measurement from a broken model is luck, and Rotterdam does not schedule tasking on luck.
+
+Charlie will countersign whatever you put on the card. Make it a number you can defend.
+
+Good luck.

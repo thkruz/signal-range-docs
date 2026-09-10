@@ -1,0 +1,109 @@
+---
+title: 'Scenario 5 - Shetland Comes Online'
+description: 'SH-02 goes operational - allocate four MERIDIAN contacts across Galway and Shetland, resolve the overlaps, and publish a deconflicted contact plan'
+lastUpdated: 2026-09-10
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Friday, 1400 Local (Galway runs UTC in March)
+**Station:** GW-01 Galway, Ireland - NATS Europe (planning authority for the network today)
+**Operator on Duty:** You
+**Site Lead:** Charlie Brooks (on-site, front office)
+**SH-02 Shetland:** Fiona MacLeod, on console
+
+> Shetland signed its acceptance card overnight, which makes NATS Europe a network as of this morning and makes somebody responsible for deciding which site takes which pass. Congratulations, that is the console you are sitting at.
+>
+> Four contacts today, two birds, both sites can see all four. Fiona has her own antenna and her own opinions. Give her a plan she can work and she will work it.
+>
+> - Charlie (turnover note, 1345)
+
+**Fiona (text, 1338):**
+> "Morning Galway. Wind's 40 knots gusting 55 and the dish is rated for worse, so I'm not worried and neither should you be. Send me the plan when it validates. If you give me a pass that overlaps one of yours I'll assume it's deliberate and then I'll ring you."
+
+---
+
+## Network Stations
+
+| Station | Location | Antenna | Frequency Plan | Status |
+|---------|----------|---------|----------------|--------|
+| GW-01 Galway | 53.27° N, 9.05° W | 4 m Ku LEO tracker, 20°/s | LNB LO 13,100 / BUC LO 12,600 | Operational, your console |
+| SH-02 Shetland | 60.15° N, 1.15° W | 4 m Ku LEO tracker, 20°/s | LNB LO 13,100 / BUC LO 12,600 | Operational as of 0600 today |
+
+Same hardware, same frequency plan, seven degrees further north. Shetland's latitude gives it a different view of each sun-synchronous pass: later rise, later set, more of the orbit above its horizon. The two sites see the same bird at overlapping but not identical times.
+
+---
+
+## Today's Contacts (epoch 14:00:00 UTC)
+
+| Contact ID | Satellite | Horizon | AOS | LOS | Priority |
+|------------|-----------|---------|-----|-----|----------|
+| SAR1-GW | MERIDIAN-SAR-1 | Galway | 14:03:12 | 14:10:18 | 1 |
+| SAR1-SH | MERIDIAN-SAR-1 | Shetland | 14:05:00 | 14:12:42 | 1 |
+| SAR2-GW | MERIDIAN-SAR-2 | Galway | 14:18:42 | 14:25:42 | 1 |
+| SAR2-SH | MERIDIAN-SAR-2 | Shetland | 14:20:00 | 14:27:30 | 2 |
+
+All four contacts are priority 2 or higher and all four must be allocated. The plan does not validate with a required contact left unassigned.
+
+### Overlaps
+
+| Pair | Overlap | Constraint |
+|------|---------|------------|
+| SAR1-GW and SAR1-SH | 14:05:00 to 14:10:18 | Cannot both be on the same site |
+| SAR2-GW and SAR2-SH | 14:20:00 to 14:25:42 | Cannot both be on the same site |
+
+<Aside type="caution">
+The constraint is the pedestal, not the spectrum. Two MERIDIAN downlinks do not interfere with each other and the scheduler does not time-share an antenna. Overlapping windows on one site are a conflict; the console will say so and refuse to validate until they are split.
+</Aside>
+
+---
+
+## Contact Plan Console Reference
+
+| Display | Meaning |
+|---------|---------|
+| Contact Allocation table | Each contact with NORAD ID, priority, window, and a Site selector |
+| Deconfliction: unassigned count | Required contacts with no site |
+| Deconfliction: conflict list | Overlapping pairs booked to one station, shown as A × B on site |
+| UNALLOCATED | Required contacts remain unassigned |
+| CONFLICT | A site is double-booked |
+| DECONFLICTED | Plan is valid and ready to publish |
+
+Galway keeps the passes it has been working all week. The Galway-horizon contacts are yours; the question is what to do with the other two.
+
+---
+
+## GW-01 Equipment Status
+
+| Equipment | Status | Notes |
+|-----------|--------|-------|
+| 4 m Ku tracker | Powered, manual, parked az 5° / el 3° | Program-track available |
+| LNB | 13,100 MHz LO, reference locked | Stable |
+| GPSDO | Locked, 9 satellites | Disciplined |
+| RX modem 1 | 1,414 MHz / 36 MHz / QPSK 3/4 | Pre-tuned for SAR-1 imagery |
+| BUC / HPA | No drive / output disabled | No uplink tasking this shift |
+
+SH-02 reports identical configuration. Shetland's contacts are worked from Shetland; you allocate them, Fiona flies them.
+
+---
+
+## Planning Checklist
+
+- [ ] Network brief read; the overlap rule understood
+- [ ] Contact Plan tab open; unassigned count noted
+- [ ] Both Galway-horizon contacts on GW-01
+- [ ] Both Shetland-horizon contacts on SH-02
+- [ ] Conflict list empty, unassigned count zero
+- [ ] Plan reads DECONFLICTED; published to Shetland
+
+---
+
+## End of Briefing
+
+A second site is capacity, not a spare. With one antenna, one of every overlapping pair was going to be dropped; with two and a valid plan, all four get worked.
+
+Fiona is waiting on the plan and the weather up there is not improving. Give her something she can fly.
+
+Good luck.

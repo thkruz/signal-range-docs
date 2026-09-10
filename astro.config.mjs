@@ -92,6 +92,34 @@ export default defineConfig({
         {
           label: 'Scenario 1 - First Light Over Galway',
           slug: 'campaign-2/scenario-1'
+        },
+        {
+          label: 'Scenario 2 - Proving the Link',
+          slug: 'campaign-2/scenario-2'
+        },
+        {
+          label: 'Scenario 3 - Two-Way Street',
+          slug: 'campaign-2/scenario-3'
+        },
+        {
+          label: 'Scenario 4 - Keys to the Bird',
+          slug: 'campaign-2/scenario-4'
+        },
+        {
+          label: 'Scenario 5 - Shetland Comes Online',
+          slug: 'campaign-2/scenario-5'
+        },
+        {
+          label: 'Scenario 6 - Watch the Watchers',
+          slug: 'campaign-2/scenario-6'
+        },
+        {
+          label: 'Scenario 7 - Moving Target',
+          slug: 'campaign-2/scenario-7'
+        },
+        {
+          label: 'Scenario 8 - Night Passes',
+          slug: 'campaign-2/scenario-8'
         }
       ]
     }, {

@@ -1,0 +1,139 @@
+---
+title: 'Scenario 4 - Keys to the Bird'
+description: 'Command-link COMSEC - complete a scheduled key rotation inside the only pass, then send an authenticated payload safe-mode command to MERIDIAN-SAR-1'
+lastUpdated: 2026-09-10
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Thursday, 1400 Local (Galway runs UTC in March)
+**Station:** GW-01 Galway, Ireland - NATS Europe
+**Operator on Duty:** You
+**Site Lead:** Charlie Brooks (on-site, front office)
+**Constellation Ops Contact:** Anneke Visser, MERIDIAN Constellation Operations (Rotterdam)
+
+> Clean uplink yesterday, so Rotterdam has given us a real one today: safe-mode the payload before the next imaging block. There is a complication, which is that the scheduled key rotation was booked weeks ago and has, naturally, arrived in the middle of your only pass.
+>
+> The bird authenticates every command. A key that is mid-rotation is not a key. Finish the rotation, then send. And leave the zeroize switch exactly where it is.
+>
+> - Charlie (turnover note, 1348)
+
+---
+
+## Command Request
+
+**Ref:** MER-OPS-2027-0318
+**From:** A. Visser, MERIDIAN Constellation Operations
+**To:** GW-01 Galway
+**Priority:** Required before next imaging block
+
+> GW-01: uplink PLD-SAFE to MERIDIAN-SAR-1 on the 14:03 UTC pass. The payload enters its next imaging block after your LOS; we need it safed before then for a thermal check.
+>
+> Our records show your station's command key is in its scheduled rotation window today. Please confirm the rotation is complete and the key reads Valid before you send - an unauthenticated PLD-SAFE will be rejected and we will not get a second window in time.
+>
+> - Anneke
+
+| Command | Mnemonic | Tasked This Pass |
+|---------|----------|------------------|
+| Payload to safe mode | PLD-SAFE | **Yes** |
+| Start recorder playback | REC-PLAYBACK | No |
+| Reset OBC watchdog | OBC-WDT-RESET | No |
+
+---
+
+## COMSEC Schedule
+
+| Item | State at Turnover |
+|------|-------------------|
+| Command-link key | Scheduled rotation pending, this shift |
+| New key material | Loaded, not yet active |
+| Rotation procedure | Initiate Key Rotation, then Confirm Key Rotation, on the TT&C COMSEC panel |
+| Required status before send | Valid |
+| Zeroize control | Armed-then-fire; **not part of a rotation** |
+
+<Aside type="danger">
+Zeroize destroys the key material on the console. It is an emergency control with its own arming switch for a reason. A zeroized station cannot command anything until re-keyed by Rotterdam, and that does not happen inside a seven-minute pass.
+</Aside>
+
+---
+
+## Pass Plan and Command Window (epoch 14:00:00 UTC)
+
+| Item | Time |
+|------|------|
+| MERIDIAN-SAR-1 AOS | 14:03:12 |
+| Command window opens | 14:03:40 |
+| Max elevation (28°) | 14:06:48 |
+| Command window closes | 14:10:00 |
+| MERIDIAN-SAR-1 LOS | 14:10:18 |
+
+Rotation can be completed before AOS. Nothing about the key depends on the spacecraft being in view.
+
+---
+
+## Uplink Plan
+
+BUC is low-side injection: **RF = IF + LO** (12,600 MHz LO). LNB is high-side: **IF = LO − RF** (13,100 MHz LO).
+
+| Path | IF (MHz) | RF (MHz) | Format |
+|------|----------|----------|--------|
+| SAR-1 telecommand uplink | 1,405 | 14,005 | QPSK 3/4, 36 MHz, −7 dBm modem |
+| SAR-1 telemetry beacon (down) | 1,389 | 11,711 | CW |
+| SAR-1 imagery downlink | 1,414 | 11,686 | QPSK 3/4, 36 MHz |
+
+Uplink Doppler is still ±325 kHz and compensation is still required for an ACK. Yesterday's lesson does not switch off because today's arrived.
+
+---
+
+## Transmit Chain Status
+
+| Equipment | Status | Notes |
+|-----------|--------|-------|
+| TX modem 1 | 1,405 MHz / 36 MHz / QPSK 3/4 / −7 dBm | Powered, not transmitting |
+| BUC | 12,600 MHz LO, reference locked | No drive present |
+| HPA | Powered, output **disabled** | Modem on air before this goes live |
+| 4 m Ku tracker | Manual, parked az 5° / el 3° | Program-track available |
+| GPSDO | Locked, 9 satellites | Disciplined |
+
+---
+
+## TT&C Console Reference
+
+| Display | Meaning |
+|---------|---------|
+| COMSEC key status | Valid, Pending Rotation, or Zeroized |
+| Window status | Open or closed against the pass window |
+| ACK | Spacecraft verified the authentication tag and executed |
+| NAK, key | Command sent on a key that was not Valid |
+| NAK, no compensation | Doppler compensation was not engaged |
+| NAK, out of window | Sent while the window was closed |
+
+---
+
+## Commanding Checklist
+
+### Before AOS
+- [ ] TT&C tab: rotation initiated and confirmed; key status Valid
+- [ ] Antenna: program-track on MERIDIAN-SAR-1
+- [ ] Uplink Doppler compensation engaged
+
+### In the Window
+- [ ] SAR-1 beacon on RX analysis
+- [ ] TX modem 1 on air, then HPA output enabled
+- [ ] PLD-SAFE sent; ACK in Command History before 14:10:00
+
+### After LOS
+- [ ] Transmit chain secured, amplifier first
+- [ ] COMSEC record closed for the shift
+
+---
+
+## End of Briefing
+
+A command link anyone can use is not a command link. The authentication tag is the only thing standing between MERIDIAN and whoever else can point a dish at it, and the rotation schedule is what keeps that tag worth something.
+
+The payload has to be safed before the imaging block. Anneke is not going to get another window from us today, and she knows it.
+
+Good luck.

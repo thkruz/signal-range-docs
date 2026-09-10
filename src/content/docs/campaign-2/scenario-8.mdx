@@ -1,0 +1,149 @@
+---
+title: 'Scenario 8 - Night Passes'
+description: 'Solo qualification shift - build the overnight two-station contact plan, complete the COMSEC rotation, prove the night link budget, and command MERIDIAN-SAR-1 inside its window with nobody watching'
+lastUpdated: 2026-09-10
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Tuesday 16 March, 0028 Local (Galway runs UTC in March)
+**Station:** GW-01 Galway, Ireland - NATS Europe (planning authority tonight)
+**Operator on Duty:** You, unassisted
+**Site Lead:** Charlie Brooks (at home; phone on, expects it not to ring)
+**SH-02 Shetland:** Fiona MacLeod, on console, working her own contacts
+
+> Evening shift left it tidy. SAR-1 has a 40 degree pass at 00:31 and it is the best geometry this station has seen. Rotation is pending on the command key. Rotterdam wants REC-PLAYBACK on the pass. Contact plan for the night is not built.
+>
+> This is the qualification shift. Everything on it you have done once. Nobody is going to prompt you to do it again.
+>
+> - Charlie (turnover note, 2340)
+
+**Fiona (text, 0021):**
+> "On console. I'll take whatever the plan gives me and I've a 5 degree graze on SAR-2 at three in the morning that I'm not thrilled about, but it's mine. Don't ring unless the building's on fire. Good luck."
+
+**Dana Torres (text, 0019):**
+> "Heard from Charlie that tonight's the one. Same as Vermont: nobody's coming, and that's the point. You've got this."
+
+---
+
+## Tonight's Contacts (epoch 00:28:00 UTC)
+
+| Contact ID | Satellite | Horizon | AOS | Max El | LOS | Priority |
+|------------|-----------|---------|-----|--------|-----|----------|
+| N-SAR1-GW | MERIDIAN-SAR-1 | Galway | 00:31:18 | 40.4° at 00:35:00 | 00:38:48 | 1 |
+| N-SAR1-SH | MERIDIAN-SAR-1 | Shetland | 00:33:20 | - | 00:41:10 | 1 |
+| N-SAR2-SH | MERIDIAN-SAR-2 | Shetland | 02:58:20 | 5.6° graze | 03:00:20 | 2 |
+
+Every contact is priority 2 or higher and must be allocated. N-SAR1-GW and N-SAR1-SH overlap from 00:33:20 to 00:38:48 and cannot sit on one site. SAR-2 is a two-minute graze that Galway does not see above 5 degrees at all; it appears in the plan so that it goes somewhere, and that somewhere is not you.
+
+The SAR-2 window is two and a half hours out. The scheduler will offer to skip to it once the SAR-1 work is done; mission-elapsed time advances with the skip, so the plan and the sky stay aligned.
+
+---
+
+## Night Tasking
+
+### COMSEC
+
+| Item | State |
+|------|-------|
+| Command-link key | Scheduled rotation pending; arrived on the night shift, as they do |
+| Procedure | TT&C COMSEC panel: Initiate Key Rotation, then Confirm Key Rotation |
+| Required before send | Key status Valid |
+| Zeroize | Not part of a rotation |
+
+### Command Request MER-OPS-2027-0402
+
+| Item | Value |
+|------|-------|
+| Target | MERIDIAN-SAR-1 (NORAD 61701) |
+| Command | REC-PLAYBACK |
+| Window opens | 00:31:40 |
+| Window closes | 00:38:30 |
+| Requirements | Doppler compensation engaged; key Valid; acknowledged before LOS |
+
+### Acceptance Card GW-01-ATP-N01 (night pass geometry)
+
+| Parameter | Value |
+|-----------|-------|
+| Satellite EIRP | 28 dBm |
+| Slant range at max elevation | 581 km |
+| Free-space path loss at 11,686 MHz | 169.1 dB |
+| GW-01 receive antenna gain | 51.8 dBi |
+| System noise temperature | 88 K |
+| Occupied bandwidth | 36 MHz |
+| Implementation loss | 1 dB |
+| Design figure, predicted C/N | ~13 dB (worksheet must agree within 1.0 dB) |
+| Demodulator threshold | 6.0 dB |
+| Required margin at Accept Link | 3.0 dB, measured live |
+| Strong segment (C/N at or above 8 dB) | 00:33:06 to 00:37:00 |
+
+Reference: C/N = EIRP + G<sub>rx</sub> − FSPL − L<sub>impl</sub> − 10 log<sub>10</sub>(k · T<sub>sys</sub> · B), k = −228.6 dBW/K/Hz. The survey quotes EIRP in dBm.
+
+<Aside type="caution">
+The plan, the rotation, and the budget do not depend on the spacecraft being in view. The pass is seven and a half minutes. Anything that can be finished before 00:31 should be.
+</Aside>
+
+---
+
+## Link Parameters
+
+LNB high-side: **IF = LO − RF** (13,100 MHz). BUC low-side: **RF = IF + LO** (12,600 MHz).
+
+| Signal | IF (MHz) | RF (MHz) | Format |
+|--------|----------|----------|--------|
+| SAR-1 imagery downlink | 1,414 | 11,686 | QPSK 3/4, 36 MHz |
+| SAR-1 telemetry beacon | 1,389 | 11,711 | CW |
+| SAR-1 telecommand uplink | 1,405 | 14,005 | QPSK 3/4, 36 MHz, −7 dBm modem |
+| SAR-2 imagery downlink | 1,370 | 11,730 | Not worked from Galway tonight |
+
+Doppler: ±270 kHz on the downlink (receiver follows), ±325 kHz on the uplink (compensated at the TT&C console, required for an ACK). A 40 degree pass has a higher peak range rate than the afternoon passes; the compensation handles it, provided it is on.
+
+---
+
+## GW-01 Equipment Status
+
+| Equipment | Status | Notes |
+|-----------|--------|-------|
+| 4 m Ku tracker | Powered, manual, parked az 5° / el 3° | Program-track available; elements current |
+| LNB | 13,100 MHz LO, reference locked | Stable |
+| GPSDO | Locked, 9 satellites | Disciplined |
+| RX modem 1 | 1,414 MHz / 36 MHz / QPSK 3/4 | Pre-tuned for SAR-1 imagery |
+| TX modem 1 | 1,405 MHz / 36 MHz / QPSK 3/4 / −7 dBm | Not transmitting |
+| BUC | 12,600 MHz LO, reference locked | No drive present |
+| HPA | Powered, output disabled | Modem on air before this goes live; off before the carrier stops |
+| Link Analysis console | Night card loaded, worksheet blank | |
+| Contact Plan console | Three contacts, none allocated | Reads UNALLOCATED |
+
+---
+
+## Qualification Checklist
+
+### Before AOS (00:31:18)
+- [ ] Contact plan: every contact allocated, no site double-booked, reads DECONFLICTED
+- [ ] COMSEC: rotation initiated and confirmed, key Valid
+- [ ] Link Analysis: worksheet computed, prediction agrees with the card
+- [ ] Antenna: program-track on MERIDIAN-SAR-1
+- [ ] TT&C: uplink Doppler compensation engaged
+
+### During the Pass
+- [ ] SAR-1 beacon on RX analysis
+- [ ] RX modem locked on 1,414 MHz
+- [ ] Accept Link pressed in the strong segment with live margin at or above 3 dB
+- [ ] TX modem on air, then HPA enabled
+- [ ] REC-PLAYBACK sent; ACK before 00:38:30
+
+### After LOS
+- [ ] Transmit chain secured, amplifier first
+- [ ] Shift log closed: what the next operator inherits
+
+---
+
+## End of Briefing
+
+Two sites, two birds, one operator, and no one on the other end of the phone who is expecting it to ring. The plan you build tonight is the one Fiona flies. The key you rotate is the one the day shift commands on. The card you sign is the one Rotterdam schedules against.
+
+Everything on this shift you have already done once. Do it again, in order, without being told.
+
+Good luck.

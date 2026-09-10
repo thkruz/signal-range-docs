@@ -1,0 +1,138 @@
+---
+title: 'Scenario 3 - Two-Way Street'
+description: 'First GW-01 commanding window - uplink Doppler compensation, transmit chain sequencing, and a recorder playback command acknowledged inside a seven-minute pass'
+lastUpdated: 2026-09-10
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Wednesday, 1400 Local (Galway runs UTC in March)
+**Station:** GW-01 Galway, Ireland - NATS Europe
+**Operator on Duty:** You
+**Site Lead:** Charlie Brooks (on-site, RF room)
+**Constellation Ops Contact:** Anneke Visser, MERIDIAN Constellation Operations (Rotterdam)
+
+> Accepted for receive as of yesterday's card. Today the station earns the other half of its licence.
+>
+> Rotterdam has a command for SAR-1 on the 14:03 pass and their flight rules say it comes from a station with a demonstrated clean uplink. That is us, or it is nobody until the next window. One thing: the HPA never goes live without drive behind it. I have watched a site cook an amplifier that way and I would rather not watch it twice.
+>
+> - Charlie (turnover note, 1352)
+
+---
+
+## Command Request
+
+**Ref:** MER-OPS-2027-0311
+**From:** A. Visser, MERIDIAN Constellation Operations
+**To:** GW-01 Galway
+**Priority:** Routine, window-bound
+
+> GW-01: please uplink REC-PLAYBACK to MERIDIAN-SAR-1 on your 14:03 UTC pass. Onboard recorder is at 71% and the next Nordic tasking block starts before your following window. Acknowledgement is required in the pass; the spacecraft rejects anything received outside its command window.
+>
+> Your carrier must be Doppler-compensated. Our receiver has a narrow acquisition band and the bird cannot tell you it is off frequency - it simply does not answer.
+>
+> Thank you, and welcome to the network.
+>
+> - Anneke
+
+| Command | Mnemonic | Tasked This Pass |
+|---------|----------|------------------|
+| Start recorder playback | REC-PLAYBACK | **Yes** |
+| Payload to safe mode | PLD-SAFE | No |
+| Reset OBC watchdog | OBC-WDT-RESET | No |
+
+---
+
+## Pass Plan and Command Window (epoch 14:00:00 UTC)
+
+| Item | Time |
+|------|------|
+| MERIDIAN-SAR-1 AOS | 14:03:12 |
+| Command window opens | 14:03:40 |
+| Max elevation (28°) | 14:06:48 |
+| Command window closes | 14:10:00 |
+| MERIDIAN-SAR-1 LOS | 14:10:18 |
+
+MERIDIAN-SAR-2 rises at 14:18:42 and is not tasked. The TT&C console shows window status live; a command sent while it reads closed comes back NAK regardless of everything else being right.
+
+---
+
+## Uplink Plan
+
+BUC is low-side injection: **RF = IF + LO** (12,600 MHz LO). The receive side is unchanged from acceptance.
+
+| Path | IF (MHz) | LO (MHz) | RF (MHz) | Format |
+|------|----------|----------|----------|--------|
+| SAR-1 telecommand uplink | 1,405 | 12,600 (BUC) | 14,005 | QPSK 3/4, 36 MHz, −7 dBm modem |
+| SAR-1 telemetry beacon (down) | 1,389 | 13,100 (LNB) | 11,711 | CW |
+| SAR-1 imagery downlink | 1,414 | 13,100 (LNB) | 11,686 | QPSK 3/4, 36 MHz |
+
+### Doppler Across the Pass
+
+| Link | Frequency | Peak Doppler | Handling |
+|------|-----------|--------------|----------|
+| Downlink | 11.7 GHz | ±270 kHz | Receiver AFC follows it |
+| Uplink | 14.0 GHz | ±325 kHz | Pre-compensated at the console; the spacecraft cannot chase it |
+
+The range rate at AOS is closing at roughly 7 km/s, passes through zero at culmination, and opens at the same rate on the way out. Uplink compensation is a console switch on the TT&C tab; it slews the command carrier against the predicted rate so the spacecraft sees 14,005 MHz throughout.
+
+---
+
+## Transmit Chain Status
+
+| Equipment | Status | Notes |
+|-----------|--------|-------|
+| TX modem 1 | 1,405 MHz / 36 MHz / QPSK 3/4 / −7 dBm | Powered, not transmitting |
+| BUC | 12,600 MHz LO, reference locked, gain 23 dB | Not muted, loopback off, no drive present |
+| HPA | Powered, output **disabled** | 50 dBm rated, 10 dB back-off, gain 44 dB |
+| OMT | TX pol H / RX pol V | 28.5 dB cross-pol isolation |
+| 4 m Ku tracker | Manual, parked az 5° / el 3° | Program-track available |
+| GPSDO | Locked, 9 satellites | Disciplined |
+
+<Aside type="danger">
+Order of operations on this chain is a safety interlock you enforce by hand: modem on air first, then HPA output. Enabling the HPA with nothing driving the BUC amplifies the BUC's own noise floor into the feed and fails the shift. Coming down, it mirrors: HPA off before the carrier stops.
+</Aside>
+
+---
+
+## TT&C Console Reference
+
+| Display | Meaning |
+|---------|---------|
+| Window status | Open or closed against the pass window above |
+| Uplink Doppler Compensation | Must be engaged before any send |
+| Command Stack: XMIT | Queues the mnemonic; result posts to Command History |
+| ACK | Spacecraft verified and executed the command |
+| NAK | Rejected; the Detail column states why (no compensation, key, or out of window) |
+
+Key status starts Valid and no rotation is scheduled this shift.
+
+---
+
+## Uplink Checklist
+
+### Before the Window
+- [ ] Antenna: program-track on MERIDIAN-SAR-1
+- [ ] SAR-1 beacon visible on RX analysis (you cannot command a bird you are not pointed at)
+- [ ] TT&C tab: uplink Doppler compensation engaged
+- [ ] TX modem 1 on air
+- [ ] HPA output enabled, only once the modem carrier is present
+
+### In the Window
+- [ ] REC-PLAYBACK sent from the Command Stack
+- [ ] ACK in Command History before 14:10:00
+
+### After LOS
+- [ ] Transmit chain secured in the correct order
+
+---
+
+## End of Briefing
+
+Until today, GW-01 has only ever listened. The first time a station radiates at a spacecraft is the first time it can do harm to one, which is why Rotterdam's flight rules exist and why Anneke's note is polite but not optional.
+
+Get the ACK. Bring the amplifier down properly. Charlie is in the RF room, and he will hear it if you don't.
+
+Good luck.
