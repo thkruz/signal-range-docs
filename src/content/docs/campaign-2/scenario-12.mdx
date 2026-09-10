@@ -45,7 +45,7 @@ import { Aside } from '@astrojs/starlight/components';
 | 2 | Acquire: program-track, beacon on 1,315 MHz IF, uplink Doppler compensation | Beacon on RX analysis |
 | 3 | PLD-ON | ACK inside the window |
 | 4 | PLD-TEST-PATTERN | ACK inside the window |
-| 5 | First decode: RX modem to 1,340 MHz | Lock; C/N at or above 8 dB; Commit Link near max elevation with 2 dB margin |
+| 5 | Secure the uplink (HPA output off), then first decode: RX modem to 1,340 MHz | HPA disabled; lock; C/N at or above 8 dB; Commit Link near max elevation with 2 dB margin |
 | 6 | Record: Command, Payload, Verdict | Three lines on the card |
 | 7 | Deliver | Erik told what acceptance transfers |
 
@@ -124,6 +124,15 @@ LNB high-side: **IF = LO − RF** (13,100 MHz). BUC low-side: **RF = IF + LO** (
 
 Doppler: up to ±270 kHz on the downlink, up to ±325 kHz on the uplink; compensation at the TT&C console is required for an ACK.
 
+<Aside type="caution">
+Secure the uplink before you decode. SAR-3 turns the station's own 14,065 MHz
+command carrier around through its command transponder at 11,810 MHz, co-polar
+with the receive chain and inside its band. With the amplifier up that return
+arrives some 50 dB above the test pattern, the AGC pulls the whole chain down
+and the video reads a few decibels of C/N instead of eleven. Both ACKs are in
+hand by then; the amplifier has nothing left to do until the next command.
+</Aside>
+
 ---
 
 ## GW-01 Equipment Status
@@ -136,7 +145,7 @@ Partly on SAR-3 from Monday, partly on SAR-1 from this morning.
 | Spectrum analyzer | Centre 1,330 MHz, span 60 MHz | Frames the 1,315 MHz beacon and the 1,322 to 1,358 MHz test-pattern band |
 | TX modem 1 | 1,465 MHz / 36 MHz / QPSK 3/4 / −7 dBm, target 61703 | On the SAR-3 uplink IF; not transmitting |
 | BUC | 12,600 MHz LO, reference locked | No drive present |
-| HPA | Powered, output disabled, 10 dB back-off | Modem on air before this goes live; off before the carrier stops |
+| HPA | Powered, output disabled, 10 dB back-off | Modem on air before this goes live; off before the carrier stops; OFF again before the decode (see the Aside) |
 | RX modem 1 | **1,414 MHz** / 36 MHz / QPSK 3/4 | Still on SAR-1 from the morning tasking; the first decode is a retune to 1,340 MHz |
 | LNB | 13,100 MHz LO, reference locked | Stable |
 | GPSDO | Locked, 9 satellites | Disciplined |
@@ -159,6 +168,7 @@ Partly on SAR-3 from Monday, partly on SAR-1 from this morning.
 - [ ] TX modem on air, then HPA enabled
 - [ ] PLD-ON acknowledged
 - [ ] PLD-TEST-PATTERN acknowledged, after PLD-ON
+- [ ] HPA output disabled: uplink secured before the decode
 - [ ] RX modem 1 retuned to 1,340 MHz; locked on the pattern; C/N at or above 8 dB
 - [ ] Commit Link pressed near max elevation with live margin at or above 2 dB
 
