@@ -1,0 +1,125 @@
+---
+title: 'Scenario 2 - The Slippery Bird'
+description: 'The yagi arrives - chase CUBEHOP-1 Doppler by hand across a 48-degree pass with the AFC checkbox off limits'
+lastUpdated: 2026-07-26
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+**Session:** Friday evening, 16:14 UTC — fourteen minutes after WXSAT set
+
+**Station:** BKYD-YAGI — crossed yagi on a TV rotator
+
+**Operator:** You
+
+**Riley:** Outside, bolting the rotator down, shouting
+
+---
+
+## Riley's Note
+
+> You earned the fence post. Here's the rotator.
+>
+> Different antenna, different band, and — this is the part nobody warns you
+> about — a completely different *problem*. Last hour you tuned once and sat
+> on your hands for fifteen minutes. Try that tonight and you'll lose the bird
+> ninety seconds in.
+>
+> CUBEHOP-1 transmits on 70cm. Same orbital speed, three times the frequency,
+> three times the Doppler shift. It does not fit the channel.
+>
+> There IS a checkbox on this console that solves it automatically. You are
+> not allowed to touch it tonight. You will learn what it does for you by
+> doing it yourself first — that's the deal.
+>
+> — Riley
+
+---
+
+## Tonight's Pass
+
+| Satellite | AOS | Max Elevation | LOS |
+|-----------|-----|---------------|-----|
+| CUBEHOP-1 | 16:18 (T+4 min) | 48.2° at 16:24 | 16:30 |
+
+A 48° pass — comfortable geometry, strong signal. Nothing about tonight is
+hard except the frequency, which will not hold still.
+
+---
+
+## Link Reference
+
+| Signal | Frequency | Bandwidth | Mode |
+|--------|-----------|-----------|------|
+| CUBEHOP-1 FM downlink | 435.250 MHz | 15 kHz | QPSK 1/2 |
+
+### The Numbers That Matter
+
+| Quantity | Value |
+|----------|-------|
+| Doppler excursion across the pass | **±10 kHz** |
+| Receiver channel width | **30 kHz** |
+| Tuning steps available | ±1 kHz (fine), ±10 kHz (coarse) |
+
+Twenty kilohertz of total travel. The carrier starts about **10 kHz high**
+while the satellite is approaching, slides down through the nominal frequency
+at closest approach, and finishes about **10 kHz low** on the way out.
+
+<Aside type="caution">
+The drift is not linear. It is slowest at the very top of the pass — at
+closest approach the range rate passes through zero, so for a few seconds the
+frequency barely moves at all — and fastest near the horizon at both ends.
+Expect to work hardest right after AOS and right before LOS.
+</Aside>
+
+---
+
+## The Rig
+
+| Component | Value | Notes |
+|-----------|-------|-------|
+| Antenna | Crossed yagi, 12 dBi, ~40° beam | Needs pointing — this one is not a fence post |
+| Polarization | RHCP | Matches CUBEHOP-1 |
+| Rotator | TV rotator, ~6°/s | Program-track flies it for you |
+| Parked at | Az 180°, El 5° | Where the last session left it |
+
+<Aside type="note">
+Set the tracking mode to **program-track first**, then pick the satellite.
+Changing the mode clears the selected target — do it the other way round and
+the rotator sits there doing nothing while your pass goes by.
+</Aside>
+
+---
+
+## The Console's Offset Readout
+
+The DECODER section shows **OFFSET** in hertz: how far the carrier sits from
+the center of your channel. Positive means the carrier is above your VFO —
+tune up. Negative means tune down.
+
+That readout is exactly what the checkbox you're not allowed to touch reads.
+Tonight you are the loop.
+
+---
+
+## Working the Pass
+
+- [ ] Rotator in **program-track**, target CUBEHOP-1, before AOS
+- [ ] Signal on the waterfall at 435.250 — expect it high of nominal at first
+- [ ] Lock the downlink
+- [ ] **Hold that lock for two solid minutes**, retuning as the carrier walks
+- [ ] AFC stays **off** the entire time
+
+---
+
+## End of Briefing
+
+Every satellite operator alive has, at some point, sat with one hand on a
+tuning knob following a signal down a waterfall because there was nothing
+clever available to do it for them.
+
+It is the least efficient way to work a pass and the single best way to
+understand what Doppler actually is. Two minutes. Then you get the checkbox —
+in a couple of sessions.
+
+Bird's up in four minutes. Go.

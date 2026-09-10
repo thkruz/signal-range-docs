@@ -1,0 +1,124 @@
+---
+title: 'Scenario 5 - The Noise Bump'
+description: 'Find GPS hiding twenty decibels under the noise floor, then watch someone lie to your clock'
+lastUpdated: 2026-07-26
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+**Session:** Monday, 16:00 UTC
+
+**Station:** BKYD-GPS — patch antenna on a paint-stick mast
+
+**Operator:** You
+
+**Riley:** Here, in experiment mode
+
+---
+
+## Riley's Note
+
+> New toy. Ten-dollar GPS patch antenna on a paint stick, pointed straight up,
+> because tonight is not about catching a pass — the GPS constellation is
+> always up there. NAVSTAR-77 is nearly at zenith right now and stays high all
+> evening.
+>
+> Tonight is about seeing something that, by the numbers, you should not be
+> able to see at all. GPS arrives at your antenna roughly **twenty decibels
+> below your own noise floor**. Below. It is quieter than the static.
+>
+> And yet every phone on earth uses it. Work out how before you look at the
+> waterfall — I'll quiz you.
+>
+> — Riley
+
+---
+
+## Tonight's Sky
+
+| Satellite | Type | Elevation |
+|-----------|------|-----------|
+| NAVSTAR-77 | GPS Block III, MEO | 89° at start, still 62° an hour later |
+
+MEO birds don't rise and set on your timescale. There is no pass to catch and
+no rotator to fly. The signal is simply *there*, all evening.
+
+---
+
+## Link Reference
+
+| Signal | Frequency | Bandwidth | Modulation |
+|--------|-----------|-----------|------------|
+| NAVSTAR-77 L1 | 1575.42 MHz | **2.046 MHz** | Spread spectrum |
+
+### The Rig, Configured Wide
+
+| Setting | Value | Why |
+|---------|-------|-----|
+| Spectrum span | 8 MHz | The whole hump has to fit on screen |
+| IF filter | 5 MHz | Wide enough to pass a 2 MHz signal |
+| Modem channel | 2.5 MHz, BPSK 1/2 | Deliberately mismatched — see below |
+
+<Aside type="caution">
+This receiver will **never** say LOCKED on GPS, and that is not a fault. A
+spread-spectrum signal is smeared across two megahertz by a code your
+demodulator does not have. Without the code, the signal genuinely *is* noise —
+a broad, low hump lifting the floor rather than a stripe standing above it.
+Detection and demodulation are different privileges.
+</Aside>
+
+---
+
+## Timing on This Station
+
+The rig's reference is GPS-disciplined. The console's **SOURCE** section
+reports it:
+
+| Readout | Meaning |
+|---------|---------|
+| `REF` | Clock source — `GPS · n SATS`, `HOLDOVER`, or `ACQUIRING` |
+| `CLK ΔT` | Accumulated timing offset, microseconds |
+| `HOLD` / `GPS` button | Switches the reference between disciplined and free-running |
+
+**Holdover** means the oven-controlled oscillator free-runs on its own
+stability and ignores GPS entirely. It drifts slowly — but it drifts
+*honestly*, which tonight may be the more valuable property.
+
+---
+
+## Failure Signatures Worth Knowing
+
+| Symptom | Satellite count | Timing offset | Diagnosis |
+|---------|----------------|---------------|-----------|
+| Antenna disconnected | Drops to 0 | Freezes, then drifts | Outage |
+| Sky obstructed | Drops | Degrades | Obstruction |
+| **Healthy count, offset walking steadily** | **Unchanged** | **Growing** | **Something is lying** |
+
+A real GPS failure takes satellites *away* from you. It is loud and obvious.
+The dangerous case is the one where every indicator stays green and the
+numbers quietly stop being true.
+
+---
+
+## Tonight's Work
+
+- [ ] Find the L1 hump on the waterfall — look for a raised floor, not a spike
+- [ ] Understand why it can be seen but never decoded
+- [ ] Watch the SOURCE panel through the evening
+- [ ] If the clock starts walking while the satellite count stays healthy,
+      decide what to do about it — and do it
+- [ ] Come back to GPS only when you can point at evidence that it's safe
+
+---
+
+## End of Briefing
+
+Everything with a clock in it trusts GPS: the power grid, financial
+timestamps, cell networks, and the little oscillator in this radio. It's a
+timing signal broadcast from twenty thousand kilometers up, at less power than
+a lightbulb, with **no authentication of any kind**.
+
+Nothing in the signal proves who sent it. The only things a liar can't fake
+are the physics: how strong it should be, how wide, and how it should move.
+
+Watch the numbers tonight.

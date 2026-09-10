@@ -1,0 +1,130 @@
+---
+title: 'Scenario 7 - Margin Call'
+description: 'Local RFI foxhunt on 70cm, then steal an eighteen-degree pass with the decibels you clawed back'
+lastUpdated: 2026-07-26
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+**Session:** Thursday, 15:15 UTC
+
+**Station:** BKYD-YAGI — crossed yagi on the TV rotator
+
+**Operator:** You
+
+**Riley:** Here, unusually cheerful about a problem
+
+---
+
+## Riley's Note
+
+> Two pieces of bad news and I'm delighted about both.
+>
+> **One:** something in this neighborhood started spraying hash all over 70cm
+> overnight. The noise floor on this band is visibly worse than it was
+> Tuesday. My money is on the new grow lights three doors down — cheap
+> switching supply, no filtering, running twenty hours a day.
+>
+> **Two:** tonight's only CUBEHOP window tops out at **eighteen degrees**.
+> In the trees. That is the thinnest margin we've ever worked.
+>
+> Why am I happy? Because a directional antenna is not just a signal
+> collector, it's a direction FINDER, and I have been waiting for an excuse
+> to teach you that. We're going to find the noise, delete it from our
+> receiver, and steal a pass that most operators would write off.
+>
+> Margin is arithmetic. Tonight we audit it.
+>
+> — Riley
+
+---
+
+## Tonight's Pass
+
+| Satellite | AOS | Max Elevation | LOS |
+|-----------|-----|---------------|-----|
+| CUBEHOP-1 | 15:35 | 18.4° at ~15:40 | 15:46 |
+
+<Aside type="caution">
+At 18°, slant range is nearly double what it is at zenith and the signal path
+grazes the treeline. Every decibel of extra noise comes straight out of your
+decode margin. On a fat overhead pass you would never notice a dirty band.
+Tonight you will.
+</Aside>
+
+---
+
+## The Interference
+
+| Property | Observed |
+|----------|----------|
+| Center frequency | ~435.360 MHz |
+| Width | ~80 kHz of ragged hash |
+| Behavior | Continuous — no on/off pattern |
+| Doppler | None |
+| In the Observations list | No |
+
+Three of those lines are the diagnosis. Satellites drift, rise, and set;
+ground noise sits perfectly still and changes strength with **where your beam
+is pointing**, not with time.
+
+Note also that it is *continuous*. Deliberate interference usually has a duty
+cycle — somebody keying up, something scanning. Accidents just run until
+somebody unplugs them.
+
+---
+
+## Link Reference
+
+| Signal | Frequency | Bandwidth | Mode |
+|--------|-----------|-----------|------|
+| CUBEHOP-1 FM downlink | 435.250 MHz | 15 kHz | QPSK 1/2 |
+| Local hash (the intruder) | ~435.360 MHz | 80 kHz | — |
+
+They are 110 kHz apart. That gap is what makes tonight survivable: the hash can
+be carved out without touching the bird's channel, even with Doppler walking
+the downlink ±10 kHz.
+
+---
+
+## Direction Finding with a Yagi
+
+The crossed yagi has **12 dBi** forward gain, a **40°** beam, and — this is
+the part that matters tonight — an **18 dB front-to-back ratio**.
+
+That means the same antenna reads a ground signal dramatically louder pointed
+at it than pointed away from it. Sweep the beam around the horizon with the
+**MAN AZ** control in the ROTATOR panel, watch the hash strength, and the peak
+is your bearing. That's a foxhunt, and it's the same instrument you'd use on a
+signal claiming to be in orbit.
+
+---
+
+## Finding the Decibels
+
+Three separate places, and you need all three tonight:
+
+- [ ] **Bearing** — sweep the yagi, find where the hash peaks, know your enemy.
+- [ ] **Notch** — the FILTER section has a one-knob notch. Center it on the
+      hash and it drops out of your passband. You can't unplug the neighbor's
+      gear; you can decline to listen to it.
+- [ ] **IF filter width** — the front end is wide open at 200 kHz. The noise
+      gate charges you by the hertz: narrow the IF filter to **100 kHz** and
+      the floor comes down with it.
+
+Then fly the pass: program-track on CUBEHOP-1, and hold the lock through
+eighteen degrees. AFC is allowed tonight — you proved you could do it by hand
+three sessions ago.
+
+---
+
+## End of Briefing
+
+Most operators look at a low pass on a noisy band and go inside for dinner.
+
+You are going to sit down, work out where every missing decibel went, take
+them back one at a time, and make the contact anyway. That's the difference
+between owning equipment and being an operator.
+
+Also, tomorrow I'm printing the Hendersons a very friendly pamphlet about
+ballast filters.

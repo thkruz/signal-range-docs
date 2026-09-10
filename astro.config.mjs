@@ -87,6 +87,50 @@ export default defineConfig({
       //     directory: 'checklists'
       //   }
     }, {
+      label: 'Campaign 2: NATS Europe',
+      items: [
+        {
+          label: 'Scenario 1 - First Light Over Galway',
+          slug: 'campaign-2/scenario-1'
+        }
+      ]
+    }, {
+      label: 'Campaign 3: Backyard Operator',
+      items: [
+        {
+          label: 'Scenario 1 - First Light',
+          slug: 'campaign-3/scenario-1'
+        },
+        {
+          label: 'Scenario 2 - The Slippery Bird',
+          slug: 'campaign-3/scenario-2'
+        },
+        {
+          label: 'Scenario 3 - Wrong-Handed',
+          slug: 'campaign-3/scenario-3'
+        },
+        {
+          label: 'Scenario 4 - Set and Forget',
+          slug: 'campaign-3/scenario-4'
+        },
+        {
+          label: 'Scenario 5 - The Noise Bump',
+          slug: 'campaign-3/scenario-5'
+        },
+        {
+          label: 'Scenario 6 - The Network Wants Vermont',
+          slug: 'campaign-3/scenario-6'
+        },
+        {
+          label: 'Scenario 7 - Margin Call',
+          slug: 'campaign-3/scenario-7'
+        },
+        {
+          label: 'Scenario 8 - Callsign',
+          slug: 'campaign-3/scenario-8'
+        }
+      ]
+    }, {
       label: 'Contributing',
       items: [{
         label: 'Contributing',

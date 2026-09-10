@@ -1,0 +1,143 @@
+---
+title: 'Scenario 8 - Callsign'
+description: 'License exam, an unlicensed operator on the bird, your first uplink through a transponder, and a beacon that never left the ground'
+lastUpdated: 2026-07-26
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+**Session:** Saturday, 15:30 UTC
+
+**Stations:** BKYD-YAGI (now with a transmitter) and BKYD-QFH
+
+**Operator:** You
+
+**Riley:** Here all evening, examining you
+
+---
+
+## Riley's Note
+
+> Exam night.
+>
+> I know you've been flying this rig for weeks. The microphone is different.
+> A receive mistake costs you a picture. A **transmit** mistake goes out to
+> everyone with an antenna, at the speed of light, with your callsign
+> attached to it.
+>
+> So: two questions first. Get them right and the tape comes off the
+> microphone. Get them wrong and we do more reading.
+>
+> After that we listen to the afternoon pass, because I want you to hear
+> something, and then — evening pass — you are going to talk to a satellite.
+>
+> — Riley
+
+---
+
+## Tonight's Passes
+
+| Time | Satellite | Max Elevation | What Happens |
+|------|-----------|---------------|--------------|
+| 15:55 – 16:07 | CUBEHOP-1 | 28.9° | Listening pass. You have company. |
+| 17:31 – 17:43 | CUBEHOP-1 | 25.7° | Your first transmission. |
+| after 17:45 | — | — | Riley's last lesson. |
+
+The weather rig is powered up alongside the yagi tonight. Leave it running.
+
+---
+
+## CUBEHOP-1 Transponder Plan
+
+CUBEHOP-1 carries a **linear transponder**: it listens on one frequency,
+amplifies whatever it hears, and retransmits it on another. Everything in the
+passband goes up and comes back down. That is the entire design.
+
+| Path | Frequency | Bandwidth | Polarization |
+|------|-----------|-----------|--------------|
+| Uplink (you transmit) | 435.900 MHz | 30 kHz | RHCP |
+| Downlink (you receive) | 435.290 MHz | 30 kHz | RHCP |
+| FM beacon (unrelated) | 435.250 MHz | 15 kHz | RHCP |
+
+<Aside type="caution">
+The transponder passband is 30 kHz wide. Tune the uplink sloppily and you fall
+off the edge of it — the bird simply doesn't hear you, and nothing on your
+console will explain why.
+</Aside>
+
+### The Doppler Asymmetry
+
+Your uplink leaves a transmitter bolted to Vermont, so it does not Doppler.
+The **downlink** does, because it comes from a satellite doing 7.5 km/s. You
+will hear your own signal walk across the waterfall while the thing producing
+it sits perfectly still on your desk.
+
+AFC handles it. Let it.
+
+---
+
+## The Transmit Rig
+
+| Component | Rating | Notes |
+|-----------|--------|-------|
+| Amplifier | ~5 W brick (37 dBm max) | Boots powered — no separate amp panel on a ham rig |
+| Uplink antenna | Crossed yagi, 12 dBi, RHCP | Same antenna you receive on |
+| TX control | SDR Console → TRANSMIT section | Frequency, PA output, and the key |
+
+Five watts. That is a nightlight. It is also, tonight, enough to reach orbit
+and come back, because the receiving end is a satellite with a good antenna
+and nothing between you and it but sky.
+
+---
+
+## Band Plan Notes (exam material)
+
+70cm is **shared**. It is allocated by agreement and coordinated by people who
+have never met you, and essentially nothing in your radio enforces any of it.
+
+What makes a transmission legal is the overlap of three separate things:
+
+1. The frequency is in a sub-band your license covers.
+2. You hold that license, and you are the control operator responsible for
+   everything that leaves this yard.
+3. The satellite in question is open for amateur use on that frequency.
+
+And one rule that surprises everybody: **no encryption**. Not because it's
+technically hard — because amateur radio polices itself. Every operator has to
+be able to identify every transmission and who sent it. Openness *is* the
+enforcement mechanism.
+
+Hold that thought for the 15:55 pass.
+
+---
+
+## Operating Checklist
+
+### Listening pass (15:55)
+- [ ] Track CUBEHOP-1 with the rotator
+- [ ] Watch the downlink side of the transponder passband, not just the beacon
+- [ ] Note anything on the air that isn't the satellite's own signal
+
+### Transmitting pass (17:31)
+- [ ] TX frequency set to the uplink center — 435.900
+- [ ] Rotator tracking before you key
+- [ ] Key the transmitter (the TRANSMIT section reads ON AIR)
+- [ ] Receiver tuned to your own downlink at 435.290
+- [ ] AFC on, and ride it
+- [ ] **Unkey before LOS** — the transponder is shared
+
+---
+
+## End of Briefing
+
+Seven sessions of listening. Tonight you answer back.
+
+Somewhere between the exam and the evening pass you are going to learn the
+thing this whole campaign has been circling: the radio spectrum does not
+authenticate anybody. Not the pirate, not the impostor, and not you. A license
+is a promise, not a password. The only things that can't lie are Doppler,
+geometry, and the clock.
+
+Everything else is just a signal claiming to be something.
+
+Seventy-three, operator.

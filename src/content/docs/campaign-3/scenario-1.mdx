@@ -1,0 +1,148 @@
+---
+title: 'Scenario 1 - First Light'
+description: 'Backyard session one - catch WXSAT-19 on the fence-post QFH and decode a weather picture with an eighty-dollar SDR'
+lastUpdated: 2026-07-26
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+**Session:** Friday evening, 16:00 UTC (12:00 local)
+
+**Station:** Riley's backyard, Burlington VT — the QFH on the back fence
+
+**Operator:** You
+
+**Riley:** In the kitchen, making a sandwich, yelling instructions through the window
+
+---
+
+## Note Taped to the Laptop Lid
+
+> Okay! You're here, the laptop's on, and there's a weather satellite coming
+> over in three minutes, so read fast.
+>
+> Everything you need is below. Two things I want to say out loud before you
+> touch anything:
+>
+> **One:** the antenna on the fence doesn't move. It never moves. That is not
+> laziness, that is the design.
+>
+> **Two:** the radio is exactly how I left it after FM night on Tuesday, which
+> means it is wrong for what you're about to do. Both settings. Figure out
+> which two and you've basically learned the whole console.
+>
+> Sandwich first. Back in five.
+>
+> — Riley
+
+---
+
+## Tonight's Pass
+
+| Satellite | AOS | Max Elevation | LOS | What It Sends |
+|-----------|-----|---------------|-----|---------------|
+| WXSAT-19 | 16:03 (T+3 min) | 55° at 16:10 | 16:18 | APT weather imagery, continuous |
+
+Fifty-five degrees is a good pass — better than most. WXSAT-19 is a polar
+orbiter: it comes up in the northwest, crosses high overhead, and sets in the
+southeast about fifteen minutes later. While it's up it draws a picture of the
+weather below it, one scan line at a time, and anyone with an antenna can
+listen.
+
+The **Observations** tab has the live countdown. Check it before you go
+hunting on the waterfall.
+
+<Aside type="note">
+There's a second bird, CUBEHOP-1, rising right after WXSAT sets. Ignore it
+tonight — it's on 70cm and the fence post can't hear it. That's what the yagi
+is for, and you haven't earned the yagi yet.
+</Aside>
+
+---
+
+## The Rig
+
+| Component | What It Is | Notes |
+|-----------|-----------|-------|
+| Antenna | Hand-wound quadrifilar helix, 137 MHz | Zip-tied to the fence, pointed straight up, 3 dBi |
+| Receiver | RTL-SDR v3, direct sampling | RF goes straight into the ADC — no downconversion |
+| Software | SkyWatcher SDR Console | Waterfall, VFO, decoder |
+
+The QFH's beam is roughly **140° wide**. That is the entire trick: a big dish
+has to be aimed and followed, but three decibels of gain buys a beam so fat
+that the satellite spends the whole pass inside it. Big antennas point. Little
+antennas wait.
+
+---
+
+## Link Reference
+
+Direct sampling means there's no LO and no IF math. What you tune is what's on
+the air.
+
+| Signal | Frequency | Bandwidth | Mode |
+|--------|-----------|-----------|------|
+| WXSAT-19 APT downlink | 137.100 MHz | 34 kHz | BPSK 1/2 |
+
+### Doppler
+
+At 137 MHz, a low-earth pass shifts the carrier by roughly **±3 kHz** across
+the pass. That's real, and you can watch the stripe lean on the waterfall —
+but it fits inside a properly-set channel, so once you're locked you do not
+need to chase it.
+
+Remember that number. It will not be true on 70cm, and Scenario 2 is going to
+make you feel it.
+
+---
+
+## Rig State at Handover
+
+Riley was working FM voice on Tuesday and left everything set for that.
+
+| Setting | Current Value | Correct for APT? |
+|---------|--------------|------------------|
+| VFO frequency | 137.170 MHz | — |
+| Channel bandwidth | 15 kHz | — |
+| Mode / FEC | BPSK, 1/2 | Yes |
+| RF gain | 79 dB | Yes |
+| Antenna | Fixed, pointed up | Yes |
+
+<Aside type="caution">
+A receiver channel narrower than the signal doesn't give you a weak, noisy
+copy — it gives you **nothing**. The demodulator never sees a signal it can't
+fit. If the stripe is plainly on the waterfall and the radio insists there's
+no lock, stop tuning and look at the channel width.
+</Aside>
+
+---
+
+## Getting a Picture
+
+Three things have to be true at once, and the console will tell you which one
+you're missing:
+
+- [ ] **On frequency** — VFO within a few kHz of the APT downlink. Click the
+      stripe on the waterfall, use the bookmark, or walk it over with the tune
+      buttons.
+- [ ] **Channel open** — wide enough to bracket 34 kHz of signal. Too narrow
+      and it's invisible; far too wide and you're just collecting noise.
+- [ ] **Left alone** — once the decoder is running, hands off. The picture
+      builds one line at a time and every fiddle costs you scan lines.
+
+The lock indicator diagnoses itself. `NO LOCK` means nothing's there.
+`BW TOO NARROW` means the passband is lifted but the channel can't fit what's
+in it. `LOCKED` means stop touching things.
+
+---
+
+## End of Briefing
+
+This is the whole hobby in fifteen minutes: a wire antenna, a cheap dongle, and
+a satellite that has no idea you exist, drawing you a picture of the clouds
+over Vermont because physics says it must.
+
+Riley has been doing this for eleven years and still goes outside to watch the
+sky during a good pass.
+
+Get the picture.

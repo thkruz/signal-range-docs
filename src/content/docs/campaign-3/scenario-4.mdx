@@ -1,0 +1,108 @@
+---
+title: 'Scenario 4 - Set and Forget'
+description: 'Fly half an overhead pass by hand, then earn the AFC checkbox and let the loop fly the rest'
+lastUpdated: 2026-07-26
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+**Session:** Sunday, 16:34 UTC
+
+**Station:** BKYD-YAGI — crossed yagi, feed harness now correct
+
+**Operator:** You
+
+**Riley:** Here, and about to hand over the checkbox
+
+---
+
+## Riley's Note
+
+> Eighty-three degrees tonight. Nearly straight overhead — the strongest pass
+> this rig has ever seen, and also the nastiest Doppler, because the geometry
+> changes fastest when the bird is closest.
+>
+> Here's the deal I made with you two sessions ago. Fly the first half by
+> hand, like you did on Friday. Then, once I've seen you do it, the tape comes
+> off the **AFC** checkbox and you can spend the back half of the pass
+> watching the loop do your job better than you do.
+>
+> Then I want you to tell me when it would fail you. Because it will.
+>
+> — Riley
+
+---
+
+## Tonight's Pass
+
+| Satellite | AOS | Max Elevation | LOS |
+|-----------|-----|---------------|-----|
+| CUBEHOP-1 | 16:38 | **83.1°** at 16:45 | 16:51 |
+
+<Aside type="note">
+Closest approach is the natural moment to switch modes: the range rate passes
+through zero there, so the carrier briefly stops drifting. Hand over to the
+loop while the frequency is standing still and the transition is clean.
+</Aside>
+
+---
+
+## Link Reference
+
+| Signal | Frequency | Bandwidth | Mode |
+|--------|-----------|-----------|------|
+| CUBEHOP-1 FM downlink | 435.250 MHz | 15 kHz | QPSK 1/2 |
+
+Doppler excursion is the same **±10 kHz** you fought on Friday — but it
+arrives faster on a high pass, because the satellite sweeps through its
+closest approach in less time.
+
+---
+
+## What AFC Actually Does
+
+**Automatic Frequency Control** is a loop, and it is not clever. Every update
+it reads exactly one number — the carrier's offset from the center of your
+channel, the same **OFFSET** readout you were using by hand — and slews the
+VFO to re-center whatever it is currently locked to.
+
+| Property | Value |
+|----------|-------|
+| Input | Measured carrier offset (Hz) |
+| Slew rate limit | 200 Hz per update |
+| Deadband | ±10 Hz (inside this it holds still) |
+| Requirement | **There must be a carrier to measure** |
+
+<Aside type="caution">
+That last row is the whole limitation. AFC re-centers a signal it already has.
+It cannot find one, cannot predict one, and cannot recover from a deep fade —
+if the carrier leaves the passband, the loop has nothing to measure and simply
+stops. A human operator knows where the signal *will be* in ten seconds. The
+loop only knows where it *was*.
+</Aside>
+
+It will also happily follow the wrong signal. If a stronger carrier wanders
+into your channel, AFC re-centers on that instead, with no opinion about
+whether it's the thing you wanted.
+
+---
+
+## Tonight's Sequence
+
+- [ ] Program-track on CUBEHOP-1 before AOS
+- [ ] **AFC off.** Lock the downlink and hold it **90 seconds** by hand
+- [ ] At the top of the pass, enable **AFC**
+- [ ] Hands off the tuning: hold **120 seconds** at **10 dB C/N or better**
+- [ ] Be ready to say when you'd turn it back off
+
+---
+
+## End of Briefing
+
+Automation on a ground station is not a reward for good behavior — it's a tool
+with a specific failure mode, and the only operators who can be trusted with
+it are the ones who can work without it.
+
+You've done that twice now. Take the checkbox.
+
+Just don't forget it's a loop, not a pilot.

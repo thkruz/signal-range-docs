@@ -1,0 +1,122 @@
+---
+title: 'Scenario 3 - Wrong-Handed'
+description: 'The signal is there and unlockable - eighteen decibels missing with pointing, frequency and hardware all nominal'
+lastUpdated: 2026-07-26
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+**Session:** Saturday, 16:24 UTC
+
+**Station:** BKYD-YAGI — crossed yagi, feed harness "improved" since last night
+
+**Operator:** You
+
+**Riley:** Present, suspiciously casual
+
+---
+
+## Riley's Note
+
+> I rewired the feed harness on the yagi this morning. Cleaned up the phasing
+> lines, shortened a run, made it tidy. It is objectively a nicer piece of
+> work than it was yesterday.
+>
+> Tonight's pass is a **sixty-three degree** monster — the best geometry
+> you've had. Same bird, same frequency, same everything as last night, and
+> the bird is closer and higher.
+>
+> So this should be the easiest contact of your life.
+>
+> If it isn't, don't start yanking connectors. Read the numbers, work out what
+> KIND of loss you're looking at, and tell me what you think happened.
+>
+> — Riley
+
+---
+
+## Tonight's Pass
+
+| Satellite | AOS | Max Elevation | LOS |
+|-----------|-----|---------------|-----|
+| CUBEHOP-1 | 16:28 | 63.4° at 16:35 | 16:41 |
+
+---
+
+## Link Reference
+
+| Signal | Frequency | Bandwidth | Mode | Polarization |
+|--------|-----------|-----------|------|--------------|
+| CUBEHOP-1 FM downlink | 435.250 MHz | 15 kHz | QPSK 1/2 | **RHCP** |
+
+---
+
+## Reading a Loss
+
+When a link comes in worse than predicted, the *shape* of the loss tells you
+where to look before you touch anything:
+
+| What you observe | What it usually means |
+|------------------|----------------------|
+| Loss varies with pointing | Antenna aim, tracking mode, or a beam too narrow |
+| Loss varies with time / fades in and out | Multipath, obstruction, scintillation |
+| Loss appears only at low elevation | Trees, terrain, atmosphere |
+| **Large, constant loss with everything else nominal** | Something systematic in the RF chain |
+
+That last row is the interesting one. A big flat number that doesn't care
+about geometry, doesn't fluctuate, and doesn't improve at high elevation is
+not a propagation problem. It's a configuration problem.
+
+---
+
+## Circular Polarization Reference
+
+The crossed yagi has a **switchable feed**: it can be configured for
+right-hand or left-hand circular polarization. That switch is in the RADIO
+section of the console, marked **POL**.
+
+| Situation | Loss |
+|-----------|------|
+| Feed handedness matches the signal | ~0.5 dB |
+| Feed handedness is opposite the signal | **~18 dB** |
+
+<Aside type="caution">
+Eighteen decibels is a factor of sixty in power. A cross-polarized signal is
+still plainly visible on the waterfall — it just refuses to lock, forever, no
+matter how well you point or tune. Seeing a signal and being able to use it
+are different privileges.
+</Aside>
+
+### One More Thing About Handedness
+
+A circularly polarized signal that **reflects** off something — a metal roof,
+a car, a wet street — comes back with its handedness **reversed**. RHCP goes
+in, LHCP comes out. That's worth remembering the first time a signal is
+strong in a direction where there's nothing but a building.
+
+---
+
+## Tonight's Checklist
+
+- [ ] Rotator in program-track on CUBEHOP-1 before AOS
+- [ ] Confirm the downlink is on the waterfall where it should be
+- [ ] Diagnose the loss before changing anything
+- [ ] Fix it
+- [ ] Prove the fix: lock held **60 seconds** at **10 dB C/N or better**
+
+Note that last line. Riley does not accept "it looks better now" — the console
+reports C/N, and the number has to hold.
+
+---
+
+## End of Briefing
+
+Riley did not sabotage the rig. Riley made an honest improvement and
+introduced one wrong assumption while doing it, which is precisely how this
+happens to real operators on real equipment.
+
+The lesson isn't "check the polarization." The lesson is that **the size and
+shape of a loss tells you which subsystem to suspect** — and that a signal you
+can see is not necessarily a signal you can use.
+
+Sixty-three degrees. Don't waste it.

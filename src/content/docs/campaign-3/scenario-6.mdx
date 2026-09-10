@@ -1,0 +1,117 @@
+---
+title: 'Scenario 6 - The Network Wants Vermont'
+description: 'Two observation requests from the network, and a satellite your own predictions insist will never rise'
+lastUpdated: 2026-07-26
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+**Session:** Tuesday, 14:40 UTC
+
+**Stations:** BKYD-QFH (weather rig) and BKYD-YAGI (70cm rig) — both live
+
+**Operator:** You
+
+**Riley:** Out until evening. Notes only.
+
+---
+
+## Riley's Note
+
+> Big day. The observation network picked up our station — somebody saw the
+> data we've been posting and now we're on the request list. Two asks today,
+> one on each rig.
+>
+> This is the part of the hobby that turns into actual science: a few hundred
+> backyard stations, all pointed at the same sky, all posting what they hear.
+> Nobody pays anybody. It runs on volunteers and text files.
+>
+> **Which is exactly the thing I want you thinking about today.** Every
+> prediction this station makes comes out of an orbital element set we
+> downloaded from a mirror. No signature. No verification. A text file, from a
+> website, that we simply believed.
+>
+> Work both requests. If the sky doesn't match the paperwork, don't shrug.
+>
+> — Riley
+
+---
+
+## Observation Requests
+
+**From:** Open Satellite Observation Network — Regional Coordinator
+
+| # | Satellite | Requested Window | Expected Max Elevation | Rig |
+|---|-----------|------------------|------------------------|-----|
+| 1 | WXSAT-19 | 14:50 – 15:04 | 36° | QFH (137 MHz) |
+| 2 | CUBEHOP-1 | 16:59 – 17:12 | **57°** | Yagi (70cm) |
+
+> *"Vermont — we're short of coverage in the northeast on both of these.
+> Request #2 is the one we really want: CUBEHOP's 16:59 pass is a good high
+> one over your site and nobody east of Michigan is scheduled. Post whatever
+> you get."*
+
+<Aside type="note">
+There is a long gap between the two requests — about an hour and three
+quarters of empty sky. The station's time-skip control will carry you across
+it once the first observation is complete.
+</Aside>
+
+---
+
+## Link Reference
+
+| Signal | Frequency | Bandwidth | Mode | Rig |
+|--------|-----------|-----------|------|-----|
+| WXSAT-19 APT | 137.100 MHz | 34 kHz | BPSK 1/2 | BKYD-QFH |
+| CUBEHOP-1 FM | 435.250 MHz | 15 kHz | QPSK 1/2 | BKYD-YAGI |
+
+---
+
+## Where Predictions Come From
+
+Everything in the **Observations** tab — AOS, elevation, azimuth, the
+countdown — is computed. None of it is measured. The chain looks like this:
+
+```
+Volunteer mirror site  →  TLE text file  →  local propagator  →  your pass list
+```
+
+A TLE is two lines of numbers describing an orbit. It has no signature, no
+checksum that means anything against tampering, and no chain of custody. If
+the file is wrong — stale, corrupted, or edited by somebody — your pass list
+is wrong in exactly the same way, confidently, with no error message.
+
+<Aside type="caution">
+A prediction and an observation are different kinds of statement. The
+Observations tab tells you what the *math* expects. The waterfall tells you
+what the *sky* is doing. When those two disagree, one of them is wrong, and it
+is your job to find out which — not to pick the one you like.
+</Aside>
+
+The **Observations** panel can fetch a fresh element set from the network if
+you have reason to distrust what's loaded.
+
+---
+
+## Today's Work
+
+- [ ] Request #1: catch WXSAT-19 on the QFH and get a lock
+- [ ] Cross-check the network's request sheet against your own predictions
+- [ ] If they disagree, work out which source to trust and why
+- [ ] Request #2: get CUBEHOP-1 on the yagi in program-track and log the contact
+- [ ] Be ready to explain what caught the problem
+
+---
+
+## End of Briefing
+
+The network is trusting a stranger's backyard with a real observation request.
+You're trusting a stranger's website with the numbers that tell you where to
+point.
+
+Both of those are fine. They're how the hobby works, and how a lot of serious
+science works too. But trust that can't be cross-checked isn't trust — it's
+just a habit.
+
+Two sources. One sky. If they don't match, find out why.
