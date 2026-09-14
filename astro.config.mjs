@@ -136,6 +136,22 @@ export default defineConfig({
         {
           label: 'Scenario 12 - LEOP: Commissioning',
           slug: 'campaign-2/scenario-12'
+        },
+        {
+          label: "Scenario 13 - The Numbers Don't Lie",
+          slug: 'campaign-2/scenario-13'
+        },
+        {
+          label: 'Scenario 14 - Atlantic Low',
+          slug: 'campaign-2/scenario-14'
+        },
+        {
+          label: 'Scenario 15 - Rotation Day',
+          slug: 'campaign-2/scenario-15'
+        },
+        {
+          label: 'Scenario 16 - Cascade',
+          slug: 'campaign-2/scenario-16'
         }
       ]
     }, {

@@ -1,27 +1,29 @@
 ---
 title: 'Scenario 5 - Shetland Comes Online'
-description: 'SH-02 goes operational - allocate four MERIDIAN contacts across Galway and Shetland, resolve the overlaps, and publish a deconflicted contact plan'
-lastUpdated: 2026-09-10
+description: 'SH-02 goes operational - allocate four MERIDIAN contacts across Galway and Shetland, publish a deconflicted plan, then fly the first Shetland pass remotely from the Galway console and work SAR-2 from home'
+lastUpdated: 2026-09-13
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 
 ## Shift Turnover Notes
 
-**Date:** Friday, 1400 Local (Galway runs UTC in March)
+**Date:** Friday, 1340 Local (Galway runs UTC in March)
 **Station:** GW-01 Galway, Ireland - NATS Europe (planning authority for the network today)
 **Operator on Duty:** You
-**Site Lead:** Charlie Brooks (on-site, front office)
-**SH-02 Shetland:** Fiona MacLeod, on console
+**Site Lead:** Charlie Brooks (on-site; flies the Galway SAR-1 pass himself)
+**SH-02 Shetland:** Fiona MacLeod, at the pedestal for the first window, on console after
 
-> Shetland signed its acceptance card overnight, which makes NATS Europe a network as of this morning and makes somebody responsible for deciding which site takes which pass. Congratulations, that is the console you are sitting at.
+> Shetland signed its acceptance card overnight, which makes NATS Europe a network as of this morning and makes somebody responsible for deciding which site takes which pass. That is the console you are sitting at.
 >
-> Four contacts today, two birds, both sites can see all four. Fiona has her own antenna and her own opinions. Give her a plan she can work and she will work it.
+> Four contacts today, two birds, both sites can see all four. Build the plan. Then - Fiona is out at the pedestal for the first window - fly Shetland's from here. I will take the Galway one myself; it is my station too.
 >
-> - Charlie (turnover note, 1345)
+> - Charlie (text, 1339)
 
-**Fiona (text, 1338):**
-> "Morning Galway. Wind's 40 knots gusting 55 and the dish is rated for worse, so I'm not worried and neither should you be. Send me the plan when it validates. If you give me a pass that overlaps one of yours I'll assume it's deliberate and then I'll ring you."
+**Fiona (text, 1346):**
+> "Morning Galway. Wind's forty knots gusting fifty-five and the dish is rated for worse, so I'm not worried and neither should you be. Send me the plan when it validates. If you give me a pass that overlaps one of yours I'll assume it's deliberate and then I'll ring you."
+
+The first window is Shetland's, at 14:01. Twenty minutes to sweep Galway, build and publish the plan, and make the Shetland station ready from three hundred miles away.
 
 ---
 
@@ -30,33 +32,71 @@ import { Aside } from '@astrojs/starlight/components';
 | Station | Location | Antenna | Frequency Plan | Status |
 |---------|----------|---------|----------------|--------|
 | GW-01 Galway | 53.27° N, 9.05° W | 4 m Ku LEO tracker, 20°/s | LNB LO 13,100 / BUC LO 12,600 | Operational, your console |
-| SH-02 Shetland | 60.15° N, 1.15° W | 4 m Ku LEO tracker, 20°/s | LNB LO 13,100 / BUC LO 12,600 | Operational as of 0600 today |
+| SH-02 Shetland | 60.15° N, 1.15° W | 4 m Ku LEO tracker, 20°/s | LNB LO 13,100 / BUC LO 12,600 | Operational as of 0600 today; remote console from GW-01 |
 
-Same hardware, same frequency plan, seven degrees further north. Shetland's latitude gives it a different view of each sun-synchronous pass: later rise, later set, more of the orbit above its horizon. The two sites see the same bird at overlapping but not identical times.
+Same hardware, same frequency plan, seven degrees further north and eight degrees further east. Select SH-02 in the asset tree and every tab - GPS Timing, TX Chain, RX Analysis, ACU, Pass Schedule - is Shetland's. The Pass Schedule tab predicts from whichever station is selected, and the two sites do not agree about the sky.
 
 ---
 
-## Today's Contacts (epoch 14:00:00 UTC)
+## Today's Contacts (epoch 13:40:00 UTC, 5° mask)
 
-| Contact ID | Satellite | Horizon | AOS | LOS | Priority |
-|------------|-----------|---------|-----|-----|----------|
-| SAR1-GW | MERIDIAN-SAR-1 | Galway | 14:03:12 | 14:10:18 | 1 |
-| SAR1-SH | MERIDIAN-SAR-1 | Shetland | 14:05:00 | 14:12:42 | 1 |
-| SAR2-GW | MERIDIAN-SAR-2 | Galway | 14:18:42 | 14:25:42 | 1 |
-| SAR2-SH | MERIDIAN-SAR-2 | Shetland | 14:20:00 | 14:27:30 | 2 |
+| Contact ID | Satellite | Horizon | AOS | Rise az | Max El | LOS | Priority |
+|------------|-----------|---------|-----|---------|--------|-----|----------|
+| SAR1-SH | MERIDIAN-SAR-1 | Shetland | 14:01:14 | 003° | 24° at 14:04:42, 860 km | 14:08:09 | 1 |
+| SAR1-GW | MERIDIAN-SAR-1 | Galway | 14:03:10 | 000° | 28° at 14:06:45, 761 km | 14:10:18 | 1 |
+| SAR2-GW | MERIDIAN-SAR-2 | Galway | 14:18:42 | 130° | 25° at 14:22:10, 828 km | 14:25:40 | 1 |
+| SAR2-SH | MERIDIAN-SAR-2 | Shetland | 14:19:32 | 162° | 86° at 14:23:23, 393 km | 14:27:15 | 2 |
 
-All four contacts are priority 2 or higher and all four must be allocated. The plan does not validate with a required contact left unassigned.
+The plan requires priority 2 and above, so all four must be allocated. The plan does not validate with a required contact left unassigned.
 
 ### Overlaps
 
 | Pair | Overlap | Constraint |
 |------|---------|------------|
-| SAR1-GW and SAR1-SH | 14:05:00 to 14:10:18 | Cannot both be on the same site |
-| SAR2-GW and SAR2-SH | 14:20:00 to 14:25:42 | Cannot both be on the same site |
+| SAR1-SH and SAR1-GW | 14:03:10 to 14:08:09 | Cannot both be on the same site |
+| SAR2-GW and SAR2-SH | 14:19:32 to 14:25:40 | Cannot both be on the same site |
 
 <Aside type="caution">
 The constraint is the pedestal, not the spectrum. Two MERIDIAN downlinks do not interfere with each other and the scheduler does not time-share an antenna. Overlapping windows on one site are a conflict; the console will say so and refuse to validate until they are split.
 </Aside>
+
+### Why Shetland sees a different pass
+
+SAR-1 is southbound on this orbit with its ground track west of Ireland. Shetland is further north, so the bird crosses its horizon two minutes before Galway's; Shetland is also further east of the track, so it never climbs as high (24° against 28°). Same bird, same element set, different place to stand. A sun-synchronous orbit at 97° inclination runs nearly pole to pole, and a site at 60° N sees more of its passes per day than one at 53° N. SAR-2 goes 86° overhead at Shetland fifteen minutes later; over Galway it peaks at 25°.
+
+---
+
+## Who Flies What
+
+| Contact | Site | Operator |
+|---------|------|----------|
+| SAR1-SH 14:01 | SH-02 | **You, remote from the GW-01 console** (Fiona is at the pedestal) |
+| SAR1-GW 14:03 | GW-01 | Charlie |
+| SAR2-GW 14:18 | GW-01 | **You** |
+| SAR2-SH 14:19 | SH-02 | Fiona (86° overhead; she will lose it briefly at the top, which is a later lesson) |
+
+---
+
+## Link Parameters
+
+LNB is high-side injection at both sites: **IF = LO − RF** (13,100 MHz LO).
+
+| Signal | RF (MHz) | IF (MHz) | Format |
+|--------|----------|----------|--------|
+| SAR-1 imagery downlink | 11,686 | 1,414 | QPSK 3/4, 36 MHz |
+| SAR-1 telemetry beacon | 11,711 | 1,389 | CW |
+| SAR-2 imagery downlink | 11,730 | 1,370 | QPSK 3/4, 36 MHz |
+| SAR-2 telemetry beacon | 11,703 | 1,397 | CW |
+
+### Expected numbers
+
+| Pass | Decode window (C/N ≥ 8 dB) | Peak C/N |
+|------|----------------------------|----------|
+| SAR-1 from Shetland, 24° | about 14:03:30 to 14:06:00 | ~9.8 dB at 14:04:42 |
+| SAR-1 from Galway, 28° (Charlie) | about 14:05:00 to 14:08:30 | ~11 dB at 14:06:45 |
+| SAR-2 from Galway, 25° | about 14:20:30 to 14:24:00 | ~10 dB at 14:22:10 |
+
+Shetland's peak is about a decibel under Galway's on the same bird: 20 log(860 / 761) is 1.1 dB of extra path loss, plus a little more atmosphere at the lower elevation. Every dB of difference between two sites should be explained by range and elevation. One that is not is a fault.
 
 ---
 
@@ -75,35 +115,71 @@ Galway keeps the passes it has been working all week. The Galway-horizon contact
 
 ---
 
-## GW-01 Equipment Status
+## Equipment Status at Turnover
+
+### GW-01 Galway
 
 | Equipment | Status | Notes |
 |-----------|--------|-------|
-| 4 m Ku tracker | Powered, manual, parked az 5° / el 3° | Program-track available |
+| 4 m Ku tracker | Powered, manual, parked az 5° / el 3° | Program-track available. Needs parking on az 130° / el 5° for SAR-2 after the hand-back. |
 | LNB | 13,100 MHz LO, reference locked | Stable |
 | GPSDO | Locked, 9 satellites | Disciplined |
-| RX modem 1 | 1,414 MHz / 36 MHz / QPSK 3/4 | Pre-tuned for SAR-1 imagery |
+| RX modem 1 | 1,414 MHz / 36 MHz / QPSK 3/4 | Charlie's SAR-1 pass. Retune to 1,370 MHz for SAR-2 after the hand-back. |
+| Spectrum analyzer | 1,414 MHz centre, 60 MHz span | Move to the SAR-2 beacon, 1,397 MHz, after the hand-back. |
 | BUC / HPA | No drive / output disabled | No uplink tasking this shift |
 
-SH-02 reports identical configuration. Shetland's contacts are worked from Shetland; you allocate them, Fiona flies them.
+### SH-02 Shetland (as Fiona left it after her last acceptance run)
+
+| Equipment | Status | Notes |
+|-----------|--------|-------|
+| 4 m Ku tracker | Powered, manual, **stowed az 180° / el 3°** against the wind | Needs parking on the rise azimuth, 003° / el 5°, before 14:01 |
+| LNB | 13,100 MHz LO, reference locked | Stable since Tuesday |
+| GPSDO | Locked, 9 satellites | Disciplined; confirm from here |
+| RX modem 1 | **1,370 MHz / 36 MHz / QPSK 3/4** | Her SAR-2 test carrier. Retune to 1,414 MHz for SAR-1. |
+| Spectrum analyzer | 1,414 MHz centre, 60 MHz span | Move to the SAR-1 beacon, 1,389 MHz, 2 MHz span |
+| BUC / HPA | Muted / output disabled | No uplink tasking |
 
 ---
 
-## Planning Checklist
+## Shift Checklist
 
-- [ ] Network brief read; the overlap rule understood
-- [ ] Contact Plan tab open; unassigned count noted
-- [ ] Both Galway-horizon contacts on GW-01
-- [ ] Both Shetland-horizon contacts on SH-02
-- [ ] Conflict list empty, unassigned count zero
-- [ ] Plan reads DECONFLICTED; published to Shetland
+### Galway sweep (13:40 – 13:45)
+- [ ] Dashboard: no active alarms on GW-01
+- [ ] GPS Timing: GW-01 GPSDO locked, not in holdover
+
+### The plan (13:45 – 13:50)
+- [ ] Contact Plan tab: SAR1-GW and SAR2-GW on GW-01
+- [ ] SAR1-SH and SAR2-SH on SH-02
+- [ ] Conflict list empty, unassigned count zero, plan reads DECONFLICTED
+
+### The Shetland console (13:50 – 14:01)
+- [ ] SH-02 selected in the asset tree
+- [ ] SH-02 GPS Timing: locked, not in holdover; TX Chain: BUC temperature normal; RX Analysis: LNB thermally stable
+- [ ] Pass Schedule (Shetland's sky): SAR-1 AOS 14:01, rise az 003°, 24° peak
+- [ ] SH-02 RX modem 1: 1,414 MHz; analyzer centre 1,389 MHz, span 2 MHz
+- [ ] SH-02 ACU: tracker parked az 003° / el 5°, then program-track, target MERIDIAN-SAR-1
+
+### SAR-1 from Shetland (14:01 – 14:08)
+- [ ] SAR-1 beacon on Shetland's RX analysis
+- [ ] SH-02 modem locked on 1,414 MHz, C/N ≥ 8 dB through the high segment
+- [ ] Peak read at culmination: ≥ 9 dB at 24°
+
+### Hand back (14:08 – 14:18)
+- [ ] GW-01 selected; RX modem 1 to 1,370 MHz; analyzer centre 1,397 MHz
+- [ ] GW-01 ACU: parked az 130° / el 5°, then program-track, target MERIDIAN-SAR-2
+
+### SAR-2 from Galway (14:18 – 14:25)
+- [ ] Imagery carrier detected, modem locked, C/N ≥ 8 dB
+
+### After LOS
+- [ ] Network log: site, who flew each contact, the number
 
 ---
 
 ## End of Briefing
 
-A second site is capacity, not a spare. With one antenna, one of every overlapping pair was going to be dropped; with two and a valid plan, all four get worked.
+A second site is capacity, not a spare. With one antenna, one of every overlapping pair was going to be dropped; with two and a valid plan, all four get worked. And a second site is only capacity if somebody can fly it: today that somebody is you, from a console three hundred miles from the dish.
 
-Fiona is waiting on the plan and the weather up there is not improving. Give her something she can fly.
+Fiona is waiting on the plan and the weather up there is not improving. Give her something she can fly, then fly hers.
 
 Good luck.

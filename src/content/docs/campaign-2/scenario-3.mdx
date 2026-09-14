@@ -1,14 +1,14 @@
 ---
 title: 'Scenario 3 - Two-Way Street'
-description: 'First GW-01 commanding window - uplink Doppler compensation, transmit chain sequencing, and a recorder playback command acknowledged inside a seven-minute pass'
-lastUpdated: 2026-09-10
+description: 'First GW-01 commanding window - tune the command IF, engage uplink Doppler compensation, bring the transmit chain up in order, get a recorder playback command acknowledged, and bring the chain down in order'
+lastUpdated: 2026-09-12
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 
 ## Shift Turnover Notes
 
-**Date:** Wednesday, 1400 Local (Galway runs UTC in March)
+**Date:** Wednesday, 1345 Local (Galway runs UTC in March)
 **Station:** GW-01 Galway, Ireland - NATS Europe
 **Operator on Duty:** You
 **Site Lead:** Charlie Brooks (on-site, RF room)
@@ -18,7 +18,7 @@ import { Aside } from '@astrojs/starlight/components';
 >
 > Rotterdam has a command for SAR-1 on the 14:03 pass and their flight rules say it comes from a station with a demonstrated clean uplink. That is us, or it is nobody until the next window. One thing: the HPA never goes live without drive behind it. I have watched a site cook an amplifier that way and I would rather not watch it twice.
 >
-> - Charlie (turnover note, 1352)
+> - Charlie (text, 1344)
 
 ---
 
@@ -45,29 +45,31 @@ import { Aside } from '@astrojs/starlight/components';
 
 ---
 
-## Pass Plan and Command Window (epoch 14:00:00 UTC)
+## Pass Plan and Command Window (5° mask, epoch 13:45:00 UTC)
 
 | Item | Time |
 |------|------|
-| MERIDIAN-SAR-1 AOS | 14:03:12 |
+| MERIDIAN-SAR-1 AOS | 14:03:10 |
 | Command window opens | 14:03:40 |
-| Max elevation (28°) | 14:06:48 |
+| Max elevation (28°) | 14:06:45 |
 | Command window closes | 14:10:00 |
 | MERIDIAN-SAR-1 LOS | 14:10:18 |
 
-MERIDIAN-SAR-2 rises at 14:18:42 and is not tasked. The TT&C console shows window status live; a command sent while it reads closed comes back NAK regardless of everything else being right.
+MERIDIAN-SAR-2 rises at 14:18:42 and is not tasked. The TT&C console shows window status live; a command sent while it reads closed comes back NAK regardless of everything else being right. A NAK is information: the Detail column says why.
 
 ---
 
 ## Uplink Plan
 
-BUC is low-side injection: **RF = IF + LO** (12,600 MHz LO). The receive side is unchanged from acceptance.
+BUC is low-side injection: **RF = IF + LO** (12,600 MHz LO). No spectrum inversion on the transmit side. The receive LNB is high-side and unchanged from acceptance.
 
 | Path | IF (MHz) | LO (MHz) | RF (MHz) | Format |
 |------|----------|----------|----------|--------|
-| SAR-1 telecommand uplink | 1,405 | 12,600 (BUC) | 14,005 | QPSK 3/4, 36 MHz, −7 dBm modem |
+| SAR-1 telecommand uplink | **1,405** | 12,600 (BUC) | 14,005 | QPSK 3/4, 36 MHz, −7 dBm modem |
 | SAR-1 telemetry beacon (down) | 1,389 | 13,100 (LNB) | 11,711 | CW |
 | SAR-1 imagery downlink | 1,414 | 13,100 (LNB) | 11,686 | QPSK 3/4, 36 MHz |
+
+The acceptance crew left transmit modem 1 on their 1,400 MHz test carrier. Five megahertz off, and the spacecraft receiver never hears you.
 
 ### Doppler Across the Pass
 
@@ -76,23 +78,29 @@ BUC is low-side injection: **RF = IF + LO** (12,600 MHz LO). The receive side is
 | Downlink | 11.7 GHz | ±270 kHz | Receiver AFC follows it |
 | Uplink | 14.0 GHz | ±325 kHz | Pre-compensated at the console; the spacecraft cannot chase it |
 
-The range rate at AOS is closing at roughly 7 km/s, passes through zero at culmination, and opens at the same rate on the way out. Uplink compensation is a console switch on the TT&C tab; it slews the command carrier against the predicted rate so the spacecraft sees 14,005 MHz throughout.
+The range rate at AOS is closing at roughly 7 km/s, passes through zero at culmination, and opens at the same rate on the way out. Uplink compensation is a switch on the TT&C tab; it slews the command carrier against the predicted rate so the spacecraft sees 14,005 MHz throughout. Engage it before the pass.
 
 ---
 
-## Transmit Chain Status
+## Transmit Chain Status (as left)
 
 | Equipment | Status | Notes |
 |-----------|--------|-------|
-| TX modem 1 | 1,405 MHz / 36 MHz / QPSK 3/4 / −7 dBm | Powered, not transmitting |
-| BUC | 12,600 MHz LO, reference locked, gain 23 dB | Not muted, loopback off, no drive present |
+| TX modem 1 | **1,400 MHz** / 36 MHz / QPSK 3/4 / −7 dBm | Powered, not transmitting. Retune to 1,405. |
+| BUC | 12,600 MHz LO, reference locked, gain 23 dB, **muted** | Stays muted until the carrier is up |
 | HPA | Powered, output **disabled** | 50 dBm rated, 10 dB back-off, gain 44 dB |
 | OMT | TX pol H / RX pol V | 28.5 dB cross-pol isolation |
 | 4 m Ku tracker | Manual, parked az 5° / el 3° | Program-track available |
-| GPSDO | Locked, 9 satellites | Disciplined |
+| GPSDO | Locked, 9 satellites | Disciplined; the BUC LO is locked to it |
 
 <Aside type="danger">
-Order of operations on this chain is a safety interlock you enforce by hand: modem on air first, then HPA output. Enabling the HPA with nothing driving the BUC amplifies the BUC's own noise floor into the feed and fails the shift. Coming down, it mirrors: HPA off before the carrier stops.
+Order of operations on this chain is a safety interlock you enforce by hand, one step at a time:
+
+1. Transmit modem on air, into the **muted** BUC.
+2. BUC unmuted, with the carrier behind it.
+3. HPA output enabled, with the BUC driving it.
+
+Coming down, it mirrors: HPA off, BUC muted, carrier off. Enabling the HPA with nothing driving the BUC amplifies the BUC's own noise floor into the feed and fails the shift.
 </Aside>
 
 ---
@@ -104,7 +112,7 @@ Order of operations on this chain is a safety interlock you enforce by hand: mod
 | Window status | Open or closed against the pass window above |
 | Uplink Doppler Compensation | Must be engaged before any send |
 | Command Stack: XMIT | Queues the mnemonic; result posts to Command History |
-| ACK | Spacecraft verified and executed the command |
+| ACK | Spacecraft verified and executed the command; it answered on the next telemetry frame |
 | NAK | Rejected; the Detail column states why (no compensation, key, or out of window) |
 
 Key status starts Valid and no rotation is scheduled this shift.
@@ -113,19 +121,26 @@ Key status starts Valid and no rotation is scheduled this shift.
 
 ## Uplink Checklist
 
-### Before the Window
-- [ ] Antenna: program-track on MERIDIAN-SAR-1
-- [ ] SAR-1 beacon visible on RX analysis (you cannot command a bird you are not pointed at)
-- [ ] TT&C tab: uplink Doppler compensation engaged
-- [ ] TX modem 1 on air
-- [ ] HPA output enabled, only once the modem carrier is present
+### Before the Pass (13:45 – 14:03)
+- [ ] GPS Timing: GPSDO locked; TX Chain: BUC on external reference
+- [ ] TX modem 1 retuned to 1,405 MHz (IF = 14,005 − 12,600)
+- [ ] Pass Schedule: window 14:03:40 – 14:10:00 confirmed
+- [ ] TT&C: uplink Doppler compensation engaged
+- [ ] Step 1: TX modem 1 on air, BUC still muted
+- [ ] Step 2: BUC unmuted, HPA still disabled
+- [ ] Step 3: HPA output enabled, not overdriven (10 dB back-off)
+- [ ] Antenna: program-track on MERIDIAN-SAR-1; beacon on RX analysis
 
-### In the Window
+### In the Window (14:03:40 – 14:10:00)
+- [ ] TT&C window reads OPEN
 - [ ] REC-PLAYBACK sent from the Command Stack
-- [ ] ACK in Command History before 14:10:00
+- [ ] ACK in Command History; read what it proves
 
 ### After LOS
-- [ ] Transmit chain secured in the correct order
+- [ ] HPA output disabled
+- [ ] BUC muted
+- [ ] TX modem 1 off air
+- [ ] Command log: what went up, what came back, chain cold
 
 ---
 

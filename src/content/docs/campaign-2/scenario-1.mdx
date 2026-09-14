@@ -1,23 +1,23 @@
 ---
 title: 'Scenario 1 - First Light Over Galway'
-description: 'GW-01 commissioning shift - first MERIDIAN LEO contacts at the new Galway Ku-band downlink site: pass planning, program-track, and SAR imagery decode'
-lastUpdated: 2026-07-04
+description: 'GW-01 commissioning shift - make the station ready in fifteen minutes, then take the first MERIDIAN LEO contacts: sweep, tune, park, program-track, decode, retune, and log'
+lastUpdated: 2026-09-12
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 
 ## Shift Turnover Notes
 
-**Date:** Monday, 1400 Local (Galway runs UTC in March)
+**Date:** Monday, 1348 Local (Galway runs UTC in March)
 **Station:** GW-01 Galway, Ireland — NATS Europe
 **Operator on Duty:** You
 **Site Lead:** Charlie Brooks (on-site, front office)
 
-> Good to have you across the water. Vermont says you're qualified, so I won't waste your time re-teaching you what a receiver is. What you haven't done is work a bird that moves. First MERIDIAN window opens at 14:02 — that's your first light, and the site's. Pass plan is loaded in the scheduler. Take the contact, get the imagery feed down, and if you're feeling ambitious there's a second bird right behind it.
+> Good to have you across the water. Acceptance crew signed the hardware off last night and left it stowed: tracker pointing south, receiver on their test carrier. First MERIDIAN window opens at 14:03 and that is the site's first light, so I would like the station ready before it, not during it. Sweep it, tune it, park it on the rise. I am in the front office if you need me. You will not.
 >
-> — Charlie (turnover note, 1355)
+> — Charlie (text, 1347)
 
-GW-01 finished construction acceptance last week. RF chain is aligned and the reference is disciplined; what has never happened here is an end-to-end contact against a live spacecraft. Today's shift is that test.
+GW-01 finished construction acceptance last night. The RF chain is aligned and the reference is disciplined; what has never happened here is an end-to-end contact against a live spacecraft. Today's shift is that test, and the station is not configured for it. You have fifteen minutes.
 
 ---
 
@@ -28,28 +28,28 @@ GW-01 finished construction acceptance last week. RF chain is aligned and the re
 | MERIDIAN-SAR-1 | LEO SAR imager (sun-sync) | MERIDIAN Constellation Operations (Rotterdam) | Healthy, imagery onboard awaiting downlink |
 | MERIDIAN-SAR-2 | LEO SAR imager (sun-sync, offset plane) | MERIDIAN Constellation Operations (Rotterdam) | Healthy, second contact of the shift |
 
-These are not TIDEMARK. A MERIDIAN pass runs horizon-to-horizon in under fifteen minutes, and the geometry changes continuously — range, azimuth rate, Doppler, all of it. The pedestal and the pass scheduler do the pointing math; your job is to have the station configured before AOS, not during it.
+These are not TIDEMARK. A MERIDIAN pass runs horizon-to-horizon in under ten minutes above the mask, and the geometry changes continuously: range, azimuth rate, Doppler, all of it. The pedestal and the pass scheduler do the pointing math; your job is to have the station configured before AOS.
 
 ---
 
-## Pass Plan (from the scheduler, epoch 14:00:00 UTC)
+## Pass Plan (from the scheduler, 5° mask, epoch 13:48:00 UTC)
 
-| Contact | AOS | Max Elevation | LOS |
-|---------|-----|---------------|-----|
-| MERIDIAN-SAR-1 | 14:02:00 | ~28° at 14:07 | 14:11:30 |
-| MERIDIAN-SAR-2 | 14:17:30 | ~25° at 14:22 | 14:26:50 |
+| Contact | AOS | Rise azimuth | Max Elevation | LOS | Set azimuth |
+|---------|-----|--------------|---------------|-----|-------------|
+| MERIDIAN-SAR-1 | 14:03:10 | 000° | 28° at 14:06:45, 761 km | 14:10:18 | 224° |
+| MERIDIAN-SAR-2 | 14:18:42 | 130° | 25° at 14:22:10, 828 km | 14:25:40 | 000° |
 
-Both are moderate-elevation passes — comfortable geometry for the pedestal. AOS azimuths and the live countdown are on the **Pass Schedule** tab; confirm them there before you commit the antenna. The dish is parked near the SAR-1 rise azimuth from the overnight crew.
+The scheduler works the 5° elevation mask, not the geometric horizon. SAR-1 actually breaks the horizon at 14:02 from azimuth 005°; it clears the mask a minute later due north. Read AOS off the **Pass Schedule** tab.
 
 <Aside type="caution">
-A 4 m dish at Ku has a beam under half a degree wide. Manual pointing cannot follow a moving LEO bird — put the antenna in **program-track** before AOS and let it fly the pass. (The pedestal slews at up to 20°/s, so these passes track cleanly; a high, near-zenith pass is a different animal — one for a later shift.)
+A 4 m dish at Ku has a beam under half a degree wide. Manual pointing cannot follow a moving LEO bird. Park the antenna on the rise azimuth by hand, then put it in **program-track** and let it fly the pass. The pedestal slews at 20°/s, so a 28° pass tracks cleanly; a near-zenith pass is a different animal and one for a later shift.
 </Aside>
 
 ---
 
 ## Link Parameters
 
-LNB is high-side injection: **IF = LO − RF** (13,100 MHz LO).
+LNB is high-side injection: **IF = LO − RF** (13,100 MHz LO). Vermont was low-side. Same arithmetic, opposite sign, and the spectrum is inverted: a higher RF lands at a lower IF.
 
 | Signal | RF (MHz) | IF (MHz) | Format |
 |--------|----------|----------|--------|
@@ -58,53 +58,67 @@ LNB is high-side injection: **IF = LO − RF** (13,100 MHz LO).
 | SAR-2 imagery downlink | 11,730 | 1,370 | QPSK 3/4, 36 MHz |
 | SAR-2 telemetry beacon | 11,703 | 1,397 | CW |
 
-Expect up to ±270 kHz of Doppler at Ku across a pass. The 36 MHz video carrier shrugs it off; the beacons will walk across the display — the spectrum analyzer and RX analysis views are your confirmation that you're on the right bird.
+### Doppler
 
-### Commissioning Acceptance (test card GW-01-FL-001)
+At 11.7 GHz the range rate on these passes is worth about **±270 kHz**: +274 kHz as SAR-1 breaks the horizon, zero at culmination, −271 kHz at LOS. The 36 MHz imagery carrier shrugs it off. The CW beacon does not: on a 2 MHz span it walks visibly across the analyzer. Because the LO is high-side, the beacon appears **below** 1,389 MHz while the bird approaches and **above** it after culmination.
+
+### Acceptance
 
 | Check | Pass Criterion |
 |-------|----------------|
 | Downlink C/N, high-elevation segment | ≥ 8 dB, held through the decode |
-| Predicted peak C/N at max elevation | ~11 dB (flag to Rotterdam if it comes in more than 3 dB low) |
-| Decode window | C/N crosses 8 dB near 18° elevation on the way up and peaks at culmination — roughly max-el ± 1.5 minutes. Do not chase a decode at the horizon. |
+| C/N at culmination | ≥ 9 dB (predicted ~11 dB; flag to Rotterdam if more than 3 dB low) |
+| Decode window | C/N crosses 8 dB near 18° elevation on the way up, peaks at culmination: roughly max-el ± 1.5 min. Do not chase a decode at the horizon. |
 
 ---
 
-## GW-01 Equipment Status
+## GW-01 Equipment Status (as the acceptance crew left it)
 
 | Equipment | Status | Notes |
 |-----------|--------|-------|
-| 4 m Ku tracker | Powered, manual, parked az 5° / el 3° | Program-track available; ephemeris current |
+| 4 m Ku tracker | Powered, manual, **stowed az 180° / el 3°** | Program-track available; ephemeris current. Needs parking on the rise azimuth. |
 | LNB | 13,100 MHz LO, reference locked | Stable |
-| GPSDO | Locked, 9 satellites | Disciplined |
-| RX modem 1 | 1,414 MHz / 36 MHz / QPSK 3/4 | Pre-tuned for SAR-1 video |
+| GPSDO | Locked, 9 satellites | Disciplined. Confirm on GPS Timing before anything else keys off it. |
+| RX modem 1 | **1,400 MHz / 20 MHz / BPSK 1/2** | The crew's loopback test carrier. Retune for SAR-1 imagery. |
+| Spectrum analyzer | 1,414 MHz centre, 60 MHz span | Move it to the beacon, 2 MHz span. |
 | BUC / HPA | Muted / disabled | No uplink tasking this shift |
 
 ---
 
 ## Contact Checklist
 
-### Before AOS
-- [ ] Pass Schedule tab: confirm AOS time and azimuth for the next contact
-- [ ] Antenna: program-track enabled, target set
-- [ ] RX modem: tuned to the correct IF for the bird you're taking
+### Before AOS (13:48 – 14:03)
+- [ ] Dashboard: no active alarms
+- [ ] GPS Timing: GPSDO locked, not in holdover
+- [ ] RX Analysis: LNB LO 13,100 MHz; work out the SAR-1 IF before you tune to it
+- [ ] RX modem 1: 1,414 MHz / 36 MHz / QPSK / 3/4, applied
+- [ ] Spectrum analyzer: centre 1,389 MHz (SAR-1 beacon), span 2 MHz
+- [ ] Pass Schedule: SAR-1 AOS time and rise azimuth confirmed
+- [ ] ACU: tracker parked az 000° / el 5°, then program-track, target MERIDIAN-SAR-1
 
-### During the Pass
-- [ ] Beacon visible on RX analysis (confirms you're on the bird)
-- [ ] RX modem lock on the video carrier
-- [ ] C/N at or above 8 dB through the high-elevation segment
-- [ ] Imagery feed decoding on the monitor before LOS
+### SAR-1 Pass (14:03 – 14:10)
+- [ ] Beacon visible on RX analysis (confirms you are on the bird)
+- [ ] RX modem lock on the imagery carrier
+- [ ] C/N ≥ 8 dB through the high-elevation segment, ≥ 9 dB at culmination
+- [ ] Watch the beacon cross 1,389 MHz at culmination and know why it came from below
 
-### Between Contacts (~3 minutes)
-- [ ] Retune RX modem to the SAR-2 IF
-- [ ] Retarget the tracker for the second rise
+### Between Contacts (14:10 – 14:18)
+- [ ] RX modem 1: 1,370 MHz
+- [ ] Spectrum analyzer: centre 1,397 MHz (SAR-2 beacon)
+- [ ] ACU: retarget program-track to MERIDIAN-SAR-2 before it rises
+
+### SAR-2 Pass (14:18 – 14:25)
+- [ ] Imagery carrier detected, RX modem locked, C/N ≥ 8 dB
+
+### After LOS
+- [ ] Shift log: time, bird, result, peak C/N and the elevation it happened at
 
 ---
 
 ## End of Briefing
 
-Every ground station has exactly one first light. Rotterdam is watching for the acceptance numbers, Charlie is watching to see whether Vermont sent him an operator or a liability, and the pass starts whether you're ready or not.
+Every ground station has exactly one first light. Rotterdam is watching for the acceptance numbers, Charlie is watching to see whether Vermont sent him an operator or a liability, and the pass starts whether you are ready or not.
 
-The second contact is a stretch goal — nobody will hold a missed SAR-2 against you today. A missed SAR-1 is a different conversation.
+Fifteen minutes. Sweep it, tune it, park it on the rise.
 
 Good luck.

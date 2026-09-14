@@ -1,0 +1,212 @@
+---
+title: 'Scenario 16 - Cascade'
+description: 'Network multi-failure, the Phase 2 capstone - a slipped pass on the board, a Shetland BUC cooking under a carrier nobody removed, a command contact flown through whatever the reference does, Shetland taking its collect unattended, and the report Erik and maintenance both need'
+lastUpdated: 2026-09-13
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Friday 9 April, 1200 Local (Galway runs UTC in April)
+**Station:** GW-01 Galway, Ireland - NATS Europe (planning authority for the network; the only station with the command key)
+**Operator on Duty:** You, qualified, solo, both consoles
+**Constellation Ops:** Anneke Visser, Rotterdam (REC-PLAYBACK and OBC-WDT-RESET on SAR-1 inside the 12:18 window)
+**SH-02 Shetland:** Fiona MacLeod, on the roof with the BUC fan; console yours
+**Customer:** Erik Halvorsen, Nordic Maritime Watch (collects on both birds)
+
+> Densest window of the week. MERIDIAN-SAR-2 slipped ninety seconds overnight (Rotterdam has not said why) and its Galway window now overlaps the SAR-1 command contact. Morning uplink check at Shetland done at 11:20; nobody has been back to the rack since. Galway TX modem still on 1,465 from Wednesday's SAR-3 work. GW-01 reference has been clean all week. Plan unbuilt.
+>
+> Fiona reports a fan alarm coming up on her BUC and is going up to look at it.
+>
+> - Morning shift (turnover log, 1155)
+
+**Fiona (text, 1158):**
+> "Fan alarm on my BUC and I'm going up to look at it, so the console's yours. Nobody's touched the rack since the uplink check this morning. SAR-2 moved overnight and Rotterdam hasn't said why. Your GPSDO's been fine. Enjoy."
+
+---
+
+## Order of Work
+
+Three problems and eighteen minutes. Triage is ordered by what each problem gates, not by how loud it is.
+
+| Order | Problem | Gates | Why here |
+|-------|---------|-------|----------|
+| 1 | The slipped pass | Which site needs which hardware | The plan decides everything after it |
+| 2 | Galway ready to command | The 12:18 window | The window has a time; nothing else does |
+| 3 | The Shetland BUC | Nothing today | Shetland's contact is receive-only. A hot transmit chain on a receive-only site gates no work, but it is still a fault with a right action and a louder wrong one |
+| 4 | Fly | | Galway commands; Shetland acquires on its own |
+| 5 | Report | | Last |
+
+---
+
+## Today's Contacts (epoch 12:00:00 UTC, 0° horizon)
+
+| Contact ID | Satellite | Horizon | Opens | Closes | Priority |
+|------------|-----------|---------|-------|--------|----------|
+| C-SAR1-SH | MERIDIAN-SAR-1 | Shetland, 56° | 12:15:50 | 12:25:50 | 2 |
+| C-SAR1-GW | MERIDIAN-SAR-1 | Galway, 30° - command contact | 12:18:00 | 12:27:40 | **1** |
+| C-SAR2-SH | MERIDIAN-SAR-2 | Shetland, 28° - NMW collect | 12:21:20 | 12:30:50 | **1** |
+| C-SAR2-GW | MERIDIAN-SAR-2 | Galway, 15° - **SLIPPED +90 s** | 12:23:30 | 12:32:20 | 2 |
+
+The overnight plan had SAR-2 on Galway after SAR-1. The slip moved its Galway window to 12:23:30, four minutes inside the command contact. The two cannot both sit on Galway, and Shetland already has the same bird at 28° against Galway's 15°. Priority-1 contacts must be assigned for the plan to validate: the command contact on GW-01, the collect on SH-02, and the slipped Galway half dropped. Dropping a window is a decision the plan records.
+
+---
+
+## Pass Plan
+
+### Galway horizon
+
+| Contact | AOS | Rise az | Max Elevation | LOS | Track |
+|---------|-----|---------|---------------|-----|-------|
+| MERIDIAN-SAR-1 | 12:17:59 | 021° | 29.8° at 12:22:49, 728 km | 12:27:35 (az 173°) | Southbound, 9.6 min. **The command contact** |
+| MERIDIAN-SAR-2 | 12:23:32 | 030° | 15.5° at 12:27:58, 1,132 km | 12:32:23 | The slipped half. Dropped |
+
+### Shetland horizon
+
+| Contact | AOS | Rise az | Max Elevation | LOS | Track |
+|---------|-----|---------|---------------|-----|-------|
+| MERIDIAN-SAR-1 | 12:15:54 | 017° | 55.8° at 12:20:53, 468 km | 12:25:49 | One operator: not worked |
+| MERIDIAN-SAR-2 | 12:21:16 | 024° | 28.0° at 12:26:05, 763 km | 12:30:51 (az 173°) | Southbound, 9.6 min. **The collect, unattended acquisition** |
+
+### Command window (SAR-1, Galway)
+
+| Item | Time |
+|------|------|
+| Window opens | 12:18:20 |
+| Max elevation | 12:22:49 |
+| Window closes | 12:27:20 |
+
+Requirements for an ACK: uplink Doppler compensation engaged, command key Valid, command sent inside the window. Ordered: **REC-PLAYBACK**, then **OBC-WDT-RESET**. PLD-SAFE is on the console and not ordered.
+
+### Expected numbers
+
+| Pass | Decode window | Peak C/N |
+|------|---------------|----------|
+| SAR-1 from Galway, 30° (beacon, then command) | Beacon on RX analysis from about 12:19 | ~11 dB at 12:22:49 |
+| SAR-2 from Shetland, 28° (unattended) | C/N ≥ 8 dB about 12:24:00 to 12:28:10 | ~10.7 dB at 12:26:05 |
+
+Shetland flies its window with nobody at its console: a station armed on program-track with the receiver on the right carrier acquires by itself. What it cannot do is notice a bad number; you check it before 12:30:51, from its console, while it is still up.
+
+---
+
+## The Shetland BUC
+
+| Reading | Meaning | Action |
+|---------|---------|--------|
+| BUC over-temperature, fan alarm, TX modem 1 on air into the BUC, HPA off | The morning uplink check left a carrier driving the BUC. A BUC dissipates heat in proportion to its output; with the fan gone it settles above the 70 °C alarm as long as a carrier is going in | Carrier off, BUC **muted**, BUC **powered**. It settles well under 70 °C inside a couple of minutes |
+
+<Aside type="caution">
+Do not power the BUC off. Twice wrong: an unpowered BUC cools five times slower because its own regulation stops, and the alarm clears on a powered reading - an off BUC never reads normal, it reads off. Mute removes the heat source; power-off removes the thermometer.
+</Aside>
+
+Shetland's contact today is receive-only. The BUC is the transmit chain and plays no part in it; the receive path is healthy. The alarm gates nothing, and it is still a ticket for the fan and a note for whoever left the carrier up.
+
+---
+
+## The Reference
+
+GW-01's GPSDO has been clean all week. If it is not clean during the window, read the panel before doing anything to it.
+
+| Panel reads | It is | Do |
+|-------------|-------|----|
+| HOLDOVER active, GNSS switch **up**, zero satellites | A GNSS outage. The oscillator holds the reference to microseconds for tens of minutes; the uplink Doppler pre-compensation does not care | Fly. Leave the switch alone. Confirm re-lock when the signal returns |
+| HOLDOVER active, GNSS switch **down** | An operator error | Switch up |
+| Anything, after a power cycle | Ten minutes of warm-up | Do not. The window is gone |
+
+Cycling the switch cannot conjure a satellite. A command goes up on a reference in holdover.
+
+---
+
+## Link Parameters
+
+LNB high-side: **IF = LO − RF** (13,100 MHz). BUC low-side: **RF = IF + LO** (12,600 MHz).
+
+| Signal | RF (MHz) | IF (MHz) | Format |
+|--------|----------|----------|--------|
+| SAR-1 imagery downlink | 11,686 | 1,414 | QPSK 3/4, 36 MHz |
+| SAR-1 telemetry beacon | 11,711 | 1,389 | CW |
+| SAR-1 TT&C uplink | 14,005 | **1,405** | QPSK 3/4, 36 MHz, −7 dBm. GW-01 TX modem is on 1,465 (SAR-3) and must be retuned |
+| SAR-2 imagery downlink | 11,730 | 1,370 | QPSK 3/4, 36 MHz |
+| SAR-2 telemetry beacon | 11,703 | 1,397 | CW |
+
+### Chain order at Galway
+
+| Up (inside the window, after the beacon is in) | Down (after both ACKs) |
+|-------------------------------------------------|------------------------|
+| 1. TX modem on air, into the **muted** BUC | 1. HPA output off |
+| 2. BUC unmuted | 2. BUC muted |
+| 3. HPA output enabled; confirm linear | 3. Carrier off |
+
+---
+
+## Equipment Status at Turnover
+
+### GW-01 Galway
+
+| Equipment | Status | Notes |
+|-----------|--------|-------|
+| 4 m Ku tracker | Powered, manual, parked az 5° / el 3° | Park on **az 21° / el 5°** for the 12:18 rise |
+| TX modem 1 | **1,465 MHz** / QPSK 3/4 / −7 dBm, not transmitting | Retune to **1,405 MHz** |
+| TT&C console | Doppler compensation off | Engage before the window |
+| RX modem 1 | 1,414 MHz / 36 MHz / QPSK 3/4 | Stays |
+| Spectrum analyzer | 1,414 MHz centre, 60 MHz span | 1,389 MHz, 2 MHz span for the beacon |
+| BUC / HPA | Muted, on reference / output disabled | Chain up inside the window |
+| GPSDO | Locked, 9 satellites, no holdover | Read it now, so you know what it looked like before the window |
+| COMSEC | TX key Valid, RX key Valid | Read both |
+| Report | Shift Incident and Impact Report: Contacts, Impact, Actions | Blank |
+
+### SH-02 Shetland
+
+| Equipment | Status | Notes |
+|-----------|--------|-------|
+| 4 m Ku tracker | Powered, manual, parked az 5° / el 3° | Program-track with MERIDIAN-SAR-2 as target before 12:21; it acquires on its own |
+| TX modem 1 | **ON AIR**, 1,405 MHz, into the BUC | The drive. Carrier off |
+| BUC | **Unmuted**, powered, over-temperature, fan alarm | Mute; keep powered; watch it come down under 70 °C |
+| HPA | Output disabled | Stays off |
+| RX modem 1 | 1,414 MHz / 36 MHz / QPSK 3/4 | Retune to **1,370 MHz** for SAR-2 |
+| GPSDO / LNB | Locked / 13,100 MHz, stable | Confirm |
+
+---
+
+## Qualification Checklist
+
+### Take the shift (12:00 – 12:05)
+- [ ] Handover read; order of work decided
+- [ ] Plan: C-SAR1-GW on GW-01, C-SAR2-SH on SH-02, slipped half dropped, DECONFLICTED
+
+### Galway ready to command (12:05 – 12:11)
+- [ ] GPS Timing: GPSDO locked, no holdover
+- [ ] TX chain: TX key Valid; RX analysis: RX key Valid
+- [ ] TX modem to 1,405 MHz; TT&C: Doppler compensation engaged; RX modem on 1,414; analyzer 1,389 MHz, 2 MHz span
+- [ ] Tracker parked az 21° / el 5°
+
+### Shetland (12:11 – 12:17)
+- [ ] SH-02 selected; dashboard: the BUC alarm read and its cause named
+- [ ] TX chain: carrier off, BUC muted, BUC powered; temperature confirmed under 70 °C
+- [ ] Modem 1 to 1,370 MHz; program-track with MERIDIAN-SAR-2 as target
+
+### The command contact (12:18 – 12:28)
+- [ ] GW-01 selected; program-track MERIDIAN-SAR-1; beacon on RX analysis
+- [ ] Carrier into the muted BUC; unmute; HPA
+- [ ] REC-PLAYBACK acknowledged
+- [ ] GPS Timing read; OBC-WDT-RESET acknowledged before 12:27:20, whatever the reference is doing
+
+### Shetland's pass, Galway's chain (12:24 – 12:31)
+- [ ] SH-02 selected before 12:30:51: pedestal program-track locked on SAR-2, modem locked, C/N ≥ 8 dB
+- [ ] GW-01 selected: HPA off, BUC muted, carrier off
+- [ ] GPS Timing: GNSS receiving, out of holdover; contacts logged
+
+### Close (12:31 – 12:40)
+- [ ] SH-02 selected: BUC normal; alarm closed with a cause
+- [ ] Impact line for Erik; Actions line for maintenance and Rotterdam
+
+---
+
+## End of Briefing
+
+Everything on this shift you have done once: a plan with a conflict, a chain up in order, a command inside a window, a reference that is not what you left it, a site flown with nobody at its console, a fault with a right action and a louder wrong one. What is new is that they arrive together, and the order you take them in is the whole exam.
+
+Qualified means nobody notices. Erik is about to not notice.
+
+Good luck.

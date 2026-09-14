@@ -1,0 +1,205 @@
+---
+title: "Scenario 13 - The Numbers Don't Lie"
+description: 'Pass-performance trending - fly the 89 degree pass and explain the keyhole, measure SAR-1 at the survey geometry against the survey budget, rule out ephemeris and pointing, read the LNB, prove Shetland clean and fly the reallocated collect from there'
+lastUpdated: 2026-09-13
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Sunday 29 March, 1300 Local (Galway runs UTC in March)
+**Station:** GW-01 Galway, Ireland - NATS Europe (planning authority for the network)
+**Operator on Duty:** You, qualified, solo
+**Constellation Ops:** Anneke Visser, Rotterdam (wants the week's two anomalies explained by 14:00)
+**SH-02 Shetland:** Fiona MacLeod, on site; on the pedestal with a torch from 13:50
+**Customer:** Erik Halvorsen, Nordic Maritime Watch (priority-1 SAR-3 collect at 13:52)
+
+> Quiet morning, no faults on the board. Both modems on 1,414, analyzers at default, trackers parked. The week's pass log is attached; Rotterdam has questions about it. The planners have booked the 13:12 SAR-2 for us: 89 degrees, straight over the top. Erik's SAR-3 collect at 13:52 is on the board for both sites - Galway sees it at 10 degrees, Shetland at 32.
+>
+> - Morning shift (turnover log, 1248)
+
+**Anneke (text, 1248):**
+> "Your week's log makes no sense and I would like it to. Galway SAR-1 is two to four dB under budget since Thursday; Shetland on the same bird is not. And the planners have given you the 89 degree SAR-2 at 13:12, which I expect to fall over at the top, and I want to know why before they book another one. Two numbers, two causes. Report by 14:00 please."
+
+---
+
+## The Week's Pass Log (MERIDIAN-SAR-1, 27-30° passes, peak C/N)
+
+| Day | GW-01 Galway | SH-02 Shetland | Note |
+|-----|--------------|----------------|------|
+| Mon 23 | 11.1 dB at 28° | 10.9 dB at 26° | |
+| Tue 24 | 10.9 dB at 29° | 11.0 dB at 27° | Also: SAR-2 at 84° over Galway, link lost 3 min around the top, back on the descending leg. Unexplained. |
+| Wed 25 | 11.0 dB at 28° | 11.1 dB at 28° | |
+| Thu 26 | **8.4 dB** at 27° | 10.9 dB at 27° | |
+| Fri 27 | **7.6 dB** at 28° | 11.0 dB at 26° | |
+| Sat 28 | **7.2 dB** at 28° | 10.9 dB at 28° | |
+
+Two anomalies. A one-off on the steepest pass of the month, and a drift across four days on one site. They are different kinds of number and each needs its own test before it gets a cause.
+
+---
+
+## Survey Budget GW-01-ATP-001 (S2, still the number of record)
+
+| Parameter | Value |
+|-----------|-------|
+| Satellite EIRP | 28 dBm |
+| Slant range at max elevation | 762 km (28°) |
+| Free-space path loss at 11,686 MHz | 171.4 dB |
+| GW-01 receive antenna gain | 51.8 dBi |
+| System noise temperature | 88 K |
+| Occupied bandwidth | 36 MHz |
+| Miscellaneous losses | 1 dB |
+| Predicted C/N at max elevation | **11.0 dB** (worksheet must agree within 1.0 dB) |
+| Demodulator threshold | 6.0 dB (QPSK 3/4) |
+| Required margin at Commit Link | 3.0 dB, measured live |
+
+The 13:30 SAR-1 pass is this geometry to the kilometre. The worksheet gets the survey numbers, not the log: the prediction is what a healthy station does at this geometry, and the measurement is what this station does today. The gap is the finding.
+
+---
+
+## Today's Contacts (epoch 13:00:00 UTC, 0° horizon)
+
+| Contact ID | Satellite | Horizon | Opens | Closes | Priority |
+|------------|-----------|---------|-------|--------|----------|
+| T-SAR2-GW | MERIDIAN-SAR-2 | Galway, 89° zenith pass | 13:12:00 | 13:22:00 | 2 |
+| T-SAR2-SH | MERIDIAN-SAR-2 | Shetland, 27° | 13:13:40 | 13:23:10 | 3 (Fiona) |
+| T-SAR1-SH | MERIDIAN-SAR-1 | Shetland, 24° | 13:28:00 | 13:37:20 | 2 (Fiona) |
+| T-SAR1-GW | MERIDIAN-SAR-1 | Galway, 28° survey geometry | 13:30:00 | 13:39:30 | 2 |
+| T-SAR3-GW | MERIDIAN-SAR-3 | Galway, 10° graze | 13:51:50 | 13:59:40 | 3 |
+| T-SAR3-SH | MERIDIAN-SAR-3 | Shetland, 32° | 13:52:00 | 14:01:40 | **1 (NMW collect)** |
+
+Only the priority-1 collect has to be assigned for the plan to read DECONFLICTED; the passes already flown are on the board for the record.
+
+---
+
+## Pass Plan
+
+### Galway horizon
+
+| Contact | AOS | Rise az | Max Elevation | LOS | Track |
+|---------|-----|---------|---------------|-----|-------|
+| MERIDIAN-SAR-2 | 13:12:00 | 163° | **89.5° at 13:16:56, 391 km** | 13:21:56 (az 345°) | Northbound, 9.9 min. The zenith pass |
+| MERIDIAN-SAR-1 | 13:30:01 | 005° | 28.0° at 13:34:46, 762 km | 13:39:30 (az 219°) | Southbound, 9.5 min. The survey geometry |
+| MERIDIAN-SAR-3 | 13:51:53 | 110° | 9.6° at 13:55:48, 1,440 km | 13:59:41 | A graze; not a collect from here |
+
+### Shetland horizon
+
+| Contact | AOS | Rise az | Max Elevation | LOS | Track |
+|---------|-----|---------|---------------|-----|-------|
+| MERIDIAN-SAR-2 | 13:13:39 | 187° | 27.3° at 13:18:26, 777 km | 13:23:13 | Fiona's |
+| MERIDIAN-SAR-1 | 13:28:04 | 008° | 23.7° at 13:32:44, 861 km | 13:37:23 | Fiona's |
+| MERIDIAN-SAR-3 | 13:52:00 | 139° | **31.9° at 13:56:46, 694 km** | 14:01:35 (az 350°) | Northbound, 9.6 min. **The collect, flown from SH-02** |
+
+Twelve minutes of empty sky sit between the survey pass and the collect. The scheduler offers to skip ahead; the skip stops two minutes before the next pass at either site and is refused while a timed step is running.
+
+### The zenith pass
+
+An elevation-over-azimuth pedestal has a keyhole at the zenith. SAR-2 rises from 163° and sets at 345°: as it crosses 89.5° the azimuth the pedestal has to point at swings almost 180° in a few seconds, and the rate it needs goes to infinity through the top. At 20°/s the pedestal cannot, the 0.45° beam falls off the spacecraft near culmination, and the link is gone until the pedestal catches up on the descending leg. The 73° pass in scenario 8 held because a few degrees a second is still tracking; the last few degrees to the zenith are not.
+
+| Leg | Expect |
+|-----|--------|
+| Ascending, from about 25° | Lock, C/N ≥ 8 dB, rising toward the top |
+| Through 13:16:56 | The pedestal loses the bird and the receiver drops lock for several seconds. Watch it on RX analysis; do not touch the pedestal |
+| Descending | Lock comes back once the azimuth rate falls. Hold it for 100 s, then record the cause |
+
+This is an operations note, not a fault. Maintenance cannot repair geometry.
+
+---
+
+## Three Candidates for the SAR-1 Shortfall
+
+| Candidate | Where it shows | How to rule it out |
+|-----------|----------------|--------------------|
+| Element-set age | Pass Schedule ephemeris panel; a pointing miss program-track cannot hold | Panel shows current elements and no pending update; program-track holds lock through the pass |
+| Pointing | The beacon off boresight on RX analysis | The beacon peaks on boresight at culmination |
+| Receive chain | RX analysis, LNB panel: noise temperature against the 60 K survey value | It is the only one left. Read it |
+
+<Aside type="caution">
+Do not power-cycle the LNB to "fix" it. A cold LNA starts at twice its nominal noise temperature and settles back to where it was: worse, then the same. The LNA is the first stage, so its noise temperature is very nearly the whole system temperature, and 10 log(T_now / T_survey) is the shortfall to the tenth of a decibel. That is a maintenance ticket, with the number attached.
+</Aside>
+
+---
+
+## Link Parameters
+
+LNB high-side at both sites: **IF = LO − RF** (13,100 MHz LO).
+
+| Signal | RF (MHz) | IF (MHz) | Format |
+|--------|----------|----------|--------|
+| SAR-2 imagery downlink | 11,730 | 1,370 | QPSK 3/4, 36 MHz |
+| SAR-2 telemetry beacon | 11,703 | 1,397 | CW |
+| SAR-1 imagery downlink | 11,686 | 1,414 | QPSK 3/4, 36 MHz |
+| SAR-1 telemetry beacon | 11,711 | 1,389 | CW |
+| SAR-3 imagery downlink | 11,760 | **1,340** | QPSK 3/4, 36 MHz |
+| SAR-3 telemetry beacon | 11,785 | **1,315** | CW |
+
+SAR-3 is on its own plan from its commissioning card. Both sites receive-only today.
+
+---
+
+## Equipment Status at Turnover
+
+### GW-01 Galway
+
+| Equipment | Status | Notes |
+|-----------|--------|-------|
+| 4 m Ku tracker | Powered, manual, parked az 5° / el 3° | Park on **az 163° / el 5°** for the zenith rise; program-track slews to the survey pass from wherever the zenith pass leaves it |
+| RX modem 1 | 1,414 MHz / 36 MHz / QPSK 3/4 | To **1,370** for SAR-2; back to **1,414** for SAR-1 |
+| Spectrum analyzer | 1,414 MHz centre, 60 MHz span | **1,370 MHz, 2 MHz span** for SAR-2; **1,389 MHz** for the SAR-1 beacon |
+| LNB | 13,100 MHz LO, reference locked | Survey value 60 K. Read it |
+| GPSDO | Locked, 9 satellites | Confirm |
+| Link Analysis | Survey budget loaded, worksheet blank | Enter the survey numbers |
+| Report | Weekly Pass-Performance Report: Anomaly 1, Anomaly 2, Recommendation | Blank |
+
+### SH-02 Shetland
+
+| Equipment | Status | Notes |
+|-----------|--------|-------|
+| 4 m Ku tracker | Powered, manual, parked az 5° / el 3° | Park on **az 139° / el 5°** for the 13:52 rise |
+| RX modem 1 | 1,414 MHz / 36 MHz / QPSK 3/4 | Retune to **1,340 MHz** for SAR-3 |
+| Spectrum analyzer | 1,414 MHz centre, 60 MHz span | **1,315 MHz, 2 MHz span** for the SAR-3 beacon |
+| LNB / GPSDO | 13,100 MHz, 60 K and change / locked | Both must read in spec before the collect moves |
+
+---
+
+## Shift Checklist
+
+### Before the zenith pass (13:00 – 13:12)
+- [ ] Brief read; the two anomalies understood as two different kinds of number
+- [ ] Dashboard clean; GPS Timing: GPSDO locked; RX Analysis: LNB on 13,100 MHz
+- [ ] Modem 1 to 1,370 MHz; analyzer 1,370 MHz, 2 MHz span; the keyhole predicted
+- [ ] Tracker parked az 163° / el 5°
+
+### The zenith pass (13:12 – 13:22)
+- [ ] Program-track MERIDIAN-SAR-2; lock on the ascending leg, C/N ≥ 8 dB
+- [ ] Culmination 13:16:56: lock lost and regained, watched on RX analysis; lock held 100 s on the descending leg; cause named
+- [ ] Anomaly 1 written as an operations note
+
+### Before the survey pass (13:22 – 13:30)
+- [ ] Modem 1 to 1,414 MHz; analyzer 1,389 MHz
+- [ ] Link Analysis: survey worksheet computed, 11.0 dB predicted
+
+### The survey pass (13:30 – 13:40)
+- [ ] Program-track MERIDIAN-SAR-1; beacon on boresight; modem locked; C/N read at 13:34:46
+- [ ] Pass Schedule: ephemeris panel read, elements current
+- [ ] RX Analysis: LNB noise temperature read against 60 K; Anomaly 2 written with the arithmetic
+
+### Shetland and the collect (13:40 – 14:02)
+- [ ] SH-02 selected: LNB noise temperature in spec, GPSDO locked
+- [ ] T-SAR3-SH on SH-02; plan DECONFLICTED; standing rule set
+- [ ] Modem 1 to 1,340 MHz; analyzer 1,315 MHz, 2 MHz span; tracker parked az 139° / el 5°; skip ahead
+- [ ] Program-track MERIDIAN-SAR-3; modem locked on 1,340 MHz, C/N ≥ 8 dB through culmination (13:56:46)
+
+### The report
+- [ ] Recommendation to Rotterdam, maintenance action, standing rule for the planners
+
+---
+
+## End of Briefing
+
+Two numbers disagree with expectation. One of them has a cause with no fix on the rack and one of them has a fix with a part number, and in the data they look nothing alike. The report is what turns a bad pass next week into a comparison instead of an argument.
+
+Anneke wants it by 14:00. Fly the passes, read the panels, do the arithmetic.
+
+Good luck.

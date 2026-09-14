@@ -1,24 +1,24 @@
 ---
 title: 'Scenario 7 - Moving Target'
-description: 'Ephemeris management - MERIDIAN-SAR-1 flew a conjunction-avoidance burn overnight; recognise the stale element set, load the post-manoeuvre elements, and reacquire the bird'
-lastUpdated: 2026-09-10
+description: 'Ephemeris management - work a baseline pass on current elements, then attempt MERIDIAN-SAR-2 on a set the avoidance burn made stale, read the miss, load the post-burn elements, and reacquire'
+lastUpdated: 2026-09-13
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 
 ## Shift Turnover Notes
 
-**Date:** Wednesday, 1400 Local (Galway runs UTC in March)
+**Date:** Wednesday, 1345 Local (Galway runs UTC in March)
 **Station:** GW-01 Galway, Ireland - NATS Europe
 **Operator on Duty:** You
 **Site Lead:** Charlie Brooks (on-site, front office)
 **Constellation Ops Contact:** Anneke Visser, MERIDIAN Constellation Operations (Rotterdam)
 
-> Anneke rang at 05:40, which tells you how her night went. Space Surveillance flagged a conjunction between SAR-1 and a spent upper stage. The constellation burned to avoid it rather than argue about probabilities. Small burn. New orbit, slightly.
+> Anneke rang at 05:40, which tells you how her night went. Space Surveillance has a conjunction on SAR-2 with a spent upper stage. Rotterdam decides at 14:00; if it is go, the burn is at 14:11, which is between your passes. Small burn. New orbit, slightly.
 >
-> Here is the problem with slightly: every prediction this station makes, and every place program-track will send the dish, comes from an element set that describes an orbit the bird is no longer in. Rotterdam is sending the post-burn set. Until it is loaded, GW-01 is confidently pointing at yesterday.
+> Here is the problem with slightly: every prediction this station makes, and every place program-track will send the dish, comes from an element set that will describe an orbit the bird is not in. Work SAR-1 first. It did not burn, and I want you to know what right looks like before you meet wrong.
 >
-> - Charlie (turnover note, 1350)
+> - Charlie (text, 1344)
 
 ---
 
@@ -27,48 +27,67 @@ import { Aside } from '@astrojs/starlight/components';
 **Ref:** MER-OPS-CAM-2027-014
 **From:** A. Visser, MERIDIAN Constellation Operations
 **To:** All MERIDIAN ground sites
-**Subject:** MERIDIAN-SAR-1 collision-avoidance manoeuvre, executed
+**Subject:** MERIDIAN-SAR-2 collision-avoidance manoeuvre, go / no-go 14:00Z
 
-> Overnight we executed a conjunction-avoidance burn on MERIDIAN-SAR-1 against a spent upper stage flagged by Space Surveillance. The manoeuvre was a small along-track adjustment; the spacecraft is healthy and the payload schedule is unaffected.
+> Space Surveillance has flagged a conjunction between MERIDIAN-SAR-2 and a spent upper stage. Go / no-go is at 14:00Z; if go, the burn executes at 14:11:00Z. It is a small along-track adjustment; the spacecraft is healthy and the payload schedule is unaffected.
 >
-> Post-manoeuvre elements will be distributed to all sites shortly. Please treat your current SAR-1 element set as stale from the moment the notice reaches your console and load the update before your next contact. The pass shift is under ten seconds; the pointing error at a 4 m Ku beamwidth is not.
+> If we burn, treat your SAR-2 element set as stale from that moment and load the post-burn elements before your 14:18 window. The pass shift is under ten seconds. The pointing error at a 4 m Ku beamwidth is not.
 >
 > - Anneke
 
 | Item | Value |
 |------|-------|
-| Spacecraft | MERIDIAN-SAR-1 (NORAD 61701) |
-| Manoeuvre | Along-track avoidance burn, overnight |
-| Element change | RAAN +0.2°, mean anomaly +0.5° |
-| Effect on next Galway pass | Timing shifts by under 10 s; pointing solution invalid on old elements |
-| Distribution | Post-burn set arrives at the console shortly after shift start |
+| Spacecraft | MERIDIAN-SAR-2 (NORAD 61702) |
+| Manoeuvre | Along-track avoidance burn, 14:11:00Z if go |
+| Element change | Mean anomaly +0.03°, about 3.5 km along track |
+| Effect on the 14:18 Galway pass | Timing shifts by under a second; pointing solution on the old set is a third of a degree off at culmination |
+| Distribution | Post-burn set (epoch 14:11:30Z) reaches the console within two minutes of the burn; the Pass Schedule ephemeris panel flags it STALE |
+
+SAR-1 is not involved. Its elements are current and stay current.
 
 ---
 
-## Pass Plan (pre-manoeuvre prediction, epoch 14:00:00 UTC)
+## Pass Plan (epoch 13:45:00 UTC, 5° mask)
 
-| Contact | AOS | Max Elevation | LOS |
-|---------|-----|---------------|-----|
-| MERIDIAN-SAR-1 | 14:03:12 | 28° at 14:06:48 | 14:10:18 |
-| MERIDIAN-SAR-2 | 14:18:42 | ~25° at 14:22 | 14:25:42 |
+| Contact | AOS | Rise az | Max Elevation | LOS | Elements |
+|---------|-----|---------|---------------|-----|----------|
+| MERIDIAN-SAR-1 | 14:03:10 | 000° | 28° at 14:06:45, 761 km | 14:10:18 | Current. The baseline. |
+| MERIDIAN-SAR-2 | 14:18:42 | 130° | 25° at 14:22:10, 828 km | 14:25:40 | Stale after 14:11 if the burn is go |
 
-These times are from the old elements. Once the update is loaded the Pass Schedule tab recomputes them; expect a shift of a few seconds, not a different pass. SAR-2 did not manoeuvre and its elements remain current.
+Decode windows (C/N ≥ 8 dB): SAR-1 about 14:05 to 14:08:30, peak ~11 dB at culmination; SAR-2 on current elements about 14:20:45 to 14:23:40, peak ~10 dB.
 
-If SAR-1 is missed, its next Galway window is later in the shift and the scheduler will offer to skip ahead to it.
+### What stale looks like
+
+| Elements | Pedestal | Carrier on RX analysis |
+|----------|----------|------------------------|
+| Current | LOCKED | Rises with elevation: about 4 dB at 10°, 7 dB at 14°, 10 dB at the top |
+| Stale (post-burn, old set) | **LOCKED** | Present but weak, peaks around 4 dB at 12° and then **falls as the bird climbs**, to below zero at culmination |
+
+A fixed along-track error is a bigger angle at shorter range: 3.5 km is 0.1° at 2,000 km and 0.25° at 828 km. The closer the bird, the worse the miss. Program-track lock means the pedestal is where it was told to go; it does not mean it was told right.
+
+<Aside type="caution">
+Program-track on a stale set does not fail loudly. The pedestal slews smoothly to where the old orbit says the bird is and holds there with every drive indicator green. Look at the carrier, not the pedestal. If C/N is falling while elevation is rising, check the ephemeris panel before you check anything else.
+</Aside>
 
 ---
 
-## Pass Schedule Ephemeris Panel Reference
+## Element Sets
+
+| Set | Epoch | Describes |
+|-----|-------|-----------|
+| SAR-2, on file at turnover | 2027-03-15 14:00Z | The orbit before the burn |
+| SAR-2, post-burn distribution | 2027-03-15 14:11:30Z | The orbit after it |
+
+An element set is a snapshot of the orbit at its epoch. Anything the spacecraft does after that instant is invisible to it. Two clocks run on every set: the calendar, which erodes it slowly (drag and model error grow the along-track error by hundreds of metres a day at 360 km), and the thruster, which breaks it at once. Rotterdam distributes fresh elements every few days for the first reason and within minutes for the second.
+
+### Pass Schedule Ephemeris Panel Reference
 
 | Display | Meaning |
 |---------|---------|
+| NOMINAL | No manoeuvre notice; the loaded set is the current distribution |
 | EPHEMERIS STALE | A manoeuvre notice has been received for this spacecraft and the loaded elements pre-date it |
 | Load Updated Ephemeris | Replaces the element set with the post-manoeuvre distribution; predictions and program-track update immediately |
 | UPDATED | Current elements loaded; pass predictions and pointing are trustworthy again |
-
-<Aside type="caution">
-Program-track on a stale set does not fail loudly. The pedestal will slew smoothly to where the old orbit says the bird is and hold there with every indicator green. The beacon simply never appears. If SAR-1 does not come up on RX analysis at AOS, check the ephemeris panel before you check anything else.
-</Aside>
 
 ---
 
@@ -83,40 +102,58 @@ LNB is high-side injection: **IF = LO − RF** (13,100 MHz LO).
 | SAR-2 imagery downlink | 11,730 | 1,370 | QPSK 3/4, 36 MHz |
 | SAR-2 telemetry beacon | 11,703 | 1,397 | CW |
 
-The Doppler profile changes by a negligible amount for a burn this size; the receiver frequency plan is unchanged. A clean reacquisition is the beacon on RX analysis, the modem locked on 1,414 MHz, and C/N at or above 8 dB through the high-elevation segment (roughly 14:05 to 14:08).
+The Doppler profile changes by a negligible amount for a burn this size; the receiver frequency plan is unchanged. A clean reacquisition is the carrier on RX analysis, the modem locked on 1,370 MHz, and C/N at or above 8 dB through what is left of the high-elevation segment.
 
 ---
 
-## GW-01 Equipment Status
+## GW-01 Equipment Status (as yesterday's shift left it)
 
 | Equipment | Status | Notes |
 |-----------|--------|-------|
-| 4 m Ku tracker | Powered, manual, parked az 5° / el 3° | Program-track available; SAR-1 elements pre-manoeuvre |
+| 4 m Ku tracker | Powered, manual, **stowed az 180° / el 3°** | Program-track available; park on az 000° / el 5° for SAR-1, az 130° / el 5° for SAR-2 |
 | LNB | 13,100 MHz LO, reference locked | Stable |
-| GPSDO | Locked, 9 satellites | Disciplined |
-| RX modem 1 | 1,414 MHz / 36 MHz / QPSK 3/4 | Pre-tuned for SAR-1 imagery |
+| GPSDO | Locked, 9 satellites | Disciplined. Timing is half of an element set. |
+| RX modem 1 | **1,370 MHz / 36 MHz / QPSK 3/4** | Yesterday's SAR-2 carrier. Retune to 1,414 MHz for SAR-1, back to 1,370 MHz for SAR-2. |
+| Spectrum analyzer | 1,414 MHz centre, 60 MHz span | 1,389 MHz / 2 MHz for SAR-1; 1,397 MHz for SAR-2 |
 | BUC / HPA | No drive / output disabled | No uplink tasking this shift |
 
 ---
 
-## Reacquisition Checklist
+## Shift Checklist
 
-### Before AOS
-- [ ] Pass Schedule tab open; ephemeris status for SAR-1 checked once the notice arrives
-- [ ] Post-manoeuvre elements loaded; entry reads UPDATED
-- [ ] Antenna: program-track on MERIDIAN-SAR-1, on the new solution
+### Before the baseline (13:45 – 14:03)
+- [ ] Dashboard: no active alarms
+- [ ] GPS Timing: GPSDO locked, not in holdover
+- [ ] Pass Schedule: both element sets current, epoch 14:00
+- [ ] RX modem 1: 1,414 MHz; analyzer centre 1,389 MHz, span 2 MHz
+- [ ] ACU: tracker parked az 000° / el 5°, then program-track, target MERIDIAN-SAR-1
 
-### During the Pass
-- [ ] SAR-1 beacon on RX analysis where the new prediction says it should be
-- [ ] RX modem locked on the imagery carrier
-- [ ] C/N at or above 8 dB, held; a marginal reacquisition is not a clean one
+### The baseline (14:03 – 14:10)
+- [ ] Beacon on RX analysis; modem locked; C/N ≥ 8 dB through the high segment, ≥ 9 dB at culmination
+- [ ] The curve remembered: up with elevation, peak at the top, down the other side
+
+### Between passes (14:10 – 14:18)
+- [ ] Ephemeris log: SAR-1 result with the set and epoch it was flown on
+- [ ] Burn executed 14:11 (Anneke's text); RX modem 1 to 1,370 MHz; analyzer centre 1,397 MHz
+- [ ] ACU: manual, tracker parked az 130° / el 5° on the old prediction
+
+### The stale attempt (14:18 – 14:20)
+- [ ] Program-track on MERIDIAN-SAR-2 on the old set; pedestal reads LOCKED
+- [ ] RX analysis: carrier weak, C/N under 5 dB and falling as elevation rises
+
+### Reacquisition (14:20 – 14:25)
+- [ ] Pass Schedule: SAR-2 reads EPHEMERIS STALE; Load Updated Ephemeris; reads UPDATED
+- [ ] Carrier comes up on RX analysis; modem locked; C/N ≥ 8 dB
+
+### After LOS
+- [ ] Ephemeris log: the stale attempt, the load, the reacquisition; reported to Rotterdam
 
 ---
 
 ## End of Briefing
 
-The element set is this station's entire model of where the satellite is. A stale set is not a degraded antenna; it is a precise antenna pointed at the wrong place.
+The element set is this station's entire model of where the satellite is. A stale set is not a degraded antenna; it is a precise antenna pointed at the wrong place, and the closer the bird gets, the more wrong it is.
 
-Anneke has been up since before five and has done her part. Load the elements, take the pass, and tell Rotterdam the bird came up where it should.
+Anneke has been up since before five and has done her part. Fly the baseline, watch the miss, load the elements, take the pass, and tell Rotterdam the bird came up where it should.
 
 Good luck.

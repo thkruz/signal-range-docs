@@ -1,14 +1,14 @@
 ---
 title: 'Scenario 4 - Keys to the Bird'
-description: 'Command-link COMSEC - complete a scheduled key rotation inside the only pass, then send an authenticated payload safe-mode command to MERIDIAN-SAR-1'
-lastUpdated: 2026-09-10
+description: 'Command-link COMSEC - read both keys, complete the scheduled command-key rotation before the pass, send an authenticated payload safe-mode command, then diagnose and clear a traffic-key mismatch after LOS'
+lastUpdated: 2026-09-12
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 
 ## Shift Turnover Notes
 
-**Date:** Thursday, 1400 Local (Galway runs UTC in March)
+**Date:** Thursday, 1345 Local (Galway runs UTC in March)
 **Station:** GW-01 Galway, Ireland - NATS Europe
 **Operator on Duty:** You
 **Site Lead:** Charlie Brooks (on-site, front office)
@@ -16,9 +16,24 @@ import { Aside } from '@astrojs/starlight/components';
 
 > Clean uplink yesterday, so Rotterdam has given us a real one today: safe-mode the payload before the next imaging block. There is a complication, which is that the scheduled key rotation was booked weeks ago and has, naturally, arrived in the middle of your only pass.
 >
-> The bird authenticates every command. A key that is mid-rotation is not a key. Finish the rotation, then send. And leave the zeroize switch exactly where it is.
+> The bird authenticates every command. A key that is mid-rotation is not a key. Finish the rotation before the pass, then send. And leave the zeroize switch exactly where it is.
 >
-> - Charlie (turnover note, 1348)
+> - Charlie (text, 1344)
+
+---
+
+## Two Keys
+
+| Key | Where | What it does | State at turnover | Today |
+|-----|-------|--------------|-------------------|-------|
+| **Command-link authentication key** | TT&C console, COMSEC panel | Signs every command so the spacecraft can prove who sent it. `requireValidKey` is on: Pending Rotation is a NAK. | **Pending Rotation** (new material loaded, not active) | Rotate it, in two steps, **before** the pass |
+| **Traffic key** | Payload crypto panels (TX Chain and RX Analysis) | AES-256-GCM, symmetric. Encrypts what you send, decrypts what comes down, verifies the auth tag. | Valid, 62 days to expiry | Rotterdam rotates the fleet traffic key on its own schedule. Watch it after the pass. |
+
+Different custody, different schedules. People confuse them constantly. Read both before you touch either.
+
+<Aside type="caution">
+Rotation is a handshake, not a swap: **Initiate Key Rotation**, then **Confirm Key Rotation**. The far end acknowledges the new key is loaded before the old one is retired. A one-step swap can leave the two ends on different keys, which is exactly what a **Mismatch** is.
+</Aside>
 
 ---
 
@@ -33,6 +48,8 @@ import { Aside } from '@astrojs/starlight/components';
 >
 > Our records show your station's command key is in its scheduled rotation window today. Please confirm the rotation is complete and the key reads Valid before you send - an unauthenticated PLD-SAFE will be rejected and we will not get a second window in time.
 >
+> Separately: the fleet traffic key rolls at 14:11 UTC on our schedule. New material is on your console.
+>
 > - Anneke
 
 | Command | Mnemonic | Tasked This Pass |
@@ -43,47 +60,31 @@ import { Aside } from '@astrojs/starlight/components';
 
 ---
 
-## COMSEC Schedule
-
-| Item | State at Turnover |
-|------|-------------------|
-| Command-link key | Scheduled rotation pending, this shift |
-| New key material | Loaded, not yet active |
-| Rotation procedure | Initiate Key Rotation, then Confirm Key Rotation, on the TT&C COMSEC panel |
-| Required status before send | Valid |
-| Zeroize control | Armed-then-fire; **not part of a rotation** |
-
-<Aside type="danger">
-Zeroize destroys the key material on the console. It is an emergency control with its own arming switch for a reason. A zeroized station cannot command anything until re-keyed by Rotterdam, and that does not happen inside a seven-minute pass.
-</Aside>
-
----
-
-## Pass Plan and Command Window (epoch 14:00:00 UTC)
+## Pass Plan and Command Window (5° mask, epoch 13:45:00 UTC)
 
 | Item | Time |
 |------|------|
-| MERIDIAN-SAR-1 AOS | 14:03:12 |
+| MERIDIAN-SAR-1 AOS | 14:03:10 |
 | Command window opens | 14:03:40 |
-| Max elevation (28°) | 14:06:48 |
+| Max elevation (28°) | 14:06:45 |
 | Command window closes | 14:10:00 |
 | MERIDIAN-SAR-1 LOS | 14:10:18 |
+| Fleet traffic key rotation (Rotterdam) | 14:11:00 |
+| MERIDIAN-SAR-2 AOS / max el / LOS | 14:18:42 / 25° at 14:22:10 / 14:25:40 |
 
-Rotation can be completed before AOS. Nothing about the key depends on the spacecraft being in view.
+SAR-2 is not tasked for commanding. It is available, optionally, to prove the new traffic key on live frames (RX modem 1 to 1,370 MHz).
 
 ---
 
 ## Uplink Plan
 
-BUC is low-side injection: **RF = IF + LO** (12,600 MHz LO). LNB is high-side: **IF = LO − RF** (13,100 MHz LO).
+Unchanged from yesterday. BUC low-side, RF = IF + LO (12,600 MHz LO). TX modem 1 is on 1,405 MHz. Uplink Doppler ±325 kHz, pre-compensated at the console.
 
 | Path | IF (MHz) | RF (MHz) | Format |
 |------|----------|----------|--------|
 | SAR-1 telecommand uplink | 1,405 | 14,005 | QPSK 3/4, 36 MHz, −7 dBm modem |
 | SAR-1 telemetry beacon (down) | 1,389 | 11,711 | CW |
-| SAR-1 imagery downlink | 1,414 | 11,686 | QPSK 3/4, 36 MHz |
-
-Uplink Doppler is still ±325 kHz and compensation is still required for an ACK. Yesterday's lesson does not switch off because today's arrived.
+| SAR-2 imagery downlink | 1,370 | 11,730 | QPSK 3/4, 36 MHz |
 
 ---
 
@@ -92,10 +93,13 @@ Uplink Doppler is still ±325 kHz and compensation is still required for an ACK.
 | Equipment | Status | Notes |
 |-----------|--------|-------|
 | TX modem 1 | 1,405 MHz / 36 MHz / QPSK 3/4 / −7 dBm | Powered, not transmitting |
-| BUC | 12,600 MHz LO, reference locked | No drive present |
-| HPA | Powered, output **disabled** | Modem on air before this goes live |
+| BUC | 12,600 MHz LO, reference locked, gain 23 dB, **muted** | As yesterday left it |
+| HPA | Powered, output disabled | 10 dB back-off |
+| Payload crypto | AES-256-GCM ACTIVE both ways, key Valid | Re-key control on the TX Chain payload panel: **Load New Key** |
 | 4 m Ku tracker | Manual, parked az 5° / el 3° | Program-track available |
 | GPSDO | Locked, 9 satellites | Disciplined |
+
+Chain order is the same three steps up (carrier into the muted BUC, unmute, HPA) and the mirror down. Yesterday's rule; today it is assumed.
 
 ---
 
@@ -103,37 +107,41 @@ Uplink Doppler is still ±325 kHz and compensation is still required for an ACK.
 
 | Display | Meaning |
 |---------|---------|
-| COMSEC key status | Valid, Pending Rotation, or Zeroized |
-| Window status | Open or closed against the pass window |
-| ACK | Spacecraft verified the authentication tag and executed |
-| NAK, key | Command sent on a key that was not Valid |
-| NAK, no compensation | Doppler compensation was not engaged |
-| NAK, out of window | Sent while the window was closed |
+| Key badge | Valid / Pending Rotation / Zeroized |
+| Initiate Key Rotation | Marks the current key Pending Rotation and stages the new material |
+| Confirm Key Rotation | Completes the handshake; the key reads Valid |
+| Zeroize (armed-then-fire) | Destroys the key material. **Not part of any rotation.** A zeroized station cannot command anything until re-keyed by Rotterdam, and that does not happen inside a seven-minute pass. |
+| NAK: key invalid | Sent under a key that is not Valid |
 
 ---
 
 ## Commanding Checklist
 
-### Before AOS
-- [ ] TT&C tab: rotation initiated and confirmed; key status Valid
-- [ ] Antenna: program-track on MERIDIAN-SAR-1
-- [ ] Uplink Doppler compensation engaged
+### Before the Pass (13:45 – 14:03)
+- [ ] TX Chain and RX Analysis payload panels: encryption ACTIVE both ways, traffic key Valid
+- [ ] TT&C: Initiate Key Rotation, then Confirm; key badge reads Valid
+- [ ] GPS Timing: GPSDO locked; TX Chain: BUC on external reference
+- [ ] Pass Schedule: window 14:03:40 – 14:10:00 confirmed
+- [ ] TT&C: uplink Doppler compensation engaged
+- [ ] Chain up: carrier into muted BUC; unmute; HPA enabled, not overdriven
+- [ ] Antenna: program-track on MERIDIAN-SAR-1; beacon on RX analysis
 
-### In the Window
-- [ ] SAR-1 beacon on RX analysis
-- [ ] TX modem 1 on air, then HPA output enabled
-- [ ] PLD-SAFE sent; ACK in Command History before 14:10:00
+### In the Window (14:03:40 – 14:10:00)
+- [ ] PLD-SAFE sent; ACK in Command History
 
 ### After LOS
-- [ ] Transmit chain secured, amplifier first
-- [ ] COMSEC record closed for the shift
+- [ ] Chain down: HPA off, BUC muted, carrier off
+- [ ] RX Analysis payload panel at 14:11: decrypt failing, auth tag unverified, traffic key **Mismatch**. Diagnose before touching anything.
+- [ ] TX Chain payload panel: Load New Key; both panels read Valid
+- [ ] Optional: SAR-2 at 14:18 on 1,370 MHz to prove the new traffic key on live frames
+- [ ] COMSEC log: both keys, both events, with times
 
 ---
 
 ## End of Briefing
 
-A command link anyone can use is not a command link. The authentication tag is the only thing standing between MERIDIAN and whoever else can point a dish at it, and the rotation schedule is what keeps that tag worth something.
+A rotation you complete is hygiene. A rotation the far end completes without you is a mismatch, and the first you hear of it is a decoder that has stopped understanding the spacecraft. Today has one of each.
 
-The payload has to be safed before the imaging block. Anneke is not going to get another window from us today, and she knows it.
+Finish the command-key rotation before the window. Get the ACK. Then read the traffic key before you touch it.
 
 Good luck.

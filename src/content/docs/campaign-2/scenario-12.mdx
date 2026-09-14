@@ -1,31 +1,31 @@
 ---
 title: 'Scenario 12 - LEOP: Commissioning'
-description: 'SAR-3 payload acceptance - predict the acceptance C/N, power the payload and command the test pattern inside the window, decode the first imagery at IF 1340, and sign the test card'
-lastUpdated: 2026-09-10
+description: 'SAR-3 payload acceptance - the test card as the shift: readiness with crypto both ways, chain up in order inside the window, PLD-ON then the test pattern, uplink secured, first imagery decoded at IF 1340 against the prediction, chain down, card signed, capacity delivered'
+lastUpdated: 2026-09-13
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 
 ## Shift Turnover Notes
 
-**Date:** Wednesday 24 March, 1000 Local (Galway runs UTC in March)
+**Date:** Wednesday 24 March, 0948 Local (Galway runs UTC in March)
 **Station:** GW-01 Galway, Ireland - NATS Europe
 **Operator on Duty:** You, solo
 **LEOP Lead:** Anneke Visser, MERIDIAN Constellation Operations (Rotterdam; countersigns the card)
 **Customer:** Erik Halvorsen, Nordic Maritime Watch (copied on the card; takes delivery of SAR-3 capacity when it is signed)
 
-> Morning SAR-1 tasking passes done, RX modem left on 1,414. Rotterdam released the SAR-3 payload acceptance test plan at 09:40; the card is loaded on the console. Beacon receiver and TT&C modem are still on SAR-3 from Monday. The pedestal is parked at her AOS azimuth.
+> Morning SAR-1 tasking passes done. Both modems are still on SAR-1: RX 1,414, TX 1,405. Analyzer at its default, tracker parked where the morning left it, BUC muted, amplifier disabled. The only thing still on SAR-3 from Monday is the ACU beacon field. Rotterdam released the SAR-3 payload acceptance test plan at 09:40; the card is loaded on the console.
 >
-> One pass, 10:06, nine and a half minutes. The worksheet has to be done before she rises; the scheduler will not offer a skip with the pass this close.
+> One pass, 10:06, nine and a half minutes. Eighteen minutes to make the station ready for it and predict the number. The scheduler will not offer a skip with the pass this close.
 >
-> - Turnover note, 0952
+> - Turnover note, 0945
 
 ---
 
 ## Acceptance Test Plan MER-ATP-SAR3-PLD-001
 
 **Cover note (A. Visser, 09:40):**
-> Bus telemetry has been clean since Monday's acquisition, so today is the payload. Four things on your 10:06 pass, in this order: PLD-ON, PLD-TEST-PATTERN, first decode on the video IF, results on the card. The TT&C console will accept those commands in any order. The card will not.
+> Bus telemetry has been clean since Monday's acquisition, so today is the payload. Readiness on the card first, both keys on record. Then on your 10:06 pass, in this order: chain up, PLD-ON, PLD-TEST-PATTERN, uplink secured, first decode on the video IF, chain down, results on the card. The TT&C console will accept those commands in any order. The card will not.
 >
 > The predicted number goes on the card before AOS and the measured number goes beside it. Erik is copied. Whatever is in the Payload section when I countersign is the contract number.
 
@@ -33,7 +33,8 @@ import { Aside } from '@astrojs/starlight/components';
 
 | Section | Records |
 |---------|---------|
-| Command | Checkout result: which commands, in what order, what the ACK pair proves |
+| Readiness | Reference state, both crypto directions and both key states, the predicted C/N |
+| Command | Checkout result: chain-up order, which commands, in what order, what the ACK pair proves |
 | Payload | Measured C/N beside the prediction, and the difference |
 | Verdict | Accepted or not, at what tested performance, with residual risk stated |
 
@@ -41,28 +42,36 @@ import { Aside } from '@astrojs/starlight/components';
 
 | Step | Action | Evidence |
 |------|--------|----------|
-| 1 | Predict C/N at maximum elevation | Link Analysis prediction agrees with the card |
-| 2 | Acquire: program-track, beacon on 1,315 MHz IF, uplink Doppler compensation | Beacon on RX analysis |
-| 3 | PLD-ON | ACK inside the window |
-| 4 | PLD-TEST-PATTERN | ACK inside the window |
-| 5 | Secure the uplink (HPA output off), then first decode: RX modem to 1,340 MHz | HPA disabled; lock; C/N at or above 8 dB; Commit Link near max elevation with 2 dB margin |
-| 6 | Record: Command, Payload, Verdict | Three lines on the card |
-| 7 | Deliver | Erik told what acceptance transfers |
+| 1 | Sweep: board, GPSDO, BUC reference | Clean board; reference on the card |
+| 2 | Predict C/N at maximum elevation | Link Analysis prediction agrees with the card |
+| 3 | Crypto both ways | TX encryption active, command key Valid; RX decryption active, traffic key Valid; on the card |
+| 4 | Uplink: TX modem to 1,465 MHz; Doppler compensation engaged | TX chain reads 1,465.0 MHz |
+| 5 | Analyzer centre 1,330 MHz | Beacon and pattern band both on screen |
+| 6 | Tracker parked az 140° / el 5° | Slew done before AOS |
+| 7 | Acquire: program-track, beacon on 1,315 MHz IF, chain cold | Beacon on RX analysis |
+| 8 | Chain up in order: carrier into the muted BUC, unmute, HPA | Each step on its own; HPA linear |
+| 9 | PLD-ON | ACK inside the window |
+| 10 | PLD-TEST-PATTERN | ACK inside the window; Command line on the card |
+| 11 | Secure the uplink: HPA output off | See the Aside below |
+| 12 | First decode: RX modem to 1,340 MHz | Lock; C/N at or above 8 dB; Commit Link near max elevation with 2 dB margin; Payload line on the card |
+| 13 | Chain down: BUC muted, carrier off | Mirror order, HPA already off |
+| 14 | Verdict | Verdict line on the card |
+| 15 | Deliver | Erik told what acceptance transfers |
 
 ---
 
-## Pass Plan and Command Window (epoch 10:00:00 UTC)
+## Pass Plan and Command Window (epoch 09:48:00 UTC)
 
 | Item | Time |
 |------|------|
-| MERIDIAN-SAR-3 AOS | 10:06:01 (az 140°) |
+| MERIDIAN-SAR-3 AOS | 10:06:00 (az 140°) |
 | Command window opens | 10:06:22 |
 | Commit Link segment (2 dB margin available) | About 10:09:00 to 10:12:30 |
 | Max elevation 27.9°, slant range 764 km | 10:10:45 |
 | Command window closes | 10:15:08 |
 | MERIDIAN-SAR-3 LOS | 10:15:29 (az 355°) |
 
-Northbound, 9.5 minutes. Two commands, a retune, a lock and a commit all sit inside it.
+Northbound, 9.5 minutes. Three chain-up steps, two commands, a secure, a retune, a lock and a commit all sit inside it.
 
 | Other traffic | AOS | Max Elevation | LOS |
 |---------------|-----|---------------|-----|
@@ -113,68 +122,83 @@ Reference: C/N = EIRP + G<sub>rx</sub> − FSPL − L<sub>impl</sub> − 10 log<
 
 ## SAR-3 Link Parameters
 
-LNB high-side: **IF = LO − RF** (13,100 MHz). BUC low-side: **RF = IF + LO** (12,600 MHz).
+LNB high-side: **IF = LO − RF** (13,100 MHz). BUC low-side: **RF = IF + LO** (12,600 MHz). The two sides of this rack do their arithmetic with opposite signs, and the same 60 MHz mistake is possible on both.
 
 | Signal | IF (MHz) | RF (MHz) | Format |
 |--------|----------|----------|--------|
 | SAR-3 telemetry beacon | 1,315 | 11,785 | CW |
-| SAR-3 imagery downlink (test pattern) | 1,340 | 11,760 | QPSK 3/4, 36 MHz |
-| SAR-3 TT&C uplink | 1,465 | 14,065 | QPSK 3/4, 36 MHz, −7 dBm modem |
+| SAR-3 imagery downlink (test pattern) | 1,340 | 11,760 | QPSK 3/4, 36 MHz; band 1,322 to 1,358 |
+| SAR-3 TT&C uplink | **1,465** | 14,065 | QPSK 3/4, 36 MHz, −7 dBm modem. TX modem 1 is on 1,405 (SAR-1) and must be retuned |
+| SAR-3 transponded return | 1,290 | 11,810 | The station's own uplink, turned around; just off the left edge of a 1,330-centred screen |
 | SAR-1 imagery downlink (for contrast) | 1,414 | 11,686 | What the RX modem is on now |
 
 Doppler: up to ±270 kHz on the downlink, up to ±325 kHz on the uplink; compensation at the TT&C console is required for an ACK.
 
+### Keys
+
+Two keys, two directions. PLD-ON and the pattern command go up under the **command key**; the test pattern comes down under the **traffic key**. A pattern that will not decrypt looks exactly like a payload that did not power on, and the card cannot tell them apart afterwards. Both read Valid on the card before AOS, so the decode can only mean one thing.
+
 <Aside type="caution">
-Secure the uplink before you decode. SAR-3 turns the station's own 14,065 MHz
-command carrier around through its command transponder at 11,810 MHz, co-polar
-with the receive chain and inside its band. With the amplifier up that return
-arrives some 50 dB above the test pattern, the AGC pulls the whole chain down
-and the video reads a few decibels of C/N instead of eleven. Both ACKs are in
-hand by then; the amplifier has nothing left to do until the next command.
+Secure the uplink before you decode. SAR-3 turns the station's own 14,065 MHz command carrier around through its command transponder at 11,810 MHz, co-polar with the receive chain and inside its band. With the amplifier up that return arrives some 50 dB above the test pattern, the AGC pulls the whole chain down and the video reads about 3 dB of C/N instead of eleven. Nothing on the RX chain is broken; it is doing what an AGC does. Both ACKs are in hand by then; the amplifier has nothing left to do until the next command.
 </Aside>
+
+---
+
+## Transmit Chain Order
+
+| Up (inside the window, after the beacon is in) | Down (after the decode) |
+|------------------------------------------------|-------------------------|
+| 1. TX modem on air, into the **muted** BUC | 1. HPA output off (already, before the decode) |
+| 2. BUC unmuted | 2. BUC muted |
+| 3. HPA output enabled; confirm linear | 3. Carrier off |
+
+Every stage sees a signal before it sees gain. An HPA enabled with no drive amplifies the noise floor into the feed; a BUC unmuted with the modem off does the same at lower level. HPA_NOISE_AMPLIFICATION is the invariant this order protects.
 
 ---
 
 ## GW-01 Equipment Status
 
-Partly on SAR-3 from Monday, partly on SAR-1 from this morning.
+Where the morning's SAR-1 tasking left it, apart from the ACU.
 
 | Equipment | Status | Notes |
 |-----------|--------|-------|
-| 4 m Ku tracker | Powered, manual, parked az 140° / el 3° | At the SAR-3 AOS azimuth; ACU beacon field preset 11,785 MHz |
-| Spectrum analyzer | Centre 1,330 MHz, span 60 MHz | Frames the 1,315 MHz beacon and the 1,322 to 1,358 MHz test-pattern band |
-| TX modem 1 | 1,465 MHz / 36 MHz / QPSK 3/4 / −7 dBm, target 61703 | On the SAR-3 uplink IF; not transmitting |
-| BUC | 12,600 MHz LO, reference locked | No drive present |
-| HPA | Powered, output disabled, 10 dB back-off | Modem on air before this goes live; off before the carrier stops; OFF again before the decode (see the Aside) |
-| RX modem 1 | **1,414 MHz** / 36 MHz / QPSK 3/4 | Still on SAR-1 from the morning tasking; the first decode is a retune to 1,340 MHz |
+| 4 m Ku tracker | Powered, manual, parked az 5° / el 3° | ACU beacon field preset 11,785 MHz from Monday. Park on **az 140° / el 5°** before AOS |
+| Spectrum analyzer | Centre 1,414 MHz, span 60 MHz | Move to **1,330 MHz** so 1,315 and 1,322 to 1,358 are both on screen |
+| TX modem 1 | **1,405 MHz** / 36 MHz / QPSK 3/4 / −7 dBm | Retune to 1,465 MHz. Not transmitting |
+| BUC | 12,600 MHz LO, reference locked, **muted** | Carrier goes in muted; unmute is step two of the chain-up |
+| HPA | Powered, output disabled, 10 dB back-off | Step three of the chain-up; OFF again before the decode; stays off |
+| RX modem 1 | **1,414 MHz** / 36 MHz / QPSK 3/4 | Still on SAR-1; the first decode is a retune to 1,340 MHz |
 | LNB | 13,100 MHz LO, reference locked | Stable |
-| GPSDO | Locked, 9 satellites | Disciplined |
-| COMSEC key | Valid | No rotation scheduled |
+| GPSDO | Locked, 9 satellites | Disciplined; on the card |
+| COMSEC | TX encryption ACTIVE, command key Valid; RX decryption ACTIVE, traffic key Valid | Observe both; on the card |
 | Link Analysis console | Acceptance card loaded, worksheet blank | |
-| Test card | Command, Payload, Verdict | Blank |
+| Test card | Readiness, Command, Payload, Verdict | Blank |
 
 ---
 
 ## Acceptance Checklist
 
-### Before AOS (10:06:01)
+### Readiness (09:48 – 10:06)
 - [ ] Test plan read; the order understood as the test, not a preference
+- [ ] Dashboard: no active alarms; GPS Timing: GPSDO locked, no holdover; TX Chain: BUC on reference
 - [ ] Link Analysis: worksheet computed, prediction agrees with the card
-- [ ] Antenna: program-track on MERIDIAN-SAR-3
-- [ ] TT&C: uplink Doppler compensation engaged
+- [ ] TX Chain and RX Analysis: crypto active both ways, both keys Valid; Readiness line on the card
+- [ ] TX modem 1 on 1,465 MHz; TT&C: uplink Doppler compensation engaged
+- [ ] Analyzer centre 1,330 MHz
+- [ ] Tracker parked az 140° / el 5°
 
-### In the Window
-- [ ] SAR-3 beacon on RX analysis at 1,315 MHz
-- [ ] TX modem on air, then HPA enabled
+### In the Window (10:06 – 10:15)
+- [ ] Program-track MERIDIAN-SAR-3; beacon on RX analysis at 1,315 MHz, chain cold
+- [ ] TX modem on air into the muted BUC; BUC unmuted; HPA enabled and linear
 - [ ] PLD-ON acknowledged
-- [ ] PLD-TEST-PATTERN acknowledged, after PLD-ON
+- [ ] PLD-TEST-PATTERN acknowledged, after PLD-ON; Command line on the card
 - [ ] HPA output disabled: uplink secured before the decode
-- [ ] RX modem 1 retuned to 1,340 MHz; locked on the pattern; C/N at or above 8 dB
-- [ ] Commit Link pressed near max elevation with live margin at or above 2 dB
+- [ ] RX modem 1 to 1,340 MHz; locked on the pattern; C/N at or above 8 dB
+- [ ] Commit Link near max elevation with live margin at or above 2 dB; Payload line on the card
 
-### After LOS
-- [ ] Transmit chain secured, amplifier first
-- [ ] Card: Command, Payload, Verdict, in that order
+### After LOS (10:15:29)
+- [ ] BUC muted, carrier off
+- [ ] Verdict line on the card, with residual risk
 - [ ] Erik told what the signed card transfers
 
 ---

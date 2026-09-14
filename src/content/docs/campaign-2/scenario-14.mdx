@@ -1,0 +1,170 @@
+---
+title: 'Scenario 14 - Atlantic Low'
+description: 'Weather reallocation judgment - real Ku rain fade on the priority collect, reallocated to Shetland and flown from there while Galway watches its own pass drown; feed heater before the sleet; the priority-2 window ridden out at Galway on measured margin'
+lastUpdated: 2026-09-13
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Friday 2 April, 1100 Local (Galway runs UTC in April)
+**Station:** GW-01 Galway, Ireland - NATS Europe (planning authority for the network)
+**Operator on Duty:** You, qualified, solo
+**SH-02 Shetland:** Fiona MacLeod, on site, off console (her heater has been on since dawn)
+**Customer:** Erik Halvorsen, Nordic Maritime Watch (priority-1 collect on the 11:12 SAR-2 window)
+
+> A deep Atlantic low is crossing Ireland. Met radar has a 30 mm/h cell on Galway from about 11:01, easing by 11:26 and turning to sleet behind the front until after noon. Shetland is dry until about 14:00. Both sites are receive-only today. Modems on 1,414, analyzers at default, BUCs unmuted, heaters off, plan unbuilt.
+>
+> Erik's priority-1 SAR-2 collect rises at 11:12 here, in the worst of it, on a 19 degree pass. There is a priority-2 SAR-1 window at 11:45 behind the front.
+>
+> - Morning shift (turnover log, 1052)
+
+**Fiona (text, 1052):**
+> "You've got the ugly end of it. Radar has the cell on Galway till half eleven and then it goes to sleet behind. I've got sky till two and my heater's been on since dawn out of habit. Erik's collect rises at ten past for me, twelve past for you. Say the word and it's mine."
+
+---
+
+## Weather Brief (Met Éireann marine, issued 1030)
+
+| Time (UTC) | GW-01 Galway | SH-02 Shetland |
+|------------|--------------|----------------|
+| 11:01 – 11:05 | Rain building to 30 mm/h | Dry |
+| 11:05 – 11:22 | Rain, 30 mm/h (the cell) | Dry |
+| 11:22 – 11:26 | Rain easing to nil | Dry |
+| 11:26 – 12:11 | Sleet, severe (ice on the feed) | Dry |
+| after 14:00 | Clearing | Showers |
+
+### What each does to a Ku link
+
+| Loss | Where it is | Fix | Number for today |
+|------|-------------|-----|------------------|
+| Rain attenuation | In the air, along the whole slant path | None on the rack. Reallocate, or ride through on margin | 30 mm/h at 11.7 GHz on a 19° pass: about **7 dB** (ITU-R P.838, 2.5 km rain height), plus a warmer sky |
+| Ice on the feed | On the horn | **Feed heater**, before it forms | Severe sleet builds to 10 dB with a 12 min time constant; melts at 1 dB/min once the heater is on |
+
+Rain attenuation rises steeply with frequency: a tenth of a decibel at C-band becomes whole decibels at Ku. A low pass makes it worse twice: a longer path through the rain, and less clear-sky margin to spend. The heater does nothing for rain.
+
+---
+
+## Today's Contacts (epoch 11:00:00 UTC, 0° horizon)
+
+| Contact ID | Satellite | Horizon | Opens | Closes | Priority |
+|------------|-----------|---------|-------|--------|----------|
+| W-SAR2-SH | MERIDIAN-SAR-2 | Shetland, 34° pass | 11:10:40 | 11:20:30 | 1 (NMW collect) |
+| W-SAR2-GW | MERIDIAN-SAR-2 | Galway, 19° pass | 11:12:50 | 11:22:00 | 1 (NMW collect) |
+| W-SAR1-GW | MERIDIAN-SAR-1 | Galway, 30° pass | 11:45:00 | 11:54:30 | 2 |
+| W-SAR1-SH | MERIDIAN-SAR-1 | Shetland, 75° pass | 11:46:00 | 11:56:00 | 2 |
+
+Every priority-1 and priority-2 contact must be assigned for the plan to read DECONFLICTED. No two windows overlap on one site, so every contact can be assigned to its own station; the decisions are which site works the collect, and whether the 11:45 window stays at Galway.
+
+---
+
+## Pass Plan
+
+### Shetland horizon (5° mask)
+
+| Contact | AOS | Rise az | Max Elevation | LOS | Track |
+|---------|-----|---------|---------------|-----|-------|
+| MERIDIAN-SAR-2 | 11:10:42 | 023° | 34.1° at 11:15:35, 659 km | 11:20:25 (az 178°) | Southbound, 9.7 min, **the collect, flown from SH-02** |
+| MERIDIAN-SAR-1 | 11:46:04 | 167° | 75.1° at 11:51:04, 405 km | 11:56:03 | Northbound; Fiona's fallback |
+
+### Galway horizon (5° mask)
+
+| Contact | AOS | Rise az | Max Elevation | LOS | Track |
+|---------|-----|---------|---------------|-----|-------|
+| MERIDIAN-SAR-2 | 11:12:53 | 028° | 19.1° at 11:17:30, 993 km | 11:22:03 (az 163°) | Southbound, 9.2 min, **in the rain** |
+| MERIDIAN-SAR-1 | 11:44:59 | 142° | 29.6° at 11:49:43, 732 km | 11:54:31 (az 355°) | Northbound, 9.5 min, **in the sleet** |
+
+### Expected numbers
+
+| Pass | Clear sky | Today | Decode window |
+|------|-----------|-------|---------------|
+| SAR-2 from Shetland, 34° | ~12 dB at 11:15:35 | ~12 dB (dry) | C/N ≥ 8 dB about 11:13:30 to 11:17:40 |
+| SAR-2 from Galway, 19° | ~8.5 dB at 11:17:30 | **~2 dB** in 30 mm/h | None. Flown unattended for the measurement only |
+| SAR-1 from Galway, 30°, heater on from 11:24 | ~11 dB at 11:49:43 | ~11 dB, feed loss 0 dB | C/N ≥ 8 dB about 11:47:30 to 11:52:00 |
+| SAR-1 from Galway, 30°, heater never on | ~11 dB | ~2 dB: 8.6 dB of ice on the horn at culmination | None |
+
+Twenty minutes of empty sky sit between the collect and the ride-out. The scheduler offers to skip ahead; the skip stops two minutes before the next pass at either site and is refused while a timed step is running. The sleet and the ice curve run on the mission clock, so a skip does not save the feed: the heater does.
+
+---
+
+## Link Parameters
+
+LNB high-side at both sites: **IF = LO − RF** (13,100 MHz LO).
+
+| Signal | RF (MHz) | IF (MHz) | Format |
+|--------|----------|----------|--------|
+| SAR-2 imagery downlink | 11,730 | 1,370 | QPSK 3/4, 36 MHz |
+| SAR-2 telemetry beacon | 11,703 | 1,397 | CW |
+| SAR-1 imagery downlink | 11,686 | 1,414 | QPSK 3/4, 36 MHz |
+| SAR-1 telemetry beacon | 11,711 | 1,389 | CW |
+
+Delivery standard 8 dB with the modem locked. Both sites receive-only: BUC muted, HPA output disabled, nothing goes up through a rain cell.
+
+---
+
+## Equipment Status at Turnover
+
+### GW-01 Galway
+
+| Equipment | Status | Notes |
+|-----------|--------|-------|
+| 4 m Ku tracker | Powered, manual, parked az 5° / el 3°, **feed heater OFF** | Heater on before 11:26. Program-track slews to the 11:45 rise from wherever the SAR-2 pass leaves it |
+| RX modem 1 | 1,414 MHz / 36 MHz / QPSK 3/4 | To 1,370 to arm the SAR-2 fade measurement; back to 1,414 for the ride-out |
+| Spectrum analyzer | 1,414 MHz centre, 60 MHz span | 1,389 MHz for the SAR-1 beacon before the ride-out |
+| BUC / HPA | Unmuted, no drive / output disabled | Mute the BUC: receive-only day |
+| GPSDO / LNB | Locked, 9 satellites / 13,100 MHz, 60 K | Confirm |
+| Dashboard | RAIN FADE alarm on GW-01 climbing with the rain rate | Read it; it is the number the reallocation rule stands on |
+
+### SH-02 Shetland
+
+| Equipment | Status | Notes |
+|-----------|--------|-------|
+| 4 m Ku tracker | Powered, manual, parked az 5° / el 3°, heater ON since dawn | Park on az 23° / el 5° for the 11:10 rise |
+| RX modem 1 | 1,414 MHz / 36 MHz / QPSK 3/4 | Retune to **1,370 MHz** for the collect |
+| Spectrum analyzer | 1,414 MHz centre, 60 MHz span | 1,370 MHz centre, 2 MHz span |
+| GPSDO / LNB | Locked / 13,100 MHz, 60 K, stable | Confirm from here |
+
+---
+
+## Shift Checklist
+
+### Read the weather (11:00 – 11:05)
+- [ ] Brief read; the fade magnitude and which loss the heater fixes understood
+- [ ] Dashboard: RAIN FADE on GW-01 read
+- [ ] GW-01: GPSDO locked, BUC muted, HPA output disabled
+
+### Reallocate and arm (11:05 – 11:10)
+- [ ] W-SAR2-SH on SH-02, every P1/P2 contact assigned, plan DECONFLICTED
+- [ ] GW-01: modem 1 to 1,370 MHz, program-track with MERIDIAN-SAR-2 as target (unattended, for the measurement)
+
+### Shetland (11:08 – 11:20)
+- [ ] SH-02 selected: GPSDO locked, LNB stable; modem 1 to 1,370 MHz; analyzer 1,370 MHz, 2 MHz span; tracker parked az 23° / el 5°
+- [ ] Program-track MERIDIAN-SAR-2; imagery carrier on Shetland's RX analysis
+- [ ] Modem locked on 1,370 MHz, C/N ≥ 8 dB through culmination (11:15:35)
+
+### Galway, in the rain (11:17 – 11:22)
+- [ ] GW-01 selected before 11:22: pedestal program-track locked on SAR-2, C/N at or below 5 dB read on RX analysis
+- [ ] Collect logged: which site, why, and what Galway measured
+
+### The front turns (11:22 – 11:30)
+- [ ] GW-01 feed heater ON before 11:26
+- [ ] Ride-out decided: W-SAR1-GW on GW-01, plan valid
+- [ ] GW-01: modem 1 to 1,414 MHz; analyzer 1,389 MHz; skip ahead
+
+### The ride-out (11:45 – 11:54)
+- [ ] Program-track MERIDIAN-SAR-1; modem locked on 1,414 MHz, C/N ≥ 8 dB through culmination (11:49:43)
+
+### After LOS
+- [ ] Ride-out logged with the feed loss it was flown on and the one it avoided
+- [ ] Standing rule written into the weather log
+
+---
+
+## End of Briefing
+
+The rain has already decided the priority-1 collect; your job is to notice that before AOS rather than after a failed attempt, and to measure it anyway so the rule has a number behind it. The sleet is a decision you get to make, and the heater makes it for you if you turn it on early enough.
+
+Erik does not need the decibels. He needs the collect. Give him the collect.
+
+Good luck.

@@ -1,0 +1,176 @@
+---
+title: 'Scenario 15 - Rotation Day'
+description: 'Fleet COMSEC under tempo - acknowledge the rotation order, build the day plan, receive SAR-1 on the retiring key, rotate the command key and follow the fleet traffic-key roll in the gap, prove both keys on SAR-2 with a cold decode and KEY-VERIFY, safe down and close the record'
+lastUpdated: 2026-09-13
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Tuesday 6 April, 0700 Local (Galway runs UTC in April)
+**Station:** GW-01 Galway, Ireland - NATS Europe (the only station on the network with the command key)
+**Operator on Duty:** You, qualified, solo
+**Constellation Ops:** Anneke Visser, Rotterdam (issued the rotation order at 05:40; countersigns the record)
+**SH-02 Shetland:** Fiona MacLeod, on console, receive-only all day
+
+> Fleet key rotation is ordered for today. The order is in the audit log at 05:40 and the new command key material (KEY-2027-Q2) was loaded to the COMSEC store at 06:15, inactive. Night shift's last contact was SAR-2; modem 1 is still on 1,370. TX modem on 1,405 from yesterday's SAR-1 tasking, not transmitting. Both keys read Valid. Plan unbuilt.
+>
+> Two passes: SAR-1 at 07:16, receive-only on the old key; SAR-2 at 07:34, the proof. Eight and a half minutes between them for the rotation.
+>
+> - Night shift (turnover log, 0655)
+
+**Anneke (text, 0541):**
+> "Rotation order is in your audit log. Old command key dies after your 07:16 SAR-1 window; new key proven on SAR-2 at 07:34 with KEY-VERIFY, inside the window. No commands in between. The traffic key rolls on the fleet schedule at 07:27, in your gap, and your station will not follow it on its own. No gaps, please. Confirm each step back to me."
+
+---
+
+## Rotation Order MER-COMSEC-2027-Q2
+
+| Step | What | When | Where |
+|------|------|------|-------|
+| Acknowledge | Audit log reviewed and signed off; the order flagged | Before anything moves | Security console |
+| Retire | Last contact on KEY-2027-Q1: SAR-1, receive only, zero commands | 07:16 – 07:25 | RX analysis |
+| Rotate (command key) | Begin, then Complete. KEY-2027-Q2 must read Valid before 07:34:18 | In the gap | TT&C console |
+| Follow (traffic key) | Rotterdam rolls the fleet traffic key at 07:27. The payload crypto reads Mismatch until it is re-keyed | In the gap, after 07:27 | TX chain payload panel |
+| Prove | Decode under Q2 with the chain cold; then chain up and KEY-VERIFY acknowledged inside the window | 07:34 – 07:43 | RX analysis, TX chain, TT&C |
+| Record | Every step above, as evidence | After LOS | Rotation record |
+
+### Two keys, two custodians
+
+| Key | Direction | Rotates on | Moved by | Status reads on |
+|-----|-----------|------------|----------|-----------------|
+| Command key (KEY-2027-Q1 → Q2) | Up: authenticates what is sent | TT&C console, Begin then Complete | You, in the gap | TX chain (TX key) |
+| Traffic key | Down: decrypts what comes back | Fleet schedule, 07:27 | Rotterdam; you follow with the re-key button | RX analysis (RX key) |
+
+<Aside type="caution">
+Between Begin and Complete the console reads **Pending Rotation**. A command sent in that state is rejected as key-invalid and written into the command history with that reason. A rotation in progress is not a key; the interval between the two buttons is the interval in which the fleet has no key at all. Send nothing in it.
+</Aside>
+
+---
+
+## Today's Contacts (epoch 07:00:00 UTC, 0° horizon)
+
+| Contact ID | Satellite | Horizon | Opens | Closes | Priority |
+|------------|-----------|---------|-------|--------|----------|
+| R-SAR1-SH | MERIDIAN-SAR-1 | Shetland, 51° | 07:13:50 | 07:23:50 | 2 (Fiona) |
+| R-SAR1-GW | MERIDIAN-SAR-1 | Galway, 27° - receive on retiring key | 07:16:00 | 07:25:30 | 1 |
+| R-SAR2-GW | MERIDIAN-SAR-2 | Galway, 25° - KEY-VERIFY on new key | 07:34:00 | 07:43:30 | 1 |
+| R-SAR2-SH | MERIDIAN-SAR-2 | Shetland, 11° | 07:36:20 | 07:44:30 | 2 (Fiona, telemetry) |
+
+Every priority-1 and priority-2 contact must be assigned for the plan to read DECONFLICTED. Both Galway halves are yours: the command originates from the TT&C console at GW-01 and only GW-01 has the key. Fiona takes the Shetland halves and stays off the uplink.
+
+---
+
+## Pass Plan (Galway horizon)
+
+| Contact | AOS | Rise az | Max Elevation | LOS | Track |
+|---------|-----|---------|---------------|-----|-------|
+| MERIDIAN-SAR-1 | 07:15:59 | 022° | 27.0° at 07:20:47, 782 km | 07:25:31 (az 170°) | Southbound, 9.5 min. Receive only |
+| MERIDIAN-SAR-2 | 07:33:58 | 190° | 24.9° at 07:38:40, 829 km | 07:43:25 (az 335°) | Northbound, 9.5 min. The proof |
+
+### Command window
+
+| Item | Time |
+|------|------|
+| Window opens | 07:34:18 |
+| Max elevation | 07:38:40 |
+| Window closes | 07:43:05 |
+
+Requirements for an ACK: uplink Doppler compensation engaged, command key Valid, command sent inside the window. Commands on the console: **KEY-VERIFY** (the proof), REC-PLAYBACK, PLD-SAFE. Only KEY-VERIFY is ordered today.
+
+### Expected numbers
+
+| Pass | Decode window | Peak C/N |
+|------|---------------|----------|
+| SAR-1 from Galway, 27° | C/N ≥ 8 dB about 07:18:30 to 07:23:00 | ~10.8 dB at 07:20:47 |
+| SAR-2 from Galway, 25° | C/N ≥ 8 dB about 07:36:30 to 07:40:50 | ~10.3 dB at 07:38:40 |
+
+The gap between SAR-1 LOS (07:25:31) and the SAR-2 window (07:34:18) is eight and a half minutes for the command rotation, the traffic re-key and the retune. The scheduler will not offer a useful skip in it; the time is yours to work.
+
+---
+
+## The Proof Pass, in Order
+
+| Step | Action | Evidence |
+|------|--------|----------|
+| 1 | Program-track MERIDIAN-SAR-2; beacon on RX analysis; chain cold | Beacon at 1,397 MHz IF |
+| 2 | Lock 1,370 MHz, C/N ≥ 8 dB, payload decrypting | **Traffic key proven** under Q2. An uplink on this rack spoils the receive measurement, which is why the decode comes first |
+| 3 | Uplink Doppler compensation; carrier into the muted BUC; unmute; HPA | Chain up in order, two minutes |
+| 4 | KEY-VERIFY | ACK inside the window: **command key proven** under Q2 |
+| 5 | HPA off, BUC muted, carrier off | Chain down in mirror order |
+
+An ACK proves one thing on one bird. The decode proves a different key. Neither alone is the rotation; the record is a chain: order, retire, rotate, follow, prove.
+
+---
+
+## Link Parameters
+
+LNB high-side: **IF = LO − RF** (13,100 MHz). BUC low-side: **RF = IF + LO** (12,600 MHz).
+
+| Signal | RF (MHz) | IF (MHz) | Format |
+|--------|----------|----------|--------|
+| SAR-1 imagery downlink | 11,686 | 1,414 | QPSK 3/4, 36 MHz |
+| SAR-1 telemetry beacon | 11,711 | 1,389 | CW |
+| SAR-2 imagery downlink | 11,730 | 1,370 | QPSK 3/4, 36 MHz |
+| SAR-2 telemetry beacon | 11,703 | 1,397 | CW |
+| SAR-2 TT&C uplink | 14,035 | **1,435** | QPSK 3/4, 36 MHz, −7 dBm. TX modem is on 1,405 (SAR-1) and must be retuned |
+
+---
+
+## Equipment Status at Turnover
+
+| Equipment | Status | Notes |
+|-----------|--------|-------|
+| 4 m Ku tracker | Powered, manual, parked az 5° / el 3° | Park on **az 22° / el 5°** for SAR-1; program-track slews to the SAR-2 rise (az 190°) from wherever SAR-1 leaves it |
+| RX modem 1 | **1,370 MHz** / 36 MHz / QPSK 3/4 | Night shift's SAR-2 carrier. To 1,414 for SAR-1; back to 1,370 for SAR-2 |
+| TX modem 1 | **1,405 MHz** / QPSK 3/4 / −7 dBm, not transmitting | Retune to **1,435 MHz** before the SAR-2 window |
+| Spectrum analyzer | 1,414 MHz centre, 60 MHz span | 1,389 MHz, 2 MHz span for SAR-1; 1,370 MHz for SAR-2 |
+| BUC / HPA | Muted, on reference / output disabled | Chain up only inside the SAR-2 window, after the decode |
+| GPSDO | Locked, 9 satellites | Confirm |
+| COMSEC | TX key Valid (Q1), RX traffic key Valid | Both read before anything moves; both read Valid again after the gap, on Q2 |
+| Security console | Audit log unreviewed; order at 05:40 unflagged | First thing |
+| Contact plan | Four contacts, none allocated | Reads UNALLOCATED |
+| Rotation record | Retire, Activate | Blank |
+
+---
+
+## Shift Checklist
+
+### Before SAR-1 (07:00 – 07:16)
+- [ ] Order read; the forbidden state understood
+- [ ] Security console: audit log signed off, rotation order flagged
+- [ ] Plan: R-SAR1-GW and R-SAR2-GW on GW-01, Shetland halves on SH-02, DECONFLICTED
+- [ ] GPS Timing: GPSDO locked; TX chain: TX key Valid; RX analysis: RX key Valid
+- [ ] Modem 1 to 1,414 MHz; analyzer 1,389 MHz, 2 MHz span; tracker parked az 22° / el 5°
+
+### SAR-1, receive only (07:16 – 07:26)
+- [ ] Program-track MERIDIAN-SAR-1; beacon on RX analysis
+- [ ] Modem locked on 1,414 MHz, C/N ≥ 8 dB through culmination (07:20:47), payload decrypting. **No commands**
+- [ ] Retire line in the record after LOS
+
+### The gap (07:26 – 07:34)
+- [ ] TT&C console: Begin rotation, Complete rotation; Q2 reads Valid
+- [ ] 07:27: RX analysis reads the traffic key **Mismatch**
+- [ ] TX chain payload panel: re-key; TX and RX read Valid
+- [ ] Modem 1 to 1,370 MHz; analyzer 1,370 MHz; TX modem to 1,435 MHz
+
+### SAR-2, the proof (07:34 – 07:44)
+- [ ] Program-track MERIDIAN-SAR-2; beacon on RX analysis
+- [ ] Modem locked on 1,370 MHz, C/N ≥ 8 dB, payload decrypting under Q2, chain still cold
+- [ ] Doppler compensation; carrier into the muted BUC; unmute; HPA
+- [ ] KEY-VERIFY acknowledged before 07:43:05
+- [ ] HPA off, BUC muted, carrier off
+
+### The record
+- [ ] Activate line: every step as evidence
+
+---
+
+## End of Briefing
+
+A rotation is not a button. It is a state the whole fleet passes through, with a time on each side of it, and today two keys pass through it on two different schedules. The order says what may not happen in between. The record says that it did not.
+
+Anneke countersigns what you write. Write evidence.
+
+Good luck.

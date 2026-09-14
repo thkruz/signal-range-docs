@@ -1,24 +1,24 @@
 ---
 title: 'Scenario 6 - Watch the Watchers'
-description: 'Monthly station security baseline - read the GW-01 audit trail end to end, flag what does not belong, and close a contractor account that should already be closed'
-lastUpdated: 2026-09-10
+description: 'Monthly station security baseline around a routine shift - read the GW-01 audit trail end to end, disposition every warning, reconcile the account roster, and decode two passes while you do it'
+lastUpdated: 2026-09-13
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 
 ## Shift Turnover Notes
 
-**Date:** Monday, 1400 Local (Galway runs UTC in March)
+**Date:** Monday, 1345 Local (Galway runs UTC in March)
 **Station:** GW-01 Galway, Ireland - NATS Europe
 **Operator on Duty:** You
 **Site Lead:** Charlie Brooks (on-site, in and out)
 **Group Security:** Priya Sharma, NATS Group Security (London; reads the return a fortnight after you file it)
 
-> Quiet one. SAR-1 is on the plan at 14:03 and it is a routine downlink that needs nothing from you beyond letting it happen. The item that actually needs you is the monthly security baseline, which nobody enjoys and which I want done properly.
+> Quiet one. SAR-1 at 14:03 and SAR-2 at 14:18, both routine downlinks that need nothing from you beyond doing them properly. The item that actually needs you is the monthly security baseline, which nobody enjoys and which I want done properly too.
 >
-> Every console action at this site is logged. Once a month somebody reads all of it. This month that is you. You'll find nothing. Find it properly.
+> Every console action at this site is logged. Once a month somebody reads all of it. This month that is you. You'll find nothing. Find it properly. And do not miss the pass while you are finding it.
 >
-> - Charlie (turnover note, 1340)
+> - Charlie (text, 1344)
 
 ---
 
@@ -35,14 +35,29 @@ import { Aside } from '@astrojs/starlight/components';
 
 ---
 
-## Current Operations
+## Current Operations (epoch 13:45:00 UTC, 5° mask)
 
-| Satellite | Contact | AOS | LOS | Tasking |
-|-----------|---------|-----|-----|---------|
-| MERIDIAN-SAR-1 | Routine downlink | 14:03:12 | 14:10:18 | Monitoring only; no acceptance, no command |
-| MERIDIAN-SAR-2 | On the horizon | 14:18:42 | 14:25:42 | Not tasked |
+| Satellite | Contact | AOS | Rise az | Max El | LOS | Tasking |
+|-----------|---------|-----|---------|--------|-----|---------|
+| MERIDIAN-SAR-1 | Routine downlink | 14:03:10 | 000° | 28° at 14:06:45 | 14:10:18 | Decode; no acceptance, no command |
+| MERIDIAN-SAR-2 | Routine downlink | 14:18:42 | 130° | 25° at 14:22:10 | 14:25:40 | Decode |
 
-Both sites are operational. SH-02 is logged in remotely for its own work.
+Decode windows (C/N ≥ 8 dB): SAR-1 about 14:05 to 14:08:30; SAR-2 about 14:20:30 to 14:24. Both sites are operational. SH-02 is logged in remotely for its own work.
+
+The baseline fits around the passes, not instead of them: sweep and set up, read the trail and disposition the benign warnings before 14:03, decode SAR-1, then the finding, the roster and SAR-2.
+
+---
+
+## Link Parameters
+
+LNB is high-side injection: **IF = LO − RF** (13,100 MHz LO).
+
+| Signal | RF (MHz) | IF (MHz) | Format |
+|--------|----------|----------|--------|
+| SAR-1 imagery downlink | 11,686 | 1,414 | QPSK 3/4, 36 MHz |
+| SAR-1 telemetry beacon | 11,711 | 1,389 | CW |
+| SAR-2 imagery downlink | 11,730 | 1,370 | QPSK 3/4, 36 MHz |
+| SAR-2 telemetry beacon | 11,703 | 1,397 | CW |
 
 ---
 
@@ -51,11 +66,13 @@ Both sites are operational. SH-02 is logged in remotely for its own work.
 | Account | Holder | Role | Status at Turnover | Authorisation |
 |---------|--------|------|--------------------|---------------|
 | op-charlie | C. Brooks | Site Lead | active | Current |
+| op-duty | Operator on duty (you) | Operator | active | Current |
 | op-fiona | F. MacLeod | Operator (SH-02) | active | Current; remote login expected |
 | svc-monitor | Monitoring Service | Service account | active | Current; polls telemetry on schedule |
 | op-guest | Kilbride Antenna Services | Maintenance (contractor) | active | **Feed work completed three weeks ago; install window closed** |
+| op-relief | T. Nakamura | Relief Operator (Vermont secondment) | active | **Secondment ended 28 February; last entry is a logout on the 27th** |
 
-Available statuses on the panel: active, disabled, expired.
+Available statuses on the panel: active, disabled, expired. Disabled is a deliberate shut-off; expired records that the authorisation lapsed and forces re-authorisation through London before any further use. Same effect today, different story in the return.
 
 ---
 
@@ -67,7 +84,7 @@ Available statuses on the panel: active, disabled, expired.
 | Actor | Account that performed it |
 | Category | auth, config, or command |
 | Severity | info or warning |
-| Flag | Marks the entry for the monthly return |
+| Flag | Marks the entry for the monthly return, with its disposition |
 | Sign Off Review | Records that the whole trail was read, end to end |
 
 ### What routine looks like at GW-01
@@ -79,19 +96,32 @@ Available statuses on the panel: active, disabled, expired.
 | TT&C command acknowledgements | Logged as command, during pass windows |
 | COMSEC key rotation | Logged as command, by the operator who ran it |
 | Monitoring service telemetry polls | Regular, on the half hour |
+| Monitoring service configuration changes | Scheduled, with a change ticket reference |
 | Remote logins from SH-02 | Fiona, during her shift |
+
+### The three warnings
+
+The logger scores rarity; you score meaning. Three entries carry warning severity this month, and each is dispositioned on who, what and when:
+
+| Entry | Actor | What | Disposition |
+|-------|-------|------|-------------|
+| 06:30 | op-fiona | Console login from a source address the station has never seen | Shetland went operational this week; its address is new to the rule. Expected, explained, checkable against the site register. |
+| 03:00 | svc-monitor | Configuration change to its own poll interval, change ticket CHG-0412 | The right actor doing the thing it exists to do, when the ticket said. Off-hours is a property of people, not of a scheduler. |
+| 02:47 | op-guest | Six failed logins, off-hours | An account that should no longer exist, at an hour nobody authorised should be trying it. **Finding**, whether or not anything got in. |
 
 <Aside type="caution">
 Severity is a hint, not a verdict. An entry earns a flag on what it is, when it happened, and who did it, not on whether it succeeded. Six failed attempts that never got in are still six attempts, at an hour when nobody should have been trying.
 </Aside>
+
+**Priya's order:** flag the entry, note the time you saw it, then disable the account. The order matters to her later.
 
 ---
 
 ## Escalation
 
 **Handle yourself:**
-- Flagging entries for the return
-- Disabling accounts whose authorisation has lapsed
+- Flagging entries for the return, with dispositions
+- Disabling accounts whose authorisation has lapsed; expiring accounts whose holders have left
 - Signing off the trail
 
 **Ring Charlie, then London:**
@@ -103,14 +133,44 @@ None of the above is expected today. That is why you read the whole log rather t
 
 ---
 
+## GW-01 Equipment Status
+
+| Equipment | Status | Notes |
+|-----------|--------|-------|
+| 4 m Ku tracker | Powered, manual, parked az 5° / el 3° | Program-track available |
+| LNB | 13,100 MHz LO, reference locked | Stable |
+| GPSDO | Locked, 9 satellites | Disciplined |
+| RX modem 1 | **1,370 MHz / 36 MHz / QPSK 3/4** | Charlie's 06:14 SAR-2 loopback test, as the log records. Retune to 1,414 MHz for SAR-1. |
+| Spectrum analyzer | 1,414 MHz centre, 60 MHz span | Move to the SAR-1 beacon, 1,389 MHz, 2 MHz span |
+| BUC / HPA | No drive / output disabled | No uplink tasking this shift |
+
+---
+
 ## Baseline Checklist
 
-- [ ] Security console open; audit trail read from first entry to last
-- [ ] Review signed off
-- [ ] Every warning-severity entry dispositioned; anomalies flagged
-- [ ] Account roster reconciled: every active account matches current authorisation
-- [ ] Lapsed accounts set to disabled
-- [ ] Finding and disposition recorded for the March return
+### Before AOS (13:45 – 14:03)
+- [ ] Dashboard: no active alarms
+- [ ] GPS Timing: GPSDO locked, not in holdover
+- [ ] RX modem 1: 1,414 MHz; analyzer centre 1,389 MHz, span 2 MHz
+- [ ] Security console: audit trail read from first entry to last; review signed off
+- [ ] 06:30 new-address login dispositioned (benign)
+- [ ] 03:00 poll-interval change dispositioned (benign, CHG-0412)
+
+### SAR-1 (14:03 – 14:10)
+- [ ] Program-track on MERIDIAN-SAR-1; beacon on RX analysis
+- [ ] Modem locked on 1,414 MHz, C/N ≥ 8 dB through the high segment
+
+### After LOS (14:10 – 14:18)
+- [ ] 02:47 off-hours failures flagged (finding)
+- [ ] op-guest set to disabled
+- [ ] op-relief set to expired
+- [ ] RX modem 1: 1,370 MHz; analyzer centre 1,397 MHz
+
+### SAR-2 (14:18 – 14:25)
+- [ ] Program-track retargeted to MERIDIAN-SAR-2; modem locked, C/N ≥ 8 dB
+
+### The return
+- [ ] Findings and dispositions recorded for the March return
 
 ---
 
@@ -118,6 +178,6 @@ None of the above is expected today. That is why you read the whole log rather t
 
 "Nothing happened" is a conclusion, not an assumption. You reach it by reading everything, and a return that says so is only worth anything if you did.
 
-A dormant account with maintenance privileges is exposure whether or not anyone used it. If somebody was trying it at three in the morning, London will want to know that too.
+A dormant account with maintenance privileges is exposure whether or not anyone used it. If somebody was trying it at three in the morning, London will want to know that too. And a baseline that cost the station a pass would not be a baseline; it would be an outage with paperwork.
 
 Good luck.

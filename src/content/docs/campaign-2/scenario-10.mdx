@@ -1,24 +1,26 @@
 ---
 title: 'Scenario 10 - Priority Tasking'
-description: 'Urgent collect on an 18 degree pass - budget the low-elevation link, raise uplink EIRP without overdriving the HPA, task MERIDIAN-SAR-1 by command, and pull the imagery down on the same pass'
-lastUpdated: 2026-09-10
+description: 'Urgent collect on an 18 degree pass - sweep and budget the station, build the EIRP in steps without overdriving the HPA, task MERIDIAN-SAR-1 by command, pull the imagery down on the same pass, then safe the chain and restore the standard'
+lastUpdated: 2026-09-13
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 
 ## Shift Turnover Notes
 
-**Date:** Thursday 18 March, 1530 Local (Galway runs UTC in March)
+**Date:** Thursday 18 March, 1518 Local (Galway runs UTC in March)
 **Station:** GW-01 Galway, Ireland - NATS Europe
 **Operator on Duty:** You, solo
 **Constellation Ops:** Anneke Visser, MERIDIAN Constellation Operations (Rotterdam; on the line for the pass)
 **Customer:** Erik Halvorsen, Nordic Maritime Watch (urgent tasking, waiting on an answer)
 
-> Routine afternoon until 15:25, when Nordic Maritime Watch rang with a vessel that stopped reporting off the Faroes. Erik has a box and he has one pass that covers it, and that pass is a low one. Tasking request is below; Rotterdam has released the bird.
+> Routine afternoon until 15:15, when Nordic Maritime Watch rang with a vessel that stopped reporting off the Faroes. Erik has a box and he has one pass that covers it, and that pass is a low one. Tasking request is below; Rotterdam has released the bird.
 >
-> Everything on this shift is arithmetic done in advance. Do the worksheet and set the amplifier before the horizon, because there is no time to do either after it.
+> The morning maintenance run left its fingerprints on the chain: BUC gain wound down to 18 dB for the sweep, and TX modem 1 still on SAR-2's 1,435 command IF from Tuesday's rotation. Nothing is alarmed. Nothing is set for this pass either.
 >
-> - Turnover note, 1528
+> Everything on this shift is arithmetic done in advance. Sweep the station, do the worksheet, build the EIRP one step at a time and park the dish before the horizon, because there is no time to do any of it after.
+>
+> - Turnover note, 1516
 
 ---
 
@@ -32,16 +34,16 @@ import { Aside } from '@astrojs/starlight/components';
 | Only window covering the box | MERIDIAN-SAR-1, Galway horizon, 15:35 to 15:44 UTC |
 | Method | Collect tasked by command early in the pass; imagery downlinked on the same pass |
 
-**Constellation Ops release (A. Visser, 15:27):**
+**Constellation Ops release (A. Visser, 15:17):**
 > "MER-OPS-2027-0421. SAR-1 released to GW-01 for the 15:35 pass: imaging block free, command link keyed, key Valid on your console. Be aware of the geometry. At 18 degrees the range at closest approach is 1,040 km and the uplink needs more EIRP than any pass you have flown from Galway. The amplifier stays linear. A splattered band costs me more than a missed collect."
 
 ---
 
-## Pass Plan and Command Window (epoch 15:30:00 UTC)
+## Pass Plan and Command Window (epoch 15:18:00 UTC)
 
 | Item | Time |
 |------|------|
-| MERIDIAN-SAR-1 AOS | 15:34:59 (az 27°, north-northeast) |
+| MERIDIAN-SAR-1 AOS | 15:34:59 (az 027°, north-northeast) |
 | Command window opens | 15:35:19 |
 | Max elevation 17.8°, slant range 1,040 km | 15:39:31 |
 | Command window closes | 15:43:43 |
@@ -76,7 +78,7 @@ Southbound, 9.1 minutes horizon to horizon. MERIDIAN-SAR-2 rises at 16:24:59 (25
 | GW-01 receive antenna gain | 51.8 dBi | |
 | System noise temperature | 88 K | |
 | Occupied bandwidth | 36 MHz | QPSK 3/4 imagery carrier |
-| Miscellaneous losses | 1.2 dB | Longer atmospheric path at 18° |
+| Miscellaneous losses | 1.2 dB | Acceptance used 1.0. The atmospheric path at 18° is about three times longer than at the zenith; gaseous absorption at Ku adds a couple of tenths |
 | Design figure, predicted C/N | ~8.1 dB | Worksheet must agree within 1.0 dB |
 | Demodulator threshold | 6.0 dB | |
 | Required margin at Commit Link | 1.0 dB, measured live | |
@@ -89,21 +91,24 @@ Reference: C/N = EIRP + G<sub>rx</sub> − FSPL − L<sub>impl</sub> − 10 log<
 | C/N at or above 8 dB | About 40 s either side of 15:39:31 |
 
 <Aside type="caution">
-Commit Link reads the live receiver C/N when pressed. On this pass the margin exists for about two and a half minutes, centred on 15:39:31. Commit on the shoulder and the margin is not there.
+Commit Link reads the live receiver C/N when pressed. On this pass the margin exists for about two and a half minutes, centred on 15:39:31. Commit on the shoulder and the margin is not there. The window is short because a low pass never gets close: range falls from 2,000 km to 1,040 km and climbs straight back, so the C/N curve is a spike, not a plateau.
 </Aside>
 
 ---
 
 ## Uplink EIRP Plan
 
-| Item | Now | For this pass |
-|------|-----|---------------|
-| HPA back-off | 10 dB | 4 dB (6 dB more EIRP) |
-| HPA overdrive limit | | Below 3 dB back-off the amplifier is overdriven and the IMD alarm trips |
-| HPA rating | 50 dBm, gain 44 dB | |
-| BUC gain | 23 dB | Unchanged. Output −10 dBm against 15 dBm saturation; the BUC is not the limit |
+Build it from the modem outward. The HPA output is its input plus gain minus back-off, so the number at the end of the chain is only right if every stage before it is.
 
-The back-off is the only EIRP control on this chain. It can be set before AOS and it should be.
+| Step | Item | Now | For this pass |
+|------|------|-----|---------------|
+| 1 | BUC gain | **18 dB** (maintenance run) | **23 dB**, the station standard. With 18 dB, a 4 dB back-off delivers the EIRP of a 9 dB one, with every indicator green |
+| 1 | BUC compression | Output well under the 15 dBm P1dB | Stays out of compression at 23 dB |
+| 2 | HPA back-off | 10 dB | **4 dB** (6 dB more EIRP). Below 3 dB the amplifier is overdriven and the IMD alarm trips; IMD worsens about 2 dB per dB of back-off given up |
+| 3 | HPA output, amplifier up | Disabled | At least **0.5 W** into the feed (about 1 W expected at 4 dB on this chain); read on the TX chain power meter once the modem is on air and the HPA is enabled |
+| After LOS | HPA back-off | 4 dB | **Back to 10 dB.** 4 dB was the exception for one geometry; on a normal pass it is 6 dB over the coordinated level and an interference risk |
+
+An amplifier driven past its linear region makes new frequencies out of the ones it was given; they go up the same dish at the same EIRP into channels that belong to somebody else.
 
 ---
 
@@ -113,11 +118,11 @@ LNB high-side: **IF = LO − RF** (13,100 MHz). BUC low-side: **RF = IF + LO** (
 
 | Signal | IF (MHz) | RF (MHz) | Format |
 |--------|----------|----------|--------|
-| SAR-1 telecommand uplink | 1,405 | 14,005 | QPSK 3/4, 36 MHz, −7 dBm modem |
+| SAR-1 telecommand uplink | **1,405** | 14,005 | QPSK 3/4, 36 MHz, −7 dBm modem. TX modem 1 is on 1,435 (SAR-2) and must be retuned |
 | SAR-1 telemetry beacon | 1,389 | 11,711 | CW; visible from the horizon |
 | SAR-1 imagery downlink | 1,414 | 11,686 | QPSK 3/4, 36 MHz |
 
-Doppler: up to ±270 kHz on the downlink (receiver follows), up to ±325 kHz on the uplink (compensated at the TT&C console, required for an ACK).
+Doppler: up to ±270 kHz on the downlink (receiver follows), up to ±325 kHz on the uplink (compensated at the TT&C console, required for an ACK; engage it before AOS, not at it).
 
 ---
 
@@ -125,18 +130,19 @@ Doppler: up to ±270 kHz on the downlink (receiver follows), up to ±325 kHz on 
 
 | Equipment | Status | Notes |
 |-----------|--------|-------|
-| 4 m Ku tracker | Powered, manual, parked az 5° / el 3° | AOS is at az 27°; program-track available, elements current |
+| 4 m Ku tracker | Powered, manual, parked az 5° / el 3° | Park on the rise azimuth, **027° / el 5°**, before AOS |
 | LNB | 13,100 MHz LO, reference locked | Stable |
 | GPSDO | Locked, 9 satellites | Disciplined |
 | RX modem 1 | 1,414 MHz / 36 MHz / QPSK 3/4 | Pre-tuned for SAR-1 imagery |
-| TX modem 1 | 1,405 MHz / 36 MHz / QPSK 3/4 / −7 dBm | Not transmitting |
-| BUC | 12,600 MHz LO, reference locked, 23 dB gain | No drive present |
+| TX modem 1 | **1,435 MHz** / 36 MHz / QPSK 3/4 / −7 dBm | SAR-2's command IF from Tuesday. Retune to 1,405. Not transmitting |
+| BUC | 12,600 MHz LO, reference locked, **18 dB gain** | Restore 23 dB. No drive present |
 | HPA | Powered, output disabled, 10 dB back-off | Modem on air before this goes live; off before the carrier stops |
 | COMSEC key | Valid | No rotation scheduled |
 | Link Analysis console | Low-pass card loaded, worksheet blank | Predicted panel reads NO SOLUTION until computed |
+| Tasking log | Blank | One entry: command, EIRP exception, result |
 
 <Aside type="danger">
-Order on the transmit chain is unchanged by urgency: modem on air first, then HPA output. An HPA enabled with nothing driving the BUC amplifies the noise floor into the feed and ends the shift.
+Order on the transmit chain is unchanged by urgency: modem on air first, then HPA output. An HPA enabled with nothing driving the BUC amplifies the noise floor into the feed and ends the shift. Down is the mirror: HPA off, BUC muted, carrier off.
 </Aside>
 
 ---
@@ -144,20 +150,24 @@ Order on the transmit chain is unchanged by urgency: modem on air first, then HP
 ## Tasking Checklist
 
 ### Before AOS (15:34:59)
+- [ ] Dashboard: no active alarms; GPS Timing: GPSDO locked, no holdover; TX Chain: BUC on reference
 - [ ] Link Analysis: worksheet computed, prediction agrees with the card
-- [ ] HPA back-off 4 dB; no overdrive alarm; BUC out of compression
-- [ ] TT&C: uplink Doppler compensation engaged
-- [ ] Antenna: program-track on MERIDIAN-SAR-1
+- [ ] BUC gain 23 dB, out of compression
+- [ ] HPA back-off 4 dB; no overdrive alarm
+- [ ] TX modem 1 on 1,405 MHz; TT&C: uplink Doppler compensation engaged
+- [ ] Tracker parked az 027° / el 5°
 
 ### In the Window
-- [ ] SAR-1 beacon on RX analysis as she clears the horizon
-- [ ] TX modem on air, then HPA enabled
+- [ ] Program-track MERIDIAN-SAR-1; beacon on RX analysis as she clears the horizon
+- [ ] TX modem on air, then HPA enabled; at least 0.5 W on the power meter
 - [ ] SAR-TASK-URGENT sent early; ACK in Command History
 - [ ] RX modem locked on 1,414 MHz; C/N above 6 dB held for 30 s
 - [ ] Commit Link pressed at max elevation with live margin at or above 1 dB
 
-### After LOS
-- [ ] Transmit chain secured, amplifier first
+### After LOS (15:44:03)
+- [ ] Chain down: HPA off, BUC muted, carrier off
+- [ ] HPA back-off restored to 10 dB
+- [ ] Tasking log: command and ACK, the EIRP exception and its restoration, measured C/N against 8.1 predicted at 18°
 - [ ] Report to Erik: what he got, and what this geometry means for the next box
 
 ---
@@ -166,6 +176,6 @@ Order on the transmit chain is unchanged by urgency: modem on air first, then HP
 
 Every pass this station has flown so far had margin to waste. This one has about two decibels and a customer who needs all of them.
 
-The numbers say it closes. Set the amplifier, do the worksheet, and be pointed at the horizon when she comes over it. Anneke is listening, Erik is waiting, and there is no second window.
+The numbers say it closes. Read the chain before you set it, set the amplifier, do the worksheet, and be pointed at the horizon when she comes over it. Anneke is listening, Erik is waiting, and there is no second window.
 
 Good luck.
