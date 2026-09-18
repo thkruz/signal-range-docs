@@ -1,0 +1,177 @@
+---
+title: 'Scenario 2 - Two Carriers'
+description: 'Incident EW-27-0251 - two unidentified carriers in the SENTRY-7 TP-1 downlink; one came through the satellite and one did not. Sort them, fix the one that is a target, refer the one that is not'
+lastUpdated: 2026-09-18
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+**Shift:** Friday 03 Sep 2027, 2330 Local (0530Z Saturday)
+
+**Station:** Peterson Annex (PA-22), 22nd Electronic Warfare Squadron
+
+**Operator:** You
+
+**Incident Cell Lead:** TSgt Marisol Quintero
+
+**Field Team:** One vehicle, staged at Clayton NM, waiting on a destination
+
+---
+
+## Shift Turnover Notes
+
+Swing shift logged the following at 2320Z:
+
+> Receive chain nominal, dish program-tracking SENTRY-7, service carrier locked at 1365 IF, C/N 12 dB. No alarms on our side.
+>
+> Customer ticket re-opened at 2205Z: bursty packet loss on the TP-1 logistics net again, same pattern as last week. NOC max-hold from the monitor site shows TWO carriers in the downlink that are not on the transponder plan. We have widened the analyzer to 60 MHz so both fit on one trace. One of them is at about 1374 IF, the other up around 1398. Have not timed either.
+>
+> Field team is staged and wants a destination. Quintero says nobody drives until we know which carrier is which. Correlator warmed up, SENTRY-9 selected, untuned.
+
+---
+
+### Active Services
+
+| Satellite | Transponder | Customer | Service | Status at Turnover |
+|-----------|-------------|----------|---------|--------------------|
+| SENTRY-7 | TP-1 (H) | JTF-South logistics net | 8 MHz QPSK 3/4 data carrier | Degraded - bursty packet loss |
+| SENTRY-9 | - | 22 EWS (collector) | Sidelobe correlation pair for SENTRY-7 | Available |
+
+---
+
+## Trouble Ticket
+
+**Ticket #:** EW-27-0251
+
+**Opened:** 2205Z by 22 EWS NOC (re-open of the TP-1 incident line)
+
+**Priority:** High
+
+**Customer Report:**
+> Same bursts as EW-27-0244. Thirty to forty seconds of loss, roughly every two minutes. Additionally the modem's noise floor across the whole passband is up about 2 dB and has been all evening.
+
+**NOC Note:**
+> Max-hold from the monitor site shows two carriers off the plan. We cannot tell from here which of them is the customer's problem. Both are inside the TP-1 downlink as seen at PA-22. Recommend PA-22 characterize both before the correlator is tasked.
+
+**TSgt Quintero (ops chat, 2328Z):**
+> *"Two carriers, one truck. I am not sending a team eighty miles to a carrier that turns out to be somebody's tower down the road from us. Tell me which one came through the bird. Then fix that one and tell me who owns the other one."*
+
+---
+
+## What the Correlator Can and Cannot See
+
+The Geolocation console cross-correlates the SENTRY-7 downlink against the SENTRY-9 downlink. It finds a signal only if **both satellites relayed it** - an uplink strong enough to enter SENTRY-7's transponder also enters SENTRY-9's sidelobes, and the time and frequency differences between the two copies are what the fix is built from.
+
+A carrier that arrives at the PA-22 dish directly - from a transmitter on the ground, through the dish's own sidelobes - was never on either satellite. Tune the correlator to it and the answer is **NO CORRELATION - check target frequency and bandwidth**, every time, however carefully it is tuned. That is not a fault. It is the correlator telling you the carrier did not come through the bird.
+
+| Tell | Through the transponder (uplink interference) | Direct at the dish (terrestrial RFI) |
+|------|-----------------------------------------------|--------------------------------------|
+| Who hears it | Every station under SENTRY-7, and SENTRY-9's sidelobes | This dish, from this spot |
+| Fits the transponder plan | Downlink maps to an uplink inside a TP-1 passband | Maps to an uplink outside every passband, or to nothing |
+| Correlator | Locks and captures | NO CORRELATION |
+| Cadence | Whatever the operator chose - often a duty cycle | Usually continuous; a site that is simply on |
+| Doppler | Follows the inclined bird | None |
+| Whose problem | The field team's | Spectrum management's |
+
+The C-band downlink (3.7-4.2 GHz) is shared with terrestrial fixed-wireless systems. A sector or backhaul link with a sidelobe pointed at a receive site produces exactly this: a strong, continuous carrier on one dish and nowhere else.
+
+---
+
+## SENTRY-7 / SENTRY-9 Operations Reference
+
+| Satellite | NORAD | Slot | Az / El from PA-22 (0530Z) | Role |
+|-----------|-------|------|----------------------------|------|
+| SENTRY-7 | 71001 | 100.2° W | 172.5° / 47.1° | Victim - carries the affected transponder |
+| SENTRY-9 | 71002 | 98.1° W | 168.7° / 48.1° | Adjacent collector |
+
+### Transponder Plan
+
+| Satellite | Transponder | Uplink Passband (MHz) | Translation (MHz) | Downlink Passband (MHz) | Polarization |
+|-----------|-------------|-----------------------|-------------------|-------------------------|--------------|
+| SENTRY-7 | TP-1 | 5,990 - 6,030 (40 MHz) | -2,225 | 3,765 - 3,805 | H |
+
+### Frequency Reference (PA-22 receive chain, LNB LO 5,150 MHz)
+
+| Signal | Downlink RF (MHz) | IF (MHz) | Would-be uplink (MHz) | Inside TP-1? |
+|--------|-------------------|----------|-----------------------|--------------|
+| SENTRY-7 TP-1 service carrier | 3,785 | 1,365 | 6,010 | Yes |
+| Carrier A (~1,374 IF) | *(derive)* | *(measure)* | *(derive)* | *(check)* |
+| Carrier B (~1,398 IF) | *(derive)* | *(measure)* | *(derive)* | *(check)* |
+
+**IF = LO - RF (downlink)** and **uplink = downlink RF + 2,225**. Work both carriers back and check each against the passband. The correlator is tuned to the uplink.
+
+---
+
+## Peterson Annex Equipment Status
+
+| Equipment | State at Turnover | Notes |
+|-----------|-------------------|-------|
+| Antenna | Program-track on SENTRY-7 (71001) | Beacon locked, C/N 12 dB. Leave it |
+| LNB | 5,150 MHz LO, powered, reference locked | 65 dB gain |
+| GPSDO | Locked, 15 ns UTC accuracy | Correlator timing reference |
+| Spectrum analyzer | RX IF tap, center 1,380 MHz, **span 60 MHz**, RBW 100 kHz | Trace 1 clear-write, trace 2 max-hold - wide enough for both carriers |
+| Receiver modem 1 | 1,365 MHz, 8 MHz, QPSK 3/4 | Customer carrier - do not retune |
+| Geolocation console | Idle, SENTRY-9 selected | Untuned. 12 s integration window |
+
+<Aside type="caution">
+The analyzer and the correlator are taps. Nothing you do on them touches the customer. The receive chain does, and the customer is live.
+</Aside>
+
+---
+
+## Correlator Reference
+
+| Parameter | Value | Notes |
+|-----------|-------|-------|
+| Integration window | 12 s | Interferer must be transmitting for at least 70% of it |
+| Target frequency | Interferer **uplink**, MHz | Within half the carrier's bandwidth of its center |
+| Correlation bandwidth | Match the carrier | Within a factor of two |
+| CAPTURE | One 12 s integration | TDOA/FDOA on success; NO CORRELATION otherwise |
+| COMPUTE FIX | Solves every capture on the pair | Lat/lon and 95% ellipse as ±major×minor km |
+
+A 36 s on-window fits three 12 s captures if the first one starts at the top of the window. Six captures across two or more cycles put most fixes inside 25 km; twelve across four cycles close to 15 km.
+
+---
+
+## Incident Report EW-27-0251 - Required Fields
+
+| Field | What the cell needs |
+|-------|---------------------|
+| 3. Frequency | Uplink center of the carrier the team is driving to (with downlink RF and IF) |
+| 4. Cadence | Both carriers: on/off timing or "continuous" |
+| 7. Fix | Lat/lon and 95% ellipse for the uplink carrier |
+| 8. Disposition | What happens to the carrier that is not a target, and which office it goes to |
+
+---
+
+## Discrimination Checklist
+
+- [ ] Both carriers observed on RX Analysis (max-hold holds the cycling one)
+- [ ] Both timed against the mission clock through two full cycles
+- [ ] Both worked back to a would-be uplink and checked against the TP-1 passband
+- [ ] Correlator tried on each - which one correlates?
+- [ ] The call made: transponder path fixed, terrestrial path referred
+- [ ] Six captures on the uplink carrier, COMPUTE FIX, ellipse reported
+- [ ] Fields 3, 4, 8 logged
+
+---
+
+## Escalation Guidelines
+
+**Handle Yourself:**
+- Timing, frequency arithmetic, correlator tuning and capture timing
+
+**Tell Quintero:**
+- The call, before the team moves
+- A fix that will not close inside 25 km after twelve captures
+
+**Spectrum management gets:**
+- Any carrier that arrives at this dish and not at the satellites: frequency, bandwidth, level, the fact that it is continuous, and the fact that the pair will not correlate on it
+
+---
+
+## End of Briefing
+
+Two carriers. One of them is somebody keying into an allied transponder on a schedule. The other is somebody's tower with a sidelobe pointed at a nine-metre dish. They look alike on a trace and they are not alike anywhere else.
+
+The correlator will tell you which is which if you ask it. Ask it before the truck moves.

@@ -248,6 +248,18 @@ export default defineConfig({
         {
           label: 'Scenario 1 - First Fix',
           slug: 'campaign-5/scenario-1'
+        },
+        {
+          label: 'Scenario 2 - Two Carriers',
+          slug: 'campaign-5/scenario-2'
+        },
+        {
+          label: 'Scenario 3 - Cold Trail',
+          slug: 'campaign-5/scenario-3'
+        },
+        {
+          label: 'Scenario 4 - Prove It',
+          slug: 'campaign-5/scenario-4'
         }
       ]
     }, {

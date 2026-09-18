@@ -1,0 +1,169 @@
+---
+title: 'Scenario 4 - Prove It'
+description: "Incident EW-27-0270 - the customer's J6 says PA-22 is geolocating an allied terminal at Cannon AFB. Calibrate the correlator on the known terminal, fix the hostile on its own, close the ellipse past the base, and write a report that survives the challenge"
+lastUpdated: 2026-09-18
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+**Shift:** Thursday 09 Sep 2027, 2315 Local (0515Z Friday)
+
+**Station:** Peterson Annex (PA-22), 22nd Electronic Warfare Squadron
+
+**Operator:** You
+
+**Incident Cell Lead:** TSgt Marisol Quintero
+
+**Field Team:** SSgt Reyes, staged at Clovis NM - fifteen minutes from the main gate at Cannon AFB, and not moving
+
+**Ops Director:** Maj. Holt (0100Z sync - and this time the J6 is on the call)
+
+---
+
+## Shift Turnover Notes
+
+Swing shift logged the following at 0505Z:
+
+> Receive chain nominal, program-track on SENTRY-7, service carrier locked at 1365, C/N 12 dB.
+>
+> Last night's fix on the TP-1 interferer (EW-27-0263 follow-up) put the centre about 35 km from Cannon AFB. Cannon has an authorised C-band terminal on TP-1 - it is on the plan, continuous, at 1372 IF. JTF-S J6 read our fix, looked at a map, and sent the message below. Reyes is holding at Clovis. Holt wants this settled before the 0100Z sync.
+>
+> The hostile is up tonight at 1354 IF on its usual cadence. The Cannon terminal is up at 1372, as always. Correlator warmed up, SENTRY-9 selected, untuned, clear.
+
+---
+
+### Active Services
+
+| Satellite | Transponder | Customer | Service | Status at Turnover |
+|-----------|-------------|----------|---------|--------------------|
+| SENTRY-7 | TP-1 (H) | JTF-South logistics net | 8 MHz QPSK 3/4 data carrier at 1365 IF | Degraded - bursty packet loss |
+| SENTRY-7 | TP-1 (H) | **Cannon AFB C-band terminal** | 2 MHz authorised carrier at 1372 IF (6,003 MHz uplink) | Nominal - continuous |
+| SENTRY-9 | - | 22 EWS (collector) | Sidelobe correlation pair for SENTRY-7 | Available |
+
+---
+
+## The Challenge
+
+**From JTF-S J6, 0340Z:**
+> Your reported geolocation for the TP-1 interferer places the error ellipse in Curry County NM within 35 km of Cannon AFB. Cannon operates an authorised C-band terminal on SENTRY-7 TP-1. We assess that PA-22 is geolocating our own terminal. Request the field tasking be cancelled and the Cannon terminal be excluded from the incident before any team approaches the installation.
+
+**TSgt Quintero (ops chat, 0512Z):**
+> *"He is not wrong to ask. He is wrong, but he is not wrong to ask. Do it properly: fix the Cannon terminal first - if the correlator puts a known site where it belongs, it is working tonight. Then clear it, fix the hostile on its own, and close the ellipse until it cannot reach the base. Write it so the J6 can follow the argument. Reyes moves when you say so."*
+
+---
+
+## How to Prove a Fix
+
+A fix that is challenged is defended with the measurement chain, in this order:
+
+1. **Calibrate the instrument.** Fix a known emitter on the same pair, the same night. The Cannon terminal is at 34.383° N, 103.322° W. If its fix lands inside 20 km of that, the pair's geometry, timing, and frequency references are sound. This proves nothing about the hostile. It proves you can trust what the correlator says about the hostile.
+2. **Solve the target alone.** CLEAR the console. The solver uses every capture on the pair, and reference captures mixed into the hostile set would drag the hostile fix toward Cannon - and hand the J6 his argument. Retune to the hostile and capture only inside its on-windows.
+3. **Close the ellipse past the alternative.** The 95% ellipse is the claim. Keep capturing through further cycles until its semi-major axis is 20 km or less. If the alternative site is farther from the fix centre than the ellipse reaches, the alternative is excluded - not by opinion, by geometry.
+4. **State the confidence.** Region, probability, what was excluded, and the state of the emitter when you wrote it.
+
+<Aside type="note">
+A reference emitter at a surveyed position is standard practice for any geolocation system. Operators fix it routinely to check the pair; the night somebody challenges a result is the night that habit pays.
+</Aside>
+
+---
+
+## SENTRY-7 / SENTRY-9 Operations Reference
+
+| Satellite | NORAD | Slot | Az / El from PA-22 (0515Z) | Role |
+|-----------|-------|------|----------------------------|------|
+| SENTRY-7 | 71001 | 100.2° W | 172.5° / 47.1° | Victim |
+| SENTRY-9 | 71002 | 98.1° W | 168.7° / 48.1° | Adjacent collector |
+
+### Transponder Plan
+
+| Satellite | Transponder | Uplink Passband (MHz) | Translation (MHz) | Downlink Passband (MHz) | Polarization |
+|-----------|-------------|-----------------------|-------------------|-------------------------|--------------|
+| SENTRY-7 | TP-1 | 5,990 - 6,030 (40 MHz) | -2,225 | 3,765 - 3,805 | H |
+
+### Frequency Reference (PA-22 receive chain, LNB LO 5,150 MHz)
+
+| Signal | Uplink (MHz) | Downlink RF (MHz) | IF (MHz) | Bandwidth | Cadence |
+|--------|--------------|-------------------|----------|-----------|---------|
+| SENTRY-7 TP-1 service carrier | 6,010 | 3,785 | 1,365 | 8 MHz | Continuous |
+| Cannon AFB terminal (reference) | 6,003 | 3,778 | 1,372 | 2 MHz | Continuous |
+| Hostile | *(derive)* | *(derive)* | 1,354 | *(measure)* | Cycled |
+
+### Known Site
+
+| Site | Latitude | Longitude | Elevation |
+|------|----------|-----------|-----------|
+| Cannon AFB C-band terminal | 34.383° N | 103.322° W | 1,310 m |
+
+---
+
+## Peterson Annex Equipment Status
+
+| Equipment | State at Turnover | Notes |
+|-----------|-------------------|-------|
+| Antenna | Program-track on SENTRY-7 (71001) | Beacon locked. Leave it |
+| LNB | 5,150 MHz LO, powered, reference locked | |
+| GPSDO | Locked, 15 ns UTC accuracy | Correlator timing reference |
+| Spectrum analyzer | RX IF tap, center 1,364 MHz, span 30 MHz | Trace 1 clear-write, trace 2 max-hold |
+| Receiver modem 1 | 1,365 MHz, 8 MHz, QPSK 3/4 | Customer carrier - do not retune |
+| Geolocation console | Idle, SENTRY-9 selected, clear | 12 s integration window |
+
+---
+
+## Correlator Reference
+
+| Parameter | Value | Notes |
+|-----------|-------|-------|
+| Integration window | 12 s | Interferer up for at least 70% of it |
+| Target frequency | **Uplink**, MHz | 6,003 for the reference; derive the hostile's |
+| Correlation bandwidth | Match the carrier | 2 MHz reference; measure the hostile |
+| CAPTURE | One 12 s integration | The reference is continuous: every capture correlates. Space them a couple of minutes apart so the FDOA lines rotate |
+| COMPUTE FIX | Solves every capture on the pair | Reports lat/lon and the 95% ellipse as ±major×minor km |
+| CLEAR | Wipes captures and fix | Between the reference and the hostile - not optional |
+
+Ellipse size is set by geometry more than by luck: with this pair, twelve captures across four cycles bring the semi-major axis to about 20 km, and every further cycle shrinks it a little more.
+
+---
+
+## Incident Report EW-27-0270 - Required Fields
+
+| Field | What the cell needs |
+|-------|---------------------|
+| 2. Calibration | Reference emitter, its fix, and the error against its surveyed position |
+| 7. Fix | Hostile lat/lon and 95% ellipse, solved on its own captures |
+| 10. Basis for exclusion | Why the Cannon terminal is not the emitter - the measurement chain, not the frequency |
+| 11. Confidence | Region, probability, what was excluded, emitter state at time of report |
+
+---
+
+## Proof Checklist
+
+- [ ] Hostile and reference both observed on RX Analysis
+- [ ] Correlator on the reference: six captures, spaced; COMPUTE FIX; error against the surveyed position inside 20 km
+- [ ] Calibration logged
+- [ ] CLEAR
+- [ ] Correlator on the hostile: eight captures inside on-windows; COMPUTE FIX inside 20 km
+- [ ] Twelve or more captures; ellipse semi-major 20 km or less; ellipse does not reach Cannon
+- [ ] The call made to Reyes with the hostile on the trace
+- [ ] Fields 10 and 11 logged
+
+---
+
+## Escalation Guidelines
+
+**Handle Yourself:**
+- Calibration, CLEAR, hostile captures, ellipse refinement
+
+**Tell Quintero:**
+- If the reference fix will not land inside 20 km of Cannon - the pair is not to be trusted tonight and nobody drives on it
+- The call, before Reyes moves
+
+**The J6 gets:**
+- Fields 2, 7, 10, 11 - the argument, in order
+
+---
+
+## End of Briefing
+
+The J6 has a map and a fix and has drawn the obvious conclusion. You have a correlator, a known emitter twenty minutes from the hostile, and an hour. Prove the instrument, prove the target, close the ellipse, and write it down so the argument makes itself.
+
+Reyes is fifteen minutes from the gate. Tell him where to go and how sure you are.

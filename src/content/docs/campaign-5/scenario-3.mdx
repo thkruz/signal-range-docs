@@ -1,0 +1,170 @@
+---
+title: 'Scenario 3 - Cold Trail'
+description: 'Incident EW-27-0263 - the TP-1 interferer is back and a field team is ready; fix it, brief them, and keep watching, because an emitter that has been fixed once is rarely there when anyone arrives'
+lastUpdated: 2026-09-18
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+**Shift:** Monday 06 Sep 2027, 2245 Local (0445Z Tuesday)
+
+**Station:** Peterson Annex (PA-22), 22nd Electronic Warfare Squadron
+
+**Operator:** You
+
+**Incident Cell Lead:** TSgt Marisol Quintero
+
+**Field Team:** SSgt Reyes, one vehicle with a DF kit, staged at Raton NM - about ninety minutes from anywhere in the north-east corner of the state
+
+---
+
+## Shift Turnover Notes
+
+Swing shift logged the following at 0435Z:
+
+> Receive chain nominal, program-track on SENTRY-7, service carrier locked at 1365, C/N 12 dB.
+>
+> Customer reported the bursts again at 0410Z. Max-hold shows the carrier is back a few MHz BELOW the service carrier this time - new frequency, same behaviour. We have not timed it. Reyes is staged at Raton and Quintero wants him moving on a fix, not on a guess.
+>
+> Correlator warmed up, SENTRY-9 selected, untuned. Console is clear.
+
+---
+
+### Active Services
+
+| Satellite | Transponder | Customer | Service | Status at Turnover |
+|-----------|-------------|----------|---------|--------------------|
+| SENTRY-7 | TP-1 (H) | JTF-South logistics net | 8 MHz QPSK 3/4 data carrier | Degraded - bursty packet loss |
+| SENTRY-9 | - | 22 EWS (collector) | Sidelobe correlation pair for SENTRY-7 | Available |
+
+---
+
+## Trouble Ticket
+
+**Ticket #:** EW-27-0263
+
+**Opened:** 0410Z by 22 EWS NOC
+
+**Priority:** High
+
+**Customer Report:**
+> Bursts are back. Same cadence as the previous two incidents. Customer notes the interferer "seems to know when we look" - it went quiet for most of the weekend while the monitor site was on it.
+
+**TSgt Quintero (ops chat, 0442Z):**
+> *"Reyes is waiting on you. Get me a fix and brief him properly - what a fix is, what it is not. Then do not walk away from the analyzer. Last time this thing went quiet the moment anyone got close. If it moves I want to know before Reyes does."*
+
+---
+
+## What a Fix Is
+
+COMPUTE FIX returns a centre and a 95% error ellipse. The emitter is inside that ellipse with 95% probability and **nowhere in particular inside it**. The centre is the most likely point, not the point. A field team is searching an area, and the size of the area is the size of the ellipse.
+
+What a fix is not:
+- **A point.** Handing a team the centre coordinates and no ellipse sends them to one spot in a region that might be twenty kilometres across.
+- **Permanent.** A fix is a statement about where the emitter was during the captures it was solved from. An emitter on wheels makes it history the moment it moves.
+- **Self-updating.** If the emitter retunes, the correlator is still tuned to the old carrier and the old captures are still in the solver. The console does not know the emitter moved. You do, if you are watching.
+
+### When the carrier stops
+
+Two full cycles of silence from a carrier that has kept a cadence all night is not a long off-window. Treat it as the emitter having stopped, moved, or retuned:
+
+1. Tell the team to hold short. Do not send them into an ellipse the emitter may have left.
+2. Log the time the carrier was last seen. The first fix becomes a last-known position with that time on it.
+3. Put max-hold across the whole passband. A retune is the cheapest thing an emitter can do; the new carrier will be somewhere in the 40 MHz.
+4. When a new carrier appears on the same cadence: **CLEAR** the correlator, retune it, and capture the new carrier on its own.
+
+<Aside type="caution">
+The solver uses every capture on the pair. Six captures from one site and six from another do not average to either; they solve to a place that is neither, with a residual that says so. CLEAR before you capture a carrier from a new position.
+</Aside>
+
+---
+
+## SENTRY-7 / SENTRY-9 Operations Reference
+
+| Satellite | NORAD | Slot | Az / El from PA-22 (0445Z) | Role |
+|-----------|-------|------|----------------------------|------|
+| SENTRY-7 | 71001 | 100.2° W | 172.5° / 47.1° | Victim |
+| SENTRY-9 | 71002 | 98.1° W | 168.7° / 48.1° | Adjacent collector |
+
+### Transponder Plan
+
+| Satellite | Transponder | Uplink Passband (MHz) | Translation (MHz) | Downlink Passband (MHz) | Polarization |
+|-----------|-------------|-----------------------|-------------------|-------------------------|--------------|
+| SENTRY-7 | TP-1 | 5,990 - 6,030 (40 MHz) | -2,225 | 3,765 - 3,805 | H |
+
+### Frequency Reference (PA-22 receive chain, LNB LO 5,150 MHz)
+
+| Signal | Downlink RF (MHz) | IF (MHz) | Uplink (MHz) |
+|--------|-------------------|----------|--------------|
+| SENTRY-7 TP-1 service carrier | 3,785 | 1,365 | 6,010 |
+| TP-1 passband at the analyzer | 3,765 - 3,805 | 1,345 - 1,385 | 5,990 - 6,030 |
+| Unidentified carrier | *(derive)* | *(measure)* | *(derive)* |
+
+**IF = LO - RF** and **uplink = downlink RF + 2,225**.
+
+---
+
+## Peterson Annex Equipment Status
+
+| Equipment | State at Turnover | Notes |
+|-----------|-------------------|-------|
+| Antenna | Program-track on SENTRY-7 (71001) | Beacon locked. Leave it |
+| LNB | 5,150 MHz LO, powered, reference locked | |
+| GPSDO | Locked, 15 ns UTC accuracy | Correlator timing reference |
+| Spectrum analyzer | RX IF tap, center 1,364 MHz, span 30 MHz | Trace 1 clear-write, trace 2 max-hold |
+| Receiver modem 1 | 1,365 MHz, 8 MHz, QPSK 3/4 | Customer carrier - do not retune |
+| Geolocation console | Idle, SENTRY-9 selected, **clear** | 12 s integration window; CLEAR wipes captures and the fix |
+
+---
+
+## Correlator Reference
+
+| Parameter | Value | Notes |
+|-----------|-------|-------|
+| Integration window | 12 s | Interferer up for at least 70% of it |
+| Target frequency | Interferer **uplink**, MHz | Retune when the carrier moves |
+| Correlation bandwidth | Match the carrier | |
+| CAPTURE | One 12 s integration | |
+| COMPUTE FIX | Solves every capture on the pair | Every capture. CLEAR between emitters |
+| CLEAR | Wipes captures, fix, and status | The only way to start over |
+
+---
+
+## Incident Report EW-27-0263 - Required Fields
+
+| Field | What the cell needs |
+|-------|---------------------|
+| 7. Fix | Which fix is current (ellipse and time) and how any earlier fix is recorded |
+| 9. Emitter mobility | Stationary or mobile; frequency changes; displacement between fixes; behaviour while the team was inbound |
+
+---
+
+## Field Team Brief - What Reyes Needs
+
+- The 95% ellipse and its centre, not a point
+- The carrier's cadence, so the DF kit knows when to listen
+- A standing instruction: if PA-22 sees the carrier stop, he hears about it before he arrives
+- Afterwards: which fix is current, and what the emitter did between them
+
+---
+
+## Escalation Guidelines
+
+**Handle Yourself:**
+- Detection, capture timing, fixes, CLEAR and retune
+
+**Tell Quintero:**
+- The moment the carrier stops for two cycles
+- The moment a new carrier appears
+- Any fix that will not close inside 25 km
+
+**Reyes gets:**
+- Hold short, then a new ellipse - never a stale one
+
+---
+
+## End of Briefing
+
+Somebody has learned that a fix takes a few minutes and a drive takes an hour. They key up, they let you fix them, and they are gone before the truck arrives. The only answer to that is to keep the analyzer on the passband and the team on a short leash, and to treat every fix as the emitter's history rather than its address.
+
+Find it. Fix it. Brief Reyes. Then watch.
