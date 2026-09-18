@@ -1,0 +1,97 @@
+---
+title: 'Scenario 23 - Dark Passes'
+description: 'Degraded operations under simultaneous faults - arm the uplink, stage the hop set, read a surge of three at 21:14, triage by what loses the pass, load the post-burn ephemeris, go to holdover, acquire, chain up, one clean ACK, call the denial with the reference free-running, hop, put PLD-SAFE through it, safe down, debrief'
+lastUpdated: 2026-09-18
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Saturday 24 April, 2100 UTC
+**Station:** GW-01 Galway, Ireland - NATS Europe (the only station on the network with the command key)
+**Operator on Duty:** You, qualified, solo
+**Constellation Ops:** Anneke Visser, Rotterdam (keys the spacecraft end of the hop set on your call)
+**Site Lead:** Charlie Brooks (on the phone)
+**Group Security:** Priya Sharma, NATS Group CSIRT (IAR-2027-0422-GW01 issued Thursday)
+
+> SAR-2 payload thermal excursion +6 °C over limit since 20:58; Rotterdam requests PLD-SAFE on the 21:22 GW-01 window. KEY-2027-Q2b live. HOP-SAR2-05 staged at both ends, inactive. TX modem on 1,405; RX on 1,414; BUC muted. Element sets current. Nothing on the board.
+>
+> - Day shift (turnover log, 2050)
+
+**Priya (text, 2040):**
+> "The report went out Thursday with their method in it, and I would bet they have read it. Anneke needs PLD-SAFE on the 21:22 pass - the payload is warming. If they come tonight they will come with everything at once, because one at a time did not work. Nothing they have done needs a new answer. It needs the answers in the right order."
+
+---
+
+## Today's Passes (epoch 21:00:00 UTC, 0° horizon, Galway)
+
+| Satellite | AOS | Rise az | Max el | Culmination | LOS | Set az | Work |
+|-----------|-----|---------|--------|-------------|-----|--------|------|
+| MERIDIAN-SAR-2 | 21:22:01 | 022° | 32.8° | 21:26:50 (663 km) | 21:31:35 | 177° | Commanding, window 21:22:21-21:31:15; **PLD-SAFE** |
+| MERIDIAN-SAR-1 | 21:39:58 | 004° | 27.0° | 21:44:44 (788 km) | 21:49:27 | 221° | Not tasked |
+
+The SAR-2 times are for the post-burn orbit. The set on the station at 21:00 is the pre-burn one.
+
+## Frequency Plan (MER-IF-2027-04b)
+
+| Signal | RF | IF | LO |
+|--------|----|----|----|
+| SAR-2 TT&C uplink | 14,035 MHz | 1,435 MHz (TX) | BUC 12,600 low-side: IF = RF − LO |
+| SAR-2 video | 11,730 MHz | 1,370 MHz (RX) | LNB 13,100 high-side: IF = LO − RF |
+| SAR-2 beacon | 11,703 MHz | 1,397 MHz | |
+| Hop set HOP-SAR2-05 | 14,031 / 14,033 / 14,035 / 14,037 / 14,039 MHz | | five channels around the fixed carrier |
+
+---
+
+## The Surge
+
+At 21:14, inside a minute:
+
+| What | Where you see it | What it costs |
+|------|------------------|---------------|
+| GNSS spoof | GPS Timing: ΔT walking, constellation healthy | Timestamps. Nothing on the pass |
+| SAR-2 debris-avoidance burn | Pass Schedule: **EPHEMERIS STALE** against SAR-2 | **The pass.** Program-track points where the bird was |
+| Jammer expected in the window | Nowhere yet - the carrier is clear | Nothing, until it is on the air |
+
+Three things, eight minutes, one command. None of them is a fault on the station. Each has a ten-second answer. The whole exam is the order.
+
+<Aside type="caution">
+Rank by what loses the pass, not by what alarmed first. A stale element set loses it outright: at 660 km, a few seconds along-track is a beamwidth, and program-track does not search. A walking reference costs a microsecond a second in timestamps and can wait four minutes. A jammer that is not on the air costs nothing until it is - and a hop set spent on a forecast is a hop set gone.
+</Aside>
+
+## The Order
+
+| Step | Where | Time it takes |
+|------|-------|---------------|
+| 1. Load Updated Ephemeris (SAR2-DAM) | Pass Schedule inbox | One click; the slew is immediate |
+| 2. GNSS switch down | GPS Timing, Lock & Power card | Ten seconds; holdover **ACTIVE**, ΔT frozen |
+| 3. Nothing | Security console | The key stays in the store until a denial is called |
+
+Then the pass as normal: pre-position on 022°, program-track on the post-burn set, chain up at 21:22:21, HK-DUMP on the fixed carrier. The ACK proves the holdover: a free-running OCXO is a perfectly good 10 MHz for Doppler compensation, the modem clock and the BUC LO. Only the timestamps carry the offset.
+
+## The Denial
+
+From 21:24:30 PLD-SAFE comes back **Uplink denied - carrier jammed**. Key Valid, Doppler engaged, window OPEN, reference in holdover.
+
+| Suspect | Why it is not |
+|---------|---------------|
+| The holdover reference | HK-DUMP ACKed on it four minutes earlier; an OCXO drifts nanoseconds an hour. Putting GNSS back hands the reference to the spoofer again |
+| The key | Valid at both ends; a key rejection is its own reason on the console |
+| Standing down | Shetland has no command key; the payload has no next window |
+
+The answer is the one it was on the 16th, with everything else still broken around it: call it, Anneke keys SAR-2, Load Hop-Set Key, Frequency hopping, **SYNC LOCKED**, resend. PLD-SAFE goes up on a set they did not control, a reference they could not reach and a sequence they did not have.
+
+<Aside type="note">
+Two hop sets spent on the same carrier in eight days is a pattern. The response is still a called hop - but HOP-SAR2-06 is staged closer, the switch is expected on the first NAK, and it is written into the pre-pass sweep. Hopping from AOS burns a set on every pass that is not denied.
+</Aside>
+
+## Surge Log SL-2027-0424-GW01
+
+| Section | Line |
+|---------|------|
+| Surge | What arrived at 21:14, the order it was dealt with, the post-burn set loaded |
+| Window | HK-DUMP, the NAK and its reason, the call, the hop, PLD-SAFE ACK |
+| Debrief | Simultaneous faults ranked by what loses the pass; what is staged for next time |
+
+The reference stays in holdover until a probe says the sky is honest. There is a storm forecast for Tuesday.

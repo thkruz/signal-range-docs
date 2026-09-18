@@ -1,0 +1,92 @@
+---
+title: 'Scenario 22 - Connecting the Dots'
+description: 'Incident attribution report - open the campaign record, read the carried-forward audit chain, flag the origin, build the timeline, fly a routine SAR-1 pass in the middle of it, make the attribution call, write the referral, continuity, board, notifications, header and debrief'
+lastUpdated: 2026-09-18
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Thursday 22 April, 1400 UTC
+**Station:** GW-01 Galway, Ireland - NATS Europe
+**Operator on Duty:** You, qualified, solo - with Priya Sharma (Group CSIRT) at the desk
+**Constellation Ops:** Anneke Visser, Rotterdam
+**Site Lead:** Charlie Brooks
+
+> RX modem on 1,370 from yesterday's SAR-2 window. BUC muted, nothing to send. KEY-2027-Q2 and the KG-01 unit log under seal since 09:52 yesterday. Five records closed since the 13th. Nothing on the board.
+>
+> - Morning shift (turnover log, 1350)
+
+**Priya (text, 1340):**
+> "I am on the desk with you at 14:00. Bring nothing; the campaign record and the audit log are the whole brief. We write the report that reads the five together, you fly SAR-1 at 14:30 in the middle of it because that is what the report is about, and by 15:30 it leaves the building. Whether the last line is in it depends on what you kept yesterday."
+
+---
+
+## Today's Pass (epoch 14:00:00 UTC, 0° horizon, Galway)
+
+| Satellite | AOS | Rise az | Max el | Culmination | LOS | Set az | Work |
+|-----------|-----|---------|--------|-------------|-----|--------|------|
+| MERIDIAN-SAR-1 | 14:30:00 | 025° | 23.8° | 14:34:49 (880 km) | 14:39:34 | 168° | Receive, video 1,414 MHz IF |
+
+---
+
+## The Two Sources
+
+**The Campaign Record** (sidebar, next to Working Doc) holds every Working Document filed since the 13th, in order. Where you completed the shift in this browser it is your own record; otherwise it is the record as filed. Read it first, start to finish.
+
+**The Security console** carries the arc forward as audit entries: the spray and the export (13 Apr), the interference report (14th), the uplink denial (16th), the timestamp skew (19th), and - if it was retained on Wednesday - the KG-01 unit log (21st). Sign it off as read, then flag what the timeline needs.
+
+<Aside type="caution">
+The KG-01 line is there only if Q2 was retained under seal on the 21st. Zeroize clears the unit, and the unit is where the log lived. If the line is missing, the report says so - it does not pretend.
+</Aside>
+
+## The Origin
+
+The first thing done to the station was the carrier on the 13th. The first thing taken from it was the configuration export at 02:33 that morning: antenna, LNB LO, modem plan, contact schedule. Every later event used a parameter in it.
+
+| Date | Input | What they needed to know | Where it was in the export |
+|------|-------|--------------------------|----------------------------|
+| 14 Apr | Downlink | Which frequencies the station receives on | Modem plan |
+| 16 Apr | Uplink | The reissued command carrier and the window | Modem plan, contact schedule |
+| 19 Apr | Time | That the reference is GPS-disciplined at this site | Equipment configuration |
+| 21 Apr | Key | When a command would be sent, and on what | Contact schedule, modem plan |
+
+That table is the report's argument. The timeline carries the numbers; the attribution section carries the argument.
+
+## The Attribution Call
+
+| What the evidence supports | What the report says |
+|----------------------------|----------------------|
+| All five inside the exported parameters, in order of access needed, and the KG-01 log ties the command-link probe to an off-station source | **One actor, one method.** Origin: the 13 April export |
+| The first four as above; the KG-01 log destroyed on the 21st | **One actor for four events; the fifth unattributable**, and why |
+| - | Never a name. A pattern is a finding; a name is a claim |
+
+"Unrelated" was ruled out on each day in each record. "Insider" is answered by the export: whoever pulled it, remotely, through an account that should not have existed, needed nobody on the station.
+
+## The Parts That Leave the Building
+
+| Section | What goes in it |
+|---------|-----------------|
+| Referral | Geolocation to specialist assets (TDOA/FDOA). A single dish gives a bearing and a signature, not a fix. Route via the site lead |
+| Continuity | Four habits, one per input: accounts and change tickets; spare key and hop set staged; ΔT on every sweep with SH-02 as the cross-check; unit logs exported, never cleared |
+| Board | Impact, exposure, cost, what was delivered anyway, what is open, what has changed. No capital ask |
+| Notifications | ComReg (IR extended), the customer (impact statement), Rotterdam (full report), Group CSIRT (report, sealed evidence, referrals). Law enforcement is CSIRT's call, not the station's |
+
+<Aside type="note">
+The pass at 14:30 is not an interruption. Eleven passes since the 13th with nothing lost is the first line the board reads. Fly it clean, log it, go back to the desk.
+</Aside>
+
+## Incident Attribution Report IAR-2027-0422-GW01
+
+| Section | Line |
+|---------|------|
+| Timeline | The origin line, then four events with dates, inputs, parameters and cost |
+| Referral | Where the report's reach ends and whose begins |
+| Continuity | What changes, stated as habits |
+| Board | One paragraph, checkable against the timeline |
+| Notifications | Who, what, by whom |
+| Report | The header: period, scope, finding, where it stops |
+| Debrief | What this station learned about reading its own history |
+
+Five records closed on their own days were one incident that nobody read until the sixth day. The record is opened at every handover from now on.

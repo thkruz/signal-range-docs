@@ -168,6 +168,22 @@ export default defineConfig({
         {
           label: 'Scenario 20 - False Time',
           slug: 'campaign-2/scenario-20'
+        },
+        {
+          label: 'Scenario 21 - Knocking on the Door',
+          slug: 'campaign-2/scenario-21'
+        },
+        {
+          label: 'Scenario 22 - Connecting the Dots',
+          slug: 'campaign-2/scenario-22'
+        },
+        {
+          label: 'Scenario 23 - Dark Passes',
+          slug: 'campaign-2/scenario-23'
+        },
+        {
+          label: 'Scenario 24 - North Atlantic Storm',
+          slug: 'campaign-2/scenario-24'
         }
       ]
     }, {

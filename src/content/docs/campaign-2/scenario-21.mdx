@@ -1,0 +1,101 @@
+---
+title: 'Scenario 21 - Knocking on the Door'
+description: 'Command-link intrusion attempt - baseline both keys and the log, arm the uplink, fly the SAR-2 commanding pass, take one clean ACK, read the counter rejects that follow it, call it a replay against an intact key, rotate out of cycle, send the second command under the new key, safe down, keep the retired key and the unit log, file the COMSEC incident'
+lastUpdated: 2026-09-18
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Wednesday 21 April, 0900 UTC
+**Station:** GW-01 Galway, Ireland - NATS Europe (the only station on the network with the command key)
+**Operator on Duty:** You, qualified, solo
+**Constellation Ops:** Anneke Visser, Rotterdam (watches the spacecraft command counter on every pass)
+**Group Security:** Priya Sharma, NATS Group CSIRT (INC-2027-0412-GW01 open; four entries so far)
+
+> KEY-2027-Q2 live on KG-01 and on SAR-2. KEY-2027-Q2b staged in the COMSEC store since Friday, inactive. TX modem on 1,405 from the last SAR-1 tasking; RX on 1,414. BUC muted. Timing incident closed Monday. Nothing on the board.
+>
+> - Night shift (turnover log, 0850)
+
+**Anneke (text, 0840):**
+> "SAR-2 at 09:24 is commanding: HK-DUMP, then PLD-STATUS, both under KEY-2027-Q2. Q2b is in your store and on my shelf - staged, not loaded, since Friday. I watch the bird's command counter on every pass now. If it rejects anything I did not see you send, you will hear from me inside a minute."
+
+---
+
+## Today's Passes (epoch 09:00:00 UTC, 0° horizon, Galway)
+
+| Satellite | AOS | Rise az | Max el | Culmination | LOS | Set az | Work |
+|-----------|-----|---------|--------|-------------|-----|--------|------|
+| MERIDIAN-SAR-2 | 09:23:58 | 008° | 30.6° | 09:28:44 (703 km) | 09:33:27 | 219° | Commanding, window 09:24:18-09:33:07 |
+| MERIDIAN-SAR-1 | 09:46:00 | 006° | 26.2° | 09:50:46 (810 km) | 09:55:29 | 223° | Not tasked |
+
+## Frequency Plan (MER-IF-2027-04b)
+
+| Signal | RF | IF | LO |
+|--------|----|----|----|
+| SAR-2 TT&C uplink | 14,035 MHz | 1,435 MHz (TX) | BUC 12,600 low-side: IF = RF − LO |
+| SAR-2 video | 11,730 MHz | 1,370 MHz (RX) | LNB 13,100 high-side: IF = LO − RF |
+| SAR-2 beacon | 11,703 MHz | 1,397 MHz | |
+
+---
+
+## What a Command Frame Carries
+
+Every TT&C frame this station sends is encrypted under the live key and carries an **authentication counter** that moves on with every frame. The bird checks both: the key proves the frame came from someone holding it, the counter proves it has not seen this frame before. A frame with a good key and an old counter is refused - and both ends log the refusal.
+
+Encryption hides the content. It does not hide the transmission. Anyone with a receiver under the uplink footprint, or on the transponded return, can record your frames. They cannot read them and they cannot make their own. They can send yours again.
+
+<Aside type="caution">
+A replay is invisible on the station. Every key badge reads **Valid** because the key is valid. The only evidence is in the log: the spacecraft rejecting frames you did not send, and KG-01 recognising them as yours.
+</Aside>
+
+## The Knock
+
+Ninety seconds after HK-DUMP ACKs, two entries land on the Security console:
+
+| Entry | Actor | What it says |
+|-------|-------|--------------|
+| Counter reject | Monitoring service | SAR-2 telemetry: 3 inbound TT&C frames rejected at the spacecraft, authentication counter stale |
+| Unit log | KG-01 | 3 frames observed on the return matching command traffic sent 09:25 (HK-DUMP), counter 0x2F13 stale, **source not this station** |
+
+The first says the bird said no. The second says why, and to what. Together they say: someone recorded your frame and sent it back, and the key held.
+
+| What you see | Replay | Compromise | Console fault |
+|--------------|--------|------------|---------------|
+| Key badges | **Valid, both ends** | Valid (they have it too) | Valid |
+| Counter rejects at the bird | **Yes - stale** | No - fresh frames execute | No |
+| KG-01 log | **Frames match yours, source elsewhere** | Frames you never sent, executed | Nothing |
+| Anything on the station broken | **No** | No | Yes |
+
+## The Proportionate Response
+
+You cannot un-record what they recorded. You can make the recording worthless.
+
+| Step | Where | What you see |
+|------|-------|--------------|
+| Flag the counter reject | Security console | The bird's refusal, timed |
+| Read the key, flag the unit log | TX Chain, Security console | Valid; three frames, source not this station |
+| Call it | The decision | Anneke keys SAR-2 to Q2b |
+| Initiate / Confirm rotation | TT&C console, COMSEC card | Key badge PENDING, then **VALID** |
+| Resend PLD-STATUS | TT&C console | **ACK received** under Q2b |
+
+Rotation retires the traffic they hold. It costs two minutes of a nine-minute window. Zeroize would cost the key, the unit and the evidence, for a key that was never in anyone else's hands - only in their recorder.
+
+<Aside type="note">
+**Zeroize is for physical compromise.** It clears the unit, and the unit is where the log lives. If Q2 is zeroized - in the window or afterwards on principle - the KG-01 line that names the source is gone, and tomorrow's attribution report has a gap where the command link should be.
+</Aside>
+
+## What to Keep
+
+The retired key is out of service and harmless in the store. The KG-01 log is the only record anywhere of where the frames came from and when. Both go under seal for CSIRT, exactly as they read. Export the unit log to the incident record on any counter reject; do not tidy it.
+
+## COMSEC Incident Record CI-2027-0421-GW01
+
+| Section | Line |
+|---------|------|
+| Rotation | The call, the order, when each end was keyed, when Valid read |
+| Report | Times, frames, counter state, KG-01 source line, what was rotated, what was retained |
+| Debrief | What changes for the next commanding pass |
+
+Downlink, uplink, time, key. Four inputs in eight days, each one a log entry. Tomorrow they get read side by side.

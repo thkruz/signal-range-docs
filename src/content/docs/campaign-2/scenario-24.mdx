@@ -1,0 +1,91 @@
+---
+title: 'Scenario 24 - North Atlantic Storm'
+description: 'Campaign capstone - take command of the network in an Atlantic low, plan three contacts across two sites, collect SAR-1 from Galway under the carrier, load the post-burn set, catch the spoof on Shetland, collect SAR-2 from Shetland on the oscillator, heater on before the sleet, command SAR-3 through it, call the denial, hop, deliver, safe the network, hand over'
+lastUpdated: 2026-09-18
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Tuesday 27 April, 0300 UTC
+**Network:** GW-01 Galway and SH-02 Shetland - NATS Europe
+**Incident Commander:** You
+**SH-02:** Fiona MacLeod
+**Constellation Ops:** Anneke Visser, Rotterdam
+**Site Lead:** Charlie Brooks (on the phone)
+**Group Security:** Priya Sharma, NATS Group CSIRT
+
+> Met Éireann orange warning: heavy rain 02:30-03:30, sleet from 03:30, west coast. Three P1 contacts in the hour, unassigned. HOP-SAR3-01 staged at both ends since Sunday. Galway TX on 1,405, RX on 1,414, BUC muted; Shetland RX on 1,414. Both references locked. Nothing on either board.
+>
+> - Night shift (turnover log, 0250)
+
+**Charlie (text, 0240):**
+> "Orange warning on the coast, three birds in an hour, and you are incident commander for the network tonight - Fiona is on SH-02, Anneke is on the constellation, I am on the phone. Plan first. Everything they have done to us in two weeks, assume they do again, all at once, in the sleet. Everything you have done, you can do again too."
+
+---
+
+## Tonight's Passes (epoch 03:00:00 UTC, 0° horizon)
+
+| Satellite | Site | AOS | Rise az | Max el | Culmination | LOS | Work |
+|-----------|------|-----|---------|--------|-------------|-----|------|
+| MERIDIAN-SAR-1 | GW-01 | 03:19:58 | 005° | 30.2° | 03:24:44 (714 km) | 03:29:28 | NMW collect, video 1,414 MHz IF |
+| MERIDIAN-SAR-2 | SH-02 | 03:31:01 | 139° | 35.1° | 03:35:59 (688 km) | 03:41:01 | NMW collect, video 1,370 MHz IF - **post-burn set** |
+| MERIDIAN-SAR-3 | GW-01 | 03:52:00 | 023° | 28.4° | 03:56:49 (754 km) | 04:01:35 | Commanding, window 03:52:21-04:01:15; **PLD-SAFE** |
+
+## Frequency Plan (MER-IF-2027-04b)
+
+| Signal | RF | IF | LO |
+|--------|----|----|----|
+| SAR-3 TT&C uplink | 14,065 MHz | 1,465 MHz (TX) | BUC 12,600 low-side: IF = RF − LO |
+| SAR-3 video | 11,760 MHz | 1,340 MHz (RX) | LNB 13,100 high-side: IF = LO − RF |
+| SAR-3 beacon | 11,785 MHz | 1,315 MHz | |
+| Hop set HOP-SAR3-01 | 14,061 / 14,063 / 14,065 / 14,067 / 14,069 MHz | | |
+
+---
+
+## The Hour
+
+| Time | Where | What | The answer |
+|------|-------|------|------------|
+| 03:01-03:16 | GW-01 | Rain band, 30 mm/h | Nothing. It ends before SAR-1 rises |
+| 03:15 | SAR-2 | Conjunction-avoidance burn; station set stale | Load the post-burn set before Shetland's AOS |
+| 03:21:30-03:28:30 | GW-01 | Terrestrial carrier 1,410 MHz IF in SAR-1's band, 60 s on / 30 s off | Notch 1410 / 2 MHz / 30 dB; keep the collect |
+| 03:25 → | SH-02 | GNSS spoof on Shetland's reference; Galway reads zero | Shetland to holdover; Galway stays on GNSS |
+| 03:40-04:10 | GW-01 | Sleet | Feed heater on **before** 03:40 |
+| 03:55-04:01:40 | SAR-3 | Jammer on the 14,065 MHz command carrier | Call the denial; hop; PLD-SAFE through it |
+
+Every one of those has a procedure from an earlier shift. The capstone is whether they hold together, in order, with the storm on top.
+
+<Aside type="caution">
+The plan first. Three P1 contacts, two sites: SAR-1 and SAR-3 can only be flown from Galway tonight; SAR-2 goes to Shetland, where it peaks at 35° in clear air while Galway has sleet between its two windows. Nothing about the adversary is in the plan - the plan is geometry and weather, and it is right before anything else happens.
+</Aside>
+
+## Two Sites, One Network
+
+The spoof is on Shetland this time. On the 19th Galway walked and Shetland was the cross-check; tonight it is the other way round. The signature is identical - ΔT walking, constellation healthy, the other site reading zero - and so is the answer: holdover at the site being lied to, GNSS kept at the site that is honest. Fiona's SAR-2 collect flies on the oscillator; the frozen offset goes in the log.
+
+## The Command Contact
+
+SAR-3 rises into sleet on a heated feed. Chain up at 03:52:21, HK-DUMP on the fixed carrier, then PLD-SAFE - which comes back **Uplink denied - carrier jammed** at 03:55.
+
+| Suspect | Why it is not |
+|---------|---------------|
+| Rain fade on the uplink | HK-DUMP ACKed in the same sleet on the same power two minutes earlier; Ku uplink fade at 28° in sleet is a decibel or two, and the NAK says "jammed", not "weak" |
+| The key | Valid at both ends; a key rejection is its own reason on the console |
+| Shetland's holdover | A different site, a different reference, a receive-only pass |
+
+Same call as the 16th and the 24th: Anneke keys SAR-3, Load Hop-Set Key, Frequency hopping, **SYNC LOCKED**, resend. The point of the capstone is that it is the same call.
+
+<Aside type="note">
+Write the incident log as you go. Half the hour is logged before the half that matters most, because the commander who writes as they go is the one who can hand over.
+</Aside>
+
+## Incident Log IL-2027-0427-NATS-EU
+
+| Section | Line |
+|---------|------|
+| Incident Log | First half hour: rain, burn, SAR-1 under the carrier, spoof on Shetland, SAR-2 on the oscillator. Second: heater, SAR-3, the NAK, the hop, PLD-SAFE, safed |
+| Handover | What is still true at 04:15, what is staged for it, and that no procedure changed - because every event had one and they held together |
+
+Three contacts delivered. That is the sentence the board reads, and it is the end of the arc.
