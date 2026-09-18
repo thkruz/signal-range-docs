@@ -1,0 +1,93 @@
+---
+title: 'Scenario 18 - Dirty Spectrum'
+description: 'Persistent interference - decode SAR-2 clean, read the cadence of the carrier that comes back, call it, notch it and keep the pass, log the event, decode SAR-1 under it when it follows the plan, build the regulator package, and close with the line that changes the sweep'
+lastUpdated: 2026-09-18
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Wednesday 14 April, 1000 UTC
+**Station:** GW-01 Galway, Ireland - NATS Europe
+**Operator on Duty:** You, qualified, solo
+**Constellation Ops:** Anneke Visser, Rotterdam (owns the regulator relationship)
+**Group Security:** Priya Sharma, NATS Group CSIRT (INC-2027-0412-GW01 open)
+**SH-02 Shetland:** Fiona MacLeod, flying both passes in parallel, receive-only
+
+> Two days on from Monday night. Interference report IR-0412 with ComReg via Rotterdam; incident record open; svc-legacy disabled 02:36 on the 12th. Nothing attributed. Modem 1 on 1,414 from the morning SAR-1 tasking. Notch filter powered, idle.
+>
+> - Day shift (turnover log, 0952)
+
+**Anneke (text, 0941):**
+> "Your Monday report is with ComReg and with me. They can act on measurements, not on a story: if that carrier comes back today I want frequency, bandwidth, cadence, first seen, and a second station saying it did not hear it. Fiona is flying both passes from Shetland in parallel. Keep your decodes; the report is what you do between them."
+
+---
+
+## Today's Passes (epoch 10:00:00 UTC, 0° horizon, Galway)
+
+| Satellite | AOS | Rise az | Max el | Culmination | LOS | Set az |
+|-----------|-----|---------|--------|-------------|-----|--------|
+| MERIDIAN-SAR-2 | 10:18:00 | 023° | 31.8° | 10:22:49 (681 km) | 10:27:34 | 176° |
+| MERIDIAN-SAR-1 | 10:40:00 | 136° | 24.0° | 10:44:45 (876 km) | 10:49:29 | 357° |
+
+SAR-2 southbound, SAR-1 northbound. Decode windows roughly 10:20:30-10:25 and 10:42:30-10:47.
+
+## Frequency Plan
+
+| Signal | RF | IF (LNB LO 13,100 MHz) |
+|--------|----|------------------------|
+| SAR-2 beacon | 11,703 MHz | 1,397 MHz |
+| SAR-2 video | 11,730 MHz | 1,370 MHz |
+| SAR-1 beacon | 11,711 MHz | 1,389 MHz |
+| SAR-1 video | 11,686 MHz | 1,414 MHz |
+
+---
+
+## If It Comes Back
+
+Monday's carrier was continuous. Today's is not.
+
+| Read | On the analyzer | What it argues |
+|------|-----------------|----------------|
+| Position | Inside the band of the bird you are receiving | Whoever runs it knows the plan |
+| Doppler | None, while the video walks ~200 kHz | Ground, not space |
+| Cadence | 60 s on, 30 s off, to the second | A timer - intent, not accident |
+| Shetland | Clean on the same pass | Galway is the target, not the satellite |
+| Key status | Valid; frames decode in the off phase | RF denial, not intrusion |
+
+<Aside type="caution">
+The pass is not over when the carrier arrives. You receive on the frequency the satellite transmits on; there is nowhere to retune to. The tool is the **IF notch**: centre it on the carrier, 2 MHz wide, 30 dB deep. The video loses a sliver of its 36 MHz and keeps its lock. A receiver you switch off is a pass they took from you for free.
+</Aside>
+
+## The Notch Filter
+
+Two notches available on the RX Analysis tab. Each takes a centre (MHz IF), a bandwidth (MHz) and a depth (dB); power the module and apply.
+
+| Notch | Centre | Width | Depth | For |
+|-------|--------|-------|-------|-----|
+| 0 | 1,374 MHz | 2 MHz | 30 dB | Event 1 - the SAR-2 pass |
+| 1 | 1,410 MHz | 2 MHz | 30 dB | Event 2 - the SAR-1 pass |
+
+Notch 0 stays where it is when you retune for SAR-1. If the carrier moves with the plan, it will not be at 1,374.
+
+---
+
+## Interference Report IR-2027-0414-GW01
+
+For ComReg, copied to Rotterdam. Evidence, not conclusion:
+
+| Field | What goes in it |
+|-------|-----------------|
+| Victim | Satellite, downlink frequency, polarisation, station and coordinates |
+| Interferer | Centre frequency, bandwidth, cadence (period and on-time), first and last seen |
+| Captures | Spectrum captures at stated span and RBW, timestamped |
+| Cross-station | SH-02's read on the same pass |
+| Impact | C/N with the carrier on and off; whether the decode completed |
+| Mitigation | Notch settings and when applied |
+
+Who and where is the regulator's to find. The security incident is a separate record with a separate reader; the report does not carry the spray or the export, and it does not say "deliberate". It carries the seconds.
+
+<Aside type="note">
+The **decision** this shift - what the station does with the rest of the pass - is graded on what the station shows: the carrier on the analyzer and the key status on RX Analysis. Look at both before you answer.
+</Aside>

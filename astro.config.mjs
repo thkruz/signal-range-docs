@@ -156,6 +156,10 @@ export default defineConfig({
         {
           label: 'Scenario 17 - Unusual Activity',
           slug: 'campaign-2/scenario-17'
+        },
+        {
+          label: 'Scenario 18 - Dirty Spectrum',
+          slug: 'campaign-2/scenario-18'
         }
       ]
     }, {
