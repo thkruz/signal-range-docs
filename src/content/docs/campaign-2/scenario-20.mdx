@@ -1,0 +1,107 @@
+---
+title: 'Scenario 20 - False Time'
+description: 'GNSS spoof on the station reference - baseline the GPSDO, set up for SAR-1, watch the GNSS vs REF delta-T walk while the constellation stays healthy, cross-check Shetland, call it a spoof, take GNSS down, fly SAR-1 on the oscillator, report it in progress, probe the sky, come back only when the offset holds still, fly SAR-2 on true time, debrief'
+lastUpdated: 2026-09-18
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Monday 19 April, 0500 UTC
+**Station:** GW-01 Galway, Ireland - NATS Europe
+**Operator on Duty:** You, qualified, solo
+**Constellation Ops:** Anneke Visser, Rotterdam (monitoring polls your frame timestamps every ten minutes)
+**Cross-check:** SH-02 Shetland, Fiona MacLeod (same sky, second GPSDO)
+**Group Security:** Priya Sharma, NATS Group CSIRT (INC-2027-0412-GW01 open)
+
+> HOP-SAR2-04 retired Friday night as observed; HOP-SAR2-05 staged. RX modem on 1,370 from Friday's SAR-2 tasking. BUC muted, nothing to send this shift. GPSDO locked, nine satellites, holdover inactive. Nothing on the board.
+>
+> - Night shift (turnover log, 0450)
+
+**Anneke (text, 0440):**
+> "Early one. SAR-1 05:22 and SAR-2 05:44, both receive only, nothing to send. HOP-SAR2-05 is staged but you will not need it today. Our monitoring polls your station every ten minutes and compares frame timestamps against our reference; if I ring you before AOS it is because those numbers moved, not because I am awake."
+
+---
+
+## Today's Passes (epoch 05:00:00 UTC, 0° horizon, Galway)
+
+| Satellite | AOS | Rise az | Max el | Culmination | LOS | Set az | Work |
+|-----------|-----|---------|--------|-------------|-----|--------|------|
+| MERIDIAN-SAR-1 | 05:21:59 | 006° | 29.2° | 05:26:45 (735 km) | 05:31:28 | 219° | Receive, video 1,414 MHz IF |
+| MERIDIAN-SAR-2 | 05:44:00 | 006° | 27.0° | 05:48:44 (788 km) | 05:53:29 | 222° | Receive, video 1,370 MHz IF |
+
+## Frequency Plan (MER-IF-2027-04b)
+
+| Signal | RF | IF | LO |
+|--------|----|----|----|
+| SAR-1 video | 11,686 MHz | 1,414 MHz | LNB 13,100 high-side: IF = LO − RF |
+| SAR-2 video | 11,730 MHz | 1,370 MHz | |
+| GNSS L1 | 1,575.42 MHz | not in the LNB band - it never appears on the analyzer | |
+
+---
+
+## The Reference
+
+Everything on the station that needs a frequency gets it from one 10 MHz output: the LNB LO, the modem symbol clock, the tracker's time, the timestamp on every frame that leaves for Rotterdam. That 10 MHz comes from an oven-stabilised oscillator that is continuously corrected - *disciplined* - toward the time a GNSS receiver on the roof says it is.
+
+The receiver cannot verify that time. GNSS carries no authentication; a transmitter within radio range that is louder than the satellites and says a consistent, slightly wrong time is, to the receiver, a perfectly good constellation. It will report LOCKED and a full satellite count - and the disciplining loop will steer the station's reference toward the lie because that is its job.
+
+<Aside type="caution">
+The GNSS Constellation panel tells you the receiver is tracking a set of satellites that agree with each other. It cannot tell you whether they are telling the truth. During a spoof nothing on that panel changes.
+</Aside>
+
+## The Read
+
+The GPS Timing tab has one reading that does move: **GNSS vs REF ΔT** - the GNSS timing solution against the disciplined reference. In a healthy sky it reads +0.0 µs and stays there. Under a spoof it walks, steadily, in one direction, at whatever rate the spoofer chooses. Two microseconds a second is a quarter of a millisecond in two minutes, which is where Rotterdam's timestamp comparison catches it.
+
+| What you see | Outage | Spoof | Fault |
+|--------------|--------|-------|-------|
+| Satellites tracked | Falling | **Healthy** | Healthy |
+| Lock badge | UNLOCKED, then holdover on its own | **LOCKED** | UNLOCKED or warm-up |
+| GNSS vs REF ΔT | Still (reference free-running) | **Walking** | Walking or erratic |
+| Other station, same sky | Same outage | **Clean** | Clean |
+
+Three of those columns look alike on one panel. The other station is what separates them: two receivers under the same satellites, and only one of them being walked, means the satellites are fine and something within range of Galway is louder than they are.
+
+## The Defence
+
+You cannot fix the sky. You can stop listening to it.
+
+| Step | Where | What you see |
+|------|-------|--------------|
+| Read ΔT walking, constellation healthy | GPS Timing, GW-01 | ΔT past 20 µs and climbing; full satellite count, LOCKED |
+| Cross-check | GPS Timing, SH-02 | ΔT +0.0 µs |
+| Call it | The decision | Anneke: take it down, log the offset |
+| GNSS switch down | GPS Timing, Lock & Power card | Holdover **ACTIVE**; ΔT stops moving |
+| Write the offset down | The record | The number every SAR-1 frame timestamp now carries |
+| Fly SAR-1 | ACU, RX Analysis | Lock and C/N as normal |
+
+Holdover does not know the truth either. It freezes the reference where the lie had walked it - a few hundred microseconds off - and the OCXO then drifts on its own at nanoseconds per hour. The modem does not care what o'clock it is; it needs a 10 MHz that does not move, and a free-running OCXO is that. The frame timestamps are what carry the error, which is why the frozen figure goes in the record: Rotterdam corrects by it.
+
+<Aside type="note">
+Power-cycling the GPSDO costs a warm-up and re-acquires the same lie. Leaving GNSS selected "until it drops out" never ends - the GPSDO will not fall into holdover on its own, because as far as it can tell GNSS is fine. The 40 µs holdover limit is how far the oscillator may drift from a *trusted* GNSS; it says nothing about GNSS itself being wrong.
+</Aside>
+
+## The Probe
+
+There is no instrument on the station that sees the spoofer directly. The only way to know whether it is still up is to listen: GNSS switch up, watch ΔT for a few seconds on the GPS Timing tab.
+
+- **Moving** - the spoofer is up. Switch back down. Cost: a few microseconds more on the frozen offset.
+- **Still, with the receiver listening and the constellation tracking** - the sky is honest again. Leave it up and let the reference re-discipline.
+
+ΔT does not reset to zero when GNSS comes back; it resumes if the spoofer is there and stays where it is if not. The clock face tells you nothing about who is on the air. Thirty seconds of a still reading with GNSS selected is the all-clear; the satellite count never was.
+
+## Report It While It Is Happening
+
+Onset time, the ΔT reading and its rate, the constellation state, the SH-02 cross-check, when GNSS was taken down and the offset it froze at, and that the pass was flown on the oscillator. GPS is not down - one station is being lied to - and the report that says so is what keeps Shetland from going to holdover for nothing. Flag the monitoring entry on the Security console: the timestamp skew is the first evidence anyone outside the station had.
+
+## Timing Incident Record TI-2027-0419-GW01
+
+| Section | Line |
+|---------|------|
+| Reference | Onset, rate, constellation state, the SH-02 read, the switch, the frozen offset; each probe and what ΔT did |
+| Report | What went to Group CSIRT and Rotterdam, and when |
+| Debrief | What changes for the sweep from tomorrow |
+
+Downlink, uplink, time. Three inputs in one week, each dressed up as normal on the panel that should have caught it. What caught them was knowing what normal looks like, one reading that was not, and a second opinion.

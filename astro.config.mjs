@@ -164,6 +164,10 @@ export default defineConfig({
         {
           label: 'Scenario 19 - Frequency Agility',
           slug: 'campaign-2/scenario-19'
+        },
+        {
+          label: 'Scenario 20 - False Time',
+          slug: 'campaign-2/scenario-20'
         }
       ]
     }, {
