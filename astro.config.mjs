@@ -215,6 +215,10 @@ export default defineConfig({
         label: 'License',
         slug: 'contributing/license'
       },
+      {
+        label: 'Writing a Plugin',
+        slug: 'contributing/plugins'
+      },
       ]
     }]
   }), mdx()]

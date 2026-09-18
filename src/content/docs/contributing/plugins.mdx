@@ -1,0 +1,79 @@
+---
+title: Writing a Plugin
+description: Add equipment to SignalRange from your own git repository.
+lastUpdated: 2026-09-14
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+SignalRange plugins are small git repositories that the engine compiles into
+its own bundle. A plugin registers things through a fixed API at boot. Today
+that means antenna hardware configs (with an optional custom core class),
+routes, and campaigns. Anything a plugin registers shows up wherever the engine
+already looks, so a plugin antenna appears in every sandbox's **LOADOUT**
+picker with no UI work.
+
+<Aside>
+  The full reference, including the manifest schema and the `PluginApi`
+  surface, lives in the engine repository at
+  [`docs/plugin-development-guide.md`](https://github.com/thkruz/SignalRange/blob/main/docs/plugin-development-guide.md).
+</Aside>
+
+## Quick start
+
+```bash
+# In a SignalRange checkout
+pnpm install
+
+# Scaffold a plugin
+pnpm run plugin -- create my-dish
+
+# Boot the app with only this plugin enabled, in a sandbox, with its antenna selected
+pnpm run plugin -- dev signal-range-plugin-my-dish
+
+# Validate and test
+pnpm run plugin -- doctor signal-range-plugin-my-dish
+pnpm run plugin -- test signal-range-plugin-my-dish
+```
+
+The scaffold is its own git repository under `src/plugins-external/`. Push it
+anywhere; users install it with:
+
+```bash
+pnpm run plugin -- add https://github.com/you/signal-range-plugin-my-dish
+pnpm run build
+```
+
+Prefer starting from GitHub? The
+[signal-range-plugin-example](https://github.com/thkruz/signal-range-plugin-example)
+repository is the rendered scaffold and works with "Use this template".
+
+## The two hard rules
+
+1. The entry file must have a **named export** matching `className` in
+   `signal-range-plugin.json`.
+2. The class's `readonly id` must **equal** the manifest's plugin `id`. It keys
+   the plugin's settings and locale strings.
+
+`pnpm run plugin -- doctor <name>` checks both, along with engine
+compatibility and locale namespacing.
+
+## Trying a plugin antenna
+
+Open any campaign sandbox and click **LOADOUT** in the command bar. Every
+registered antenna, built-in and plugin, is listed per station. Applying a
+choice restarts the sandbox from a clean state and remembers the choice for
+that sandbox. For a one-shot launch, append `?antenna=<ID>` to the sandbox URL.
+
+## What is committed
+
+The plugin clones are gitignored. What the engine commits is the reproducible
+record of the plugin set: `external-plugins.json` (the lockfile) and the
+generated manifest. A fresh checkout restores the same plugins with
+`pnpm run plugin -- restore`, which the build runs for you.
+
+## Licensing
+
+Plugins may use any license; the example template is MIT. SignalRange itself
+is AGPL-3.0, and a plugin compiled into a SignalRange build becomes part of
+that combined work, so distribute accordingly.
