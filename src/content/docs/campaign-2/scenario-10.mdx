@@ -16,7 +16,7 @@ import { Aside } from '@astrojs/starlight/components';
 
 > Routine afternoon until 15:15, when Nordic Maritime Watch rang with a vessel that stopped reporting off the Faroes. Erik has a box and he has one pass that covers it, and that pass is a low one. Tasking request is below; Rotterdam has released the bird.
 >
-> The morning maintenance run left its fingerprints on the chain: BUC gain wound down to 18 dB for the sweep, and TX modem 1 still on SAR-2's 1,435 command IF from Tuesday's rotation. Nothing is alarmed. Nothing is set for this pass either.
+> The morning maintenance run left its fingerprints on the chain: BUC gain wound down to 18 dB for the sweep, and TX modem 1 still on SAR-2's 1,435 command IF from Tuesday's rotation. Nothing is faulted. Nothing is set for this pass either.
 >
 > Everything on this shift is arithmetic done in advance. Sweep the station, do the worksheet, build the EIRP one step at a time and park the dish before the horizon, because there is no time to do any of it after.
 >
@@ -150,7 +150,7 @@ Order on the transmit chain is unchanged by urgency: modem on air first, then HP
 ## Tasking Checklist
 
 ### Before AOS (15:34:59)
-- [ ] Dashboard: no active alarms; GPS Timing: GPSDO locked, no holdover; TX Chain: BUC on reference
+- [ ] Dashboard: only the RX AGC rail (weak signal, empty sky), no faults; GPS Timing: GPSDO locked, no holdover; TX Chain: BUC on reference
 - [ ] Link Analysis: worksheet computed, prediction agrees with the card
 - [ ] BUC gain 23 dB, out of compression
 - [ ] HPA back-off 4 dB; no overdrive alarm

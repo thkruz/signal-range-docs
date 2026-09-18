@@ -104,7 +104,7 @@ Rotterdam wants the beacon level as a number near culmination, not "present". A 
 
 | Item | Reads on | Required for a first acquisition |
 |------|----------|----------------------------------|
-| Board | Dashboard | No active alarms; on a new spacecraft every anomaly is blamed on the bird first, and the board is how you prove it was not the station |
+| Board | Dashboard | Only the RX AGC rail (empty sky, not a fault); on a new spacecraft every anomaly is blamed on the bird first, and the board is how you prove it was not the station |
 | Reference | GPS Timing | GPSDO locked, no holdover, on the log. A station reference error looks exactly like a spacecraft frequency error; the Doppler curve is SOH evidence only if the reference is on record |
 | ACU beacon frequency | ACU | 11,785 MHz (SAR-3). Selecting SAR-3 as the program-track target copies it into the field; typing it does the same |
 | Analyzer | RX Analysis | Centre 1,315 MHz, span 2 MHz |
@@ -141,7 +141,7 @@ Rotterdam wants the beacon level as a number near culmination, not "present". A 
 
 ### Readiness (08:50 – 09:08)
 - [ ] LEOP card read; the along-track uncertainty and the 0.45° beam understood together
-- [ ] Dashboard: no active alarms
+- [ ] Dashboard: only the RX AGC rail (weak signal, empty sky); no faults
 - [ ] GPS Timing: GPSDO locked, no holdover
 - [ ] ACU beacon frequency 11,785 MHz; TRR line in the LEOP log
 - [ ] Analyzer centre 1,315 MHz, span 2 MHz

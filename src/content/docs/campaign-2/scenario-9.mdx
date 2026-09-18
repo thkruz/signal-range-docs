@@ -114,7 +114,7 @@ Four checks per site, both from this console. SH-02 is checked with Shetland sel
 
 | Check | Reads on | Nominal | GW-01 action | SH-02 action |
 |-------|----------|---------|--------------|--------------|
-| Board | Dashboard | No active alarms | Confirm | Confirm. A clean board on a remote site says nothing about configuration; the next three checks do. |
+| Board | Dashboard | Only the RX AGC rail (empty sky, not a fault) | Confirm | Confirm. A board with nothing tripped on a remote site says nothing about configuration; the next three checks do. |
 | Reference | GPS Timing | GPSDO locked, 9 satellites, holdover clear | Confirm | Confirm; the GNSS antenna up there has been flaky in the wind |
 | Receive chain | RX Analysis | LNB 13,100 MHz LO, reference locked, 60 K, thermally stable | Retune modem 1 from 1,370 to **1,414 MHz**; analyzer centre **1,389 MHz**, span **2 MHz** | Read the LNB. **Leave modem 1 on 1,414**; it is Fiona's SAR-1 carrier until 06:29 |
 | Transmit chain | TX Chain | BUC on external reference, current normal, under 70 °C; HPA output disabled | Confirm cold: powered, locked, disabled | Confirm cold |
@@ -171,7 +171,7 @@ All passes are receive-only. The delivery standard is 8 dB or better held with t
 
 ### Galway sweep (06:00 – 06:07)
 - [ ] Brief read; six contacts, who flies what, and the plan rule understood
-- [ ] Dashboard: no active alarms on GW-01
+- [ ] Dashboard: only the RX AGC rail on GW-01 (weak signal, empty sky); no faults
 - [ ] GPS Timing: GW-01 GPSDO locked, not in holdover
 - [ ] RX Analysis: LNB 13,100 / stable; modem 1 to 1,414 MHz; analyzer 1,389 MHz, 2 MHz span
 - [ ] TX Chain: BUC on reference, current normal, HPA output disabled
@@ -181,7 +181,7 @@ All passes are receive-only. The delivery standard is 8 dB or better held with t
 - [ ] Second-orbit contacts: decision made, either way
 
 ### Shetland sweep (06:10 – 06:17)
-- [ ] SH-02 selected; Dashboard: no active alarms
+- [ ] SH-02 selected; Dashboard: only the RX AGC rail, no faults
 - [ ] GPS Timing: SH-02 GPSDO locked, not in holdover
 - [ ] RX Analysis: SH-02 LNB 13,100 / stable; modem left on 1,414
 - [ ] TX Chain: SH-02 BUC on reference, under 70 °C; HPA output disabled
