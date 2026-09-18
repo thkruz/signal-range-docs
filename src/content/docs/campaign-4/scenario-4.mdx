@@ -1,0 +1,71 @@
+---
+title: 'Scenario 4 - State of Health'
+description: 'A channel that does not come back - second TALON-2 backup contact: tell a transient from a trend, call the state of health DEGRADED with the channel named, command the stuck heater off inside the window, and verify it in the telemetry rather than the ACK'
+lastUpdated: 2026-09-18
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Package
+
+**Date:** Monday 8 November 2027, 1800 Local (0200Z Tuesday)
+**Site:** SANDSTORM (SS-01), transportable X-band EA site, high desert
+**Operator on Console:** You - contractor, second shift
+**Crew Chief:** MSgt Delgado (maintenance tent, radio on channel 2)
+**Mission Direction:** 9 EWS ops floor, callsign RAMPART
+
+> Primary terminal still down; 0205Z contact is ours again. Monitor is on the bird from last night, receiver 3 on 1625, modem 1 still on 1200. Chain cold.
+>
+> TALON-2 came out of eclipse at 0120Z. The battery heater runs through eclipse exit and cycles off on its own at 20 °C. Rotterdam's note says it did not last time and they are watching it. So watch it.
+>
+> Command stack has the TCS heater commands loaded. Do not send anything you cannot verify on the panel.
+>
+> - Delgado (turnover, 1745)
+
+---
+
+## TALON-2 Reference
+
+| Signal | RF (MHz) | LO (MHz) | IF (MHz) | Notes |
+|--------|----------|----------|----------|-------|
+| TT&C uplink | 8,200 | 7,000 (BUC, low-side) | 1,200 | H-pol; modem 1 already tuned |
+| Telemetry / beacon downlink | 7,300 | 8,925 (LNB, high-side) | 1,625 | V-pol; receiver 3, monitor chain |
+| Contact window | - | - | - | T+5:00 to T+40:00 mission elapsed |
+
+## Transient or Trend
+
+Two kinds of thing move on a telemetry panel, and the whole shift is telling them apart.
+
+| | Transient | Trend |
+|--|-----------|-------|
+| What it looks like | A channel departs and returns on its own | A channel departs and keeps going |
+| Cause | Usually none visible; the spacecraft absorbed something | Usually visible in the channel next to it |
+| Rate to harm | Never gets there | Reaches a limit inside the window |
+| What you do | Log the time and the peak; it becomes a point in a long-term trend | Name it, call it, command it, verify it |
+
+Tonight's transient: reaction wheel 1 to ~5200 rpm for a minute at T+4:00 - a momentum bump, unloaded on its own. Tonight's trend: battery temperature climbing about three degrees a minute from T+7:00 with **heater state ON** beside it, forty minutes after eclipse exit. At that rate the battery is at the 40 °C red limit inside three minutes of the yellow crossing.
+
+<Aside type="caution">
+A state-of-health call that names the channel is a call somebody can act on. **Degraded - battery temperature in yellow and climbing, heater stuck ON, commanding TCS-HTR-OFF** is a call. **One channel in yellow is not a degraded bird** is not; nor is putting the payload to safe mode to protect a battery that a heater command protects just as well.
+</Aside>
+
+## Command, Then Verify
+
+| Step | Where | What you see |
+|------|-------|--------------|
+| HPA up, modem 1 keyed | TX Chain | Chain ready inside the window |
+| TCS-HTR-OFF | TT&C console | **ACK** - receipt, not execution |
+| Heater state | Telemetry tab | OFF on the next frame - the command executed |
+| Battery temperature | Telemetry tab | Turns over and comes back inside limits over the next few minutes - the command fixed what you sent it for |
+
+A command is verified twice: the direct effect (the state it was meant to change) and the reason you sent it (the trend it was meant to stop). Log both times. Then chain cold before the log entry.
+
+<Aside type="note">
+The heater still needs an engineer. That is the anomaly report to RAMPART, not the contact log. The log carries what the panel said and when.
+</Aside>
+
+## TALON-2 Contact Log 2027-313-01
+
+| Section | Line |
+|---------|------|
+| Contact | The transient with its time and peak; the trend with its rate and cause; the call; the command and its ACK; the verification, both halves; the chain state; the report raised |

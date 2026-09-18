@@ -1,0 +1,76 @@
+---
+title: 'Scenario 3 - First Shift'
+description: 'TALON-2 state of health - the contractor's first shift at SANDSTORM is a TT&C backup contact on the unit's own X-band relay: point the monitor, take telemetry, read the spacecraft subsystem by subsystem, call its state of health on the frames, send one housekeeping dump, safe the chain, log it'
+lastUpdated: 2026-09-18
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Package
+
+**Date:** Sunday 7 November 2027, 1800 Local (0200Z Monday)
+**Site:** SANDSTORM (SS-01), transportable X-band EA site, high desert
+**Operator on Console:** You - contractor, first shift (referred by 9 EWS on the strength of an attribution report)
+**Crew Chief:** MSgt Delgado (maintenance tent, radio on channel 2)
+**Mission Direction:** 9 EWS ops floor, callsign RAMPART
+
+> Welcome aboard. Tonight is not a jamming shift. The primary MILSATCOM terminal is down for a scheduled maintenance window and SANDSTORM covers TALON-2's 0210Z contact - telemetry on the monitor aperture, one housekeeping dump on the TX chain, hand back to RAMPART.
+>
+> TALON-2 is the bird behind the protected band in every tasking order you will ever read here. Tonight you are the station keeping it alive, not the one keeping clear of it.
+>
+> The monitor dish is parked at 90/10. Receiver 3 is already on the 1625 telemetry IF. The exciters still carry the jam tune - retune modem 1 to 1200 before you key anything, and do not key anything until the window.
+>
+> - Delgado (turnover, 1740)
+
+---
+
+## TALON-2 Reference
+
+The unit's X-band MILSATCOM relay at 110.0 W. From SANDSTORM it sits at **azimuth 166, elevation 50** and does not move on your timescale. GEO: no Doppler compensation on the command carrier.
+
+| Signal | RF (MHz) | LO (MHz) | IF (MHz) | Notes |
+|--------|----------|----------|----------|-------|
+| TT&C uplink | 8,200 | 7,000 (BUC, low-side) | 1,200 | H-pol; inside the 8,175-8,225 protected band - because this is the bird it protects |
+| Telemetry / beacon downlink | 7,300 | 8,925 (LNB, high-side) | 1,625 | V-pol CW carrier; receiver 3, monitor chain |
+| Contact window | - | - | - | T+10:00 to T+40:00 mission elapsed |
+
+## Reading a Spacecraft
+
+Telemetry is grouped by subsystem. Each channel has a nominal value, a yellow band and a red band. A limit is a distance to harm, not a fraction of scale.
+
+| Subsystem | Channels | What they tell you |
+|-----------|----------|--------------------|
+| EPS (power) | Bus voltage, battery state of charge, array current | Whether the regulator holds the bus, where the battery sits, whether the sun is on the panels. The number to watch is the battery at the bottom of the next eclipse |
+| TCS (thermal) | Battery temperature, TWTA baseplate | The battery has tight limits because a cell above 32 °C ages fast and above 40 is a fire risk; the TWTA is designed to run hot. Slow channels with tight limits are the ones you write down |
+| ADCS (attitude) | Reaction wheel speed, sun sensor error | Wheel speed is stored momentum - how hard the bird works to hold still; its trend across contacts says when a momentum dump is due. Sun error says the pointing is good |
+| COMM | Transponder output power, command receiver AGC | The payload is alive and hearing you |
+| OBC | Processor load | The computer has headroom |
+
+<Aside type="caution">
+**Nominal** is a claim about fresh frames inside limits, made after reading them. **No red badges** is not a state of health. The link badge must read LIVE and the frame counter must be climbing before any channel means anything; a STALE stream is frozen history.
+</Aside>
+
+## The Contact
+
+| Step | Where | What you see |
+|------|-------|--------------|
+| Jam strings cold | TX Chain | HPA output disabled, JAM-A and JAM-B un-keyed |
+| Monitor onto TALON-2 | ACU (antenna 2) | Az 166 / el 50 |
+| Telemetry | Telemetry tab | Link **LIVE**, frames climbing, state of health **NOMINAL** |
+| Read each subsystem | Telemetry tab | Every channel green on fresh frames |
+| State of health | The decision | RAMPART logs your call |
+| Modem 1 to 1200 MHz | TX Chain | 8,200 MHz RF through the 7,000 LO |
+| Window open at T+10:00 | TT&C console | HPA up, modem 1 keyed, HK-DUMP **ACK** |
+| Safe the chain | TX Chain | Modem 1 un-keyed, HPA disabled - before the log entry |
+
+<Aside type="note">
+One command, inside the window, on the right carrier, and the chain back to cold before you write anything down. The jam antenna does not move tonight.
+</Aside>
+
+## TALON-2 Contact Log 2027-312-01
+
+| Section | Line |
+|---------|------|
+| Contact | Where the telemetry came from, the stream state, what was read subsystem by subsystem, the call, what was sent and what came back, how the chain was left |
+
+The next operator reads that line before they touch anything.

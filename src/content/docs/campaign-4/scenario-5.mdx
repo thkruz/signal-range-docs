@@ -1,0 +1,69 @@
+---
+title: 'Scenario 5 - Ranging Pass'
+description: 'A burn, a step, and a new set - third TALON-2 backup contact: a six-tone ranging arc around an east-west station-keeping burn, the burn read as a step in slant range with pointing steady, the post-burn element set loaded, the arc handed to the engineers'
+lastUpdated: 2026-09-18
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Package
+
+**Date:** Tuesday 9 November 2027, 1800 Local (0200Z Wednesday)
+**Site:** SANDSTORM (SS-01), transportable X-band EA site, high desert
+**Operator on Console:** You - contractor, third shift
+**Crew Chief:** MSgt Delgado (maintenance tent, radio on channel 2)
+**Mission Direction:** 9 EWS ops floor, callsign RAMPART
+**Spacecraft Engineering:** TALON ops, callsign LANTERN
+
+> Last backup contact - the primary terminal is back at 0600Z. LANTERN has an east-west station-keeping burn on TALON-2 at 0214Z and asked for a ranging arc from us around it: three tones before, the post-burn set loaded when they issue it, three after. The tone is on the TT&C console next to the command stack.
+>
+> Chain as last night: monitor on the bird, receiver 3 on 1625, modem 1 on 1200, cold. Window T+5:00 to T+40:00.
+>
+> - Delgado (turnover, 1750)
+
+---
+
+## Ranging
+
+A ranging tone goes up the command path like a command - key, window, uplink - and comes back with a number: the slant range from the aperture to the bird, to a tenth of a kilometre. One range is one number on one line of sight. A series of them over time, from a known slot, with the pointing angles the tracker already holds, is an **arc** - and an arc is what an orbit is fitted to.
+
+| Reading | What it tells the engineers |
+|---------|------------------------------|
+| One range | Almost nothing on its own |
+| Three timed ranges | A radial track: where the bird is along the line of sight and how that is changing |
+| Three before and three after a known burn | The burn itself, measured from the ground: the step between the two halves |
+| The pointing angles held throughout | The other two dimensions the range cannot see |
+
+## The Burn
+
+At 0214Z TALON-2 fires its thrusters and moves a tenth of a degree east along its orbit. From SANDSTORM that is about **1.5 km of slant range** - the fourth tone comes back longer than the third - with the monitor still on the bird and the telemetry still LIVE.
+
+<Aside type="caution">
+Range that steps while pointing and telemetry hold steady is the spacecraft moving, not the station. It is not a tracking error, not a tone fault, and not noise. It also means the element set the station is predicting from now describes where the bird used to be: the Pass Schedule tab reads **EPHEMERIS STALE** until LANTERN's post-burn set is loaded from the inbox.
+</Aside>
+
+## The Contact
+
+| Step | Where | What you see |
+|------|-------|--------------|
+| Telemetry LIVE, SOH nominal | Telemetry tab | The bird is healthy before anything goes up |
+| HPA up, modem 1 keyed | TX Chain | Chain ready inside the window |
+| Three tones | TT&C console, TONE | Three ranges, a tenth of a kilometre apart at most |
+| One tone after 0214Z | TT&C console | ~1.5 km longer |
+| Load Updated Ephemeris (TALON2-SK) | Pass Schedule inbox | STALE clears; prediction and measurement agree again |
+| Two more tones | TT&C console | Six ranges - the solution badge |
+| Hand-off | The log | Six timed ranges, the step, the sets, the angles |
+| Chain cold | TX Chain | Before the log entry |
+
+<Aside type="note">
+The pre-burn arc is not obsolete once the set changes. It is the "before" that makes the burn measurable. Give the engineers all six ranges, when each was taken, and which set it was taken against.
+</Aside>
+
+## TALON-2 Contact Log 2027-314-01
+
+| Section | Line |
+|---------|------|
+| Ranging | The arc: tones, the burn as a step, the set loaded, the hand-off |
+| Contact | Telemetry state, the arc summary, the chain state, the end of the backup role |
+
+Three contacts, three logs, one bird handed back healthy. The primary terminal is back at 0600Z.

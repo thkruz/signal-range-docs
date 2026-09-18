@@ -228,6 +228,18 @@ export default defineConfig({
         {
           label: 'Scenario 2 - Failover',
           slug: 'campaign-4/scenario-2'
+        },
+        {
+          label: 'Scenario 3 - First Shift',
+          slug: 'campaign-4/scenario-3'
+        },
+        {
+          label: 'Scenario 4 - State of Health',
+          slug: 'campaign-4/scenario-4'
+        },
+        {
+          label: 'Scenario 5 - Ranging Pass',
+          slug: 'campaign-4/scenario-5'
         }
       ]
     }, {
