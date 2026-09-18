@@ -1,0 +1,92 @@
+---
+title: 'Scenario 19 - Frequency Agility'
+description: 'TRANSEC ride-through - tune and key the uplink, fly the SAR-2 commanding pass, take one clean ACK, read the NAK that follows with a Valid key, call it as uplink denial, key the hop set at both ends, go to hopping, get sync, ride the resend through, safe down, log it, decode SAR-1 untouched, debrief'
+lastUpdated: 2026-09-18
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Friday 16 April, 1300 UTC
+**Station:** GW-01 Galway, Ireland - NATS Europe (the only station on the network with the command key)
+**Operator on Duty:** You, qualified, solo
+**Constellation Ops:** Anneke Visser, Rotterdam (keys the spacecraft end of the hop set on your call)
+**Group Security:** Priya Sharma, NATS Group CSIRT (INC-2027-0412-GW01 open)
+
+> IF plan MER-IF-2027-04b applied 21:10 last night. Hop set HOP-SAR2-04 loaded to the COMSEC store at 08:20, inactive. TX modem on 1,405 from yesterday's SAR-1 tasking; RX on 1,414. BUC muted. Nothing on the board.
+>
+> - Morning shift (turnover log, 1250)
+
+**Anneke (text, 1244):**
+> "New IF plan is on your station as of last night. I loaded hop set HOP-SAR2-04 on SAR-2 at 08:20; your copy is in the store, inactive. SAR-2 at 13:20 is commanding: HK-DUMP, then PLD-STATUS. If your carrier is denied you call it and I key my end on the call - not before, the set is not free. SAR-1 after is receive only."
+
+---
+
+## Today's Passes (epoch 13:00:00 UTC, 0° horizon, Galway)
+
+| Satellite | AOS | Rise az | Max el | Culmination | LOS | Set az | Work |
+|-----------|-----|---------|--------|-------------|-----|--------|------|
+| MERIDIAN-SAR-2 | 13:20:01 | 138° | 27.9° | 13:24:43 (765 km) | 13:29:29 | 353° | Commanding, window 13:20:21-13:29:09 |
+| MERIDIAN-SAR-1 | 13:42:01 | 005° | 25.2° | 13:46:46 (839 km) | 13:51:29 | 224° | Receive only |
+
+## Frequency Plan (MER-IF-2027-04b)
+
+| Signal | RF | IF | LO |
+|--------|----|----|----|
+| SAR-2 TT&C uplink | 14,035 MHz | 1,435 MHz (TX) | BUC 12,600 low-side: IF = RF − LO |
+| SAR-2 video | 11,730 MHz | 1,370 MHz (RX) | LNB 13,100 high-side: IF = LO − RF |
+| SAR-2 beacon | 11,703 MHz | 1,397 MHz | |
+| SAR-1 video | 11,686 MHz | 1,414 MHz | |
+| Hop set HOP-SAR2-04 | 14,031 / 14,033 / 14,035 / 14,037 / 14,039 MHz | | five channels around the fixed carrier |
+
+---
+
+## The Window
+
+Two commands inside 13:20:21-13:29:09, in order: **HK-DUMP**, then **PLD-STATUS**. Chain up before the first (carrier into the muted BUC, unmute, HPA), chain down at LOS in the mirror order.
+
+The console gives four reasons for a NAK. Three of them are its own:
+
+| NAK reason | What to check | Fix |
+|------------|---------------|-----|
+| Uplink not compensated | TT&C console Doppler toggle | Engage it |
+| COMSEC key invalid | TX chain key badge | Rotate |
+| Outside command window | Window badge | Wait |
+| **Uplink denied - carrier jammed** | Everything above reads clean; the transponded return on the analyzer shows a carrier that is not yours | **Hop** |
+
+<Aside type="caution">
+A NAK with the key reading **Valid** at both ends, Doppler engaged and the window **OPEN** is not a station problem and not a key problem. It is the satellite failing to hear you because something louder is sitting on your uplink frequency at the bird. Rotating a good key in an open window spends the window on nothing. Standing down hands them the window.
+</Aside>
+
+## The Hop Set
+
+Frequency hopping is only agile to someone who does not have the sequence. The key **is** the sequence. Both ends must load it - Anneke on SAR-2, you on the Security console - or one of you is transmitting into nothing.
+
+| Step | Where | What you see |
+|------|-------|--------------|
+| Call the denial | The decision | Anneke keys SAR-2 on your call |
+| Load Hop-Set Key | Security console, TRANSEC card | Key badge **LOADED** |
+| Waveform mode → Frequency hopping | Same card | Sync badge **SYNC LOCKED** |
+| Resend PLD-STATUS | TT&C console | **ACK received** - through the jamming |
+
+What hopping changes: your carrier is spread over five channels a jammer parked on one cannot cover, and the bird follows because it has the sequence. What it does not change: the jammer is still there, the set is now spent, and the report still has to say what was seen.
+
+<Aside type="note">
+A hop set used on the air is a hop set observed. HOP-SAR2-04 is retired tonight and the next set is staged before the next commanding pass. You hop on a called denial - not from AOS. Hopping every pass burns a set for a denial that may not come.
+</Aside>
+
+---
+
+## SAR-1 Afterwards
+
+Receive only, nothing of yours on the air. Uplink denial is aimed at the satellite; downlink interference is aimed at the station. A jammer that was on 14,035 MHz at SAR-2 has no reach into what SAR-1 sends you on 11,686. Decode it clean and write down that it was clean; that line is part of the picture too.
+
+## Uplink Denial Record UD-2027-0416-GW01
+
+| Section | Line |
+|---------|------|
+| Window | The clean ACK, the NAK and its reason, what the console read at that moment, the call, when both ends keyed, when sync locked, the ACK that followed |
+| Debrief | What changes for the next commanding pass |
+
+Times, what came back, what was done, in order. "Transient" and "attack" are conclusions; the record carries the NAK reason and the key state at the moment of the NAK.

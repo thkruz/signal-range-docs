@@ -160,6 +160,10 @@ export default defineConfig({
         {
           label: 'Scenario 18 - Dirty Spectrum',
           slug: 'campaign-2/scenario-18'
+        },
+        {
+          label: 'Scenario 19 - Frequency Agility',
+          slug: 'campaign-2/scenario-19'
         }
       ]
     }, {
