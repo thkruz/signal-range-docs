@@ -152,6 +152,10 @@ export default defineConfig({
         {
           label: 'Scenario 16 - Cascade',
           slug: 'campaign-2/scenario-16'
+        },
+        {
+          label: 'Scenario 17 - Unusual Activity',
+          slug: 'campaign-2/scenario-17'
         }
       ]
     }, {

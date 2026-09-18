@@ -1,0 +1,108 @@
+---
+title: 'Scenario 17 - Unusual Activity'
+description: 'First indicators - read the overnight log as a set, flag the spray, fly SAR-1, characterise a carrier that does not Doppler, call it, open the incident, flag the live configuration export, disable the account that was used, fly SAR-2 and close the record'
+lastUpdated: 2026-09-18
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Shift Turnover Notes
+
+**Date:** Monday 12 April, 0200 UTC
+**Station:** GW-01 Galway, Ireland - NATS Europe
+**Operator on Duty:** You, qualified, solo, night shift
+**Group Security:** Priya Sharma, NATS Group CSIRT - on the number all night
+**SH-02 Shetland:** Fiona MacLeod, on console, receive-only
+
+> Quiet evening. Last contact SAR-2 at 23:52, decoded; modem 1 left on 1,370. Station unattended 00:06 to 01:55. Nothing on the alarm board.
+>
+> - R. Byrne (turnover log, 0006)
+
+**Priya (text, 0152):**
+> "Group Security here. Your station raised three auth warnings overnight; the monitoring feed shows me the count and not the content. Read the log before your first pass. If anything on it or on the pass does not belong: flag it, note the time you saw it, then act. In that order. I will be on this number."
+
+---
+
+## Priya's Rule
+
+| Step | What | Why |
+|------|------|-----|
+| Look | Read the log as a set, read the pass as a whole | Three small warnings are one pattern; one carrier is a geometry |
+| Flag | Acknowledge the entry on the Security console | The flag is the first line of the incident record |
+| Note the time | The time *you saw it*, in the record | A change without a time behind it is a change nobody can explain at 09:00 |
+| Act | Disable, retune, report | The action is what the record justifies - never the other way round |
+
+<Aside type="caution">
+Nothing tonight is loud. A spray is designed to look like three unrelated warnings. A ground emitter in your band looks like a bad pass. A configuration export on a decommissioned account looks like a service poll. The console gives you entries; the pattern is yours to find.
+</Aside>
+
+---
+
+## Today's Passes (epoch 02:00:00 UTC, 0° horizon, Galway)
+
+| Satellite | AOS | Rise az | Max el | Culmination | LOS | Set az |
+|-----------|-----|---------|--------|-------------|-----|--------|
+| MERIDIAN-SAR-1 | 02:20:00 | 187° | 30.0° | 02:24:46 (717 km) | 02:29:34 | 339° |
+| MERIDIAN-SAR-2 | 02:40:01 | 137° | 26.3° | 02:44:46 (809 km) | 02:49:30 | 354° |
+
+Both northbound. Decode window (C/N ≥ 8 dB) roughly the middle third of each pass: 02:22:30-02:27:00 and 02:42:30-02:47:00.
+
+## Frequency Plan
+
+| Signal | RF | IF (LNB LO 13,100 MHz) | Analyzer |
+|--------|----|------------------------|----------|
+| SAR-1 beacon | 11,711 MHz | 1,389 MHz | inside a 40 MHz span on 1,414 |
+| SAR-1 video | 11,686 MHz | 1,414 MHz | centre |
+| SAR-2 beacon | 11,703 MHz | 1,397 MHz | inside a 40 MHz span on 1,370 |
+| SAR-2 video | 11,730 MHz | 1,370 MHz | centre |
+
+Ku Doppler is about ±250 kHz across a pass: frame the analyzer wide enough to hold the video, the beacon and the walk.
+
+---
+
+## The Overnight Log
+
+Three warning entries, an hour apart, one remote source, three attempts each, each stopping on the third:
+
+| Time | Account | What |
+|------|---------|------|
+| 01:12 | C. Brooks | 3 failed logins |
+| 01:40 | F. MacLeod | 3 failed logins |
+| 01:58 | Telemetry bridge (legacy) - **decommissioned 14 January, still active** | 3 failed logins |
+
+Few attempts per account, many accounts, one source, stopping just under the lockout. That is a spray. The third account is the one to flag: it should not answer at all.
+
+## The Carrier
+
+From about 02:25:30, four minutes into the SAR-1 pass, a second carrier appears at 1,410 MHz IF (11,690 MHz RF) - a megahertz wide, 4 MHz below the video and inside its band. The video's C/N drops with it.
+
+Two things to check before calling it:
+
+- **Does it move?** Over a minute the SAR-1 video walks ~200 kHz down the span with the Doppler. Frame the carrier on a 2 MHz span and watch. A signal with no Doppler on a pass that has plenty is not on the bird.
+- **Does it outlive the bird?** LOS is 02:29:34. A carrier that is still there afterwards was never coming from any satellite.
+
+Fiona has SAR-1 clean from Shetland the whole pass. Whatever you are seeing is Galway's.
+
+<Aside type="note">
+This is the first **decision** in the campaign. It is graded on what the station actually shows - not on which option sounds right. Read the carrier and the key status before you answer: a call made without looking scores half.
+</Aside>
+
+## The Export
+
+While you are writing up the carrier, the log moves: **02:33, a full station-configuration export by the legacy telemetry account** - antenna, LNB LO, modem plan, contact schedule. No change ticket. Thirty-five minutes after that account failed three logins.
+
+A contact schedule is a list of where an antenna will point, when, on what frequency. Flag it, note the time, then disable the account - in that order.
+
+---
+
+## Incident Record INC-2027-0412-GW01
+
+The Working Document for the night. Each flagged entry and each call writes a line into it:
+
+| Section | Line |
+|---------|------|
+| Indicators | The spray, with times and accounts; the export, with contents |
+| Incident | Both indicators as seen, no cause claimed; geolocation of the carrier referred to specialist assets |
+| Debrief | The one thing tonight that changes tomorrow |
+
+What was seen, when, what was done. Whether the spray, the carrier and the export are related is a conclusion somebody reaches later, from this record - and the record is worth nothing if it already contains the conclusion.
