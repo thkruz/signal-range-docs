@@ -1,0 +1,72 @@
+---
+title: 'Drill 4 - Vendor Session'
+description: 'Security drill 4 of 4 - a vendor remote-access session has opened on the M&C segment on a Saturday night with no ticket, beside a flow the network has never carried; the flow baseline that makes it visible, the boundary it crossed, what it could reach, and what a real vendor session looks like'
+lastUpdated: 2026-09-18
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Flow Baseline - GW-01 M&C Segment
+
+**Date:** Saturday 1 May, 2130 UTC
+**Station:** GW-01 Galway - NATS Europe
+**Operator:** You
+**Site Lead:** Charlie Brooks (on the phone)
+**Next pass:** MERIDIAN-SAR-2, 23:50 UTC
+
+> The M&C segment carries a dozen flows and they do not change between maintenance windows. Anything not on this list is an event on its own, before anyone reads what it carried.
+>
+> - Network baseline, revised 26 April
+
+| From | To | Port / protocol | Cadence |
+|------|----|-----------------|---------|
+| Operator workstation (GW-MC-01) | ACU controller | 4001/tcp (mgmt) | Continuous |
+| Operator workstation | RF front end controller | 4002/tcp (mgmt) | Continuous |
+| Operator workstation | RX / TX modems | 4003/tcp (mgmt) | Continuous |
+| Operator workstation | GPSDO | 4004/tcp (mgmt) | On demand |
+| Monitoring service | ACU, RFFE, modems, GPSDO | 161/udp (poll) | Every 20 min |
+| All M&C hosts | Site reference | 123/udp (NTP) | Hourly |
+| Monitoring service | Corporate collector (via firewall) | 5044/tcp, outbound only | Continuous |
+
+**No M&C host has internet egress.** Anything outbound to a public address from this segment is not on the baseline.
+
+---
+
+## Vendor Access - How It Is Supposed to Work
+
+| Step | Requirement |
+|------|-------------|
+| Ticket | Names the units, the window, the reason |
+| Window | Inside the published maintenance window (this week: none) |
+| Path | Corporate jump host only; nothing inbound reaches the M&C segment directly |
+| Account | `svc-vendor` enabled for the window, disabled after |
+| Session | Recorded; an operator on the console while it runs |
+
+The session at 21:12 matches none of these.
+
+<Aside type="caution">
+A vendor session with no ticket, outside the window, from an address the baseline has never seen, is either a vendor ignoring the procedure or somebody using the vendor's credentials. From this console those look the same. The answer to both is the same: cut the account, keep the evidence, tell CSIRT.
+</Aside>
+
+## What a Session on the M&C Segment Can Reach
+
+Everything on the monitor-and-control path: the ACU (pointing, tracking, limits), the RF front end controller (LNB LO, BUC), the modems, the GPSDO settings, and the workstation it came in through. Not the crypto unit, which has its own path and its own keys. Not the RF itself.
+
+A burst of ACU parameter reads from a session is what mapping the controller looks like.
+
+## Do Not Pull the Site Uplink
+
+The edge router also carries Rotterdam, the monitoring feed, Group Security's path in, and the coordination for the 23:50 pass. The account is the switch that removes exactly the thing that should not be there.
+
+---
+
+## Event Checklist
+
+- [ ] Flow baseline read; tonight's entries compared against it
+- [ ] Audit log reviewed
+- [ ] Session entry flagged; the call made with the flow and burst still open
+- [ ] `svc-vendor` disabled; session dropped
+- [ ] Flow and burst flagged
+- [ ] Boundary and proper vendor path stated
+- [ ] Reach assessed
+- [ ] Event logged; Group Security notified; M&C baseline check before 23:50

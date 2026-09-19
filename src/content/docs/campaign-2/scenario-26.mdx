@@ -1,0 +1,74 @@
+---
+title: 'Drill 2 - Baseline Check'
+description: 'Security drill 2 of 4 - the pre-pass sweep against the recorded baseline: RX modem 1 is not where the daybook says, the audit log says who moved it, and the access request for the 06:10 pass has to be confirmed before anything is keyed'
+lastUpdated: 2026-09-18
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Sweep Sheet
+
+**Date:** Thursday 29 April, 0530 UTC
+**Station:** GW-01 Galway - NATS Europe
+**Operator:** You
+**Site Lead:** Charlie Brooks (on the phone from 0600)
+
+> Pre-pass sweep, every shift, before the first pass: live configuration against the recorded baseline, unit by unit; audit log since the last sweep; access request for each pass confirmed. Anything that differs from the baseline has a ticket behind it or it is drift. Drift is restored, flagged, and referred.
+>
+> - Sweep procedure, revised 26 April
+
+---
+
+## Recorded Baseline - GW-01 (daybook, 26 April)
+
+| Unit | Setting | Value |
+|------|---------|-------|
+| RX modem 1 | Frequency | **1,414 MHz** (MERIDIAN-SAR-1 video IF) |
+| RX modem 1 | Bandwidth | 36 MHz |
+| RX modem 1 | Modulation / FEC | QPSK 3/4 |
+| LNB | LO | 13,100 MHz |
+| GPSDO | Reference | GNSS-disciplined, PPS on |
+| TX modem 1 | Frequency | 1,405 MHz |
+| BUC | State | Muted |
+
+## Change Control
+
+| Change | Who may make it | Ticket |
+|--------|-----------------|--------|
+| Receiver / transmitter frequency | Operator on duty, site lead | Required, with the pass or incident it serves |
+| LNB / BUC parameters | Site lead | Required |
+| Vendor maintenance | Vendor account, in a maintenance window, escorted or on a recorded session | Required, and the window must be open |
+
+The vendor maintenance account (`svc-vendor`) is for ACU and modem service. It is not authorised to retune a receiver, and there is no maintenance window this week.
+
+<Aside type="caution">
+The baseline is a control only while it is checked. A baseline that is updated to whatever the station currently says stops being one. Restore what the daybook says; do not overwrite the daybook with what you found.
+</Aside>
+
+---
+
+## Access Request - 0610 Pass
+
+| Field | Value |
+|-------|-------|
+| Request | SAR-2027-0429-011 |
+| Station | GW-01 |
+| Spacecraft | MERIDIAN-SAR-1 (61701) |
+| Window | 06:08 - 06:17 UTC |
+| Frequencies | Per the plan (1,414 MHz RX IF; no transmit) |
+| Confirmed by | Rotterdam constellation ops, 28 April 17:40 UTC, in the contact schedule |
+
+The board shows what we plan to do. The request is what we are allowed to do. Confirm the request against the schedule, for today, before anything is keyed.
+
+---
+
+## Sweep Checklist
+
+- [ ] Baseline read from the daybook, not from memory
+- [ ] RX modem 1 read on RX Analysis against the baseline
+- [ ] Audit log since the last sweep reviewed
+- [ ] Any difference: called as change (ticketed) or drift (not)
+- [ ] Drift restored from the baseline
+- [ ] Entries flagged; account held if the change was unauthorised
+- [ ] Access request confirmed for each pass
+- [ ] Sweep logged with times; referred to Group Security if anything was found

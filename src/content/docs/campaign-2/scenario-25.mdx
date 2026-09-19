@@ -1,0 +1,98 @@
+---
+title: 'Drill 1 - Site Orientation'
+description: "Security drill 1 of 4 - Group Security's ten-stop orientation sheet for the Galway crew: segments, lifetime, decision ownership, the soft target, effects, consequence, the M&C path, why OT is not IT, the antenna pattern, and what stays inside the fence"
+lastUpdated: 2026-09-18
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Orientation Sheet
+
+**Date:** Wednesday 28 April, 0900 UTC
+**Station:** GW-01 Galway - NATS Europe
+**Operator:** You
+**Issued by:** Priya Sharma, NATS Group CSIRT
+
+> Every operator walks this once, with the consoles in front of them, before the next roster. Ten stops, one line each into the sheet. It is not a test of the fortnight; it is the fortnight written down so the next one is shorter.
+>
+> - Priya, cover note
+
+<Aside type="note">
+A drill is a short scenario with one purpose. No pass to fly, nobody on the phone. Read the sheet, walk the stops, sign it off.
+</Aside>
+
+---
+
+## The Four Segments
+
+| Segment | What is in it | Galway examples |
+|---------|---------------|-----------------|
+| Space | The spacecraft | MERIDIAN-SAR-1, SAR-2, SAR-3 |
+| Link | The RF paths up and down | Ku-band downlink at 11.4-11.7 GHz; the TT&C uplink; the beacon |
+| Ground | Stations, control centres, the networks between them | GW-01, SH-02, Rotterdam constellation ops, Group CSIRT |
+| User | Whoever consumes the product | The imagery analysts; the customer's tasking desk |
+
+Everything the fortnight did to us happened on the link, seen from the ground. Nothing was done to the spacecraft.
+
+## Across a Satellite's Life
+
+Launch and early orbit (first contact, first telemetry), commissioning (payload checkout), routine operations (passes, products, state of health), anomaly response, end of life (disposal commanding). Galway lives in the middle two and is the first and last voice for the others.
+
+## Who Owns Which Decision
+
+| Decision | Owner |
+|----------|-------|
+| Anything on the console in the next minute | The operator |
+| Holding or dropping a pass | Site lead (Charlie), on the operator's proposal |
+| Rotating a command key out of cycle | Operator proposes; constellation ops (Anneke) concurs at the far end |
+| Zeroizing a key | Nobody below CSIRT (Priya), and only on a compromise finding |
+| Declaring an incident to the regulator | Group, never the site |
+
+## The Soft Target
+
+The ground has people, accounts, vendors, a network with an outside edge, and RF that anyone with a dish can hear or key into. The bird has none of those, and everything that commands it passes through the ground anyway.
+
+## Effects
+
+| Effect | What the attacker gets | April example |
+|--------|------------------------|---------------|
+| Deny | The link does not work | Uplink jammed on SAR-3 |
+| Degrade | The link works worse | The 11690 carrier under SAR-1 |
+| Disrupt | The link works, then does not, unpredictably | (none in April) |
+| Deceive | The station believes something false | Spoofed GNSS time |
+| Exploit | Our own system or knowledge of it, used against us | Replayed command frames; the configuration export |
+
+## Consequence
+
+State what was not delivered and what decision it affected, then when the next opportunity is. C/N is the symptom on our side of the wall.
+
+## The Monitor-and-Control Path
+
+Operator workstation (M&C client) → M&C network segment → ACU, RF front end controller, modems, GPSDO, each on its own management port. The Security console watches that segment. The crypto unit sits beside it with its own path.
+
+## Why OT Is Not IT
+
+Availability first: the ACU runs a pass at 02:20 whether or not a patch is out. Firmware is vendor-qualified against the hardware. An agent scanning it can stall a control loop. Changes go in maintenance windows, from verified images, and are logged.
+
+### Boundaries
+
+| Boundary | What crosses it |
+|----------|-----------------|
+| M&C segment / corporate network | The monitoring feed, outbound only |
+| Corporate network / internet | Vendor access via the jump host, on a ticket, in a window |
+
+Nothing on the M&C segment reaches the internet directly.
+
+## The Antenna Pattern
+
+Mainlobe about a degree wide at Ku-band on a 4 m dish. Sidelobe envelope tens of dB below the peak in every direction; nulls between sidelobes, narrow. No direction is deaf. On 12 April a 60 dBm emitter 24 km south-west arrived at about -90 dBm through a sidelobe while the dish pointed north at 30 degrees.
+
+## Outside the Fence
+
+Sensitive once it leaves the site: the contact schedule, the frequency plan and configuration, key change dates, staffing and vendor visits. And the station emits: a dish pointed at the sky, a BUC keyed, a beacon locked are observable from outside. A pass is a public event to anyone watching.
+
+---
+
+## Sign-off
+
+Ten stops, ten lines in the sheet. The drill completes when the tenth is written.

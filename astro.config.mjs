@@ -184,6 +184,22 @@ export default defineConfig({
         {
           label: 'Scenario 24 - North Atlantic Storm',
           slug: 'campaign-2/scenario-24'
+        },
+        {
+          label: 'Drill 1 - Site Orientation',
+          slug: 'campaign-2/scenario-25'
+        },
+        {
+          label: 'Drill 2 - Baseline Check',
+          slug: 'campaign-2/scenario-26'
+        },
+        {
+          label: 'Drill 3 - Removable Media',
+          slug: 'campaign-2/scenario-27'
+        },
+        {
+          label: 'Drill 4 - Vendor Session',
+          slug: 'campaign-2/scenario-28'
         }
       ]
     }, {

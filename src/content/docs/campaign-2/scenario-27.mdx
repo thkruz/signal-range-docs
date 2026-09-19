@@ -1,0 +1,72 @@
+---
+title: 'Drill 3 - Removable Media'
+description: "Security drill 3 of 4 - the vendor's technician has mounted a USB stick on the M&C workstation and staged an unsigned ACU firmware image from it; nothing has installed yet, and the next ten minutes are the transfer rule, how an image earns trust, and why the ACU is not a laptop"
+lastUpdated: 2026-09-18
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Service Plan - MNT-0430
+
+**Date:** Friday 30 April, 0800 UTC
+**Station:** GW-01 Galway - NATS Europe
+**Operator:** You
+**Site Lead:** Charlie Brooks (in the equipment room, escorting)
+**Vendor:** ACU manufacturer, one technician on site 07:30-12:00
+
+| Ticket item | Unit | Window |
+|-------------|------|--------|
+| Diagnostics read | ACU controller | 07:30 - 08:00 |
+| Fan tray replacement | ACU controller | 08:00 - 09:00 |
+| Post-service check | ACU, antenna | 09:00 - 10:00 |
+
+**Not in the ticket:** firmware of any kind. The controller is at 4.1.7, the qualified release for this hardware.
+
+---
+
+## Transfer Rule - M&C Enclave
+
+Nothing enters the M&C segment on removable media except through the transfer station:
+
+1. A media ticket, raised in advance, naming the file, its source and its hash.
+2. The file scanned and hash-checked on the isolated kiosk.
+3. Moved across the one-way path onto site-owned media.
+4. Logged with two names on it.
+
+Personal or vendor media never mounts on an M&C host. The rule is slow on purpose: the question "what is on this stick" is never answered on the machine that moves the dish.
+
+## Firmware - Trusting What Is Installed
+
+A firmware image installs on a controller only when all four hold:
+
+| Requirement | What it proves |
+|-------------|----------------|
+| Vendor-signed release, published with a hash | The vendor made it |
+| Obtained through the transfer path | It arrived the way files arrive here |
+| Hash matched on the isolated kiosk | It is the file the vendor published |
+| Change ticket naming version, window, rollback | Somebody owns it |
+
+A technician's badge does not sign a file.
+
+<Aside type="caution">
+Hold, isolate, keep. Do not wipe the workstation or destroy the media before CSIRT has seen them: they are the only record of what was on them.
+</Aside>
+
+---
+
+## Why the ACU Is Not a Laptop
+
+The M&C workstation is on the segment that controls the antenna. The ACU runs firmware nothing on that segment can inspect after it is installed. A scanner catches what it knows; a modified controller image is not on its list. On operational equipment the control is the path the file took, not a scan at the end of it. A controller running a bad image points a four-metre dish wherever the image says, on the next pass.
+
+---
+
+## Event Checklist
+
+- [ ] Audit log reviewed against MNT-0430
+- [ ] Off-plan entries identified (media, firmware)
+- [ ] Media entry flagged; the call made with the firmware stage still open
+- [ ] Image held; workstation isolated; media retained
+- [ ] Verification path stated (signed release, transfer path, hash, ticket)
+- [ ] Firmware entry flagged
+- [ ] Technician account suspended pending verification
+- [ ] Event logged; Group Security notified
