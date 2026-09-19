@@ -4,6 +4,28 @@ import cloudflare from '@astrojs/cloudflare';
 
 import mdx from "@astrojs/mdx";
 
+// GA4 measurement ID for the SignalRange property. The same stream is used by
+// the app (signal-range/src/analytics.ts) and the home site
+// (signal-range-home/src/config.ts); split surfaces by hostName in GA4.
+// Set to 'G-PLACEHOLDER' to render no tag and send nothing.
+const GA4_MEASUREMENT_ID = 'G-QNLH2DZXEK';
+const analyticsHead =
+  GA4_MEASUREMENT_ID && GA4_MEASUREMENT_ID !== 'G-PLACEHOLDER'
+    ? [
+        {
+          tag: 'script',
+          attrs: {
+            src: `https://www.googletagmanager.com/gtag/js?id=${GA4_MEASUREMENT_ID}`,
+            async: true,
+          },
+        },
+        {
+          tag: 'script',
+          content: `window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', '${GA4_MEASUREMENT_ID}');`,
+        },
+      ]
+    : [];
+
 // https://astro.build/config
 export default defineConfig({
   output: 'server',
@@ -13,6 +35,7 @@ export default defineConfig({
   site: 'https://docs.signalrange.space',
   integrations: [starlight({
     prerender: false,
+    head: analyticsHead,
     title: 'Official Documentation',
     description: 'Learn how to start communicating with satellites using SignalRange',
     favicon: './favicon.ico',
