@@ -8,6 +8,9 @@ import mdx from "@astrojs/mdx";
 // the app (signal-range/src/analytics.ts) and the home site
 // (signal-range-home/src/config.ts); split surfaces by hostName in GA4.
 // Set to 'G-PLACEHOLDER' to render no tag and send nothing.
+// Opt-in only: public/sr-consent.js (shared with the home site) loads gtag.js
+// after the visitor presses "Allow"; inside the app's brief iframes it never
+// shows a banner and follows the choice made on the app.
 const GA4_MEASUREMENT_ID = 'G-QNLH2DZXEK';
 const analyticsHead =
   GA4_MEASUREMENT_ID && GA4_MEASUREMENT_ID !== 'G-PLACEHOLDER'
@@ -15,13 +18,10 @@ const analyticsHead =
         {
           tag: 'script',
           attrs: {
-            src: `https://www.googletagmanager.com/gtag/js?id=${GA4_MEASUREMENT_ID}`,
-            async: true,
+            src: '/sr-consent.js',
+            'data-ga-id': GA4_MEASUREMENT_ID,
+            defer: true,
           },
-        },
-        {
-          tag: 'script',
-          content: `window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', '${GA4_MEASUREMENT_ID}');`,
         },
       ]
     : [];
