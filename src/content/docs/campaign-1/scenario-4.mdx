@@ -64,8 +64,8 @@ TIDEMARK-2 completed station-keeping at 45°W and the Halifax spacecraft team ha
 | Parameter | RF (MHz) | LO (MHz) | IF (MHz) |
 |-----------|----------|----------|----------|
 | Beacon (Downlink) | 4,180 | 5,250 (LNB) | 1,070 |
-| Carrier (Downlink) | 3,792 | 5,250 (LNB) | 1,458 |
-| Carrier (Uplink) | 8,020 | 7,000 (BUC) | 1,020 |
+| Carrier (Downlink, TP-1) | 3,792 | 5,250 (LNB) | 1,458 |
+| Carrier (Uplink, TP-1) | 6,017 | 7,000 (BUC) | 983 |
 
 <Aside type="note">
 TIDEMARK-2 frequencies differ from TIDEMARK-1. Verify each value against the reference table - don't assume parameters carry over between satellites.
@@ -76,16 +76,16 @@ TIDEMARK-2 frequencies differ from TIDEMARK-1. Verify each value against the ref
 | Direction | Frequency (IF) | Bandwidth | Modulation | FEC | Power |
 |-----------|----------------|-----------|------------|-----|-------|
 | Receive | 1,458 MHz | 36 MHz | QPSK | 3/4 | — |
-| Transmit | 1,020 MHz | 36 MHz | QPSK | 3/4 | -7 dBm |
+| Transmit | 983 MHz | 36 MHz | QPSK | 3/4 | -7 dBm |
 
 ### Spectrum Analyzer Settings (Beacon Acquisition)
 
 | Parameter | Value | Notes |
 |-----------|-------|-------|
 | Center Frequency | 1,070 MHz | TIDEMARK-2 beacon IF |
-| Span | 10 kHz | Narrow for CW beacon |
+| Span | 10 kHz (enter 0.01; the field is in MHz) | Narrow for CW beacon |
 | RBW | 1 kHz | Tight resolution |
-| Reference Level | -90 dBm | Typical beacon level |
+| Reference Level | about -90 dBm | Already set by the beacon preset (-91 dBm) |
 
 ---
 
@@ -130,7 +130,7 @@ Before making changes, confirm:
 Command antenna to TIDEMARK-2:
 
 - [ ] Set tracking mode: Program-track
-- [ ] Select target: TIDEMARK-2
+- [ ] Select target: TIDEMARK-2, then press Move to Target
 - [ ] Wait for slew to complete
 - [ ] Verify position: Az 219.7°, El 26.3°
 
@@ -143,7 +143,7 @@ The antenna will slew approximately 58° in azimuth and 8° in elevation. This t
 Verify antenna pointing with beacon:
 
 - [ ] Configure spectrum analyzer for 1,070 MHz IF
-- [ ] Set narrow span (10 kHz) and tight RBW (1 kHz)
+- [ ] Set narrow span (10 kHz, entered as 0.01 MHz) and tight RBW (1 kHz)
 - [ ] Confirm beacon signal at expected frequency
 
 ### Phase 4: Receive Chain
@@ -161,7 +161,7 @@ Configure receiver for TIDEMARK-2 downlink:
 
 Configure and enable transmitter:
 
-- [ ] TX modem frequency: 1,020 MHz
+- [ ] TX modem frequency: 983 MHz
 - [ ] Bandwidth: 36 MHz
 - [ ] Power: -7 dBm
 - [ ] Modulation: QPSK
@@ -186,7 +186,7 @@ Confirm bidirectional link:
 
 ## IF Frequency Calculations
 
-Downlink (High-side LO):
+Downlink (LO above RF):
 ```
 IF = LO - RF
 ```
@@ -196,14 +196,14 @@ Example - Beacon:
 IF = 5,250 - 4,180 = 1,070 MHz
 ```
 
-Uplink (Low-side LO):
+Uplink (LO above RF, lower sideband - the BUC panel shows LSB):
 ```
-RF = LO + IF
+RF = LO - IF
 ```
 
 Example - Carrier:
 ```
-RF = 7,000 + 1,020 = 8,020 MHz
+RF = 7,000 - 983 = 6,017 MHz
 ```
 
 ---

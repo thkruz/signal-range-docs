@@ -12,7 +12,7 @@ import { Aside } from '@astrojs/starlight/components';
 **Stations:** Vermont (VT-01) and Maine (ME-02) - you have both this morning
 **Operator on Duty:** You
 **Supervisor:** Dana Torres (driving in - roads are bad, 40+ minutes out)
-**Customer Contact:** James Okafor (SeaLink fleet ops)
+**Customer Contact:** James Okafor (Fleet Captain, Atlantic Shipping Alliance - SeaLink's anchor customer)
 
 > Two boards lit at once. Vermont's in the front edge of a winter storm - feed
 > icing faster than the forecast said, RX margin bleeding. And Maine just threw
@@ -50,6 +50,7 @@ import { Aside } from '@astrojs/starlight/components';
 | Event | Severe winter storm over the site, in progress |
 | Symptom | Ice accumulating on feed - RX loss growing toward ~10 dB if unchecked |
 | Feed heater | **OFF** (the failure: it should have been on before the front arrived) |
+| Where to read it | ACU Control: precipitation, ice accumulation and the feed heater switch |
 | Recovery | Heater ON -> ice melts ~1 dB/min; margin recovers gradually |
 | Time to recover | Minutes to tens of minutes, weather-dependent |
 
@@ -81,27 +82,40 @@ event, and Maine's drive is fine.
 | Recovery time | Slow either way | Fast |
 | Operator leverage | Start the heater, then wait | Full - config fix |
 
-The classic answer: start the slow recovery (heater) the moment you understand
-it, then fix the fast deterministic fault while the slow one heals - **unless**
-the fast fault is actively dangerous, in which case it goes first outright. Both
-orderings get the customer back; one of them also protects the spectrum and the
-amplifier. Look at the table again.
+The rule: start the slow recovery the moment you understand it - one switch
+costs seconds - then give the dangerous fast fault your full attention while the
+slow one heals. Only if the slow fix would take minutes of your attention does
+the dangerous fault go first. Here the heater is one switch, so it goes first,
+and Maine's HPA gets everything you have immediately after.
+
+Both first moves are timed. The heater must be on within three minutes of
+reading the Vermont board, and Maine's HPA output must come off the air within
+two minutes once you have set the order. Running out of either timer fails the
+shift.
 
 ---
 
 ## "Is This an Attack?" (adversarial check)
 
 Two sites degrading simultaneously is exactly what a coordinated interference
-or sabotage event would look like - and also exactly what a Friday in January
+or sabotage event would look like - and also exactly what a Friday in March
 looks like. Before you tell James "bad luck," be able to defend it:
 
 - [ ] Causes are independent and each fully explains its own symptoms
-- [ ] VT-01 degradation tracks the storm (weather radar agrees, precip sensor agrees)
+- [ ] VT-01 degradation tracks the storm (weather radar agrees, ACU precipitation readout agrees)
 - [ ] ME-02 fault is a config value with a mundane history (back-off drift), not an RF anomaly
-- [ ] No unexplained signals on either spectrum, no carrier anomalies satellite-side
+- [ ] No unexplained signals on either spectrum: sweep each carrier on RX Analysis at about 50 MHz span
+  (ME-02 TM-2 carrier at 1,458 MHz IF, VT-01 TM-1 carrier at 1,532 MHz IF)
 
 Document the rule-out in the log. The day the answer ISN'T bad luck, the value
 of having done this honestly every other time is that someone believes you.
+
+### Frequency Plan (both sites, LNB LO 5,250 / BUC LO 7,000)
+
+| Carrier | Uplink RF (TP-1) | TX IF | Downlink RF | RX IF |
+|---------|------------------|-------|-------------|-------|
+| TIDEMARK-1 (VT-01) | 5,943 MHz | 1,057 MHz (7,000 - 5,943) | 3,718 MHz | 1,532 MHz |
+| TIDEMARK-2 (ME-02) | 6,017 MHz | 983 MHz (7,000 - 6,017) | 3,792 MHz | 1,458 MHz |
 
 ---
 

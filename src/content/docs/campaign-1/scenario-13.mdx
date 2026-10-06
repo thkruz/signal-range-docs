@@ -55,7 +55,7 @@ SeaLink has not reported anything. The customer is unaware. Whatever you do, the
 | Parameter | RF (MHz) | LO (MHz) | IF (MHz) |
 |-----------|----------|----------|----------|
 | Beacon (Downlink) | 4,175.5 | 5,250 (LNB) | 1,074.5 |
-| Carrier (Uplink, TP-2) | 5,906 | 7,000 (BUC) | 1,094 |
+| Carrier (Uplink, TP-1) | 5,943 | 7,000 (BUC, LSB: 7,000 - 1,057) | 1,057 |
 
 ### Modem Configuration
 
@@ -98,7 +98,7 @@ Note the shape: current draw stepped up first and held flat; temperature is foll
 | LNB | 5,250 MHz LO, powered | Reference locked, thermally stable |
 | BUC | Unmuted, gain 33 dB | **Temp 62°C, current 4.1A - trending up** |
 | HPA | Enabled, backoff 8 dB | Within linear region |
-| TX Modem 1 | Transmitting, IF 1,094 MHz | Customer carrier active |
+| TX Modem 1 | Transmitting, IF 1,057 MHz | Customer carrier active |
 | Dashboard | No active alarms | Trend pre-alarm only |
 
 ---
@@ -143,7 +143,7 @@ If the de-rate is the right call, execute it live - no mute, no theater:
 1. Lower BUC gain in a single adjustment (target 23 dB operating value, down from 33 dB)
 2. Verify HPA still in linear region (backoff increases as drive drops)
 3. Verify BUC not saturated
-4. Watch 5-10 minutes: slope flattens, then trends down, current draw normalizes
+4. Watch the BUC on TX Chain until the curve turns over: temperature back below 61°C and current draw under 3.2 A. The full settle takes 5-10 minutes; the turn shows within a few
 5. Open maintenance ticket for BUC swap on next planned window
 6. Log the action
 

@@ -67,14 +67,14 @@ The transmit chain has been offline since midnight for scheduled maintenance. Cu
 
 ### IF Frequency Reference
 
-**Downlink (High-side LO):**
+**Downlink (LNB LO above RF):**
 ```
 IF = LO - RF
 ```
 
-**Uplink (Low-side LO):**
+**Uplink (BUC LO above RF, lower sideband):**
 ```
-IF = LO - RF
+RF = LO - IF, so IF = LO - RF
 ```
 
 ### Modem Configuration
@@ -91,7 +91,7 @@ IF = LO - RF
 | Center Frequency | 1,074.5 MHz | TIDEMARK-1 beacon IF |
 | Span | 2 kHz | Narrow for CW beacon |
 | RBW | Auto | |
-| Reference Level | -50 dBm | Typical beacon level |
+| Min / Max Amplitude | -100 / -50 dBm | Frames the beacon level |
 
 ---
 
@@ -167,8 +167,9 @@ After successful loopback validation:
 
 - [ ] Verify encryption status (AES-256 required)
 - [ ] Disable BUC loopback mode
+- [ ] Restore LNB LO to 5,250 MHz (RX Analysis)
 - [ ] Enable HPA output
-- [ ] Adjust HPA backoff for required output power
+- [ ] Adjust HPA backoff for required output power: above 400 W (TIDEMARK-1 link budget minimum)
 - [ ] Verify uplink operational
 
 ---
@@ -187,7 +188,7 @@ To view the loopback signal at the same IF frequency as the TX modem output:
 |-----------|-----------------|---------------|
 | LNB LO | 5,250 MHz | 7,000 MHz |
 
-Setting the LNB LO to match the BUC LO (7,000 MHz) allows direct IF comparison. The spectrum analyzer will show the TX modem output at 1,057 MHz.
+Setting the LNB LO to match the BUC LO (7,000 MHz) allows direct IF comparison. The spectrum analyzer will show the TX modem output at 1,057 MHz. Set the LNB LO back to 5,250 MHz when the test is done, or the receive chain stays off the satellite.
 
 ### BUC Gain for Loopback
 

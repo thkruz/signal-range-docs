@@ -24,7 +24,7 @@ import { Aside } from '@astrojs/starlight/components';
 > bird with the spectrum, and hold it there. Do not experiment with the broken
 > automation while IT is mid-diagnosis.
 >
-> — Dana (at your console, 1404)
+> — Dana (at your console, 1402)
 
 ---
 
@@ -53,12 +53,16 @@ import { Aside } from '@astrojs/starlight/components';
 | Elevation | 34.2° |
 | Polarization | 14.0° |
 | Beacon proof | CW spike at 1,074.5 MHz IF (5,250 LO - 4,175.5 RF) |
-| Carrier proof | 36 MHz carrier at 1,532 MHz IF, receiver locked |
+| Carrier proof | 36 MHz carrier at 1,532 MHz IF, receiver locked, C/N 9 dB or better |
+
+The spectrum analyzer was left on the carrier view (1,532 MHz, 50 MHz span):
+retune its center to 1,074.5 MHz to find the beacon.
 
 <Aside type="caution">
-With the automation's lock logic offline, the ACU panel cannot tell you whether
-you are on the satellite. The beacon at the right IF is the only pointing proof
-that does not depend on the failed controller. Verify on the spectrum after
+The ACU lock light (and the Dashboard's PROGRAM TRACK / LOCKED) still read as if
+nothing happened: they froze at the moment of the crash. Don't trust them. The
+automation fault itself shows on the alarm ticker. The beacon at the right IF is
+the only pointing proof that does not depend on the failed controller. Verify on the spectrum after
 every manual input - fly instruments, not feel.
 </Aside>
 
@@ -68,18 +72,18 @@ every manual input - fly instruments, not feel.
 
 - [ ] Acknowledge the automation fault; confirm servos/manual mode healthy
 - [ ] Record current position BEFORE touching anything (the dish is on the bird - do not lose that)
-- [ ] Switch tracking mode to MANUAL deliberately (a faulted controller in a half-automatic state is worse than honest manual)
+- [ ] Switch tracking mode to MANUAL deliberately (a faulted controller in a half-automatic state is worse than honest manual). **Timed: running out fails the shift**
 - [ ] Confirm/refine pointing against the prediction sheet
-- [ ] Prove pointing: beacon at 1,074.5 MHz IF, then carrier lock at the receiver
+- [ ] Prove pointing: beacon at 1,074.5 MHz IF (**timed: running out fails the shift**), then carrier lock at the receiver
 - [ ] Hold and spot-check periodically; GEO drift over one shift is negligible
-- [ ] Log the timeline: fault time, manual entry, every position input, IT updates
+- [ ] Log the timeline in the Ops Log (type it): fault time, manual entry, every position input, IT updates, and that the ACU was not rebooted
 
 ### Why Not Just Reboot It?
 
 The controller holds calibration state. An uncoordinated power cycle can come
 back with stale or defaulted axis calibration - and IT loses the crash state
 they need for root cause. Bypass first, stabilize the service, let IT do
-diagnosis on their schedule. (GPS-adjacent lesson from S8 applies: you cycle
+diagnosis on their schedule. (The same rule as power-cycling an LNB: you cycle
 equipment YOU own; you coordinate cycles on equipment someone else is debugging.)
 
 ---

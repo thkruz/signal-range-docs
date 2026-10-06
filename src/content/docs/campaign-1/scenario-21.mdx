@@ -44,6 +44,13 @@ import { Aside } from '@astrojs/starlight/components';
 | Beacon (Downlink) | 4,180 | 1,070 |
 | Carrier (Downlink) | 3,792 | 1,458 |
 | TP-1 downlink passband | 3,774 - 3,810 | 1,440 - 1,476 |
+| Uplink (TX, BUC LO 7,000) | 6,017 | 983 |
+
+ME-02's uplink is **off** this shift: the incident work is receive-only, and
+you want nothing of ours on the transponder while you characterize somebody
+else's signal. The spectrum analyzer comes up parked on the beacon (1,070 MHz
+IF, 2 MHz span); retune it to the carrier (1,458 MHz, 40 MHz span) to watch
+the interference.
 
 ---
 
@@ -105,6 +112,10 @@ that holds keys).
 | Notch filter on the interferer | Narrowband interferer inside our passband | Notch bandwidth comes out of our carrier's SNR |
 | Tighten IF filtering | Interferer at passband edge | Slight group-delay penalty |
 | Ride it out, document windows | Duty-cycled interferer, link survives the bursts | Customer sees periodic margin dips |
+
+For a ~6 MHz interferer at 1,470 MHz IF, the RX Analysis Notch Filter card's
+Notch 1 goes to **1,470 MHz center, 8 MHz wide, 30 dB deep**, enabled, then
+**Apply Changes** (nothing changes until you apply).
 
 There is no transmit-side mitigation for uplink jamming available to a ground
 station: power escalation ("burn through") degrades neighbors, violates

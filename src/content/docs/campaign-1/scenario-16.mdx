@@ -1,6 +1,6 @@
 ---
 title: 'Scenario 16 - Cascade Failure'
-description: 'Phase 2 capstone - prioritize and recover three concurrent unrelated faults on VT-01 with the customer on the line'
+description: 'Qualified-operator incident response - prioritize and recover three concurrent unrelated faults on VT-01 with the customer on the line'
 lastUpdated: 2026-05-25
 ---
 
@@ -81,7 +81,7 @@ Three concurrent, unrelated alarms have appeared simultaneously on VT-01:
 
 | Subsystem | Alarm | Likely Cause |
 |-----------|-------|--------------|
-| BUC | Over-temperature (>70°C) + high current draw | Thermal event; output should be muted to allow cooldown |
+| BUC | Over-temperature (>70°C, still climbing while driven) | Thermal event; output should be muted to allow cooldown |
 | LNB | Reference unlocked | Sticky reference-lock fault; clears on power cycle |
 | HPA | Overdriven (back-off below 3 dB) | Back-off has drifted from the standard 10 dB margin |
 
@@ -111,11 +111,14 @@ For this incident the order resolves to:
 - Disable the HPA output (takes the overdriven uplink off the air immediately).
 - Mute the BUC (begins thermal recovery - safe now that the HPA is down).
 - Restore HPA back-off to 10 dB while the chain is cold.
-- Wait for BUC temperature and current to return to nominal.
+- Wait for BUC temperature to fall back under 70°C (about a minute muted).
 - Power cycle the LNB to clear the sticky reference-lock fault.
 - Verify receiver lock and C/N on TIDEMARK-1.
 - Unmute the BUC, then re-enable the HPA, and confirm clean TX output.
 - Final dashboard sweep, customer notification, log entry.
+
+The first two (HPA output off, BUC mute) are **timed safety steps**: two minutes each from
+when they come up on the checklist. Running out fails the shift.
 
 <Aside type="caution">
 **Sequencing rule (same as every power-down):** the HPA comes down before its
@@ -133,7 +136,7 @@ event, not a judgment call.
 | Parameter | RF (MHz) | LO (MHz) | IF (MHz) |
 |-----------|----------|----------|----------|
 | Beacon (Downlink) | 4,175.5 | 5,250 (LNB) | 1,074.5 |
-| Carrier (Uplink, TP-2) | 5,906 | 7,000 (BUC) | 1,094 |
+| Carrier (Uplink, TP-1) | 5,943 | 7,000 (BUC, LSB: 7,000 - 1,057) | 1,057 |
 
 ### Standard Operating Margins
 
@@ -158,8 +161,8 @@ continues to dissipate power and the temperature will not fall.
 1. Disable the HPA output FIRST - never mute the BUC under an enabled HPA.
 2. Mute the BUC.
 3. Confirm temperature trending downward.
-4. Wait for temperature `< 70°C` and current draw `< 4.5 A`.
-5. Do not unmute until both conditions hold.
+4. Wait for temperature `< 70°C` (current draw should read normal, `< 4.5 A`).
+5. Do not unmute until both hold.
 
 ---
 
@@ -208,7 +211,7 @@ ready when you unmute the BUC and re-enable the output.
 
 ## Customer Communication
 
-James Okafor (SeaLink Fleet Captain) is on the line throughout. He does not want a
+James Okafor (Fleet Captain, Atlantic Shipping Alliance - SeaLink's anchor customer) is on the line throughout. He does not want a
 technical lecture; he wants to know:
 
 - That you are working it.
@@ -261,7 +264,7 @@ picture. A correct entry captures:
 
 Example:
 
-> *"0934 - VT-01 cascade event. Concurrent unrelated faults: BUC over-temp (72°C, high I),
+> *"0934 - VT-01 cascade event. Concurrent unrelated faults: BUC over-temp (72°C),
 > LNB ref unlock (sticky), HPA back-off drift (2 dB). Recovery in order: BUC mute, HPA
 > 10 dB, LNB power cycle, BUC unmute. SeaLink (Okafor) notified. Impact report to
 > follow."*
@@ -273,8 +276,8 @@ fault recurs, the next event is no longer "unrelated."
 
 ## End of Briefing
 
-This is the Phase 2 capstone. You have done multi-fault recovery before (S8 on AURORA-7),
-but that was three related faults on one bird. This is three unrelated faults on one
+You have done multi-fault recovery before (the AURORA-7 night shift), but that was
+three related faults on one bird. This is three unrelated faults on one
 station with a customer on the line and a supervisor who trusts you to handle it.
 
 Triage. Prioritize. Recover in order. Notify. Log.

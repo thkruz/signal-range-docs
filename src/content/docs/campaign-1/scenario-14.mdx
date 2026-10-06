@@ -56,7 +56,7 @@ require Catherine to drop her own customers - not free.
 
 **Source:** SeaLink customer portal, posted 1247
 
-**From:** James Okafor (SeaLink Fleet Captain)
+**From:** James Okafor (Fleet Captain, Atlantic Shipping Alliance - SeaLink's anchor customer)
 
 **Priority:** Advisory - operator discretion
 
@@ -78,7 +78,7 @@ require Catherine to drop her own customers - not free.
 | Parameter | RF (MHz) | LO (MHz) | IF (MHz) |
 |-----------|----------|----------|----------|
 | Beacon (Downlink) | 4,175.5 | 5,250 (LNB) | 1,074.5 |
-| Carrier (Uplink) | 5,943 | 7,000 (BUC) | 1,057 |
+| Carrier (Uplink, TP-1) | 5,943 | 7,000 (BUC, LSB: 7,000 - 1,057) | 1,057 |
 
 ### Modem Configuration
 
@@ -100,7 +100,7 @@ require Catherine to drop her own customers - not free.
 - Precipitation: None yet
 - Visibility: 10 miles
 
-**Forecast (1325-1545):**
+**Forecast (1325-1345):**
 - Moderate rain front passing overhead, ~20 minutes peak
 - No freezing - temperatures stay well above 32°F
 - Expected link margin impact: ~3 dB fade at peak
@@ -112,7 +112,8 @@ Rain attenuates C-band signals roughly in proportion to rain intensity along the
 slant path. A 3 dB fade is well within AGC compensation range for a healthy link.
 The feed heater is not just for ice - it also keeps water from beading and sheeting
 on the feed assembly. Dry surfaces attenuate less than wet ones. Bring it up
-before the rain lands.
+before the rain lands. (The ACU card labels it "Prevents ice buildup"; it is the same
+heater. The Rain Blower is optional on a moderate front and not part of this procedure.)
 
 ---
 
@@ -193,7 +194,7 @@ the responsible move is to not spend it. Keep back-off nominal through the front
 - [ ] Beacon C/N noted at baseline (write it down)
 - [ ] Modem locked with margin
 
-### Through the Fade (1325-1545)
+### Through the Fade (1325-1345)
 
 - [ ] Receiver lock maintained
 - [ ] C/N held above 7 dB (action threshold)
@@ -245,7 +246,7 @@ entry captures:
 
 Example:
 
-> *"1325-1545 - Moderate rain over VT-01, ~3 dB peak fade. Held TM-1 service per
+> *"1325-1345 - Moderate rain over VT-01, ~3 dB peak fade. Held TM-1 service per
 > SeaLink SLA preference. Peak AGC gain 3 dB (of 10 dB available), beacon C/N
 > minimum 7.8 dB. Triggers watched: AGC at max with continued fade; modem unlock.
 > Neither fired. SeaLink notified by reply on customer portal."*
@@ -257,8 +258,8 @@ records the trigger that fired and the time it did.
 
 ## End of Briefing
 
-S3 taught you that when the weather is bad enough, you hand the link off. S14 is
-the other half of the lesson: when the weather is not that bad, you don't.
+The winter storms taught you that when the weather is bad enough, you hand the link
+off. Today is the other half of the lesson: when the weather is not that bad, you don't.
 
 Escape is a tool, not a reflex. The customer told you what they value. The link
 will tell you whether their preference is operationally supportable. Match the

@@ -44,22 +44,24 @@ TIDEMARK-1 provides backbone connectivity for several enterprise customers in th
 | Parameter | RF (MHz) | LO (MHz) | IF (MHz) |
 |-----------|----------|----------|----------|
 | Beacon (Downlink) | 4,175.5 | 5,250 (LNB) | 1,074.5 |
-| Carrier (Downlink) | 3,718 | 5,250 (LNB) | 1,532 |
-| Carrier (Uplink) | 5,943 | 4,849 (BUC) | 1,094 |
+| Carrier (Downlink, TP-1) | 3,718 | 5,250 (LNB) | 1,532 |
+| Carrier (Uplink, TP-1) | 5,943 | 7,000 (BUC) | 1,057 |
+
+Both LOs sit above their RF: IF = LO - RF on the downlink, RF = LO - IF on the uplink (the BUC panel shows lower sideband, LSB).
 
 ### Modem Configuration
 
 | Direction | Frequency (IF) | Bandwidth | Modulation | FEC | Power |
 |-----------|----------------|-----------|------------|-----|-------|
 | Receive | 1,532 MHz | 36 MHz | QPSK | 3/4 | — |
-| Transmit | 1,094 MHz | 36 MHz | QPSK | 3/4 | -7 dBm |
+| Transmit | 1,057 MHz | 36 MHz | QPSK | 3/4 | -7 dBm |
 
 ### LNB Configuration
 
 | Parameter | Value |
 |-----------|-------|
 | LO Frequency | 5,250 MHz |
-| Gain | 60 dB |
+| Gain | 60 dB (the panel reads 65 dB after power-up; set it to 60) |
 | Reference | External (GPSDO 10 MHz) |
 
 ---
@@ -133,13 +135,14 @@ Maine's look angles differ from Vermont's. Program Track calculates correct poin
 - [ ] GNSS signal present
 
 **Antenna**
-- [ ] Tracking mode: Program Track
-- [ ] Target: TIDEMARK-1
+- [ ] Tracking mode: Program Track (PROGRAM)
+- [ ] Target: TIDEMARK-1, then press Move to Target
 - [ ] Position reached
 
 **Receive Chain**
 - [ ] LNB powered, LO: 5,250 MHz, Gain: 60 dB
-- [ ] Thermal stabilization complete
+- [ ] LNB ready: LOCK shows LOCKED, noise temperature under 100 K
+- [ ] Spectrum analyzer: Center 1,074.5 MHz, Span 0.002 MHz (2 kHz; the span field is in MHz), Min Amp -65 dBm, Max Amp -50 dBm
 - [ ] Beacon visible at 1,074.5 MHz IF
 
 **Receiver (Modem)**
@@ -149,7 +152,7 @@ Maine's look angles differ from Vermont's. Program Track calculates correct poin
 - [ ] C/N ≥ 10 dB
 
 **Transmitter (Modem)**
-- [ ] Frequency: 1,094 MHz, Power: -7 dBm
+- [ ] Frequency: 1,057 MHz, Power: -7 dBm
 - [ ] Bandwidth: 36 MHz, Mod: QPSK, FEC: 3/4
 - [ ] Transmission enabled
 
@@ -162,8 +165,20 @@ Maine's look angles differ from Vermont's. Program Track calculates correct poin
 ### Post-Handover: Stow Vermont
 
 - [ ] Return to Vermont station view
-- [ ] Set tracking mode: Stow
+- [ ] Set tracking mode: Stow (click STOW, then APPLY on the Antenna Positioning card)
 - [ ] Confirm antenna reaches stow position (El: 90°)
+
+### Handover Log Entry
+
+Type the handover into the Ops Log (station sidebar) before you sign off. Every weather handover gets an entry, even a clean one:
+
+- Time the weather started degrading the link, and time the handover completed
+- Satellite and services affected (TIDEMARK-1, enterprise data)
+- Stations involved (VT-01 to ME-02)
+- Weather conditions at the primary site
+- Anything abnormal you saw during the transfer
+
+The log is what post-incident review and seasonal pattern analysis run on.
 
 ---
 

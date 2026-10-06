@@ -46,7 +46,7 @@ Same enterprise traffic that runs through TM-1 every day. Customers do not need 
 
 **Window:** 1000-1200 Local
 
-**Scope:** HPA waveguide flange inspection and gasket replacement (VT-01)
+**Scope:** HPA waveguide flange inspection today (VT-01); the flange gasket replacement follows in the booked window next Tuesday, 0700-0900
 
 **Crew Lead:** Pete Hollis (RF Tech III)
 
@@ -56,7 +56,7 @@ Same enterprise traffic that runs through TM-1 every day. Customers do not need 
 - BUC muted
 - Personnel-safe RF chain (no radiating energy on the feed)
 
-**Return to Service:** Next shift (S12)
+**Return to Service:** After the crew signs off the gasket replacement next Tuesday. ME-02 holds TIDEMARK-1 until then.
 
 <Aside type="caution">
 The crew will physically access the feed assembly and waveguide run. Verify the HPA is disabled and the BUC is muted before the antenna reaches maintenance position. RF energy at the feed during crew access is a personnel-safety event.
@@ -72,14 +72,16 @@ The crew will physically access the feed assembly and waveguide run. Verify the 
 |-----------|----------|----------|----------|
 | Beacon (Downlink) | 4,175.5 | 5,250 (LNB) | 1,074.5 |
 | Carrier (Downlink) | 3,718 | 5,250 (LNB) | 1,532 |
-| Carrier (Uplink) | 5,943 | 4,849 (BUC) | 1,094 |
+| Carrier (Uplink, TP-1) | 5,943 | 7,000 (BUC, LSB) | 1,057 |
 
 ### Modem Configuration
 
 | Direction | Frequency (IF) | Bandwidth | Modulation | FEC | Power |
 |-----------|----------------|-----------|------------|-----|-------|
 | Receive | 1,532 MHz | 36 MHz | QPSK | 3/4 | — |
-| Transmit | 1,094 MHz | 36 MHz | QPSK | 3/4 | -7 dBm |
+| Transmit | 1,057 MHz | 36 MHz | QPSK | 3/4 | -7 dBm |
+
+The BUC LO sits above the uplink, so the BUC outputs the lower sideband: RF = LO - IF = 7,000 - 1,057 = 5,943 MHz.
 
 ME-02's LNB LO is set to 5,250 MHz for this coordination window. Receive IFs match Vermont exactly, which means downstream configurations are identical at both sites. This is by design - it removes ME-02-specific values from the operator's head during the commit.
 
@@ -114,7 +116,7 @@ ME-02's LNB LO is set to 5,250 MHz for this coordination window. Receive IFs mat
 
 ## Planned Handover Procedure (SOP-MX-002)
 
-This SOP differs from the weather-handover procedure (SOP-WX-003) used in S3. There is no time pressure, no need to enable the source-station feed heater, and the source-station antenna goes to maintenance position rather than stow. Read the checklists carefully - the muscle memory from weather handovers will get the sequence almost right but not exactly.
+This SOP differs from the weather-handover procedure (SOP-WX-003) you ran when the snow came through. There is no time pressure, no need to enable the source-station feed heater, and the source-station antenna goes to maintenance position rather than stow. Read the checklists carefully - the muscle memory from weather handovers will get the sequence almost right but not exactly.
 
 ### Pre-Handover: Source Station Baseline
 
@@ -183,7 +185,7 @@ A maintenance-position dish (5°) is different from a stow-position dish (90°).
 - Transmit-side staging on ME-02 (modem on, BUC muted, HPA disabled)
 - Traffic transfer execution
 - VT-01 safing for the crew
-- Operations log entry
+- Operations log entry (typed into the Ops Log: who has TM-1, what state VT-01 is in)
 
 ### Inform Dana
 
@@ -206,6 +208,6 @@ This is routine for our maintenance cadence. Work methodically and you will be f
 
 Pete's crew is at the gate. Catherine has her side ready. Dana wants the handover clean and the station safed before the window opens at 1000.
 
-Verify Maine, stage Maine, transfer traffic, verify Vermont safed. Log it. Meet Dana in the conference room to walk through the gasket procedure before the crew starts work.
+Verify Maine, stage Maine, transfer traffic, verify Vermont safed. Type the handover into the Ops Log. Meet Dana in the conference room to walk through the gasket procedure before the crew starts work.
 
-Next shift you bring it back.
+When the crew signs off the gasket replacement next Tuesday, you bring it back.

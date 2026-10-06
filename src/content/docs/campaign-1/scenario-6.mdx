@@ -71,31 +71,31 @@ AURORA-7 requires step-track mode. Program-track cannot compensate for orbital i
 | Parameter | RF (MHz) | LO (MHz) | IF (MHz) |
 |-----------|----------|----------|----------|
 | Beacon (Downlink) | 4,165 | 5,250 (LNB) | 1,085 |
-| Carrier (Downlink) | 3,605 | 5,250 (LNB) | 1,645 |
-| Carrier (Uplink) | 5,830 | 4,925 (BUC) | 905 |
+| Carrier (Downlink) | 3,828 | 5,250 (LNB) | 1,422 |
+| Carrier (Uplink) | 6,053 | 7,500 (BUC) | 1,447 |
 
 ### IF Calculation Reference
 
-**Downlink (High-side LO):**
+**Downlink (LNB LO above RF):**
 ```
 IF = LO - RF
 ```
 
-**Uplink (Low-side LO):**
+**Uplink (BUC LO above RF, lower sideband):**
 ```
-IF = RF - LO
+RF = LO - IF, so IF = LO - RF
 ```
 
 <Aside type="note">
-The BUC uses low-side injection for upconversion. TX IF calculation is different from RX: IF = RF - LO, not LO - RF.
+Both local oscillators sit above their RF frequencies, so the TX IF uses the same subtraction as the RX IF: IF = LO - RF = 7,500 - 6,053 = 1,447 MHz. The BUC panel shows this as SIDEBAND LSB.
 </Aside>
 
 ### Modem Configuration
 
 | Direction | IF (MHz) | Bandwidth | Modulation | FEC |
 |-----------|----------|-----------|------------|-----|
-| Receive | 1,645 | 24 MHz | QPSK | 3/4 |
-| Transmit | 905 | 24 MHz | QPSK | 3/4 |
+| Receive | 1,422 | 24 MHz | QPSK | 3/4 |
+| Transmit | 1,447 | 24 MHz | QPSK | 3/4 |
 
 ---
 
@@ -108,11 +108,11 @@ The BUC uses low-side injection for upconversion. TX IF calculation is different
 | GPSDO | Locked | Timing reference stable |
 | Antenna | Program-track on TIDEMARK-1 | Change target and mode |
 | LNB | 5,250 MHz LO, powered | No change needed |
-| BUC | 4,925 MHz LO, muted | Unmute after TX config |
+| BUC | 7,500 MHz LO, muted | Unmute after TX config |
 | HPA | Disabled | Enable for transmission |
 | Beacon Receiver | 1,085 MHz IF | Pre-configured by Charlie |
-| RX Modem | 1,200 MHz (incorrect) | Configure to 1,645 MHz |
-| TX Modem | 1,050 MHz (incorrect) | Configure to 905 MHz |
+| RX Modem | 1,200 MHz (incorrect) | Configure to 1,422 MHz |
+| TX Modem | 1,050 MHz (incorrect) | Configure to 1,447 MHz |
 | Encryption | AES-256-GCM | Keys verified by Charlie |
 
 ---
@@ -151,8 +151,8 @@ Never transmit without verifying encryption status. Pacific Rim traffic includes
 
 ### Receive Chain
 
-- [ ] Spectrum analyzer: Reconfigure for 1,645 MHz IF, 24 MHz span
-- [ ] RX modem frequency: 1,645 MHz
+- [ ] Spectrum analyzer: Reconfigure for 1,422 MHz IF, 50 MHz span, Max -20 dBm, Min -50 dBm, RBW Auto
+- [ ] RX modem frequency: 1,422 MHz
 - [ ] RX modem bandwidth: 24 MHz
 - [ ] RX modem modulation: QPSK, FEC 3/4
 - [ ] Carrier lock: Confirmed
@@ -160,7 +160,7 @@ Never transmit without verifying encryption status. Pacific Rim traffic includes
 
 ### Transmit Chain
 
-- [ ] TX modem frequency: 905 MHz (calculated from RF - LO)
+- [ ] TX modem frequency: 1,447 MHz (calculated from LO - RF)
 - [ ] TX modem bandwidth: 24 MHz
 - [ ] TX modem modulation: QPSK, FEC 3/4
 - [ ] Encryption: Verified active

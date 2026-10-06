@@ -50,6 +50,10 @@ The satellite is fully operational and serving active customer traffic. Your job
 | Parameter | RF (MHz) | LO (MHz) | IF (MHz) |
 |-----------|----------|----------|----------|
 | Beacon (Downlink) | 4,175.5 | 5,250 (LNB) | 1,074.5 |
+| Carrier (Downlink, TP-1) | 3,718 | 5,250 (LNB) | 1,532 |
+| Carrier (Uplink, TP-1) | 5,943 | 7,000 (BUC) | 1,057 |
+
+Both local oscillators sit above their RF, so both conversions subtract: IF = LO - RF on the way down, RF = LO - IF on the way up (the BUC panel shows this as LSB, lower sideband).
 
 ### Antenna Configuration
 
@@ -88,7 +92,7 @@ If the GPSDO drops to holdover mode, you have approximately twenty minutes befor
 
 | Equipment | Status | Key Indicators |
 |-----------|--------|----------------|
-| BUC | Active, reference locked | LO: 6,425 MHz, not muted |
+| BUC | Active, reference locked | LO: 7,000 MHz (LSB), RF 5,943 MHz, not muted |
 | HPA | Transmitting | 50 dBm output, 10 dB backoff |
 
 <Aside type="caution">

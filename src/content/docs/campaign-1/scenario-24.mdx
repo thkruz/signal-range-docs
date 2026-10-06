@@ -12,11 +12,11 @@ import { Aside } from '@astrojs/starlight/components';
 **Stations:** VT-01 and ME-02 - **you have incident command of both**
 **Operator on Duty:** You
 **Supervisor:** Dana Torres (on-site VT-01, working the phones)
-**Also on the net:** Catherine Vega (ME-02 hands available), Marcus Chen (Halifax), James Okafor (SeaLink fleet ops), Francis Martin (board)
+**Also on the net:** Catherine Vega (ME-02 hands available), Marcus Chen (Halifax), James Okafor (Fleet Captain, Atlantic Shipping Alliance - SeaLink's anchor customer), Francis Martin (board)
 
-> Everything at once this morning. Storm front tracking onto Vermont inside the
-> hour. Maine's BUC is running hot again - same signature as the S13 unit, and
-> the swap never made it through procurement. AURORA-7 has a SeaLink sync pass
+> Everything at once this morning. Storm front on top of Vermont in minutes.
+> Maine's BUC is running hot again - same unit, same signature you caught
+> before, and the swap never made it through procurement. AURORA-7 has a SeaLink sync pass
 > booked at 0800 on a beacon that's four dB weaker than the day you qualified.
 > James is already calling, and Francis wants a board note by end of morning.
 >
@@ -32,47 +32,54 @@ import { Aside } from '@astrojs/starlight/components';
 
 | # | Item | System | Severity | Trend |
 |---|------|--------|----------|-------|
-| 1 | Storm front, ETA ~30 min | VT-01 / TIDEMARK-1 | Building | Worsening |
-| 2 | BUC thermal trend, current elevated | ME-02 / TIDEMARK-2 | Pre-alarm | Worsening |
+| 1 | Storm front, ETA ~4 min (radar) | VT-01 / TIDEMARK-1 (TM-1) | Building | Worsening |
+| 2 | BUC thermal trend, current elevated | ME-02 / TIDEMARK-2 (TM-2) | Pre-alarm | Worsening |
 | 3 | Beacon margin for 0800 customer pass | VT-01 / AURORA-7 | Marginal | Fixed window |
-| 4 | Customer escalation | SeaLink (James) | - | Hourly calls |
+| 4 | Customer escalation | James (Atlantic Shipping, via SeaLink) | - | Hourly calls |
 | 5 | Board notification | Francis | - | Due end of morning |
 
 Five tracks. Three are clocks you do not control (storm, pass window, board
 deadline). Two are trends you can bend (BUC heat, customer confidence).
 
+The storm is the nearest clock: the feed heater has to be on before the front
+arrives. **Timed: running out fails the shift.**
+
 <Aside type="note">
-Nothing on this board is new. The storm is S3/S14/S20. The BUC trend is S13.
-The weak-beacon step-track pass is S6/S10/S22. The customer is S10/S14/S16.
-The board note is S22. The capstone skill is not any of these - it is holding
-five tracks without dropping one, and writing it all down while you do it.
+Nothing on this board is new. You have ridden storms on the feed heater, de-rated
+this BUC once already, flown AURORA-7's weak beacon on step-track, talked James
+through bad mornings, and written the sunset case the board is reading. The skill
+today is not any of these - it is holding five tracks without dropping one, and
+writing it all down while you do it.
 </Aside>
 
 ---
 
 ## Reference Data
 
-### VT-01 / TIDEMARK-1
+### VT-01 / TIDEMARK-1 (TM-1)
 
 | Parameter | Value |
 |-----------|-------|
 | Beacon | 4,175.5 MHz -> 1,074.5 MHz IF |
-| Weather plan | Feed heater BEFORE the front; ride unless AGC maxes with continued fade (S14 thresholds) |
+| Uplink | TX IF 1,057 MHz -> BUC LO 7,000 -> 5,943 MHz (TP-1) |
+| Weather plan | Feed heater BEFORE the front; ride unless AGC maxes with continued fade (the rain-fade SOP thresholds) |
 
-### ME-02 / TIDEMARK-2 (Catherine's hands, your call)
+### ME-02 / TIDEMARK-2 (TM-2) (Catherine's hands, your call)
 
 | Parameter | Value |
 |-----------|-------|
 | Beacon | 4,180 MHz -> 1,070 MHz IF |
+| Uplink | TX IF 983 MHz -> BUC LO 7,000 -> 6,017 MHz (TP-1) |
 | BUC | Gain 10 dB above operating value, temp climbing ~0.3°C/min, current elevated |
-| Fix | S13 playbook: de-rate to operating gain, verify linearity, swap ticket |
+| Fix | The thermal-trend playbook: de-rate to the 23 dB operating gain, verify linearity, swap ticket |
+| De-rate took | On TX Chain: current at or under 3.5 A, temperature at or under 65°C and falling, carrier still locked |
 
 ### VT-01 / AURORA-7 (0800-0820 customer pass)
 
 | Parameter | Value |
 |-----------|-------|
 | Beacon | 4,165 MHz -> 1,085 MHz IF - **weak (end-of-life decline)** |
-| Pass config | Step-track required; 1,422 MHz IF down / 1,447 MHz IF up (BUC LO 7,500) |
+| Pass config | Step-track required (SeaLink brings the carrier up at 0800) |
 | Go/no-go | Step-track must hold the beacon; if it cannot, the pass scrubs - tell the customer BEFORE 0800, not during |
 
 ---
@@ -82,6 +89,9 @@ five tracks without dropping one, and writing it all down while you do it.
 The Working Document panel is configured as your incident log. Triage calls,
 go/no-go decisions, customer commitments, and the board note build in it as you
 work. At end of shift it IS the after-action report - Dana forwards it as-is.
+
+When you close the incident, type the closing entry in the Ops Log (sidebar)
+yourself: incident closed, and the ME-02 BUC swap still open.
 
 ---
 
@@ -107,9 +117,9 @@ but it goes in the log with a reason, like everything else today.
 
 ## End of Briefing
 
-Twenty-three scenarios taught the pieces. The job was never the pieces.
+Every shift so far taught the pieces. The job was never the pieces.
 
 Order the board. Bend the trends. Keep five promises at once, and write it down
 so the next operator could pick up your shift cold.
 
-This is the exam. Fly it like a Tuesday.
+This is the exam. Fly it like any other shift.

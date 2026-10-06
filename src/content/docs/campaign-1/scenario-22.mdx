@@ -40,7 +40,7 @@ import { Aside } from '@astrojs/starlight/components';
 | Orbit | Inclined GEO ~3°, station-keeping N-S suspended years ago |
 | Beacon EIRP trend | **Declining - see table** |
 | Transponder | TP-1 operational, 24 MHz |
-| Customer base | SeaLink maritime sync windows (S10-style passes), declining usage |
+| Customer base | SeaLink maritime sync windows (scheduled customer passes), declining usage |
 
 ### Beacon Power History (monthly medians, ME/VT combined)
 
@@ -53,10 +53,15 @@ import { Aside } from '@astrojs/starlight/components';
 | 6 months ago | -2.4 |
 | 3 months ago | -3.1 |
 | This month | **-4.0** |
+| *Step-track floor (Halifax / ops estimate)* | *about -6.0* |
+
+At the current rate (1.6 dB in the last six months, and rising) the beacon
+reaches the step-track floor in roughly one to two quarters.
 
 The decline is consistent with solar array / power subsystem aging: the bus is
 running out of watts, and the spacecraft sheds load by reducing RF output. The
-slope has been **steepening** - the last 6 months lost as much as the previous 12.
+slope has been **steepening** - the last 6 months lost 1.6 dB, more than the whole
+first year of the record (1.1 dB).
 
 <Aside type="note">
 Step-track needs a usable beacon. The operational cliff is not "the transponder
@@ -70,11 +75,17 @@ margin for the months you cannot see yet.
 
 ## Today's Data Collection (final ops run)
 
-- [ ] Acquire AURORA-7, program-track then step-track (standard SOP-TK-002)
-- [ ] Measure current beacon level at 1,085 MHz IF against the reference table
+- [ ] Acquire AURORA-7: in ACU Control select it as the target, Move to Target
+      (program-track), then engage step-track (standard SOP-TK-002)
+- [ ] Confirm the beacon is present at 1,085 MHz IF on the spectrum analyzer
+      (this month's -4.0 dB figure is the median from the beacon log; there is
+      no relative-dB readout on the console to compare against)
 - [ ] Verify step-track still holds lock at current beacon power
-- [ ] Note C/N margin on the carrier at 1,422 MHz IF
+- [ ] Confirm receiver modem 1 is locked on the carrier at 1,422 MHz IF with
+      C/N of at least 8 dB (above demod threshold)
 - [ ] Confirm with Marcus what the vehicle telemetry says about power trend
+- [ ] Type the delivery entry in the Ops Log (sidebar) when the report goes to
+      the board
 
 ---
 

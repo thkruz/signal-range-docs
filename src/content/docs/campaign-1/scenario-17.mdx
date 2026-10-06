@@ -14,7 +14,7 @@ import { Aside } from '@astrojs/starlight/components';
 **Supervisor:** Dana Torres (on-site)
 **Spacecraft Liaison:** Marcus Chen (SeaLink Halifax)
 
-> Sun transit window on TM-1 this morning - the prediction sheet is attached. Window opens at 1149, peak around 1151:30, clear by 1154. You know the drill from the read-ahead: this one you don't fight. Notify, ride it through, document. The only way to fail a sun transit is to panic during one.
+> Sun transit window on TM-1 this morning - the prediction sheet is attached. Window opens about 1149, peak around 1151:30, clear by 1154. You know the drill from the read-ahead: this one you don't fight. Notify, ride it through, document. The only way to fail a sun transit is to panic during one.
 >
 > — Dana (text, 1138)
 
@@ -27,7 +27,7 @@ import { Aside } from '@astrojs/starlight/components';
 | Parameter | Value |
 |-----------|-------|
 | Event | Solar conjunction - Sun crosses antenna boresight |
-| Window open | 1149:00 local |
+| Window open | ~1149:00 local |
 | Peak | ~1151:30 local |
 | Window close | ~1154:00 local |
 | Predicted peak degradation | ~12 dB C/N |
@@ -68,7 +68,7 @@ the thing you can get wrong.
 |-----------|----------|----------|----------|
 | Beacon (Downlink) | 4,175.5 | 5,250 (LNB) | 1,074.5 |
 | Carrier (Downlink) | 3,718 | 5,250 (LNB) | 1,532 |
-| Carrier (Uplink, TP-2) | 5,906 | 7,000 (BUC) | 1,094 |
+| Carrier (Uplink, TP-1) | 5,943 | 7,000 (BUC, LSB: 7,000 - 1,057) | 1,057 |
 
 ---
 
@@ -77,15 +77,15 @@ the thing you can get wrong.
 ### Before the Window (now - 1149)
 
 - [ ] Dashboard: no active alarms - confirm clean baseline
-- [ ] RX: beacon present, receiver locked, note baseline C/N
-- [ ] Customer notification sent (template below) - **before** the window opens
+- [ ] RX Analysis: beacon present, receiver locked, note baseline C/N (at least 10 dB)
+- [ ] Customer notification sent (template below) - **before** the window opens. Timed: you have two minutes once the notification step comes up, and running out fails the shift
 - [ ] Confirm uplink configuration: no changes planned during the window
 
 ### During the Window (1149 - 1154)
 
 - [ ] Do **not** repoint, do not handover, do not adjust the RX chain
 - [ ] Keep the uplink exactly as it is - the satellite still hears us fine
-- [ ] Watch the sky-noise alarm rise, peak, and fall - that is the event working as predicted
+- [ ] Watch the sky-noise alarm rise, peak, and fall on the alarm ticker at the top of the screen (ACU Control's Sky Temp readout climbs with it) - that is the event working as predicted
 - [ ] Expect demod loss of lock near peak; expect it to recover on its own
 
 ### After the Window (1154+)

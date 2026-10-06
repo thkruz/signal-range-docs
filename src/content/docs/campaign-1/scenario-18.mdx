@@ -48,12 +48,13 @@ import { Aside } from '@astrojs/starlight/components';
 |-----------|----------|----------|----------|
 | Beacon (Downlink) | 4,180 | 5,250 (LNB) | 1,070 |
 | Carrier (Downlink) | 3,792 | 5,250 (LNB) | 1,458 |
+| Carrier (Uplink, TP-1) | 6,017 | 7,000 (BUC, LSB: 7,000 - 983) | 983 |
 
 ### Vehicle Anomaly Data (Halifax, 0850)
 
 | Parameter | Nominal | Current |
 |-----------|---------|---------|
-| Nominal slot position | Az 219.7°, El 26.3° | Drifting ±1.5° (figure-8, growing) |
+| Nominal slot position | Az 219.7°, El 26.3° | Drifting ±1.3° (figure-8, growing) |
 | Ephemeris validity | Good | **Stale - drift exceeds prediction** |
 | Station-keeping | Automatic N-S burns | **Degraded thrusters - burns suspended** |
 | Transponders / beacon | Nominal | Nominal (payload unaffected) |
@@ -77,8 +78,8 @@ the satellite actually *is*.
 
 - [ ] Confirm beacon C/N degradation under program-track (document the baseline first)
 - [ ] Enable step-track optimization (requires program-track engaged underneath)
-- [ ] Confirm beacon lock recovers and holds
-- [ ] Verify carrier C/N stabilizes at or near baseline
+- [ ] Confirm beacon lock holds under step-track (ACU Control)
+- [ ] RX Analysis: verify the carrier stays locked with C/N at or above 9 dB
 - [ ] Hold and monitor - the drift grows slowly; step-track keeps up
 
 <Aside type="caution">

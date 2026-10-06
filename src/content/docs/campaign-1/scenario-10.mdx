@@ -24,7 +24,7 @@ import { Aside } from '@astrojs/starlight/components';
 > — Dana
 
 **Marcus (call note, 0930):**
-> *"Marcus here from Halifax. We're spun up on our end - payload's nominal, watching the spacecraft side telemetry now. Customer's expecting clean throughput from 10:00 to 10:30 sharp. Whenever you've got the ground side in pass configuration, give me a wave."*
+> *"Marcus here from Halifax. We're spun up on our end - payload's nominal, watching the spacecraft side telemetry now. Customer's expecting clean throughput from 10:00 to 10:30 sharp. Get the ground side into pass configuration and I'll be watching the inbound."*
 
 ---
 
@@ -107,11 +107,11 @@ This is the SeaLink high-priority pass SOP. It is shorter than the post-maintena
 ### Pre-Pass Setup (0945-1000)
 
 - [ ] VT-01 dashboard: no active alarms
-- [ ] Antenna in **step-track** on AURORA-7
+- [ ] Antenna in **step-track** on AURORA-7 (ACU Control: Step-Track Optimization switch in the Program Track card)
 - [ ] Beacon lock held under step-track for ≥ 15 seconds
 - [ ] RX modem locked, C/N ≥ 8 dB
 - [ ] Uplink return path verified (BUC unmuted, HPA enabled, not overdriven)
-- [ ] Marcus confirms payload acquisition on his end
+- [ ] Marcus confirms payload acquisition on his end (Marcus calls it; no action on your side)
 
 ### Window Open (1000)
 
@@ -125,8 +125,8 @@ This is the SeaLink high-priority pass SOP. It is shorter than the post-maintena
 
 - [ ] HPA backoff restored to **10 dB** resting value
 - [ ] HPA still healthy at resting backoff
-- [ ] Marcus confirms clean pass delivery on his end
-- [ ] Operations log entry filed
+- [ ] Marcus confirms clean pass delivery on his end (Marcus calls it; no action on your side)
+- [ ] Operations log entry typed into the Ops Log (window, backoff change and restore)
 
 <Aside type="caution">
 **Backoff discipline.** A 6 dB backoff is acceptable for a 30-minute scheduled window. It is not the right resting state. Returning the amp to 10 dB between passes protects the amplifier and matches the configuration the next operator expects to inherit. Forgetting this step is a paper cut that compounds across shifts.

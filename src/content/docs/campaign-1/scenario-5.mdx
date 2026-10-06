@@ -6,7 +6,7 @@ lastUpdated: 2026-02-02
 
 import { Aside } from '@astrojs/starlight/components';
 
-**Duration:** 15-20 minutes
+**Duration:** 20-25 minutes
 
 **Difficulty:** Intermediate
 
@@ -80,6 +80,7 @@ SeaLink Global runs maritime data services for commercial shipping. Their contra
 | Bandwidth | 36 MHz |
 | Modulation | QPSK |
 | FEC Rate | 3/4 |
+| Polarization | Horizontal (TP-1) |
 | Nominal C/N | 14-16 dB |
 | Minimum C/N | 8 dB (threshold) |
 
@@ -118,7 +119,7 @@ The receive chain includes a configurable notch filter for narrowband interferen
 |-----------|-------|-------|
 | Center Frequency | 950-2150 MHz | Set to interference IF frequency |
 | Bandwidth | 100 kHz - 10 MHz | Match interference width |
-| Depth | 40+ dB | Fixed attenuation in notch |
+| Depth | 40 dB | Set on the Notch Filter card (adjustable) |
 | State | Enabled/Disabled | Filter bypassed when disabled |
 
 <Aside type="caution">

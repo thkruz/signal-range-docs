@@ -9,7 +9,7 @@ import { Aside } from '@astrojs/starlight/components';
 
 **Duration:** 30-40 minutes
 
-**Difficulty:** Medium
+**Difficulty:** Intermediate
 
 **Mission Type:** Solo Night Operations
 
@@ -129,8 +129,8 @@ Ice accumulation on the antenna feed can degrade signal quality or cause mechani
 |-----------|---------------|-------|
 | GPSDO | Locked | Master timing reference - verify first |
 | LNB | Powered, reference locked | Check for alarms |
-| BUC | Powered, muted | Unmute when TX required |
-| HPA | Powered, disabled | Enable sequence required for TX |
+| BUC | Powered, unmuted | Transmitting at handoff |
+| HPA | Powered, enabled | Transmitting at handoff |
 | Antenna | Tracking AURORA-7 | Verify tracking mode |
 | Feed Heater | Standby | Enable before freezing precip |
 
@@ -159,7 +159,7 @@ When disabling:
 2. Mute BUC
 3. Power down as needed
 
-Never enable the HPA with the BUC muted - you'll damage the amplifier.
+Never enable the HPA with the BUC muted - the HPA sees no drive and the link won't come up.
 
 ---
 

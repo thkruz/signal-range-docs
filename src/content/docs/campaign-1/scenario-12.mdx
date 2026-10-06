@@ -53,7 +53,7 @@ import { Aside } from '@astrojs/starlight/components';
 |-----------|----------|---------------|--------|
 | TIDEMARK-1 | SeaLink Maritime | ME-02 (Catherine) | Operational on Maine — no impact reported |
 
-SeaLink is on Catherine's uplink right now. Marcus Chen (Halifax spacecraft side) was notified when traffic moved last night and will want a similar notification when it comes back.
+SeaLink is on Catherine's uplink right now. Marcus Chen (Halifax spacecraft side) was notified when traffic moved to Maine last Wednesday and will want a similar notification when it comes back.
 
 ---
 
@@ -66,14 +66,13 @@ SeaLink is on Catherine's uplink right now. Marcus Chen (Halifax spacecraft side
 | Tracking Mode | Program-track (TIDEMARK-1 is a stable GEO bird) |
 | Azimuth | 161.8° |
 | Elevation | 34.2° |
-| Polarization | 14° |
 
 ### Frequency Allocation
 
 | Parameter | RF (MHz) | LO (MHz) | IF (MHz) |
 |-----------|----------|----------|----------|
 | Beacon (Downlink) | 4,175.5 | 5,250 (LNB) | 1,074.5 |
-| Carrier (Uplink, TP-2) | 5,906 | 7,000 (BUC) | 1,094 |
+| Carrier (Uplink, TP-1) | 5,943 | 7,000 (BUC, LSB) | 1,057 |
 
 ### Modem Configuration (preserved from pre-maintenance)
 
@@ -93,13 +92,13 @@ SeaLink is on Catherine's uplink right now. Marcus Chen (Halifax spacecraft side
 | GPSDO | Locked | Stayed up through the window for timing continuity |
 | Antenna | Stowed | Az 0°, El 90° — repoint required |
 | LNB | Powered off | LO and gain preserved at operational values |
-| BUC | Powered off | **Bench-test gain value left in place — see Aside below** |
+| BUC | Powered off | **Bench-test value left in place — see Aside below** (gain and LO read `--` until the BUC is powered) |
 | HPA | Powered off, output disabled | |
-| TX Modem | Configured, not transmitting | IF 1,094 MHz, QPSK 3/4, 36 MHz |
+| TX Modem | Configured, not transmitting | IF 1,057 MHz, QPSK 3/4, 36 MHz |
 | Feed Heater | Off | Not required — clear weather forecast |
 
 <Aside type="caution">
-Maintenance crews leave bench-test values behind. The S7 incident (BUC unmuted in loopback, high current alarm) was the same crew. Inspect the TX chain panel before energizing — anything outside the operating baseline gets corrected first.
+Maintenance crews leave bench-test values behind. The loopback incident at the uplink validation (BUC unmuted in loopback, high current alarm) was the same crew. Power the BUC up muted, then inspect the TX chain panel before anything else is energized — anything outside the operating baseline gets corrected first.
 </Aside>
 
 ---
@@ -111,14 +110,14 @@ The standard restoration order — reverse of shutdown — is RX before TX, low-
 ### Receive Path
 
 1. Repoint antenna to TIDEMARK-1 (program-track)
-2. Power up LNB → wait for thermal stability + reference lock
-3. Tune spectrum analyzer to the TM-1 beacon IF
+2. Power up LNB → wait for the noise temperature to settle under 100 K with reference lock, held for 30 seconds
+3. Tune spectrum analyzer to the TM-1 beacon IF (the crew left it parked elsewhere)
 4. Verify RX modem regains lock with healthy C/N margin
 
 ### Transmit Path
 
-1. Inspect TX chain panel — identify anything outside the operating baseline
-2. Power up BUC → confirm reference lock (BUC stays muted from the safed state)
+1. Power up BUC → confirm reference lock (BUC stays muted from the safed state)
+2. Inspect TX chain panel — identify anything outside the operating baseline (the BUC card shows its values only once powered)
 3. Correct the maintenance leftover — BUC gain back to 23 dB (powered + muted = safe to adjust)
 4. Power up HPA → output stays disabled
 5. Enable TX modem transmit — the modem drives into a muted BUC
@@ -137,7 +136,7 @@ transfer stands Maine down and brings Vermont up in one coordinated swap.
 
 ### Catherine's Constraints
 
-Catherine has been holding TM-1 since the maintenance window opened. She's not under any time pressure but a clean planned handover is the grade.
+Catherine has been holding TM-1 since last Wednesday's hand-off. She's not under any time pressure but a clean planned handover is the grade.
 
 **Pre-release criteria for VT-01 — confirm all before requesting traffic back:**
 
@@ -182,7 +181,7 @@ Customers (vessel operators) never saw the swap and don't need a separate notifi
 - [ ] BUC reference: Locked
 - [ ] BUC gain: 23 dB (operating value)
 - [ ] HPA: Enabled, not overdriven
-- [ ] TX modem: Transmitting at 1,094 MHz IF
+- [ ] TX modem: Transmitting at 1,057 MHz IF
 
 ### Traffic
 - [ ] TIDEMARK-1 owner: VT-01
@@ -212,12 +211,12 @@ Customers (vessel operators) never saw the swap and don't need a separate notifi
 - Customer-impact event during the restoration
 - Anything outside the standard restoration sequence
 
-The S11-S12 cycle is a planned maintenance procedure. There is no time pressure. Procedural cleanliness is what gets logged.
+The hand-off and return cycle is a planned maintenance procedure. There is no time pressure. Procedural cleanliness is what gets logged.
 
 ---
 
 ## End of Briefing
 
-Catherine's been holding the link clean since 0700. Marcus is waiting for the all-clear from our side. The maintenance crew left a small surprise in the BUC gain field — catch it before you energize the chain.
+Catherine's been holding the link clean since last Wednesday. Marcus is waiting for the all-clear from our side. When you're done, type the close-out into the Ops Log: VT-01 back in service and the leftover you caught. The maintenance crew left a small surprise in the BUC gain field — catch it before you energize the chain.
 
 Bring Vermont back the way you'd want the next operator to bring it back if it were you handing off.

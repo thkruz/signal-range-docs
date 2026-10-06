@@ -6,7 +6,7 @@ lastUpdated: 2026-02-02
 
 import { Aside } from '@astrojs/starlight/components';
 
-**Duration:** 20-30 minutes
+**Duration:** 25-35 minutes
 
 **Difficulty:** Beginner
 
@@ -64,7 +64,7 @@ SeaLink has been notified of the maintenance window. They've scheduled non-criti
 **Requirements:**
 - RF transmit chain secured before crew approaches feed
 - Antenna positioned for feed access (maintenance position)
-- Two-way radio confirmation before crew ascent
+- Crew-clear confirmation before any transmit chain changes (Charlie relays Mike's radio calls)
 
 ---
 
@@ -88,7 +88,7 @@ No personnel within 3 meters of the feed horn while the transmit chain is energi
 
 ### Your Responsibility
 
-As the operator on console, you control access to the exclusion zone. **Never re-enable transmit equipment while maintenance personnel are on the antenna structure.** Verbal confirmation via radio is required before any transmit chain changes.
+As the operator on console, you control access to the exclusion zone. **Never re-enable transmit equipment while maintenance personnel are on the antenna structure.** Mike confirms crew-clear by radio before any transmit chain changes; Charlie relays his calls to you on console, and you acknowledge them on the checklist.
 
 ---
 
@@ -104,19 +104,21 @@ As the operator on console, you control access to the exclusion zone. **Never re
 
 | Parameter | Operational | Maintenance |
 |-----------|-------------|-------------|
-| Azimuth | 161.8° | 0° |
+| Azimuth | 161.9° | Unchanged |
 | Elevation | 34.2° | 5° |
-| Tracking Mode | Program-track | Manual |
+| Tracking Mode | Program-track | Maintenance (MAINT) |
 
-The maintenance position (elevation 5°) tilts the dish low enough for crew access to the feed assembly while clearing horizon obstructions.
+The maintenance position (elevation 5°) tilts the dish low enough for crew access to the feed assembly while clearing horizon obstructions. Only elevation moves; azimuth stays where it was.
+
+On the ACU Control tab, clicking a mode button only stages the move: press **APPLY** on the Antenna Positioning card to start it. To return to the satellite, click PROGRAM, select TIDEMARK-1 as the target and press **Move to Target**.
 
 ### LNB Parameters
 
 | Parameter | Value |
 |-----------|-------|
 | LO Frequency | 5,250 MHz |
-| Gain | 60 dB |
-| Thermal Stabilization | ~60 seconds after power-up |
+| Gain | 60 dB (the panel reads 65 dB after a power cycle; set it back to 60) |
+| Ready indicators | LOCK shows LOCKED, noise temperature back near 43 K |
 
 ---
 
@@ -126,8 +128,9 @@ The maintenance position (elevation 5°) tilts the dish low enough for crew acce
 |-----------|---------------|-------|
 | Antenna | Program-track on TIDEMARK-1 | Operational position |
 | LNB | Powered, reference locked | Receiving beacon |
-| BUC | Powered, muted | Standard standby |
-| HPA | Powered, output disabled | Ready state |
+| TX Modem | Transmitting | Customer traffic |
+| BUC | Powered, unmuted, transmitting | Live link |
+| HPA | Powered, enabled, 10 dB backoff | Transmitting to TIDEMARK-1 |
 
 ---
 
@@ -141,9 +144,10 @@ Disable highest-power components first to eliminate hazard quickly:
 |------|--------|-----|
 | 1 | Disable HPA output | Stop RF radiation |
 | 2 | Power off HPA | Fully de-energize amplifier |
-| 3 | Mute BUC | Secure upconverter |
-| 4 | Power down LNB | Shutdown receive path |
-| 5 | Command antenna to maintenance position | Safe access for crew |
+| 3 | Power off BUC | Fully de-energize upconverter |
+| 4 | Stop TX modem transmitting | No IF drive into a dead chain |
+| 5 | Power down LNB | Shutdown receive path |
+| 6 | Command antenna to maintenance position | Safe access for crew |
 
 ### Startup Sequence (Antenna → Receive → Transmit)
 
@@ -153,14 +157,15 @@ Point and verify before enabling transmit:
 |------|--------|-----|
 | 1 | Command antenna to operational position | Establish signal path |
 | 2 | Power on LNB (5,250 MHz LO, 60 dB gain) | Enable receive chain |
-| 3 | Wait for LNB thermal stabilization | Indicator turns green |
-| 4 | Verify beacon on spectrum analyzer | Confirm pointing correct |
-| 5 | Unmute BUC | Enable TX path |
-| 6 | Power on HPA | Energize amplifier |
-| 7 | Enable HPA output | Restore full service |
+| 3 | Confirm LNB LOCK and noise temperature | Receive path ready |
+| 4 | Retune the spectrum analyzer to the beacon and verify it | Confirm pointing correct |
+| 5 | Start TX modem transmitting | IF drive present |
+| 6 | Power on BUC | Enable TX path |
+| 7 | Power on HPA | Energize amplifier |
+| 8 | Enable HPA output | Restore full service |
 
 <Aside type="caution">
-Never enable the HPA with the BUC muted - you'll amplify noise and potentially damage the amplifier. Always verify BUC is unmuted before enabling HPA output.
+Never enable the HPA with the BUC off or muted - the HPA has no drive, so it amplifies noise and the link won't come up. Always verify the BUC is powered and unmuted before enabling HPA output.
 </Aside>
 
 ---
@@ -171,10 +176,11 @@ Never enable the HPA with the BUC muted - you'll amplify noise and potentially d
 
 - [ ] HPA output: Disabled
 - [ ] HPA power: Off
-- [ ] BUC: Muted
+- [ ] BUC: Powered off
+- [ ] TX modem: Not transmitting
 - [ ] LNB: Powered off
-- [ ] Antenna: At maintenance position (Az 0°, El 5°)
-- [ ] Radio confirmation: Received from maintenance lead
+- [ ] Antenna: At maintenance position (El 5°)
+- [ ] Crew clear confirmed (quiz, relayed by Charlie)
 
 ---
 
@@ -182,13 +188,15 @@ Never enable the HPA with the BUC muted - you'll amplify noise and potentially d
 
 ### Receive Path
 - [ ] LNB reference: Locked (indicator green)
-- [ ] Antenna position: 161.8° Az, 34.2° El
+- [ ] Antenna position: 161.9° Az, 34.2° El
 - [ ] Tracking mode: Program-track
+- [ ] Spectrum analyzer: Retuned to Center 1,074.5 MHz, Span 0.002 MHz (2 kHz)
 - [ ] Beacon: Visible at 1,074.5 MHz IF
 - [ ] Signal strength: Nominal
 
 ### Transmit Path
-- [ ] BUC: Unmuted
+- [ ] TX modem: Transmitting
+- [ ] BUC: Powered on, unmuted
 - [ ] HPA: Powered on
 - [ ] HPA output: Enabled
 - [ ] No alarms on dashboard
@@ -199,7 +207,7 @@ Never enable the HPA with the BUC muted - you'll amplify noise and potentially d
 
 The maintenance crew is standing by. Mike's done this replacement dozens of times - he just needs you to secure the RF so his team can work safely.
 
-Run through the shutdown sequence, confirm with Mike on the radio, then hold position until he calls the work complete. Take your time on the recovery - SeaLink would rather wait an extra five minutes than have you rush and miss a step.
+Run through the shutdown sequence, wait for Charlie to relay Mike's crew-clear call, then hold position until he calls the work complete. Take your time on the recovery - SeaLink would rather wait an extra five minutes than have you rush and miss a step.
 
 Charlie's watching, but this is your show.
 
