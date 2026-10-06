@@ -41,12 +41,12 @@ GW-01 remains in commissioning. Yesterday's contacts proved the chain can decode
 
 | Parameter | Value | Source | Verifiable on the rack? |
 |-----------|-------|--------|--------------------------|
-| Satellite EIRP | 28 dBm | MERIDIAN payload data sheet | No |
+| Satellite EIRP | 31.3 dBm | MERIDIAN payload data sheet | No |
 | Slant range at max elevation | 761 km | Pass geometry, 28° culmination | Pass Schedule tab |
 | Free-space path loss at 11,686 MHz | 171.4 dB | From the range above | Arithmetic |
-| GW-01 receive antenna gain | 51.8 dBi | 4 m Ku, measured at feed | No |
+| GW-01 receive antenna gain | 50.4 dBi | 4 m Ku, measured at the LNA flange (feed loss included) | No |
 | LNB gain | 65 dB | Survey; **read it on RX Analysis** | Yes |
-| System noise temperature | 88 K | LNB 60 K plus sky, atmosphere and feed at 28° | No (understand it) |
+| System noise temperature | 125 K | LNB 60 K plus the antenna: sky, atmosphere, spillover and feed, about 65 K at 28° | No (understand it) |
 | Occupied bandwidth | 36 MHz | QPSK 3/4 imagery carrier | Yes (modem) |
 | Implementation loss | 1 dB | Pointing, polarization, modem | No |
 
@@ -58,7 +58,7 @@ Path loss scales with range squared: 20 log<sub>10</sub>(range ratio). At the 5�
 
 | Check | Criterion |
 |-------|-----------|
-| Predicted C/N | Within 1.0 dB of the design figure on the card (~11 dB) |
+| Predicted C/N | Within 1.0 dB of the design figure on the card (~11.4 dB) |
 | Demodulator threshold | 6.0 dB (QPSK 3/4) |
 | Required margin at acceptance | 2.0 dB over threshold, measured live at culmination |
 | Shoulder readings | C/N at ~15° elevation on the rising and setting legs, about 7 dB each; the two must agree |

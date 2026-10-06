@@ -43,14 +43,14 @@ Two anomalies. A one-off on the steepest pass of the month, and a drift across f
 
 | Parameter | Value |
 |-----------|-------|
-| Satellite EIRP | 28 dBm |
+| Satellite EIRP | 31.3 dBm |
 | Slant range at max elevation | 762 km (28°) |
 | Free-space path loss at 11,686 MHz | 171.4 dB |
-| GW-01 receive antenna gain | 51.8 dBi |
-| System noise temperature | 88 K |
+| GW-01 receive antenna gain | 50.4 dBi |
+| System noise temperature | 125 K |
 | Occupied bandwidth | 36 MHz |
 | Miscellaneous losses | 1 dB |
-| Predicted C/N at max elevation | **11.0 dB** (worksheet must agree within 1.0 dB) |
+| Predicted C/N at max elevation | **11.4 dB** (worksheet must agree within 1.0 dB) |
 | Demodulator threshold | 6.0 dB (QPSK 3/4) |
 | Required margin at Commit Link | 3.0 dB, measured live |
 
@@ -116,7 +116,7 @@ This is an operations note, not a fault. Maintenance cannot repair geometry.
 | Receive chain | RX analysis, LNB panel: noise temperature against the 60 K survey value | It is the only one left. Read it |
 
 <Aside type="caution">
-Do not power-cycle the LNB to "fix" it. A cold LNA starts at twice its nominal noise temperature and settles back to where it was: worse, then the same. The LNA is the first stage, so its noise temperature is very nearly the whole system temperature, and 10 log(T_now / T_survey) is the shortfall to the tenth of a decibel. That is a maintenance ticket, with the number attached.
+Do not power-cycle the LNB to "fix" it. A cold LNA starts at twice its nominal noise temperature and settles back to where it was: worse, then the same. The LNA is the first stage, so its noise adds straight onto the antenna temperature (about 65 K at 28°: sky, spillover and the feed), and 10 log((T_ant + T_now) / (T_ant + T_survey)) is the shortfall to the tenth of a decibel. That is a maintenance ticket, with the number attached.
 </Aside>
 
 ---
@@ -178,7 +178,7 @@ SAR-3 is on its own plan from its commissioning card. Both sites receive-only to
 
 ### Before the survey pass (13:22 – 13:30)
 - [ ] Modem 1 to 1,414 MHz; analyzer 1,389 MHz
-- [ ] Link Analysis: survey worksheet computed, 11.0 dB predicted
+- [ ] Link Analysis: survey worksheet computed, 11.4 dB predicted
 
 ### The survey pass (13:30 – 13:40)
 - [ ] Program-track MERIDIAN-SAR-1; beacon on boresight; modem locked; C/N read at 13:34:46

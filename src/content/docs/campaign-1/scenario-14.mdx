@@ -103,13 +103,16 @@ require Catherine to drop her own customers - not free.
 **Forecast (1325-1345):**
 - Moderate rain front passing overhead, ~20 minutes peak
 - No freezing - temperatures stay well above 32°F
-- Expected link margin impact: ~3 dB fade at peak
+- Expected link margin impact: under 1 dB of C/N at the heaviest part of the cell (C-band)
 - AGC compensation range available
 
 **Operational Considerations:**
 
-Rain attenuates C-band signals roughly in proportion to rain intensity along the
-slant path. A 3 dB fade is well within AGC compensation range for a healthy link.
+At C-band rain barely attenuates the carrier: a heavy cell takes a few tenths of a dB off
+the signal. Most of what you will see is noise: the wet path radiates at about 275 K into the
+beam and lifts the system noise temperature, so C/N drops by well under a dB while the input
+level hardly moves. The same cell would take several dB off a Ku link. Either way it is well
+within AGC compensation range for a healthy link.
 The feed heater is not just for ice - it also keeps water from beading and sheeting
 on the feed assembly. Dry surfaces attenuate less than wet ones. Bring it up
 before the rain lands. (The ACU card labels it "Prevents ice buildup"; it is the same
@@ -134,7 +137,7 @@ heater. The Rain Blower is optional on a moderate front and not part of this pro
 
 | Parameter | Nominal | Watch Threshold | Action Threshold |
 |-----------|---------|-----------------|------------------|
-| Beacon C/N | 10+ dB | 7-10 dB | < 7 dB |
+| Beacon C/N | Within 1 dB of the baseline you wrote down | 1-3 dB under baseline | More than 3 dB under |
 | AGC compensation in use | < 2 dB | 2-6 dB | At max gain |
 | Modem lock | Locked | Brief drops | Sustained unlock |
 | HPA back-off | 10 dB | - | - |
@@ -173,7 +176,7 @@ distinguishes holding from inertia.
 ## HPA Back-off During a Fade
 
 It is technically possible to reduce HPA back-off to push more uplink power. For a
-3 dB rain fade with downlink AGC compensating cleanly, **don't.**
+sub-dB C-band rain fade with downlink AGC compensating cleanly, **don't.**
 
 | Action | Benefit | Cost |
 |--------|---------|------|
@@ -246,9 +249,9 @@ entry captures:
 
 Example:
 
-> *"1325-1345 - Moderate rain over VT-01, ~3 dB peak fade. Held TM-1 service per
-> SeaLink SLA preference. Peak AGC gain 3 dB (of 10 dB available), beacon C/N
-> minimum 7.8 dB. Triggers watched: AGC at max with continued fade; modem unlock.
+> *"1325-1345 - Heavy rain cell over VT-01, under 1 dB of C/N lost at peak (mostly sky
+> noise). Held TM-1 service per SeaLink SLA preference. AGC gain moved under 1 dB,
+> beacon C/N within 1 dB of baseline. Triggers watched: AGC at max with continued fade; modem unlock.
 > Neither fired. SeaLink notified by reply on customer portal."*
 
 If the hold had failed - if the call had flipped to handover - the same entry

@@ -72,14 +72,14 @@ Southbound, 9.1 minutes horizon to horizon. MERIDIAN-SAR-2 rises at 16:24:59 (25
 
 | Parameter | Value | Note |
 |-----------|-------|------|
-| Satellite EIRP | 28 dBm | Unchanged |
+| Satellite EIRP | 31.3 dBm | Unchanged |
 | Slant range at max elevation | 1,040 km | Acceptance was 761 km |
 | Free-space path loss at 11,686 MHz | 174.1 dB | Acceptance was 171.4 dB |
-| GW-01 receive antenna gain | 51.8 dBi | |
-| System noise temperature | 88 K | |
+| GW-01 receive antenna gain | 50.4 dBi | |
+| System noise temperature | 131 K | |
 | Occupied bandwidth | 36 MHz | QPSK 3/4 imagery carrier |
 | Miscellaneous losses | 1.2 dB | Acceptance used 1.0. The atmospheric path at 18° is about three times longer than at the zenith; gaseous absorption at Ku adds a couple of tenths |
-| Design figure, predicted C/N | ~8.1 dB | Worksheet must agree within 1.0 dB |
+| Design figure, predicted C/N | ~8.3 dB | Worksheet must agree within 1.0 dB |
 | Demodulator threshold | 6.0 dB | |
 | Required margin at Commit Link | 1.0 dB, measured live | |
 
@@ -150,7 +150,7 @@ Order on the transmit chain is unchanged by urgency: modem on air first, then HP
 ## Tasking Checklist
 
 ### Before AOS (15:34:59)
-- [ ] Dashboard: only the RX AGC rail (weak signal, empty sky), no faults; GPS Timing: GPSDO locked, no holdover; TX Chain: BUC on reference
+- [ ] Dashboard: only the RX AGC no-carrier warning (noise only, empty sky), no faults; GPS Timing: GPSDO locked, no holdover; TX Chain: BUC on reference
 - [ ] Link Analysis: worksheet computed, prediction agrees with the card
 - [ ] BUC gain 23 dB, out of compression
 - [ ] HPA back-off 4 dB; no overdrive alarm
@@ -167,7 +167,7 @@ Order on the transmit chain is unchanged by urgency: modem on air first, then HP
 ### After LOS (15:44:03)
 - [ ] Chain down: HPA off, BUC muted, carrier off
 - [ ] HPA back-off restored to 10 dB
-- [ ] Tasking log: command and ACK, the EIRP exception and its restoration, measured C/N against 8.1 predicted at 18°
+- [ ] Tasking log: command and ACK, the EIRP exception and its restoration, measured C/N against 8.3 predicted at 18°
 - [ ] Report to Erik: what he got, and what this geometry means for the next box
 
 ---
