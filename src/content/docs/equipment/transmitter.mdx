@@ -1,7 +1,7 @@
 ---
 title: Transmitter
 description: A beginner's guide to using the Transmitter in SignalRange
-lastUpdated: 2025-12-29
+lastUpdated: 2026-10-06
 ---
 
 import { Steps } from '@astrojs/starlight/components';
@@ -56,12 +56,12 @@ Click a modem button to switch the control panel to that modem's configuration.
 
 ### Power meter
 
-The power percentage bar shows how much of the transmitter's total power budget is being used by the current modem's configuration. The transmitter has a total power budget of 10 dBm (10W equivalent).
+The power percentage bar shows how much of the transmitter's total power budget is being used by the current modem's configuration. The transmitter has a total power budget of 10 dBm (10 mW).
 
 *   **Green bar** - power consumption within budget
 *   **Red bar (over-budget)** - power consumption exceeds 100%, will trigger a fault when transmission is enabled
 
-The power budget calculation considers both the signal power and bandwidth: `Power Budget Load = Power (dBm) + 10 × log10(Bandwidth in MHz)`. Wider bandwidth signals at the same power level use more transmitter capacity because they represent more total energy.
+The power budget calculation considers both the signal power and bandwidth: `Power Budget Load = Power (dBm) + 10 × log10(Bandwidth in MHz)`. Wider bandwidth signals at the same power level use more transmitter capacity because they represent more total energy. The percentage is a ratio of powers, not of dBm numbers: a load of 10 dBm is 100%, 7 dBm is 50%, and 0 dBm is 10%. For example, a -7 dBm carrier 36 MHz wide has a load of 8.6 dBm and reads 72%.
 
 ### Understanding IF signals
 
@@ -116,9 +116,9 @@ The system monitors for several fault conditions:
 
 ### Short examples
 
-*   **Example A - Normal transmission:** Modem 1 powered, TX enabled, Freq = 1400 MHz, BW = 10 MHz, Power = -20 dBm, Loopback OFF, Online LED on, TX LED on, Power = 8%. Signal is being transmitted at IF frequency through the uplink chain to the satellite.
+*   **Example A - Normal transmission:** Modem 1 powered, TX enabled, Freq = 1400 MHz, BW = 10 MHz, Power = -20 dBm, Loopback OFF, Online LED on, TX LED on, Power = 1%. Signal is being transmitted at IF frequency through the uplink chain to the satellite.
 *   **Example B - Standby (ready to transmit):** Modem 2 powered, TX disabled, configuration set, Online LED on, TX LED off, Power = 15%. Modem is configured and ready. Enable TX switch to begin transmission.
-*   **Example C - Fault condition:** Modem 3 powered, TX enabled, Power = 5 dBm (very high), BW = 30 MHz (very wide), Power = 250% (over budget), Fault indicator active. Power budget exceeded caused fault. Disable TX, reduce power to -15 dBm or bandwidth to 10 MHz, press FAULT RESET, then re-enable TX.
+*   **Example C - Fault condition:** Modem 3 powered, TX enabled, Power = 5 dBm (very high), BW = 30 MHz (very wide), Power = 949% (over budget), Fault indicator active. Power budget exceeded caused fault. Disable TX, reduce power to -15 dBm (about 9%), press FAULT RESET, then re-enable TX. Narrowing the bandwidth to 10 MHz alone would not be enough: 5 dBm in 10 MHz still reads 316%.
 *   **Example D - Loopback test mode:** Modem 1 powered, TX enabled, Loopback ON, Loopback LED on. Signal is generated but routed to IF filter for local testing. Check receiver to verify signal quality. Disable loopback when testing complete.
 *   **Example E - Multiple modems transmitting:** Modem 1 at 1350 MHz, Modem 2 at 1400 MHz, Modem 3 at 1450 MHz, all transmitting. Three carriers at different frequencies going to the satellite. Each modem's power budget is independent.
 *   **Example F - Powered off:** POWER switch off, all LEDs off except possibly Fault (which clears when power cycles). Modem is inactive, consuming no power, producing no signal.
@@ -128,10 +128,10 @@ The power budget calculation uses:
 
 ```
 Power Budget Load (dBm-eq) = Power (dBm) + 10 × log10(Bandwidth in MHz)
-Power Percentage = (Power Budget Load / 10 dBm) × 100
+Power Percentage = 100 × 10^((Power Budget Load - 10 dBm) / 10)
 ```
 
-The power budget load (after bandwidth adjustment) is compared directly to the 10 dBm budget. Lower power values (more negative dBm) and narrower bandwidths consume less of the budget.
+The power budget load (after bandwidth adjustment) is compared with the 10 dBm budget as a ratio of powers, so every 3 dB of load halves or doubles the percentage. Lower power values (more negative dBm) and narrower bandwidths consume less of the budget.
 </Aside>
 
 <Aside type="note" title="Developer Note: Signal Origin and Routing">

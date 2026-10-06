@@ -94,10 +94,10 @@ Shetland flies its window with nobody at its console: a station armed on program
 
 | Reading | Meaning | Action |
 |---------|---------|--------|
-| BUC over-temperature, fan alarm, TX modem 1 on air into the BUC, HPA off | The morning uplink check left a carrier driving the BUC. A BUC dissipates heat in proportion to its output; with the fan gone it settles above the 70 °C alarm as long as a carrier is going in | Carrier off, BUC **muted**, BUC **powered**. It settles well under 70 °C inside a couple of minutes |
+| BUC over-temperature, fan alarm, TX modem 1 on air into the BUC, HPA off | The morning uplink check left a carrier driving the BUC. A BUC dissipates heat in proportion to its output; with the fan gone a driven unit draws about 4.3 A (3.1 A is normal) and climbs toward 75 °C, above the 70 °C alarm, as long as a carrier is going in | Carrier off, BUC **muted**, BUC **powered**. The current drops to its 2.6 A idle draw at once; the temperature turns down and passes 70 °C within two or three minutes, heading for the mid-50s |
 
 <Aside type="caution">
-Do not power the BUC off. Twice wrong: an unpowered BUC cools five times slower because its own regulation stops, and the alarm clears on a powered reading - an off BUC never reads normal, it reads off. Mute removes the heat source; power-off removes the thermometer.
+Do not power the BUC off. Twice wrong: an off BUC does cool, but the alarm clears on a powered reading - an off BUC never reads normal, it reads off - and the fan is still dead the moment it comes back up with a carrier in it. Mute removes the heat source; power-off removes the thermometer.
 </Aside>
 
 Shetland's contact today is receive-only. The BUC is the transmit chain and plays no part in it; the receive path is healthy. The alarm gates nothing, and it is still a ticket for the fan and a note for whoever left the carrier up.

@@ -169,7 +169,7 @@ After successful loopback validation:
 - [ ] Disable BUC loopback mode
 - [ ] Restore LNB LO to 5,250 MHz (RX Analysis)
 - [ ] Enable HPA output
-- [ ] Adjust HPA backoff for required output power: above 400 W (TIDEMARK-1 link budget minimum)
+- [ ] Adjust HPA backoff for required output power: above 400 W (TIDEMARK-1 link budget minimum). The HPA makes 60 dBm (1 kW) at P1dB, so 3 dB of back-off gives 57 dBm (501 W) and 4 dB gives 56 dBm (398 W, just short). Below 3 dB the overdrive alarm trips.
 - [ ] Verify uplink operational
 
 ---
@@ -194,7 +194,7 @@ Setting the LNB LO to match the BUC LO (7,000 MHz) allows direct IF comparison. 
 
 | Mode | Recommended Gain | Reason |
 |------|-----------------|--------|
-| Normal TX | 50 dB | Full output to HPA |
+| Normal TX | 23 dB | About 13 dBm drive to the HPA from the -10 dBm modem, well under the BUC's 28 dBm P1dB |
 | Loopback Test | 20 dB | Prevents RX chain overload |
 
 ---

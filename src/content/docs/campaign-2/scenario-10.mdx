@@ -98,13 +98,13 @@ Commit Link reads the live receiver C/N when pressed. On this pass the commit ma
 
 ## Uplink EIRP Plan
 
-Build it from the modem outward. The HPA output is its input plus gain minus back-off, so the number at the end of the chain is only right if every stage before it is.
+Build it from the modem outward. GW-01's HPA is a 2.5 W Ku solid-state amplifier run at fixed gain, ALC off: its output is its input plus its gain, and the back-off sets that gain from the rated 16 dBm drive (an attenuator in front of the output stage). A weak drive comes out weak, decibel for decibel, so the number at the end of the chain is only right if every stage before it is.
 
 | Step | Item | Now | For this pass |
 |------|------|-----|---------------|
-| 1 | BUC gain | **18 dB** (maintenance run) | **23 dB**, the station standard. With 18 dB, a 4 dB back-off delivers the EIRP of a 9 dB one, with every indicator green |
-| 1 | BUC compression | Output well under the 15 dBm P1dB | Stays out of compression at 23 dB |
-| 2 | HPA back-off | 10 dB | **4 dB** (6 dB more EIRP). Below 3 dB the amplifier is overdriven and the IMD alarm trips; IMD worsens about 2 dB per dB of back-off given up |
+| 1 | BUC gain | **18 dB** (maintenance run) | **23 dB**, the station standard. With 18 dB, a 4 dB back-off delivers the EIRP of a 9 dB one (0.3 W instead of 1 W), with every indicator green |
+| 1 | BUC compression | 11 dBm out, far under the 28 dBm P1dB | 16 dBm at 23 dB, still 12 dB under P1dB: out of compression |
+| 2 | HPA back-off | 10 dB | **4 dB** (6 dB more EIRP: 24 dBm becomes 30 dBm). Below 3 dB the amplifier is overdriven and the IMD alarm trips; the IM3 (2-tone) readout worsens about 2 dB per dB of back-off given up (about −46 dBc at 10 dB, −35 dBc at 4) |
 | 3 | HPA output, amplifier up | Disabled | At least **0.5 W** into the feed (about 1 W expected at 4 dB on this chain); read on the TX chain power meter once the modem is on air and the HPA is enabled |
 | After LOS | HPA back-off | 4 dB | **Back to 10 dB.** 4 dB was the exception for one geometry; on a normal pass it is 6 dB over the coordinated level and an interference risk |
 

@@ -109,13 +109,15 @@ that holds keys).
 
 | Option | When | Cost |
 |--------|------|------|
-| Notch filter on the interferer | Narrowband interferer inside our passband | Notch bandwidth comes out of our carrier's SNR |
+| Notch filter on the interferer | Narrowband interferer inside our passband | The notched slice comes out of our carrier's SNR (here about 0.6 dB) |
 | Tighten IF filtering | Interferer at passband edge | Slight group-delay penalty |
 | Ride it out, document windows | Duty-cycled interferer, link survives the bursts | Customer sees periodic margin dips |
 
 For a ~6 MHz interferer at 1,470 MHz IF, the RX Analysis Notch Filter card's
 Notch 1 goes to **1,470 MHz center, 8 MHz wide, 30 dB deep**, enabled, then
-**Apply Changes** (nothing changes until you apply).
+**Apply Changes** (nothing changes until you apply). That notch takes the jammer
+about 24 dB down and costs the 36 MHz carrier only the energy in its 8 MHz slice,
+about 0.6 dB: lock margin goes from about 1.5 dB with the jammer on to about 8 dB.
 
 There is no transmit-side mitigation for uplink jamming available to a ground
 station: power escalation ("burn through") degrades neighbors, violates

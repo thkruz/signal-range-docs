@@ -16,7 +16,7 @@ import { Aside } from '@astrojs/starlight/components';
 
 > Two boards lit at once. Vermont's in the front edge of a winter storm - feed
 > icing faster than the forecast said, RX margin bleeding. And Maine just threw
-> an HPA overdrive with a temperature alarm on top - back-off looks like it
+> an HPA overdrive with the amp running hot - back-off looks like it
 > walked. Unrelated problems, same shift.
 >
 > I'm 40 minutes out. Triage them: SLA exposure first, recovery time second.
@@ -37,7 +37,7 @@ import { Aside } from '@astrojs/starlight/components';
 | Satellite | Carried By | Customer | Status |
 |-----------|-----------|----------|--------|
 | TIDEMARK-1 | VT-01 | SeaLink Maritime | **Degrading - feed icing, RX margin falling** |
-| TIDEMARK-2 | ME-02 | SeaLink Maritime | **Degraded - HPA overdriven, over-temperature** |
+| TIDEMARK-2 | ME-02 | SeaLink Maritime | **Degraded - HPA overdriven, running hot** |
 
 ---
 
@@ -58,9 +58,9 @@ import { Aside } from '@astrojs/starlight/components';
 
 | Parameter | State |
 |-----------|-------|
-| Symptom | HPA back-off at 1 dB - overdriven, IMD elevated, temperature above the 85°C alarm |
+| Symptom | HPA back-off at 1 dB - 59 dBm (794 W), overdrive alarm, IM3 (2-tone) near -25 dBc, case temperature about 62°C (about 44°C at 10 dB) |
 | Cause | Back-off setting drift (config, not hardware) |
-| Recovery | Disable HPA output -> restore back-off to 10 dB -> re-enable; temperature falls with output power |
+| Recovery | Disable HPA output -> restore back-off to 10 dB (50 dBm, 100 W: ~9 dB less output) -> re-enable; temperature falls with output power over a few minutes |
 | Time to recover | Under five minutes, fully in your control |
 
 <Aside type="caution">

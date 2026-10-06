@@ -81,9 +81,9 @@ Three concurrent, unrelated alarms have appeared simultaneously on VT-01:
 
 | Subsystem | Alarm | Likely Cause |
 |-----------|-------|--------------|
-| BUC | Over-temperature (>70°C, still climbing while driven) | Thermal event; output should be muted to allow cooldown |
-| LNB | Reference unlocked | Sticky reference-lock fault; clears on power cycle |
-| HPA | Overdriven (back-off below 3 dB) | Back-off has drifted from the standard 10 dB margin |
+| BUC | Over-temperature (>70°C, still climbing while driven), high current draw (5.4 A), cooling-fault warning | Failing output stage drawing 2.3 A extra on a slow fan; muting removes the stage bias and lets it cool |
+| LNB | Reference unlocked | Sticky reference-lock fault; clears on power cycle. The free-running LO costs the TIDEMARK-1 carrier about 3 dB of Es/N0 (still locked) |
+| HPA | Overdriven (back-off 2 dB: 58 dBm, 631 W) | Back-off has drifted from the standard 10 dB margin |
 
 <Aside type="caution">
 The faults are independent. Do not assume one is causing the others. Treat each on its
@@ -142,8 +142,8 @@ event, not a judgment call.
 
 | Parameter | Nominal | Alarm Threshold |
 |-----------|---------|-----------------|
-| BUC Temperature | 25-45°C | > 70°C |
-| BUC Current Draw | < 3.0 A | > 4.5 A |
+| BUC Temperature | 35-55°C (about 47°C at the 23 dB operating gain) | > 70°C |
+| BUC Current Draw | About 3.1 A driven, 2.6 A muted | > 4.5 A |
 | HPA Back-off | 10 dB | < 3 dB (overdriven) |
 | LNB Reference | Locked | Any unlock |
 
@@ -161,7 +161,7 @@ continues to dissipate power and the temperature will not fall.
 1. Disable the HPA output FIRST - never mute the BUC under an enabled HPA.
 2. Mute the BUC.
 3. Confirm temperature trending downward.
-4. Wait for temperature `< 70°C` (current draw should read normal, `< 4.5 A`).
+4. Wait for temperature `< 70°C`. Muting takes the bias off the failing stage, so current drops to the 2.6 A idle within seconds and the temperature passes 70°C about a minute after the mute.
 5. Do not unmute until both hold.
 
 ---
@@ -173,6 +173,11 @@ a sticky reference-lock fault - a transient that the LNB's internal phase-lock c
 cannot recover from without a power cycle.
 
 ### Recovery
+
+While the reference is unlocked the LNB's LO free-runs: the RX Analysis **LO Error**
+readout wanders by tens of kHz and the phase noise degrades. The TIDEMARK-1 carrier's
+Es/N0 runs about 3 dB low (around 11.6 dB against 14.4 dB locked). The modem holds lock,
+but that lost margin is what SeaLink is feeling.
 
 1. Power OFF the LNB.
 2. Wait for state to update.
@@ -190,12 +195,16 @@ would coordinate the LNB cycle with the customer or wait for a low-traffic windo
 
 ## HPA Back-off Drift
 
-Back-off measures how far below saturation the HPA is operating. The standard for
-TIDEMARK-1 service is 10 dB - enough margin to keep IMD products below the coordination
-floor while delivering SLA-grade power.
+Back-off measures how far the HPA output sits below its 1 dB compression point
+(P1dB: 60 dBm, 1 kW). The HPA panel shows the setpoint and the actual **Back-off:** next
+to P1dB. The standard for TIDEMARK-1 service is 10 dB - 50 dBm (100 W), with the
+**IM3 (2-tone)** readout near -43 dBc - enough margin to keep IMD products below the
+coordination floor while delivering SLA-grade power.
 
-Below 3 dB the amplifier is overdriven: IMD products rise sharply, adjacent-channel
-emissions exceed coordination limits, and the amplifier's tube wears prematurely.
+Below 3 dB the amplifier is overdriven: at 2 dB it puts out 58 dBm (631 W) and IM3
+climbs to about -27 dBc (roughly 2 dB worse for every dB of back-off given up),
+adjacent-channel emissions exceed coordination limits, and the amplifier's tube wears
+prematurely. With the output disabled the HPA cools over a couple of minutes, not at once.
 
 ### Recovery
 

@@ -50,14 +50,14 @@ At 21:14, inside a minute:
 
 | What | Where you see it | What it costs |
 |------|------------------|---------------|
-| GNSS spoof | GPS Timing: ΔT walking, constellation healthy | Timestamps. Nothing on the pass |
+| GNSS spoof | GPS Timing: ΔT walking, constellation healthy | Timestamps, and 2 ppm on every LO (tens of kHz, inside the Doppler). Nothing on the pass |
 | SAR-2 debris-avoidance burn | Pass Schedule: **EPHEMERIS STALE** against SAR-2 | **The pass.** Program-track points where the bird was |
 | Jammer expected in the window | Nowhere yet - the carrier is clear | Nothing, until it is on the air |
 
 Three things, eight minutes, one command. None of them is a fault on the station. Each has a ten-second answer. The whole exam is the order.
 
 <Aside type="caution">
-Rank by what loses the pass, not by what alarmed first. A stale element set loses it outright: at 660 km, a few seconds along-track is a beamwidth, and program-track does not search. A walking reference costs a microsecond a second in timestamps and can wait four minutes. A jammer that is not on the air costs nothing until it is - and a hop set spent on a forecast is a hop set gone.
+Rank by what loses the pass, not by what alarmed first. A stale element set loses it outright: at 660 km, a few seconds along-track is a beamwidth, and program-track does not search. A walking reference costs two microseconds a second in timestamps and can wait four minutes. A jammer that is not on the air costs nothing until it is - and a hop set spent on a forecast is a hop set gone.
 </Aside>
 
 ## The Order

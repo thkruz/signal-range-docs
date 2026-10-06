@@ -32,7 +32,7 @@ import { Aside } from '@astrojs/starlight/components';
 
 ### Dana's Text (1003)
 
-> *"Trend display flagged BUC temp on VT-01. Up from 57 to 62 over the last fifteen, no alarm yet. Carrier is fine. Take a look at it and decide what you want to do - I trust your read."*
+> *"Trend display flagged BUC temp on VT-01. Up from 57 to 62 over the last ten, no alarm yet. Carrier is fine. Take a look at it and decide what you want to do - I trust your read."*
 
 The flag is not an alarm. The over-temperature trip is at 70°C. You have time. Use it.
 
@@ -70,20 +70,20 @@ SeaLink has not reported anything. The customer is unaware. Whatever you do, the
 
 ## BUC Thermal Trend Log
 
-Trend display readings, last 15 minutes (sampled every 3 min):
+Trend display readings, last 10 minutes (sampled every 2 min):
 
 | Time | Temp (°C) | Current (A) | Notes |
 |------|-----------|-------------|-------|
-| 0948 | 57.2 | 4.0 | First flag - above caution floor |
-| 0951 | 58.1 | 4.1 | Current already stepped up, holding |
-| 0954 | 59.0 | 4.1 | Continued climb |
-| 0957 | 60.1 | 4.1 | Slope steady |
-| 1000 | 61.0 | 4.1 | Sustained +0.3°C/min, no flattening |
-| 1003 | 62.0 | 4.1 | Current reading |
+| 0953 | 57.0 | 4.0 | First flag - above caution floor |
+| 0955 | 58.5 | 4.0 | Current already stepped up, holding |
+| 0957 | 59.6 | 4.0 | Continued climb |
+| 0959 | 60.6 | 4.0 | Climbing ~0.5°C/min |
+| 1001 | 61.4 | 4.0 | Slope easing, still climbing |
+| 1003 | 62.0 | 4.0 | Current reading, ~+0.3°C/min |
 
-**Slope:** ~+0.3°C/min (~+1°C every 3 minutes, sustained over 15 min, no flattening)
+**Slope:** ~+0.3°C/min now (it was nearer +0.8°C/min ten minutes ago; easing, not flat)
 
-**Headroom to trip (70°C):** ~25-30 minutes at current slope if uncorrected
+**Headroom to trip (70°C):** ~25 minutes if the current slope held. The easing slope says it may level off below the trip; nothing on the board says where.
 
 Note the shape: current draw stepped up first and held flat; temperature is following it with thermal lag. Cause precedes effect.
 
@@ -96,10 +96,10 @@ Note the shape: current draw stepped up first and held flat; temperature is foll
 | GPSDO | Locked | Stable reference, no holdover |
 | Antenna | Program-track on TIDEMARK-1 | Locked, nominal Az/El |
 | LNB | 5,250 MHz LO, powered | Reference locked, thermally stable |
-| BUC | Unmuted, gain 33 dB | **Temp 62°C, current 4.1A - trending up** |
+| BUC | Unmuted, gain 33 dB | **Temp 62°C, current 4.0 A - trending up** |
 | HPA | Enabled, backoff 8 dB | Within linear region |
 | TX Modem 1 | Transmitting, IF 1,057 MHz | Customer carrier active |
-| Dashboard | No active alarms | Trend pre-alarm only |
+| Dashboard | BUC cooling-fault warning (fan/heatsink degraded) | No over-temperature alarm - trend pre-alarm |
 
 ---
 
@@ -115,7 +115,7 @@ Note the shape: current draw stepped up first and held flat; temperature is foll
 
 ### Heat Source
 
-The BUC dissipates electrical power as heat in proportion to its drive level minus its useful RF output. Excess gain that the HPA does not need turns into chassis heat instead of useful radiated power. Higher current + higher temperature with no other anomaly is one story, not two.
+The BUC dissipates electrical power as heat in proportion to its drive level minus its useful RF output. Excess gain that the HPA does not need turns into chassis heat instead of useful radiated power: at 33 dB this BUC draws 4.0 A, at the 23 dB operating gain about 3.1 A. Higher current + higher temperature with no other anomaly is one story, not two. A degraded fan makes the same dissipation run hotter - a healthy unit at 33 dB would settle in the mid-50s; this one heads for the mid-60s.
 
 <Aside type="caution">
 The 70°C trip will mute the BUC automatically and drop the carrier hard. If the trend reaches the trip point, the decision has been made for you - and the customer notices.
@@ -129,10 +129,10 @@ Four operational responses are available for a pre-alarm thermal trend. Each has
 
 | Option | What It Does | Customer Cost | When It Fits |
 |--------|--------------|---------------|--------------|
-| **De-rate** | Reduce BUC gain ~10 dB, let HPA backoff increase, monitor trend reverse | None (within SLA margin) | Trend is real, root cause is excess gain, time is available |
+| **De-rate** | Reduce BUC gain ~10 dB, let the HPA ALC make up the drive, monitor trend reverse | None (ALC holds the EIRP) | Trend is real, root cause is excess gain, time is available |
 | **Swap now** | Take carrier down hard, hot-swap BUC module | Full outage during swap | BUC is failing fast or already past trip |
 | **Mute + switch backup** | Mute primary, transition to backup modem chain | Brief carrier interruption | Primary is suspect across the chain, not just BUC |
-| **Hold and monitor** | Take no action, watch the curve | None unless trip | Trend is flattening on its own (it is not, here) |
+| **Hold and monitor** | Take no action, watch the curve | None unless trip | Trend has flattened well below the trip on a healthy unit (here it is easing, not flat, and the fan is degraded) |
 
 ---
 
@@ -141,9 +141,9 @@ Four operational responses are available for a pre-alarm thermal trend. Each has
 If the de-rate is the right call, execute it live - no mute, no theater:
 
 1. Lower BUC gain in a single adjustment (target 23 dB operating value, down from 33 dB)
-2. Verify HPA still in linear region (backoff increases as drive drops)
+2. Verify HPA still in linear region. With the ALC on, the HPA output and back-off stay put: its gain rises by the 10 dB you took out of the BUC, which is what keeps the customer's EIRP steady
 3. Verify BUC not saturated
-4. Watch the BUC on TX Chain until the curve turns over: temperature back below 61°C and current draw under 3.2 A. The full settle takes 5-10 minutes; the turn shows within a few
+4. Watch the BUC on TX Chain until the curve turns over: current drops to about 3.1 A within seconds; the temperature turns down at once and passes 61°C about 2 minutes after the de-rate (about 58°C after 5 minutes, then easing toward the mid-50s)
 5. Open maintenance ticket for BUC swap on next planned window
 6. Log the action
 

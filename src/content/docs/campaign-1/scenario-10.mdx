@@ -136,14 +136,14 @@ This is the SeaLink high-priority pass SOP. It is shorter than the post-maintena
 
 ## EIRP vs Linearity (Reference)
 
-Lowering HPA backoff moves the amplifier closer to saturation. The tradeoff:
+Lowering HPA backoff moves the amplifier closer to saturation. VT-01's HPA makes 60 dBm (1 kW) at its 1 dB compression point (P1dB); the back-off sets the output below that, and the IM3 (2-tone) readout gets about 2 dB worse for every dB of back-off given up:
 
-| Backoff | EIRP | IMD | Linearity |
-|---------|------|-----|-----------|
-| 10 dB (resting) | Conservative | Low | Excellent |
-| 6 dB (pass window) | +4 dB | Modestly elevated | Good - within spec |
-| 3 dB (aggressive) | +7 dB | High | Marginal - overdrive risk |
-| 1 dB (saturation) | Max | Very high | Compressed - **do not run here** |
+| Backoff | HPA output | EIRP vs resting | IM3 (2-tone) | Linearity |
+|---------|------------|-----------------|--------------|-----------|
+| 10 dB (resting) | 50 dBm (100 W) | - | about -43 dBc | Excellent |
+| 6 dB (pass window) | 54 dBm (251 W) | +4 dB | about -35 dBc | Good - within spec |
+| 3 dB (aggressive) | 57 dBm (501 W) | +7 dB | about -29 dBc | Marginal - last setting before the overdrive alarm |
+| 1 dB (near P1dB) | 59 dBm (794 W) | +9 dB | about -25 dBc | Overdrive alarm - **do not run here** |
 
 The 6 dB target for the SeaLink window is the standard high-throughput backoff for AURORA-7. Watch the overdrive indicator across the pass; if it ever trips, raise backoff before doing anything else.
 

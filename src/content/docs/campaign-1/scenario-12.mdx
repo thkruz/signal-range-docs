@@ -98,7 +98,7 @@ SeaLink is on Catherine's uplink right now. Marcus Chen (Halifax spacecraft side
 | Feed Heater | Off | Not required — clear weather forecast |
 
 <Aside type="caution">
-Maintenance crews leave bench-test values behind. The loopback incident at the uplink validation (BUC unmuted in loopback, high current alarm) was the same crew. Power the BUC up muted, then inspect the TX chain panel before anything else is energized — anything outside the operating baseline gets corrected first.
+Maintenance crews leave bench-test values behind. The loopback incident at the uplink validation (BUC left unmuted in loopback at a 50 dB test gain) was the same crew. Power the BUC up muted, then inspect the TX chain panel before anything else is energized — anything outside the operating baseline gets corrected first.
 </Aside>
 
 ---
@@ -110,7 +110,7 @@ The standard restoration order — reverse of shutdown — is RX before TX, low-
 ### Receive Path
 
 1. Repoint antenna to TIDEMARK-1 (program-track)
-2. Power up LNB → wait for the noise temperature to settle under 100 K with reference lock, held for 30 seconds
+2. Power up LNB → wait out the warm-up (the LNB panel reads "Thermal: Warming m:ss" for about 90 seconds after power-on) until it reads Stable with the noise temperature under 100 K and reference lock, held for 30 seconds
 3. Tune spectrum analyzer to the TM-1 beacon IF (the crew left it parked elsewhere)
 4. Verify RX modem regains lock with healthy C/N margin
 

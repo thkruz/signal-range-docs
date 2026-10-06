@@ -1,7 +1,7 @@
 ---
 title: Orthomode Transducer
 description: A beginner's guide to using the Orthomode Transducer in SignalRange
-lastUpdated: 2025-11-15
+lastUpdated: 2026-10-06
 ---
 
 import { Steps } from '@astrojs/starlight/components';
@@ -18,7 +18,7 @@ The OMT (Orthomode Transducer) or duplexer sits between the antenna and the rest
 *   **TX POL** - the polarization the OMT will place on outgoing (transmit) signals (H or V).
 *   **RX POL** - which polarization the OMT is routing the incoming (receive) path to expect.
 *   **TX EFF POL / RX EFF POL** - the effective polarization after accounting for the antenna's physical skew (rotation) and any reversal caused by the OMT. Even if the OMT is set to "H", the antenna's skew can make the signal behave like "V"; the effective fields show how a real signal will arrive or be transmitted.
-*   **X-POL (dB)** - cross-polarization isolation in decibels (dB). This number tells you how well the OMT is preventing energy in the unwanted polarization from leaking into the wanted path.
+*   **X-POL (dB)** - cross-polarization isolation in decibels (dB). This number tells you how well the OMT is preventing energy in the unwanted polarization from leaking into the wanted path. It is a fixed property of each unit (every OMT is built slightly differently), so it does not change when you flip the toggle; only a fault lowers it.
 
 ### LED indicator (X-POL)
 
@@ -32,6 +32,10 @@ The module shows a simple colored LED to indicate cross-polar isolation quality:
 
 Polarization describes the orientation of the radio wave (for example, horizontal "H" or vertical "V"). If the antenna and OMT expect different polarizations, the received signal power is reduced. The system expresses this loss as cross-polarization isolation in dB. For example, if a strong signal arrives but is in the wrong polarization and the X-POL is 20 dB, that signal will appear about 20 dB weaker on the expected path.
 
+### Insertion loss
+
+Like any piece of waveguide, the OMT loses a little power (0.5 dB). On transmit that loss is charged to the uplink: the HPA's output reaches the feed 0.5 dB lower. On receive the OMT's normal loss is already counted in the antenna's feed loss (the antenna gain is quoted at the feed flange, after the OMT), so a healthy OMT costs the downlink nothing extra. Only a fault that raises the OMT's insertion loss costs the downlink, and that extra loss also adds its own noise.
+
 ### Alarms and the "faulted" status
 
 The OMT is considered _faulted_ when cross-polar isolation falls below the safe threshold (25 dB). A fault means incoming signals may be contaminated by the unwanted polarization, and received power can be reduced - this may show up as poor sensitivity or degraded data on the receiver.
@@ -40,8 +44,8 @@ The OMT is considered _faulted_ when cross-polar isolation falls below the safe 
 
 1.  Check the **TOGGLE** position: switching the OMT can restore the expected polarization.
 2.  Look at **TX EFF POL / RX EFF POL**: if they differ from the configured TX/RX POL, the antenna has a significant skew. Consider adjusting antenna alignment if possible.
-3.  If the LED is **amber** or **red**, suspect reduced isolation. Try changing the OMT toggle and re-check the X-POL value.
-4.  When in doubt, compare the observed signal strength before and after the OMT - a large drop indicates cross-pol loss (equal to the X-POL dB value).
+3.  If the LED is **amber** or **red**, suspect reduced isolation. The toggle does not change the X-POL value (it belongs to the unit), so a low reading points to a hardware fault: report it.
+4.  When in doubt, compare the observed signal strength before and after the OMT - a large drop indicates cross-pol loss (equal to the X-POL dB value). A drop of a dB or two on a correctly polarized signal points instead to an OMT fault that has raised its insertion loss.
 
 ### Short examples
 

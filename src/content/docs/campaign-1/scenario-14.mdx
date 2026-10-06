@@ -88,7 +88,7 @@ require Catherine to drop her own customers - not free.
 | Modulation | QPSK |
 | FEC Rate | 3/4 |
 | TX Power | -7 dBm |
-| HPA Back-off | 10 dB (nominal) |
+| HPA Back-off | 10 dB (nominal): 50 dBm, 100 W, 10 dB under the 60 dBm P1dB |
 
 ---
 
@@ -180,7 +180,7 @@ sub-dB C-band rain fade with downlink AGC compensating cleanly, **don't.**
 
 | Action | Benefit | Cost |
 |--------|---------|------|
-| Reduce back-off from 10 dB to 7 dB | +3 dB uplink margin you don't need | IMD into adjacent transponders; amplifier stress; spurious emissions risk |
+| Reduce back-off from 10 dB to 7 dB | +3 dB uplink power (50 -> 53 dBm, 100 -> 200 W) you don't need | IM3 about 6 dB worse (roughly 2 dB per dB given up) into adjacent transponders; amplifier stress; spurious emissions risk |
 | Hold back-off at 10 dB | Nominal IMD; nominal amplifier wear | None - link is healthy without it |
 
 Optimization is not "turn every dial to max." If the link has margin you don't need,

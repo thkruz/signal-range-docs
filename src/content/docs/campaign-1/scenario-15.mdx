@@ -140,8 +140,10 @@ Carrier occupies 5,967 - 6,003 MHz at RF.
 | Spectrum Analyzer | Centered on beacon (1,078 MHz IF, 2 kHz span) | Routine watch config |
 
 <Aside type="caution">
-HPA back-off at 5 dB is marginal. With a 36 MHz QPSK carrier driven that close to
-saturation, third-order IMD products extend several MHz beyond the carrier edges.
+HPA back-off at 5 dB is marginal: 55 dBm (316 W), with the HPA panel's IM3 (2-tone)
+readout near -33 dBc against about -43 dBc at the standard 10 dB. With a 36 MHz
+QPSK carrier driven that close to saturation, third-order IMD products extend
+several MHz beyond the carrier edges.
 The 28 dB cross-pol isolation alone is not enough to keep those products below
 the coordination floor in RedSky's slot.
 </Aside>
@@ -184,9 +186,9 @@ Back-off is the right lever here. It linearizes the amplifier, suppresses IMD by
 roughly 2x the back-off delta in dBc, and does not require touching the customer
 carrier or coordinating with SeaLink.
 
-| Option | Trade-off | Recommended? |
+| Option | Effect | Recommended? |
 |--------|-----------|--------------|
-| Raise HPA back-off to 10 dB | Drops TX power ~5 dB, suppresses IMD substantially | **Yes** |
+| Raise HPA back-off to 10 dB | Drops TX power 5 dB (55 -> 50 dBm, 316 -> 100 W), IM3 about 10 dB lower | **Yes** |
 | Reduce TX modem power | Kills the customer link or drops margin below SLA | No |
 | Retune carrier center | Requires SeaLink coordination and a service window | No |
 | Add an RX notch at 5,961 MHz | Protects our receiver, does nothing for the neighbor | No |

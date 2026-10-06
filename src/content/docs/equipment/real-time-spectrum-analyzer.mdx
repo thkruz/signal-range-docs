@@ -1,7 +1,7 @@
 ---
 title: Real-Time Spectrum Analyzer
 description: A beginner's guide to using the Real-Time Spectrum Analyzer in SignalRange
-lastUpdated: 2025-11-15
+lastUpdated: 2026-10-06
 ---
 
 import { Steps } from '@astrojs/starlight/components';
@@ -252,7 +252,7 @@ The analyzer automatically calculates and displays the correct noise floor (yell
 
 - Check for saturation - if signal power too high, amplifiers compress (distortion)
 - Verify HPA back-off is adequate (>3 dB to avoid IMD)
-- Look for intermodulation products (new signals at f1±f2 frequencies)
+- Look for intermodulation at the TX RF Post-HPA or Post-OMT taps: with two or more carriers, third-order products at 2f1-f2 and 2f2-f1; with one carrier, spectral-regrowth shoulders either side of it. Both rise as the HPA back-off falls
 - Check filter bandwidth matches signal - too narrow clips the signal
 - Compare multiple tap points to identify which stage introduces distortion
 

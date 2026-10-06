@@ -55,6 +55,8 @@ The GNSS Constellation panel tells you the receiver is tracking a set of satelli
 
 The GPS Timing tab has one reading that does move: **GNSS vs REF ΔT** - the GNSS timing solution against the disciplined reference. In a healthy sky it reads +0.0 µs and stays there. Under a spoof it walks, steadily, in one direction, at whatever rate the spoofer chooses. Two microseconds a second is a quarter of a millisecond in two minutes, which is where Rotterdam's timestamp comparison catches it.
 
+A reference whose time walks two microseconds every second is also two parts per million off frequency, and every LO disciplined to it carries that: about 26 kHz on the 13,100 MHz LNB LO, 25 kHz on the 12,600 MHz BUC LO. Against ±250 kHz of LEO Doppler nobody sees it on the analyzer. The timing tab is where the spoof shows.
+
 | What you see | Outage | Spoof | Fault |
 |--------------|--------|-------|-------|
 | Satellites tracked | Falling | **Healthy** | Healthy |
