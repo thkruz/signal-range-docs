@@ -53,7 +53,7 @@ import { Aside } from '@astrojs/starlight/components';
 | 9 | PLD-ON | ACK inside the window |
 | 10 | PLD-TEST-PATTERN | ACK inside the window; Command line on the card |
 | 11 | Secure the uplink: HPA output off | See the Aside below |
-| 12 | First decode: RX modem to 1,340 MHz | Lock; C/N at or above 8 dB; Commit Link near max elevation with 2 dB margin; Payload line on the card |
+| 12 | First decode: RX modem to 1,340 MHz | Lock; C/N at or above 8 dB; Commit Link near max elevation with 4 dB margin; Payload line on the card |
 | 13 | Chain down: BUC muted, carrier off | Mirror order, HPA already off |
 | 14 | Verdict | Verdict line on the card |
 | 15 | Deliver | Erik told what acceptance transfers |
@@ -66,7 +66,7 @@ import { Aside } from '@astrojs/starlight/components';
 |------|------|
 | MERIDIAN-SAR-3 AOS | 10:06:00 (az 140°) |
 | Command window opens | 10:06:22 |
-| Commit Link segment (2 dB margin available) | About 10:09:00 to 10:12:30 |
+| Commit Link segment (4 dB margin available) | About 10:09:00 to 10:12:30 |
 | Max elevation 27.9°, slant range 764 km | 10:10:45 |
 | Command window closes | 10:15:08 |
 | MERIDIAN-SAR-3 LOS | 10:15:29 (az 355°) |
@@ -113,8 +113,8 @@ The console does not sequence commands. PLD-TEST-PATTERN sent to an unpowered pa
 | Occupied bandwidth | 36 MHz |
 | Miscellaneous losses | 1 dB |
 | Design figure, predicted C/N | ~11.3 dB (worksheet must agree within 1.0 dB) |
-| Demodulator threshold | 6.0 dB (QPSK 3/4) |
-| Required margin at Commit Link | 2.0 dB, measured live |
+| Demodulator threshold | 4.2 dB C/N (QPSK 3/4: Es/N0 5.0 dB in the 30 Msps carrier) |
+| Required margin at Commit Link | 4.0 dB (C/N 8.2 dB), measured live |
 
 Reference: C/N = EIRP + G<sub>rx</sub> − FSPL − L<sub>impl</sub> − 10 log<sub>10</sub>(k · T<sub>sys</sub> · B), k = −228.6 dBW/K/Hz. EIRP is quoted in dBm.
 
@@ -194,7 +194,7 @@ Where the morning's SAR-1 tasking left it, apart from the ACU.
 - [ ] PLD-TEST-PATTERN acknowledged, after PLD-ON; Command line on the card
 - [ ] HPA output disabled: uplink secured before the decode
 - [ ] RX modem 1 to 1,340 MHz; locked on the pattern; C/N at or above 8 dB
-- [ ] Commit Link near max elevation with live margin at or above 2 dB; Payload line on the card
+- [ ] Commit Link near max elevation with live margin at or above 4 dB; Payload line on the card
 
 ### After LOS (10:15:29)
 - [ ] BUC muted, carrier off

@@ -59,8 +59,8 @@ Path loss scales with range squared: 20 log<sub>10</sub>(range ratio). At the 5�
 | Check | Criterion |
 |-------|-----------|
 | Predicted C/N | Within 1.0 dB of the design figure on the card (~11.4 dB) |
-| Demodulator threshold | 6.0 dB (QPSK 3/4) |
-| Required margin at acceptance | 2.0 dB over threshold, measured live at culmination |
+| Demodulator threshold | 4.2 dB C/N (QPSK 3/4: Es/N0 5.0 dB in the 30 Msps carrier) |
+| Required margin at acceptance | 4.0 dB over threshold (C/N 8.2 dB), measured live at culmination |
 | Shoulder readings | C/N at ~15° elevation on the rising and setting legs, about 7 dB each; the two must agree |
 | Measurement point | On boresight under program-track, 14:06:45, 28°, 761 km |
 
@@ -122,7 +122,7 @@ LNB is high-side injection: **IF = LO − RF** (13,100 MHz LO).
 ### During the Pass (14:03 – 14:10)
 - [ ] SAR-1 beacon visible on RX analysis
 - [ ] Rising leg: modem locked, C/N read near 15° (about 7 dB)
-- [ ] Culmination: live margin at or above 2.0 dB, Commit Link pressed
+- [ ] Culmination: live margin at or above 4.0 dB, Commit Link pressed
 - [ ] Setting leg: C/N read near 15° on the way down; compare with the rising leg
 
 ### After LOS

@@ -92,8 +92,8 @@ The gaps are two and a half hours, then ninety minutes. The scheduler will offer
 | Occupied bandwidth | 36 MHz |
 | Implementation loss | 1 dB |
 | Design figure, predicted C/N | ~13.8 dB (worksheet must agree within 1.0 dB) |
-| Demodulator threshold | 6.0 dB |
-| Required margin at Accept Link | 3.0 dB, measured live |
+| Demodulator threshold | 4.2 dB C/N (QPSK 3/4: Es/N0 5.0 dB in the 30 Msps carrier) |
+| Required margin at Accept Link | 5.0 dB (C/N 9.2 dB), measured live |
 | Strong segment (C/N at or above 8 dB) | 00:33:10 to 00:37:00 |
 
 Reference: C/N = EIRP + G<sub>rx</sub> − FSPL − L<sub>impl</sub> − 10 log<sub>10</sub>(k · T<sub>sys</sub> · B), k = −228.6 dBW/K/Hz. The survey quotes EIRP in dBm.
@@ -112,7 +112,7 @@ The chain stays cold until the downlink is proven: an uplink on this rack spoils
 
 ### 02:54 from Shetland: telemetry, on holdover
 
-A 13° pass at 1,233 km will not decode imagery: expect C/N to peak near 6.6 dB, and hold lock above 5 dB through culmination for the state-of-health frames. That is 20 log(1233 / 581) = 6.5 dB more path loss than the 00:31 pass, plus atmosphere at 13°. A site is underperforming only when its number is worse than its geometry.
+A 13° pass at 1,233 km will not meet the imagery delivery standard: expect C/N to peak near 6.6 dB, a clean lock with only a couple of dB over threshold and well short of the 8 dB delivery line. Hold lock above 5 dB through culmination for the state-of-health frames. That is 20 log(1233 / 581) = 6.5 dB more path loss than the 00:31 pass, plus atmosphere at 13°. A site is underperforming only when its number is worse than its geometry.
 
 The SH-02 GNSS antenna has been unreliable in the wind. If the GPS Timing panel shows the receiver locked with HOLDOVER active, the GNSS input switch up and zero satellites, that is an outage at the site, not a switch left down. The disciplined oscillator coasts on its last correction; a few minutes of holdover is a few microseconds and a few hertz at Ku. Fly the pass on it, leave the switch alone (cycling it cannot conjure a signal), and confirm re-lock when the signal returns. Then put the outage in the handover: the day shift decides whether it was weather or a failing antenna, and cannot decide without the record.
 
@@ -175,7 +175,7 @@ Doppler: ±270 kHz on the downlink (receiver follows), ±325 kHz on the uplink (
 
 ### Contact 1 (00:31 – 00:39)
 - [ ] Program-track on MERIDIAN-SAR-1; beacon on RX analysis
-- [ ] RX modem locked on 1,414 MHz; Accept Link pressed in the strong segment with live margin ≥ 3 dB
+- [ ] RX modem locked on 1,414 MHz; Accept Link pressed in the strong segment with live margin ≥ 5 dB
 - [ ] TT&C: uplink Doppler compensation engaged; modem on air; BUC unmuted; HPA enabled
 - [ ] REC-PLAYBACK sent; ACK before 00:38:30
 - [ ] After LOS: HPA off, BUC muted, carrier off; contact logged

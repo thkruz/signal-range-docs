@@ -82,7 +82,8 @@ SeaLink Global runs maritime data services for commercial shipping. Their contra
 | FEC Rate | 3/4 |
 | Polarization | Horizontal (TP-1) |
 | Nominal C/N | 14-16 dB |
-| Minimum C/N | 8 dB (threshold) |
+| Demod lock threshold | Es/N0 5.0 dB (about 4.2 dB C/N in 36 MHz) |
+| Service minimum | 8 dB C/N |
 
 ---
 
@@ -139,12 +140,14 @@ They cannot help with broadband interference or interference centered on your si
 
 ## C/N Degradation Quick Reference
 
-| C/N Range | Signal Quality | Service Impact |
-|-----------|---------------|----------------|
-| > 15 dB | Excellent | Full throughput |
-| 10-15 dB | Good | Normal operations |
-| 6-10 dB | Marginal | Reduced throughput, errors |
-| < 6 dB | Poor | Service degradation or loss |
+| C/N Range | Modem Reads | Service Impact |
+|-----------|-------------|----------------|
+| > 10 dB | Locked, good margin | Normal operations, fade margin in hand |
+| 5.2-10 dB | Locked, good margin | Decoding cleanly, little fade margin left |
+| 4.2-5.2 dB | Locked, **Degraded margin** | Errors on every small fade: customer complaints |
+| < 3.7 dB | **No lock** | Outage |
+
+The modem locks on Es/N0 (C/N measured in the symbol-rate bandwidth). QPSK 3/4 needs 5.0 dB, which is about 4.2 dB of C/N in our 36 MHz channel; RX Analysis shows the requirement as Required Es/N0 and the margin in the status bar.
 
 C/N drops when carrier power decreases OR when in-band noise/interference increases. The receiver's AGC responds to total power in the passband - a strong interference spike can cause AGC to reduce gain on the entire signal.
 
