@@ -52,6 +52,14 @@ Tap the coupler at **TX RF Post-HPA** (or Post-OMT) and look at the spectrum ana
 In SignalRange the intermodulation products are drawn on the TX analyzer; they are not yet radiated into the satellite's transponder.
 </Aside>
 
+### What the satellite does with your power
+
+Your EIRP crosses about 200 dB of free-space loss to a GEO satellite and arrives as a flux density. The transponder compares it with its **saturation flux density (SFD)**: the difference is its input back-off. A Campaign 1 station at its normal 100 W runs a TIDEMARK transponder about 3 dB short of saturation, which leaves it about half a dB under its maximum output.
+
+*   **More power near saturation buys almost nothing.** Six dB more HPA output moves the downlink by a fraction of a dB, and past saturation the tube folds back: the downlink falls again.
+*   **Less power (or a mispointed dish) costs downlink in fixed-gain transponders**, roughly dB for dB once you are well backed off, and it always costs uplink C/N. A transponder in ALC holds its output while the uplink fade stays inside its range; only the uplink C/N suffers.
+*   **The C/N you measure on the downlink includes the uplink**: (C/N)⁻¹ = (C/N_up)⁻¹ + (C/N_down)⁻¹. With two or more carriers in one transponder, its own intermodulation adds a third term.
+
 ### ALC on or off?
 
 *   **ALC on**: change the BUC gain and the HPA output does not move - its gain changes instead. This keeps the uplink steady, and it hides a BUC that is driving harder than it needs to. If the drive falls too low for the setpoint, the ALC runs out of range and raises an alarm.
