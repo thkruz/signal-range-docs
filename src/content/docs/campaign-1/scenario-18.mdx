@@ -54,7 +54,7 @@ import { Aside } from '@astrojs/starlight/components';
 
 | Parameter | Nominal | Current |
 |-----------|---------|---------|
-| Nominal slot position | Az 219.7°, El 26.3° | Drifting ±1.3° (figure-8, growing) |
+| Nominal slot position (from ME-02) | Az 222.5°, El 24.3° | Drifting ±1.3° (figure-8, growing) |
 | Ephemeris validity | Good | **Stale - drift exceeds prediction** |
 | Station-keeping | Automatic N-S burns | **Degraded thrusters - burns suspended** |
 | Transponders / beacon | Nominal | Nominal (payload unaffected) |
@@ -76,10 +76,14 @@ the satellite actually *is*.
 
 ### Transition Checklist
 
-- [ ] Confirm beacon C/N degradation under program-track (document the baseline first)
+- [ ] Confirm beacon C/N degradation under program-track (document the baseline first: the
+      beacon normally reads about 34 dB on the ACU; on the stale ephemeris it sits near 28 dB)
 - [ ] Enable step-track optimization (requires program-track engaged underneath)
-- [ ] Confirm beacon lock holds under step-track (ACU Control)
-- [ ] RX Analysis: verify the carrier stays locked with C/N at or above 9 dB
+- [ ] Watch step-track climb the beacon back to 32 dB or better (ACU Control). It steps the
+      dish a tenth of a beamwidth at a time and keeps the better reading, so expect about a
+      minute of stepping, not an instant fix
+- [ ] RX Analysis: verify the carrier is back - locked, C/N at or above 12 dB (it sits near
+      9 dB on the stale ephemeris)
 - [ ] Hold and monitor - the drift grows slowly; step-track keeps up
 
 <Aside type="caution">

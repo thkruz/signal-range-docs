@@ -59,9 +59,9 @@ The spectrum analyzer was left on the carrier view (1,532 MHz, 50 MHz span):
 retune its center to 1,074.5 MHz to find the beacon.
 
 <Aside type="caution">
-The ACU lock light (and the Dashboard's PROGRAM TRACK / LOCKED) still read as if
-nothing happened: they froze at the moment of the crash. Don't trust them. The
-automation fault itself shows on the alarm ticker. The beacon at the right IF is
+The ACU lock light, the ACU beacon C/N and the Dashboard's lock all come from the
+failed processor: they read UNKNOWN (and "PROGRAM TRACK (OFFLINE)") until IT
+restores it. The automation fault itself shows on the alarm ticker. The beacon at the right IF is
 the only pointing proof that does not depend on the failed controller. Verify on the spectrum after
 every manual input - fly instruments, not feel.
 </Aside>

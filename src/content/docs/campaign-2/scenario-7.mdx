@@ -40,7 +40,7 @@ import { Aside } from '@astrojs/starlight/components';
 | Spacecraft | MERIDIAN-SAR-2 (NORAD 61702) |
 | Manoeuvre | Along-track avoidance burn, 14:11:00Z if go |
 | Element change | Mean anomaly +0.03°, about 3.5 km along track |
-| Effect on the 14:18 Galway pass | Timing shifts by under a second; pointing solution on the old set is a third of a degree off at culmination |
+| Effect on the 14:18 Galway pass | Timing shifts by under a second; pointing solution on the old set is half a degree off at culmination |
 | Distribution | Post-burn set (epoch 14:11:30Z) reaches the console within two minutes of the burn; the Pass Schedule ephemeris panel flags it STALE |
 
 SAR-1 is not involved. Its elements are current and stay current.
@@ -61,7 +61,7 @@ Decode windows (C/N ≥ 8 dB): SAR-1 about 14:05 to 14:08:30, peak ~11 dB at cul
 | Elements | Pedestal | Carrier on RX analysis |
 |----------|----------|------------------------|
 | Current | LOCKED | Rises with elevation: about 4 dB at 10°, 7 dB at 14°, 10 dB at the top |
-| Stale (post-burn, old set) | **LOCKED** | Present but weak, peaks around 4 dB at 12° and then **falls as the bird climbs**, to below zero at culmination |
+| Stale (post-burn, old set) | **LOCKED** | Present but weak, peaks around 3 dB on the rising leg and then **falls as the bird climbs**, to about -5 dB at culmination |
 
 A fixed along-track error is a bigger angle at shorter range: 3.5 km is 0.1° at 2,000 km and 0.25° at 828 km. The closer the bird, the worse the miss. Program-track lock means the pedestal is where it was told to go; it does not mean it was told right.
 

@@ -53,10 +53,12 @@ import { Aside } from '@astrojs/starlight/components';
 | 6 months ago | -2.4 |
 | 3 months ago | -3.1 |
 | This month | **-4.0** |
-| *Step-track floor (Halifax / ops estimate)* | *about -6.0* |
+| *Step-track floor (beacon lock: 6.5 dB C/N on the ACU, 1 kHz tracking bandwidth)* | *about -6.3* |
 
-At the current rate (1.6 dB in the last six months, and rising) the beacon
-reaches the step-track floor in roughly one to two quarters.
+Today the step-tracked beacon reads about 8.8 dB C/N on the ACU, so 2.3 dB
+separates it from the 6.5 dB beacon lock below which step-track cannot hold the
+bird. At the current rate (1.6 dB in the last six months, and rising) that margin
+is gone in roughly two quarters, sooner if the slope keeps steepening.
 
 The decline is consistent with solar array / power subsystem aging: the bus is
 running out of watts, and the spacecraft sheds load by reducing RF output. The
