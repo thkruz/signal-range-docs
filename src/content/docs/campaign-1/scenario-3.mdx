@@ -14,7 +14,7 @@ import { Aside } from '@astrojs/starlight/components';
 **Supervisor:** Charlie Brooks (present)
 **Maine Station:** ME-02 (unmanned, Catherine Vega en route)
 
-> Weather service just upgraded the forecast to a blizzard warning. Snow started falling about ten minutes ago and it's coming down hard. Link margin to TIDEMARK-1 is already degrading - we've got maybe fifteen minutes before AGC runs out of compensation range.
+> Weather service just upgraded the forecast to a blizzard warning. Snow started falling about ten minutes ago and it's coming down hard. Link margin to TIDEMARK-1 is already degrading - we've got maybe fifteen minutes before the carrier drops under its lock threshold.
 >
 > Maine is 150 miles northeast with clear skies. Catherine is driving in now - should arrive in about ten minutes. We need to get the backup site configured and execute the handover before Vermont goes dark.
 >
@@ -80,11 +80,12 @@ Both LOs sit above their RF: IF = LO - RF on the downlink, RF = LO - IF on the u
 - Wind-driven snow creating significant signal attenuation
 
 **Link Impact:**
-- Current weather degradation: ~4 dB
-- Projected at storm peak: 8+ dB (exceeds AGC compensation range)
+- Clear-sky C/N on the TIDEMARK-1 carrier: about 12.7 dB. The modem holds lock down to about 4.2 dB (QPSK 3/4), so Vermont starts with roughly 8 dB of margin.
+- At C-band, falling snow itself costs well under 1 dB. The damage comes from snow and ice loading the feed: every dB of ice on the feed takes about 3 dB off C/N, because the wet feed both absorbs the carrier and radiates its own noise into the LNB. About 3 dB of ice on an unheated feed is enough to lose lock.
+- Projected at storm peak: Vermont cannot hold the 4.2 dB threshold. Plan to be off VT-01 before then.
 
 <Aside type="caution">
-The AGC indicator shows current compensation level. When it approaches maximum, link failure is imminent. Monitor this during handover preparation.
+Don't wait for the AGC to warn you. The AGC card shows its **Gain** (dB), its **Input** level (dBm) and its **Output** level (dBm). VT-01's AGC holds the output at -30 dBm and has a 10 dB maximum gain. It levels the total power it sees, carrier plus noise, so as the feed loads up the input level drops only a dB or two and the gain rises by the same amount. At VT-01 the gain reads about -2.5 dB in clear sky and is still under +1 dB when the carrier loses lock; the card never gets near **At Max**. Watch the carrier's C/N on RX Analysis: that is the number that tells you how much time you have.
 </Aside>
 
 ---
@@ -126,7 +127,7 @@ Maine's look angles differ from Vermont's. Program Track calculates correct poin
 ### Pre-Handover: Protect Vermont
 
 - [ ] Enable feed heater on Vermont ACU
-- [ ] Note current AGC compensation level
+- [ ] Note the AGC Gain (dB) and Input (dBm), and the carrier's C/N
 
 ### Backup Site Activation (Maine)
 
@@ -184,12 +185,16 @@ The log is what post-incident review and seasonal pattern analysis run on.
 
 ## AGC Reference
 
-| AGC Level | Status |
-|-----------|--------|
-| Low | Minimal compensation |
-| Medium | Normal operation |
-| High | Link margin shrinking |
-| Maximum | Link failure imminent |
+What the VT-01 AGC card shows (output target -30 dBm, maximum gain +10 dB):
+
+| Readout | Clear sky | Feed loaded, near loss of lock | What it tells you |
+|---------|-----------|--------------------------------|-------------------|
+| Gain | about -2.5 dB | about +0.5 dB | How hard the AGC is working. A few dB of movement is normal. |
+| Input | about -27.5 dBm | about -30.5 dBm | Total power arriving at the AGC: carrier plus noise |
+| Output | -30.0 dBm | -30.0 dBm | Held at target; a steady output says nothing about link health |
+| Mode | Active | Active | **At Max** means the gain has reached +10 dB: there is almost no carrier left to level (pre-acquisition, a dead LNB) |
+
+The AGC keeps the level steady for the modem. It cannot restore C/N: it turns the noise up and down with the carrier. Judge the link by C/N and lock margin, not by the AGC.
 
 ---
 
