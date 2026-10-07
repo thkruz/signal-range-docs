@@ -32,7 +32,7 @@ import { Aside } from '@astrojs/starlight/components';
 
 ### Dana's Text (1003)
 
-> *"Temperature log flagged BUC temp on VT-01. Up from 57 to 62 over the last ten, no alarm yet - readings are in the trend table below. Carrier is fine. Take a look at it and decide what you want to do - I trust your read."*
+> *"Temperature trend flagged BUC temp on VT-01. Up from 57 to 62 over the last ten, no alarm yet - the curve is on TX Chain, and the log is below. Carrier is fine. Take a look at it and decide what you want to do - I trust your read."*
 
 The flag is not an alarm. The over-temperature trip is at 70°C. You have time. Use it.
 
@@ -70,12 +70,12 @@ SeaLink has not reported anything. The customer is unaware. Whatever you do, the
 
 ## BUC Thermal Trend Log
 
-Station temperature log readings, last 10 minutes (sampled every 2 min). The console has no trend readout; this table is the history:
+Station temperature log readings, last 10 minutes (sampled every 2 min). TX Chain shows the same curve live (BUC Thermal: Trend, 10 min ago, and a 30-minute sparkline with the 70°C trip line):
 
 | Time | Temp (°C) | Current (A) | Notes |
 |------|-----------|-------------|-------|
 | 0953 | 57.0 | 4.0 | First flag - above caution floor |
-| 0955 | 58.5 | 4.0 | Current already stepped up, holding |
+| 0955 | 58.3 | 4.0 | Current already stepped up, holding |
 | 0957 | 59.6 | 4.0 | Continued climb |
 | 0959 | 60.6 | 4.0 | Climbing ~0.5°C/min |
 | 1001 | 61.4 | 4.0 | Slope easing, still climbing |
