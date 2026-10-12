@@ -46,9 +46,12 @@ import { Aside } from '@astrojs/starlight/components';
 | TP-1 downlink passband | 3,774 - 3,810 | 1,440 - 1,476 |
 | Uplink (TX, BUC LO 7,000) | 6,017 | 983 |
 
-ME-02's uplink is **off** this shift: the incident work is receive-only, and
-you want nothing of ours on the transponder while you characterize somebody
-else's signal. The spectrum analyzer comes up parked on the beacon (1,070 MHz
+ME-02's uplink stays **on** this shift: its TM-2 hub carrier is the SeaLink
+service the interferer is riding on, and dropping it to characterize somebody
+else's signal would take the customer down for them. What you see at 1,458 MHz
+is our own carrier relayed back through TP-1, with the interferer on its top
+edge when it keys up. Leave the TX chain alone; the incident work is all on the
+receive side. The spectrum analyzer comes up parked on the beacon (1,070 MHz
 IF, 2 MHz span); retune it to the carrier (1,458 MHz, 40 MHz span) to watch
 the interference.
 
@@ -63,11 +66,11 @@ is it local to our site?**
 |------|--------------------|-------------------------------|
 | Implication | Terrestrial / local RX problem | The interferer is in the **uplink** - it is being relayed by the satellite |
 | Examples | Radar, 5G OOB emissions, our own equipment | Misaligned partner uplink, carrier-under-carrier, deliberate uplink jamming |
-| Cross-check | Compare with VT-01 / Halifax view of the same transponder | Same |
+| Cross-check | Compare with Halifax's view of the same transponder (or any other station on TP-1) | Same |
 
 Then the signature questions, in order of diagnostic power:
 
-1. **Duty cycle.** Natural and accidental sources are continuous or random.
+1. **Duty cycle.** Watch a full on/off cycle on the analyzer and time it. Natural and accidental sources are continuous or random.
    Regular on/off timing (e.g., minutes on, minutes off, repeating) implies
    either rotating machinery (radar - seconds, not minutes) or a hand on a
    transmit switch.
@@ -109,15 +112,17 @@ that holds keys).
 
 | Option | When | Cost |
 |--------|------|------|
-| Notch filter on the interferer | Narrowband interferer inside our passband | The notched slice comes out of our carrier's SNR (here about 0.6 dB) |
+| Notch filter on the interferer | Narrowband interferer inside our passband | The notched slice comes out of our carrier's SNR (here about 1 dB) |
 | Tighten IF filtering | Interferer at passband edge | Slight group-delay penalty |
 | Ride it out, document windows | Duty-cycled interferer, link survives the bursts | Customer sees periodic margin dips |
 
 For a ~6 MHz interferer at 1,470 MHz IF, the RX Analysis Notch Filter card's
 Notch 1 goes to **1,470 MHz center, 8 MHz wide, 30 dB deep**, enabled, then
-**Apply Changes** (nothing changes until you apply). That notch takes the jammer
-about 24 dB down and costs the 36 MHz carrier only the energy in its 8 MHz slice,
-about 0.6 dB: lock margin goes from about 1.5 dB with the jammer on to about 8 dB.
+**Apply Changes** (nothing changes until you apply). That notch takes most of the
+jammer out and costs the 36 MHz carrier the energy in its 8 MHz slice, about 1 dB.
+On RX modem 1, C/N during a burst goes from about 6 dB (lock margin about 1.5 dB)
+to about 9 dB (margin about 5 dB); in the off periods it reads about 12 dB against
+about 13 dB clean.
 
 There is no transmit-side mitigation for uplink jamming available to a ground
 station: power escalation ("burn through") degrades neighbors, violates
@@ -157,7 +162,7 @@ Build the package as you observe; every field timestamped:
 ## End of Briefing
 
 Most interference is an accident wearing a scary mask. The discipline of
-characterizing it honestly is what lets you recognize the day it isn't - and
+characterizing it accurately is what lets you recognize the day it isn't - and
 makes your evidence worth something when that day comes.
 
 Measure first. Conclude carefully. Never transmit your frustration.

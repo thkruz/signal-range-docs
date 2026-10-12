@@ -112,10 +112,10 @@ For this incident the order resolves to:
 - Mute the BUC (begins thermal recovery - safe now that the HPA is down).
 - Restore HPA back-off to 10 dB while the chain is cold.
 - Wait for BUC temperature to fall back under 70°C (about a minute muted).
-- Power cycle the LNB to clear the sticky reference-lock fault.
-- Verify receiver lock and C/N on TIDEMARK-1.
+- Power cycle the LNB to clear the sticky reference-lock fault (about 90 s to stabilize).
 - Unmute the BUC, then re-enable the HPA, and confirm clean TX output.
-- Final dashboard sweep, customer notification, log entry.
+- Verify receiver lock and C/N on TIDEMARK-1 (your own carrier, back on the air).
+- Final Dashboard sweep, customer notification, log entry.
 
 The first two (HPA output off, BUC mute) are **timed safety steps**: two minutes each from
 when they come up on the checklist. Running out fails the shift.
@@ -176,19 +176,25 @@ cannot recover from without a power cycle.
 
 While the reference is unlocked the LNB's LO free-runs: the RX Analysis **LO Error**
 readout wanders by tens of kHz and the phase noise degrades. The TIDEMARK-1 carrier's
-Es/N0 runs about 3 dB low (around 11.6 dB against 14.4 dB locked). The modem holds lock,
+Es/N0 runs about 3 dB low (around 11 dB against about 14 dB locked). The modem holds lock,
 but that lost margin is what SeaLink is feeling.
 
 1. Power OFF the LNB.
 2. Wait for state to update.
 3. Power ON the LNB.
 4. Confirm reference lock acquired.
-5. Confirm thermal stabilization complete before relying on the link.
+5. Confirm thermal stabilization complete before relying on the link (about 90 s after
+   power-on).
 
 <Aside type="note">
 Power cycling the LNB briefly drops your receive path. While you are mid-recovery on a
 muted TX chain anyway, this is a natural moment to do it. If the BUC were still up, you
 would coordinate the LNB cycle with the customer or wait for a low-traffic window.
+
+The carrier RX modem 1 locks to is your own uplink coming back down through TIDEMARK-1.
+With the HPA disabled and the BUC muted it is off the air, so RX Analysis shows only the
+beacon and the modem has nothing to lock to. Verify receiver lock and C/N after the uplink
+is back up, not before.
 </Aside>
 
 ---

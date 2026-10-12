@@ -111,7 +111,7 @@ Both local oscillators sit above their RF frequencies, so the TX IF uses the sam
 | BUC | 7,500 MHz LO, muted | Unmute after TX config |
 | HPA | Disabled | Enable for transmission |
 | Beacon Receiver | 1,085 MHz IF | Pre-configured by Charlie |
-| RX Modem | 1,200 MHz (incorrect) | Configure to 1,422 MHz |
+| RX Modem | 1,200 MHz, 36 MHz, BPSK 1/2 (parked from a test carrier) | Configure to 1,422 MHz, 24 MHz, QPSK 3/4 |
 | TX Modem | 1,050 MHz (incorrect) | Configure to 1,447 MHz |
 | Encryption | AES-256-GCM | Keys verified by Charlie |
 
@@ -151,12 +151,14 @@ Never transmit without verifying encryption status. Pacific Rim traffic includes
 
 ### Receive Chain
 
-- [ ] Spectrum analyzer: Reconfigure for 1,422 MHz IF, 50 MHz span, Max -20 dBm, Min -50 dBm, RBW Auto
+- [ ] Spectrum analyzer: Reconfigure for 1,422 MHz IF, 50 MHz span, Max -30 dBm, Min -90 dBm, RBW Auto (it was set by hand to 300 Hz for the beacon)
 - [ ] RX modem frequency: 1,422 MHz
 - [ ] RX modem bandwidth: 24 MHz
 - [ ] RX modem modulation: QPSK, FEC 3/4
-- [ ] Carrier lock: Confirmed
-- [ ] C/N ratio: ≥ 10 dB
+
+<Aside type="note">
+Expect an empty slot at 1,422 MHz and no modem lock yet. VT-01 is off-air on AURORA-7 and nobody else uplinks on that slot, so the only thing coming down from the satellite is its beacon. The carrier the modem locks on is our own, relayed back through the transponder once the transmit chain is up.
+</Aside>
 
 ### Transmit Chain
 
@@ -169,7 +171,7 @@ Never transmit without verifying encryption status. Pacific Rim traffic includes
 
 ### Full Duplex Verification
 
-- [ ] RX modem: Locked with margin
+- [ ] RX modem: Locked on our own carrier, C/N ≥ 8 dB (expect about 10 dB)
 - [ ] TX path: Active, no alarms
 - [ ] Dashboard: All indicators green
 
@@ -192,7 +194,8 @@ Never transmit without verifying encryption status. Pacific Rim traffic includes
 2. Beacon becomes visible on spectrum analyzer
 3. Switch to step-track mode
 4. ACU optimizes pointing using beacon signal
-5. Configure receive and transmit chains
+5. Configure the receive chain, then bring up the transmit chain
+6. Confirm the receiver locks on our own carrier coming back down
 
 ---
 

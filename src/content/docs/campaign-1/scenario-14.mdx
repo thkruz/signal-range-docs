@@ -34,7 +34,7 @@ import { Aside } from '@astrojs/starlight/components';
 
 > Routine morning. TIDEMARK-1 link nominal, customer traffic at SLA. Weather radar shows
 > a heavy rain cell moving in from the west - arrival around 1325, twenty minutes
-> through. No freezing, just rain. Feed heater off; bring it up before the front lands.
+> through. No freezing, just rain. Feed heater off; bring it up before the front arrives.
 > SeaLink left a note for the next shift on the customer portal - check it before the
 > rain hits.
 
@@ -113,10 +113,26 @@ the signal. Most of what you will see is noise: the wet path radiates at about 2
 beam and lifts the system noise temperature, so C/N drops by well under a dB while the input
 level hardly moves. The same cell would take several dB off a Ku link. Either way it is well
 within AGC compensation range for a healthy link.
+
+**What the cell looks like on the console.** It is small, so know where to look:
+
+- RX modem 1 C/N on the TIDEMARK-1 carrier: about 13 dB before the rain, a few tenths to
+  under 1 dB lower with the cell overhead. That is about the size of the readout's normal
+  wander, which is why you write the baseline down first.
+- ACU Environmental card: Precipitation ACTIVE while the cell is overhead, and the beacon
+  C/N on the ACU down by under a dB.
+- AGC gain: it wanders by about a dB on its own, before and during the rain. The rain moves
+  the input level by a few tenths of a dB, too little to show there. What matters is that it
+  stays far below its maximum.
+
+The cell takes about twenty minutes to pass. Once your hold is set up and the link is
+holding, you can wait it out or skip ahead (Skip 20 min in the command bar); the hold keeps
+counting through the skip, and the weather runs its course.
+
 The feed heater is not just for ice - it also keeps water from beading and sheeting
 on the feed assembly. Dry surfaces attenuate less than wet ones. Bring it up
-before the rain lands. (The ACU card labels it "Prevents ice buildup"; it is the same
-heater. The Rain Blower is optional at C-band, even in a heavy cell, and not part of this procedure.)
+before the rain arrives. (The ACU card reads "Prevents ice, keeps the feed dry"; it is one
+heater doing both jobs. The Rain Blower is optional at C-band, even in a heavy cell, and not part of this procedure.)
 
 ---
 
@@ -199,9 +215,10 @@ the responsible move is to not spend it. Keep back-off nominal through the front
 
 ### Through the Fade (1325-1345)
 
+- [ ] Hold until the cell has passed (wait it out or skip ahead)
 - [ ] Receiver lock maintained
 - [ ] C/N held above 7 dB (action threshold)
-- [ ] AGC compensation in use - tracking, not at max
+- [ ] AGC gain far below max (it wanders about a dB on its own)
 - [ ] Antenna still locked on TIDEMARK-1
 - [ ] HPA back-off unchanged at 10 dB
 
@@ -250,8 +267,8 @@ entry captures:
 Example:
 
 > *"1325-1345 - Heavy rain cell over VT-01, under 1 dB of C/N lost at peak (mostly sky
-> noise). Held TM-1 service per SeaLink SLA preference. AGC gain moved under 1 dB,
-> beacon C/N within 1 dB of baseline. Triggers watched: AGC at max with continued fade; modem unlock.
+> noise). Held TM-1 service per SeaLink SLA preference. AGC gain far below max (no change
+> beyond its normal wander), beacon C/N within 1 dB of baseline. Triggers watched: AGC at max with continued fade; modem unlock.
 > Neither fired. SeaLink notified by reply on customer portal."*
 
 If the hold had failed - if the call had flipped to handover - the same entry
@@ -268,7 +285,7 @@ Escape is a tool, not a reflex. The customer told you what they value. The link
 will tell you whether their preference is operationally supportable. Match the
 two.
 
-Bring the feed heater up before the rain lands. Watch the margins. Hold or hand
+Bring the feed heater up before the rain arrives. Watch the margins. Hold or hand
 off on the trigger conditions, not on the customer's wishes alone.
 
 Dana will read the log entry at the end of shift.

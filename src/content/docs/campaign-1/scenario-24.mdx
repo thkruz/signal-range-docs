@@ -72,7 +72,7 @@ writing it all down while you do it.
 | Uplink | TX IF 983 MHz -> BUC LO 7,000 -> 6,017 MHz (TP-1) |
 | BUC | Gain 10 dB above operating value, 63°C climbing ~0.2°C/min, current 4.0 A (3.1 A at 23 dB), cooling-fault warning (fan) |
 | Fix | The thermal-trend playbook: de-rate to the 23 dB operating gain, verify linearity, swap ticket |
-| De-rate took | On TX Chain: current drops to about 3.1 A within seconds, temperature at or under 65°C and falling, carrier still locked |
+| De-rate took | On TX Chain: current drops to about 3.1 A within seconds, the temperature Trend turns negative (the reading itself lags: still in the low 60s a minute later), P1dB Margin about 12 dB, carrier still locked |
 
 ### VT-01 / AURORA-7 (0800-0820 customer pass)
 
@@ -80,6 +80,9 @@ writing it all down while you do it.
 |-----------|-------|
 | Beacon | 4,165 MHz -> 1,085 MHz IF - **weak (end-of-life decline)** |
 | Pass config | Step-track required (SeaLink brings the carrier up at 0800) |
+| TM-1 during the window | SeaLink's backup hub carries the TM-1 trunk for the AURORA-7 window (booked with the pass); VT-01's own TM-1 carrier comes off the air before the dish moves |
+| Before you repoint | VT-01 is still radiating its TM-1 carrier. Take it off the air on TX Chain first, amplifier before drive: HPA output disabled, then BUC muted. A carrier keyed through a slew sweeps every satellite on the arc |
+| Slew | About a minute from TIDEMARK-1 to AURORA-7; the lock comes once the dish arrives |
 | Go/no-go | Step-track must hold the beacon; if it cannot, the pass scrubs - tell the customer BEFORE 0800, not during |
 
 ---
@@ -88,7 +91,9 @@ writing it all down while you do it.
 
 The Working Document panel is configured as your incident log. Triage calls,
 go/no-go decisions, customer commitments, and the board note build in it as you
-work. At end of shift it IS the after-action report - Dana forwards it as-is.
+work: plans and decisions as you make them, outcomes as they happen. It does not
+open on its own; its icon pulses when a line is added. At end of shift it IS the
+after-action report - Dana forwards it as-is.
 
 When you close the incident, type the closing entry in the Ops Log (sidebar)
 yourself: incident closed, and the ME-02 BUC swap still open.

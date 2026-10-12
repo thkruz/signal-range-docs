@@ -142,7 +142,7 @@ The GPSDO generates the master timing reference. All RF equipment locks to this 
 GPSDO (source) → Distribution Amp → LNB, BUC, Modems
 ```
 
-If the GPSDO shows locked but a downstream device shows reference unlocked, the problem is between them - usually the device itself needs a power cycle to re-acquire lock.
+If the GPSDO shows locked but a downstream device shows reference unlocked, the problem is between them - usually the device itself needs a power cycle to re-acquire lock. After a power cycle the LNB needs about 90 seconds to warm up before it reads stable.
 
 ### Power Sequencing
 
@@ -219,6 +219,8 @@ The GPSDO is the foundation. If it's unhappy, nothing downstream will work corre
 
 **4. Check the Transmit Chain (if bidirectional)**
 
+- VT-01's receiver modem listens to our own AURORA-7 carrier, relayed back down by the satellite: it doubles as a loopback through the bird. If the beacon is steady but our carrier keeps dropping lock, the receive side is fine and the carrier is dropping out before it reaches the satellite.
+- A faulted modem stays in the alarm list while it is powered: take it out of service (power it off) once its replacement carries the link.
 - BUC reference locked?
 - Loopback test passing?
 - HPA enabled and not faulted?
@@ -240,6 +242,7 @@ A fully operational link requires all of the following:
 - [ ] Antenna tracking: Step-track (for AURORA-7)
 - [ ] Beacon lock: Acquired
 - [ ] Beacon signal: Visible at 1,085 MHz IF
+- [ ] Receiver: Steady lock on our own carrier, C/N about 10.5 dB
 
 ### Transmit Path
 - [ ] BUC reference: Locked

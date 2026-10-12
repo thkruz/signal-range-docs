@@ -55,10 +55,16 @@ import { Aside } from '@astrojs/starlight/components';
 | This month | **-4.0** |
 | *Step-track floor (beacon lock: 6.5 dB C/N on the ACU, 1 kHz tracking bandwidth)* | *about -6.3* |
 
-Today the step-tracked beacon reads about 8.8 dB C/N on the ACU, so 2.3 dB
+The 24-month reference read about **-63 dBm** on the VT-01 spectrum analyzer's Peak
+readout. The log is always taken the same way: step-tracked, beacon at 1,085 MHz IF,
+with nothing of ours on the bird (the AGC on noise alone; keying a carrier makes the
+AGC back off and the beacon reads about 12 dB lower).
+
+Today the step-tracked beacon reads about 9 dB C/N on the ACU, so about 2.3 dB
 separates it from the 6.5 dB beacon lock below which step-track cannot hold the
-bird. At the current rate (1.6 dB in the last six months, and rising) that margin
-is gone in roughly two quarters, sooner if the slope keeps steepening.
+bird. At the last six months' rate (1.6 dB per six months) that margin lasts two to
+three quarters, sooner if the slope keeps steepening: plan to move customers inside
+two.
 
 The decline is consistent with solar array / power subsystem aging: the bus is
 running out of watts, and the spacecraft sheds load by reducing RF output. The
@@ -77,14 +83,22 @@ margin for the months you cannot see yet.
 
 ## Today's Data Collection (final ops run)
 
+VT-01's TIDEMARK-1 traffic is on ME-02 for the morning, so VT-01 starts off the air
+with its TX chain staged for AURORA-7 (BUC LO 7,500, TX modem 1,447 MHz / 24 MHz,
+modem not transmitting, BUC muted, HPA disabled). Nothing is keyed while the dish
+leaves TIDEMARK-1.
+
 - [ ] Acquire AURORA-7: in ACU Control select it as the target, Move to Target
       (program-track), then engage step-track (standard SOP-TK-002)
-- [ ] Confirm the beacon is present at 1,085 MHz IF on the spectrum analyzer
-      (this month's -4.0 dB figure is the median from the beacon log; there is
-      no relative-dB readout on the console to compare against)
 - [ ] Verify step-track still holds lock at current beacon power
+- [ ] Measure the beacon at 1,085 MHz IF on the spectrum analyzer before keying
+      anything: read the Peak readout and compare it with the -63 dBm reference
+      (this month's -4.0 dB figure is the median from the beacon log)
+- [ ] Bring the AURORA-7 test carrier up on TX Chain, drive first: TX modem
+      transmitting, BUC unmuted, HPA enabled
 - [ ] Confirm receiver modem 1 is locked on the carrier at 1,422 MHz IF with
-      C/N of at least 8 dB (about 4 dB over the 4.2 dB demod threshold)
+      C/N of at least 8 dB (it reads about 14 dB, well over the 4.2 dB demod
+      threshold: the transponder is not what is failing)
 - [ ] Confirm with Marcus what the vehicle telemetry says about power trend
 - [ ] Type the delivery entry in the Ops Log (sidebar) when the report goes to
       the board

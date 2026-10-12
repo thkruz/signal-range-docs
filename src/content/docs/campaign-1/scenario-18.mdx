@@ -54,10 +54,16 @@ import { Aside } from '@astrojs/starlight/components';
 
 | Parameter | Nominal | Current |
 |-----------|---------|---------|
-| Nominal slot position (from ME-02) | Az 222.5°, El 24.3° | Drifting ±1.3° (figure-8, growing) |
+| Nominal slot position (from ME-02) | Az 222.7°, El 24.4° | Drifting ±1.3° (figure-8, growing) |
 | Ephemeris validity | Good | **Stale - drift exceeds prediction** |
 | Station-keeping | Automatic N-S burns | **Degraded thrusters - burns suspended** |
 | Transponders / beacon | Nominal | Nominal (payload unaffected) |
+
+Look angles are live on every panel, so expect them to differ by a few tenths of a degree:
+the Overview shows the selected station's live look angles to the bird (select ME-02 first;
+with VT-01 selected it shows Vermont's angles), the Dashboard and ACU show where ME-02's dish
+is actually pointing. As the figure-eight grows, the live position wanders around the
+nominal slot and program-track keeps pointing at the stale prediction.
 
 <Aside type="note">
 The payload is healthy - this is a propulsion problem, not a communications
@@ -80,11 +86,11 @@ the satellite actually *is*.
       beacon normally reads about 34 dB on the ACU; on the stale ephemeris it sits near 28 dB)
 - [ ] Enable step-track optimization (requires program-track engaged underneath)
 - [ ] Watch step-track climb the beacon back to 32 dB or better (ACU Control). It steps the
-      dish a tenth of a beamwidth at a time and keeps the better reading, so expect about a
-      minute of stepping, not an instant fix
+      dish a tenth of a beamwidth at a time and keeps the better reading, so expect about
+      half a minute of stepping, not an instant fix
 - [ ] RX Analysis: verify the carrier is back - locked, C/N at or above 12 dB (it sits near
-      9 dB on the stale ephemeris)
-- [ ] Hold and monitor - the drift grows slowly; step-track keeps up
+      7 dB on the stale ephemeris, about 3 dB above the lock point)
+- [ ] Watch it on ACU Control for a while - the drift grows slowly; step-track keeps up
 
 <Aside type="caution">
 Do not chase the bird manually. Manual pointing against a growing figure-eight

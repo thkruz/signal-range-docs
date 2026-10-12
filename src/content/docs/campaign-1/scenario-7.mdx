@@ -107,7 +107,7 @@ RF = LO - IF, so IF = LO - RF
 | BUC | **Check status** | Maintenance may have left in test config |
 | HPA | Disabled | Enable after validation complete |
 | RX Modem | Configured | Should be operational |
-| TX Modem | **Verify config** | May need frequency adjustment |
+| TX Modem | **Verify config** | Left on the crew's narrow test carrier (950 MHz, 9 MHz, BPSK 1/2, -10 dBm) |
 
 <Aside type="caution">
 The maintenance crew ran loopback tests overnight. Verify BUC configuration before proceeding - loopback mode and mute state should be checked on the Dashboard.
@@ -133,7 +133,7 @@ Confirm the receive path is operational:
 
 - [ ] Antenna tracking TIDEMARK-1
 - [ ] LNB powered, reference locked, thermally stable
-- [ ] Beacon visible at 1,074.5 MHz IF
+- [ ] Beacon visible at 1,074.5 MHz IF (Span 2 kHz, Min Amp -100 dBm, Max Amp -30 dBm; it reads about -49 dBm)
 - [ ] Signal level nominal
 
 ### Phase 3: Transmit Chain Configuration
@@ -151,7 +151,7 @@ Configure the TX modem for TIDEMARK-1 uplink:
 
 Test the low-power TX chain before engaging the HPA:
 
-- [ ] Reduce BUC gain for loopback (prevents RX overload)
+- [ ] Reduce BUC gain to 20 dB for loopback (keeps the LNB linear, see below)
 - [ ] Enable BUC loopback mode
 - [ ] Unmute BUC
 - [ ] Verify loopback signal on spectrum analyzer
@@ -167,6 +167,7 @@ After successful loopback validation:
 
 - [ ] Verify encryption status (AES-256 required)
 - [ ] Disable BUC loopback mode
+- [ ] Set BUC gain back to 23 dB (at 20 dB the HPA is 3 dB short of drive)
 - [ ] Restore LNB LO to 5,250 MHz (RX Analysis)
 - [ ] Enable HPA output
 - [ ] Adjust HPA backoff for required output power: above 400 W (TIDEMARK-1 link budget minimum). The HPA makes 60 dBm (1 kW) at P1dB, so 3 dB of back-off gives 57 dBm (501 W) and 4 dB gives 56 dBm (398 W, just short). Below 3 dB the overdrive alarm trips.
@@ -194,8 +195,10 @@ Setting the LNB LO to match the BUC LO (7,000 MHz) allows direct IF comparison. 
 
 | Mode | Recommended Gain | Reason |
 |------|-----------------|--------|
-| Normal TX | 23 dB | About 13 dBm drive to the HPA from the -10 dBm modem, well under the BUC's 28 dBm P1dB |
-| Loopback Test | 20 dB | Prevents RX chain overload |
+| Normal TX | 23 dB | About 16 dBm drive to the HPA from the -7 dBm modem, well under the BUC's 28 dBm P1dB |
+| Loopback Test | 20 dB | Keeps the LNB linear (below) |
+
+The test loop is a directional coupler and pad that feed the BUC output into the LNB about 66 dB down. At 60 dB gain the LNB compresses at about -50 dBm in (its output P1dB is +10 dBm). At 23 dB the loop puts -50 dBm into it: 0.7 dB of compression and an "LNB input overload" alarm, so the carrier you measure is distorted by the test itself. At 20 dB it gets -53 dBm, 3 dB under, about 0.2 dB of compression: a clean, linear look at the modem and BUC. Put the gain back to 23 dB before the HPA goes on.
 
 ---
 

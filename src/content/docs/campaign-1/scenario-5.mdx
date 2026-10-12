@@ -91,10 +91,11 @@ SeaLink Global runs maritime data services for commercial shipping. Their contra
 
 | Equipment | Status | Notes |
 |-----------|--------|-------|
-| Antenna | Program-track on TIDEMARK-1 | Az: 161.8°, El: 34.2° |
+| Antenna | Program-track on TIDEMARK-1 | Az: 161.9°, El: 34.2° |
 | LNB | 5,250 MHz LO, powered | Reference locked |
 | GPSDO | Locked | 10 MHz reference nominal |
-| Receiver Modem | 1,532 MHz IF, 36 MHz BW | Check C/N display |
+| Receiver Modem | 1,532 MHz IF, 36 MHz BW | Monitors our own hub carrier as it comes back down; check C/N display |
+| TX Chain | Transmitting, HPA enabled | The SeaLink hub carrier (1,057 MHz IF, 5,943 MHz RF): leave it up, it is the customer's traffic |
 
 ### Spectrum Analyzer Configuration (Current)
 
@@ -104,7 +105,8 @@ The spectrum analyzer is configured for beacon observation from this morning's p
 |-----------|--------------|-------|
 | Center Frequency | 1,074.5 MHz | Beacon IF |
 | Span | 2 kHz | Narrow for CW beacon |
-| RBW | 1 kHz | High sensitivity |
+| RBW | 10 Hz (manual) | Set for the beacon; far too narrow for a wide span: put it back on Auto |
+| Amplitude | -140 to -40 dBm | Beacon (~-47 dBm) and its floor on screen |
 
 This configuration cannot show the 36 MHz main signal or wideband interference. You'll need to reconfigure.
 
@@ -144,10 +146,12 @@ They cannot help with broadband interference or interference centered on your si
 |-----------|-------------|----------------|
 | > 10 dB | Locked, good margin | Normal operations, fade margin in hand |
 | 5.2-10 dB | Locked, good margin | Decoding cleanly, little fade margin left |
-| 4.2-5.2 dB | Locked, **Degraded margin** | Errors on every small fade: customer complaints |
+| 4.2-5.2 dB | Locked, **Degraded margin** | Hub still decodes error-free; customers' small terminals are already dropping packets |
 | < 3.7 dB | **No lock** | Outage |
 
 The modem locks on Es/N0 (C/N measured in the symbol-rate bandwidth). QPSK 3/4 needs 5.0 dB, which is about 4.2 dB of C/N in our 36 MHz channel; RX Analysis shows the requirement as Required Es/N0 and the margin in the status bar.
+
+The table is for the 9 m hub at VT-01. SeaLink's ships run 1-2 m terminals with 15-20 dB less G/T, so the same interference in the transponder puts them much closer to their threshold. An LDPC-coded carrier decodes error-free until it is within a fraction of a dB of threshold, then fails abruptly: the hub's **Payload Data Integrity** card can show BER around 1e-12 and 0 CRC errors while the remotes are losing packets. Judge the customer's link by the hub's margin, not its BER.
 
 C/N drops when carrier power decreases OR when in-band noise/interference increases. The receiver's AGC responds to total power in the passband - a strong interference spike can cause AGC to reduce gain on the entire signal.
 
@@ -161,7 +165,7 @@ C/N drops when carrier power decreases OR when in-band noise/interference increa
 - [ ] Note current degradation severity
 
 ### Spectrum Analysis
-- [ ] Reconfigure analyzer: widen span to 50+ MHz
+- [ ] Reconfigure analyzer: widen span to 50+ MHz, RBW Auto, amplitude -100 to -30 dBm
 - [ ] Center on main signal IF (1,532 MHz)
 - [ ] Look for anomalies in or near the signal bandwidth
 - [ ] Characterize any interference: frequency, bandwidth, power
@@ -179,7 +183,7 @@ C/N drops when carrier power decreases OR when in-band noise/interference increa
 - [ ] Verify C/N recovery on receiver modem
 
 ### Service Verification
-- [ ] Confirm C/N returned to nominal range
+- [ ] Confirm C/N back above the 8 dB service minimum (expect about 9-10 dB with the notch: the spike still takes its share of transponder power, so the full 14 dB returns only when its source is fixed)
 - [ ] Monitor for stability
 - [ ] Update trouble ticket with resolution
 

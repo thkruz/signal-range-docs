@@ -107,7 +107,7 @@ ME-02's LNB LO is set to 5,250 MHz for this coordination window. Receive IFs mat
 | GPSDO | Locked | Verify |
 | LNB | Powered, LO 5,250 MHz, locked | Verify |
 | Antenna | Program-track on TIDEMARK-1 | Verify lock |
-| RX Modem 1 | Tuned to 1,532 MHz IF, locked | Verify C/N ≥ 10 dB |
+| RX Modem 1 | Tuned to 1,532 MHz IF, locked on VT-01's carrier | Verify C/N ≥ 10 dB (reads about 12-13 dB, the same as VT-01) |
 | TX Modem 1 | Configured for TM-1 uplink, not transmitting | **Enable transmission (drives into muted BUC)** |
 | BUC | Powered, muted | **Leave muted - the transfer unmutes it** |
 | HPA | Disabled | **Leave disabled - the transfer enables it** |
@@ -121,7 +121,7 @@ This SOP differs from the weather-handover procedure (SOP-WX-003) you ran when t
 ### Pre-Handover: Source Station Baseline
 
 - [ ] VT-01 dashboard: no active alarms
-- [ ] VT-01 antenna: locked on TIDEMARK-1
+- [ ] VT-01 antenna: locked on TIDEMARK-1 (ACU: current target TIDEMARK-1, beacon locked)
 - [ ] VT-01 traffic ownership: confirmed
 
 ### Receive-Side Verification (Maine)
@@ -140,9 +140,11 @@ This SOP differs from the weather-handover procedure (SOP-WX-003) you ran when t
 <Aside type="caution">
 Never bring the receiving station's RF up by hand while the source is still
 radiating. Two uplinks on the same transponder is dual illumination - an
-immediate, customer-visible violation. The traffic transfer stands VT-01 down
-and brings ME-02 up in one coordinated swap; your job is to have Maine staged
-so that swap lands on a ready chain.
+immediate, customer-visible violation: the two copies of the carrier arrive at
+about equal level and wreck each other's C/N. The traffic transfer is
+break-before-make: VT-01's HPA and BUC drop and ME-02's come up in the same
+step, so there is never a moment with both stations radiating. Your job is to
+have Maine staged so the swap finds a ready chain.
 </Aside>
 
 ### Traffic Transfer

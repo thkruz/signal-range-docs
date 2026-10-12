@@ -48,10 +48,10 @@ import { Aside } from '@astrojs/starlight/components';
 | Parameter | State |
 |-----------|-------|
 | Event | Severe winter storm over the site, in progress |
-| Symptom | Ice accumulating on feed - RX loss growing toward ~10 dB if unchecked |
+| Symptom | Ice accumulating on feed (about 2.5 dB at 0712, growing about 0.6 dB/min unheated). Ice on the feed costs both directions: the TM-1 carrier you receive is your own uplink, so it loses uplink EIRP and downlink margin at once. At 0712 the carrier reads about 5 dB C/N, a dB above the lock point; another dB of ice takes it under |
 | Feed heater | **OFF** (the failure: it should have been on before the front arrived) |
 | Where to read it | ACU Control: precipitation, ice accumulation and the feed heater switch |
-| Recovery | Heater ON -> ice melts ~1 dB/min; margin recovers gradually |
+| Recovery | Heater ON -> ice melts ~1 dB/min; C/N climbs back to about 12-13 dB once the feed is clear (the snow itself still costs a little) |
 | Time to recover | Minutes to tens of minutes, weather-dependent |
 
 ### ME-02 - Equipment (fast, deterministic)
@@ -108,7 +108,7 @@ looks like. Before you tell James "bad luck," be able to defend it:
   (ME-02 TM-2 carrier at 1,458 MHz IF, VT-01 TM-1 carrier at 1,532 MHz IF)
 
 Document the rule-out in the log. The day the answer ISN'T bad luck, the value
-of having done this honestly every other time is that someone believes you.
+of having done this straight every other time is that someone believes you.
 
 ### Frequency Plan (both sites, LNB LO 5,250 / BUC LO 7,000)
 

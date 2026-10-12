@@ -63,26 +63,30 @@ All TIDEMARK beacons are V-pol CW carriers. The constellation clusters its beaco
 
 - [ ] Dashboard: no active alarms
 - [ ] GPSDO: locked, stable reference
-- [ ] RX: TM-1 beacon present at 1,074.5 MHz IF, receiver locked, healthy C/N
-- [ ] TX: HPA enabled, standard 10 dB backoff, no overdrive
+- [ ] RX: TM-1 beacon present at 1,074.5 MHz IF, receiver locked, healthy C/N (about 13 dB on our own TP-1 carrier); note the reading
+- [ ] TX: HPA enabled, standard 10 dB backoff (about 50 dBm, 100 W out), no overdrive
 
 ### ME-02 / TIDEMARK-2
 
 - [ ] Dashboard: no active alarms
 - [ ] RX: LNB powered, noise temperature normal; retune the analyzer to 1,070 MHz IF (it may still be parked on another bird's beacon) and confirm the TM-2 beacon
 - [ ] Antenna: locked on TIDEMARK-2 in program-track
-- [ ] Payload spot-check: frame sync, CRC, FEC indicators
+- [ ] Payload spot-check: frame sync, CRC, FEC indicators (ME-02's receiver hears its own TM-2 hub carrier, relayed by the bird)
 
 ### TIDEMARK-3 Spot-Check (from VT-01)
 
 - [ ] Sister teleport confirms it has TM-1 customer traffic (already coordinated)
+- [ ] TX inhibit: disable VT-01's HPA output before the dish moves
 - [ ] Repoint VT-01 to TIDEMARK-3 in program-track (Az 140.5°, El 37.8°)
 - [ ] Spectrum analyzer to 1,078 MHz IF - beacon present and clean
 - [ ] Return VT-01 to TIDEMARK-1, retune analyzer to 1,074.5 MHz IF
+- [ ] Take TM-1 back: enable VT-01's HPA output once the dish is locked on TIDEMARK-1
 - [ ] Final alarm sweep, then type the round summary into the Operations Log (rounds complete, TM-3 beacon verified)
 
 <Aside type="note">
 The TM-3 check is receive-only. No transmit configuration is required - the only question this morning is whether the bird's beacon is where the commissioning crew says it is, seen independently from our own antenna.
+
+Never slew a keyed dish. With VT-01's HPA on, the dish sweeping off TIDEMARK-1 would paint every satellite along the arc with 100 W, and while the sister teleport carries TM-1 a second VT-01 carrier on the same frequency would interfere with it. Inhibit TX first, move, and bring the HPA back only once you are locked on TIDEMARK-1 again.
 </Aside>
 
 <Aside type="caution">

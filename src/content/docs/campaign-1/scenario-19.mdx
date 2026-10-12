@@ -58,7 +58,26 @@ what to leave OFF the card is most of the work.
 | Carrier (Uplink) | 6,053 MHz; BUC LO 7,500 -> 1,447 MHz IF |
 | Bandwidth | 24 MHz (narrower than TIDEMARK - legacy) |
 | Receiver (RX modem 1) | Starts on the TIDEMARK-1 default (1,532 MHz / 36 MHz) - retune to 1,422 MHz / 24 MHz on RX Analysis and Apply |
+| Transmit chain | Staged for AURORA-7 and off the air: BUC LO 7,500, TX modem 1,447 MHz / 24 MHz, modem not transmitting, BUC muted, HPA disabled |
 | Required tracking | Program-track to acquire, step-track to hold |
+
+### VT-01 This Afternoon
+
+VT-01's TIDEMARK-1 traffic is on ME-02 for the afternoon, so VT-01 starts off the air:
+nothing is keyed while the dish leaves TIDEMARK-1. The AURORA-7 slot (6,053 MHz uplink)
+is VT-01's own. Once the dish is tracking the AURORA-7 beacon, bring the uplink up on TX
+Chain, drive before amplifier: TX modem transmitting, then unmute the BUC, then enable the
+HPA. The carrier RX modem 1 locks to at 1,422 MHz is that uplink coming back down through
+AURORA-7 (about 10 dB C/N on a 9 m dish at 10 dB back-off), so prove the receive chain
+after the uplink is up, not before.
+
+### Procedure Order
+
+1. ACU Control: retarget program-track to AURORA-7 and let it lock.
+2. RX Analysis: find the beacon at 1,085 MHz with a narrow span (~2 kHz).
+3. ACU Control: engage step-track on the acquired beacon; watch it hold the figure-8.
+4. TX Chain: bring the AURORA-7 uplink up.
+5. RX Analysis: retune RX modem 1 to 1,422 MHz / 24 MHz, prove lock and C/N at least 8 dB.
 
 ---
 
@@ -71,7 +90,7 @@ too rare to spend card space on. Your call.
 - Beacon "missing" at 1,085 MHz - LNB LO was set to 6,080 (Maine default) instead of 5,250 after a cross-site shift.
 - Operator chased the figure-8 with manual nudges for twenty minutes instead of trusting step-track.
 - Spectrum span left at 2 kHz from a beacon check; operator concluded the 24 MHz carrier was "gone."
-- TX IF computed against BUC LO 7,000 instead of AURORA-7's 7,500 - carrier landed 500 MHz off.
+- TX IF computed against BUC LO 7,000 instead of AURORA-7's 7,500 - the carrier came up 500 MHz off.
 
 ---
 
@@ -85,7 +104,8 @@ too rare to spend card space on. Your call.
 | Watch Out | The 2-3 mistakes with the highest local base rate |
 
 The Working Document lists sections in the order you first add a line to them, so
-the first Watch-Out lands before Track. The editorial order above is what the
+the first Watch-Out appears before Track. The panel does not open on its own: its icon
+pulses when a line is added. The editorial order above is what the
 printed card uses.
 
 ---

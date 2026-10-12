@@ -102,7 +102,7 @@ LNB is high-side injection: **IF = LO − RF** (13,100 MHz LO).
 | SAR-2 imagery downlink | 11,730 | 1,370 | QPSK 3/4, 36 MHz |
 | SAR-2 telemetry beacon | 11,703 | 1,397 | CW |
 
-The Doppler profile changes by a negligible amount for a burn this size; the receiver frequency plan is unchanged. A clean reacquisition is the carrier on RX analysis, the modem locked on 1,370 MHz, and C/N at or above 8 dB through what is left of the high-elevation segment.
+The Doppler profile changes by a negligible amount for a burn this size; the receiver frequency plan is unchanged. A clean reacquisition is the 1,397 MHz beacon on RX analysis, the modem locked on 1,370 MHz, and C/N at or above 8 dB through what is left of the high-elevation segment.
 
 ---
 
@@ -114,7 +114,7 @@ The Doppler profile changes by a negligible amount for a burn this size; the rec
 | LNB | 13,100 MHz LO, reference locked | Stable |
 | GPSDO | Locked, 9 satellites | Disciplined. Timing is half of an element set. |
 | RX modem 1 | **1,370 MHz / 36 MHz / QPSK 3/4** | Yesterday's SAR-2 carrier. Retune to 1,414 MHz for SAR-1, back to 1,370 MHz for SAR-2. |
-| Spectrum analyzer | 1,414 MHz centre, 60 MHz span | 1,389 MHz / 2 MHz for SAR-1; 1,397 MHz for SAR-2 |
+| Spectrum analyzer | 1,414 MHz centre, 60 MHz span | 1,389 MHz / 2 MHz for SAR-1; 1,397 MHz / 2 MHz (beacon) for SAR-2 |
 | BUC / HPA | No drive / output disabled | No uplink tasking this shift |
 
 ---
@@ -143,7 +143,7 @@ The Doppler profile changes by a negligible amount for a burn this size; the rec
 
 ### Reacquisition (14:20 – 14:25)
 - [ ] Pass Schedule: SAR-2 reads EPHEMERIS STALE; Load Updated Ephemeris; reads UPDATED
-- [ ] Carrier comes up on RX analysis; modem locked; C/N ≥ 8 dB
+- [ ] 1,397 MHz beacon comes up on RX analysis; modem locked; C/N ≥ 8 dB
 
 ### After LOS
 - [ ] Ephemeris log: the stale attempt, the load, the reacquisition; reported to Rotterdam

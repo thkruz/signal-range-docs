@@ -59,6 +59,8 @@ TIDEMARK-2 completed station-keeping at 45°W and the Halifax spacecraft team ha
 | TIDEMARK-1 | 53°W | 161.9° | 34.2° |
 | TIDEMARK-2 | 45°W | 219.7° | 26.3° |
 
+Azimuths are the ACU's program-track values (it reads 161.92° on TIDEMARK-1). Older logs round TIDEMARK-1 to 161.8°; the tenth of a degree is inside the beam.
+
 ### Frequency Allocation
 
 | Parameter | RF (MHz) | LO (MHz) | IF (MHz) |
@@ -84,8 +86,8 @@ TIDEMARK-2 frequencies differ from TIDEMARK-1. Verify each value against the ref
 |-----------|-------|-------|
 | Center Frequency | 1,070 MHz | TIDEMARK-2 beacon IF |
 | Span | 10 kHz (enter 0.01; the field is in MHz) | Narrow for CW beacon |
-| RBW | 1 kHz | Tight resolution |
-| Reference Level | about -90 dBm | Already set by the beacon preset (-91 dBm) |
+| RBW | Auto | About 30 Hz at a 10 kHz span: a narrow RBW lowers the noise floor under the CW line |
+| Amplitude | Min Amp -100 dBm, Max Amp -20 dBm | The beacon reads about -50 dBm |
 
 ---
 
@@ -143,7 +145,7 @@ The antenna will slew approximately 58° in azimuth and 8° in elevation. This t
 Verify antenna pointing with beacon:
 
 - [ ] Configure spectrum analyzer for 1,070 MHz IF
-- [ ] Set narrow span (10 kHz, entered as 0.01 MHz) and tight RBW (1 kHz)
+- [ ] Set narrow span (10 kHz, entered as 0.01 MHz), RBW on Auto, Min Amp -100 dBm, Max Amp -20 dBm
 - [ ] Confirm beacon signal at expected frequency
 
 ### Phase 4: Receive Chain
@@ -151,21 +153,19 @@ Verify antenna pointing with beacon:
 Configure receiver for TIDEMARK-2 downlink:
 
 - [ ] RX modem frequency: 1,458 MHz
-- [ ] Bandwidth: 36 MHz
-- [ ] Modulation: QPSK
+- [ ] Bandwidth: 36 MHz, Modulation: QPSK (same as TIDEMARK-1)
 - [ ] FEC: 3/4
-- [ ] Verify carrier lock
-- [ ] Confirm C/N ≥ 10 dB
+
+<Aside type="note">
+No carrier lock yet. TIDEMARK-2 is new and carries no traffic, so until VT-01 uplinks, the only thing on its downlink is the beacon. The receiver locks on VT-01's own carrier, relayed by the transponder, once the transmit chain is up.
+</Aside>
 
 ### Phase 5: Transmit Chain
 
 Configure and enable transmitter:
 
 - [ ] TX modem frequency: 983 MHz
-- [ ] Bandwidth: 36 MHz
-- [ ] Power: -7 dBm
-- [ ] Modulation: QPSK
-- [ ] FEC: 3/4
+- [ ] Bandwidth: 36 MHz, Power: -7 dBm, Modulation: QPSK, FEC: 3/4 (carried over from TIDEMARK-1; check them)
 - [ ] Enable TX modem output
 - [ ] Unmute BUC (before enabling HPA)
 - [ ] Enable HPA output
@@ -178,7 +178,7 @@ Enable the transmit chain from input to output: BUC first, then HPA. An enabled 
 
 Confirm bidirectional link:
 
-- [ ] Receiver: Locked with margin
+- [ ] Receiver: Locked on VT-01's own carrier coming back down, C/N ≥ 10 dB
 - [ ] HPA: Enabled, proper backoff
 - [ ] No alarms
 

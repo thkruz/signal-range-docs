@@ -125,7 +125,7 @@ LNB high-side: **IF = LO − RF** (13,100 MHz). BUC low-side: **RF = IF + LO** (
 | 4 m Ku tracker | Powered, manual, parked az 5° / el 3° | Park on **az 22° / el 5°** for SAR-1; program-track slews to the SAR-2 rise (az 190°) from wherever SAR-1 leaves it |
 | RX modem 1 | **1,370 MHz** / 36 MHz / QPSK 3/4 | Night shift's SAR-2 carrier. To 1,414 for SAR-1; back to 1,370 for SAR-2 |
 | TX modem 1 | **1,405 MHz** / QPSK 3/4 / −7 dBm, not transmitting | Retune to **1,435 MHz** before the SAR-2 window |
-| Spectrum analyzer | 1,414 MHz centre, 60 MHz span | 1,389 MHz, 2 MHz span for SAR-1; 1,370 MHz for SAR-2 |
+| Spectrum analyzer | 1,414 MHz centre, 60 MHz span | 1,389 MHz, 2 MHz span for SAR-1; 1,397 MHz (SAR-2 beacon) for SAR-2 |
 | BUC / HPA | Muted, on reference / output disabled | Chain up only inside the SAR-2 window, after the decode |
 | GPSDO | Locked, 9 satellites | Confirm |
 | COMSEC | TX key Valid (Q1), RX traffic key Valid | Both read before anything moves; both read Valid again after the gap, on Q2 |
@@ -153,7 +153,7 @@ LNB high-side: **IF = LO − RF** (13,100 MHz). BUC low-side: **RF = IF + LO** (
 - [ ] TT&C console: Begin rotation, Complete rotation; Q2 reads Valid
 - [ ] 07:27: RX analysis reads the traffic key **Mismatch**
 - [ ] TX chain payload panel: re-key; TX and RX read Valid
-- [ ] Modem 1 to 1,370 MHz; analyzer 1,370 MHz; TX modem to 1,435 MHz
+- [ ] Modem 1 to 1,370 MHz; analyzer 1,397 MHz (SAR-2 beacon); TX modem to 1,435 MHz
 
 ### SAR-2, the proof (07:34 – 07:44)
 - [ ] Program-track MERIDIAN-SAR-2; beacon on RX analysis
