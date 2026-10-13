@@ -82,7 +82,7 @@ SeaLink Global runs maritime data services for commercial shipping. Their contra
 | FEC Rate | 3/4 |
 | Polarization | Horizontal (TP-1) |
 | Nominal C/N | 14-16 dB |
-| Demod lock threshold | Es/N0 5.0 dB (about 4.2 dB C/N in 36 MHz) |
+| Demod lock threshold | Es/N0 5.0 dB (about 4.2 dB C/N on a clean carrier) |
 | Service minimum | 8 dB C/N |
 
 ---
@@ -91,7 +91,7 @@ SeaLink Global runs maritime data services for commercial shipping. Their contra
 
 | Equipment | Status | Notes |
 |-----------|--------|-------|
-| Antenna | Program-track on TIDEMARK-1 | Az: 161.9°, El: 34.2° |
+| Antenna | Program-track on TIDEMARK-1 | Az: 153.2°, El: 35.2° |
 | LNB | 5,250 MHz LO, powered | Reference locked |
 | GPSDO | Locked | 10 MHz reference nominal |
 | Receiver Modem | 1,532 MHz IF, 36 MHz BW | Monitors our own hub carrier as it comes back down; check C/N display |
@@ -106,7 +106,7 @@ The spectrum analyzer is configured for beacon observation from this morning's p
 | Center Frequency | 1,074.5 MHz | Beacon IF |
 | Span | 2 kHz | Narrow for CW beacon |
 | RBW | 10 Hz (manual) | Set for the beacon; far too narrow for a wide span: put it back on Auto |
-| Amplitude | -140 to -40 dBm | Beacon (~-47 dBm) and its floor on screen |
+| Amplitude | -140 to -40 dBm | Beacon (about -58 dBm) and its floor on screen |
 
 This configuration cannot show the 36 MHz main signal or wideband interference. You'll need to reconfigure.
 
@@ -142,18 +142,18 @@ They cannot help with broadband interference or interference centered on your si
 
 ## C/N Degradation Quick Reference
 
-| C/N Range | Modem Reads | Service Impact |
-|-----------|-------------|----------------|
-| > 10 dB | Locked, good margin | Normal operations, fade margin in hand |
-| 5.2-10 dB | Locked, good margin | Decoding cleanly, little fade margin left |
-| 4.2-5.2 dB | Locked, **Degraded margin** | Hub still decodes error-free; customers' small terminals are already dropping packets |
-| < 3.7 dB | **No lock** | Outage |
+| Margin (Es/N0 - 5.0 dB) | C/N, clean carrier | Modem Reads | Service Impact |
+|-------------------------|--------------------|-------------|----------------|
+| about 5.8 dB or more | about 10 dB or more | Locked, good margin | Normal operations, fade margin in hand |
+| 1.0 to 5.8 dB | about 5.2 to 10 dB | Locked, good margin | Decoding cleanly, little fade margin left |
+| -0.5 to 1.0 dB | about 3.7 to 5.2 dB | Locked, **Degraded margin** | Hub still decodes error-free; customers' small terminals are already dropping packets |
+| below -0.5 dB | below about 3.7 dB | **No lock** | Outage |
 
-The modem locks on Es/N0 (C/N measured in the symbol-rate bandwidth). QPSK 3/4 needs 5.0 dB, which is about 4.2 dB of C/N in our 36 MHz channel; RX Analysis shows the requirement as Required Es/N0 and the margin in the status bar.
+The modem works on Es/N0, not C/N: QPSK 3/4 needs Es/N0 5.0 dB, RX Analysis shows it as Required Es/N0, and the status bar shows the margin over it. The thresholds have hysteresis: once Degraded, the modem reads Good again only from 1.5 dB of margin; once lost, it re-acquires lock only from +0.5 dB. On a clean carrier Es/N0 reads about 0.8 dB above C/N, which is where the C/N column comes from. With interference in the band the two read closer together, so judge the link by the margin in the status bar, not by a C/N rule of thumb.
 
-The table is for the 9 m hub at VT-01. SeaLink's ships run 1-2 m terminals with 15-20 dB less G/T, so the same interference in the transponder puts them much closer to their threshold. An LDPC-coded carrier decodes error-free until it is within a fraction of a dB of threshold, then fails abruptly: the hub's **Payload Data Integrity** card can show BER around 1e-12 and 0 CRC errors while the remotes are losing packets. Judge the customer's link by the hub's margin, not its BER.
+The table is for the 9 m hub at VT-01. SeaLink's ships run 1-2 m terminals with 15-20 dB less G/T, so the same interference in the transponder puts them much closer to their threshold. TIDEMARK-1's carrier is concatenated-coded (Viterbi K=7 rate 3/4 inside, Reed-Solomon 223/255 outside; the Payload Data Integrity card shows both). That pair decodes error-free while Reed-Solomon can still correct every block the Viterbi decoder hands it, then fails abruptly within a fraction of a dB: the hub's **Payload Data Integrity** card can show BER around 1e-12 and 0 CRC errors while the remotes are losing packets. Judge the customer's link by the hub's margin, not its BER.
 
-C/N drops when carrier power decreases OR when in-band noise/interference increases. The receiver's AGC responds to total power in the passband - a strong interference spike can cause AGC to reduce gain on the entire signal.
+C/N drops when carrier power decreases OR when in-band noise/interference increases: an interferer inside our passband counts as noise to the demodulator (C/(N+I)), and one inside the transponder also takes a share of its output power. The receiver's AGC responds to total power in the passband, so a strong spike makes it cut its gain - but that gain applies to carrier and noise alike, so the AGC's gain change is a symptom of the extra power, not the cause of the C/N loss.
 
 ---
 

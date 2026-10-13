@@ -116,9 +116,10 @@ within AGC compensation range for a healthy link.
 
 **What the cell looks like on the console.** It is small, so know where to look:
 
-- RX modem 1 C/N on the TIDEMARK-1 carrier: about 13 dB before the rain, a few tenths to
-  under 1 dB lower with the cell overhead. That is about the size of the readout's normal
-  wander, which is why you write the baseline down first.
+- RX modem 1 Raw C/N on the TIDEMARK-1 carrier (RX Analysis): about 13 dB before the rain, a
+  few tenths to under 1 dB lower with the cell overhead. That is about the size of the
+  readout's normal wander, which is why you write the baseline down first. This is the
+  readout the action threshold below is measured on.
 - ACU Environmental card: Precipitation ACTIVE while the cell is overhead, and the beacon
   C/N on the ACU down by under a dB.
 - AGC gain: it wanders by about a dB on its own, before and during the rain. The rain moves
@@ -126,8 +127,10 @@ within AGC compensation range for a healthy link.
   stays far below its maximum.
 
 The cell takes about twenty minutes to pass. Once your hold is set up and the link is
-holding, you can wait it out or skip ahead (Skip 20 min in the command bar); the hold keeps
-counting through the skip, and the weather runs its course.
+holding, you can wait it out or skip ahead with the skip control in the command bar. The skip
+jumps to the moment the cell clears and the weather runs its course on the way. While the hold
+step waits, the mission clock is held (HOLD beside the timer), so waiting it out and skipping
+score the same.
 
 The feed heater is not just for ice - it also keeps water from beading and sheeting
 on the feed assembly. Dry surfaces attenuate less than wet ones. Bring it up
@@ -153,7 +156,7 @@ heater doing both jobs. The Rain Blower is optional at C-band, even in a heavy c
 
 | Parameter | Nominal | Watch Threshold | Action Threshold |
 |-----------|---------|-----------------|------------------|
-| Beacon C/N | Within 1 dB of the baseline you wrote down | 1-3 dB under baseline | More than 3 dB under |
+| RX modem 1 Raw C/N (TIDEMARK-1 carrier) | Within 1 dB of the baseline you wrote down (about 13 dB) | 1-6 dB under baseline (7-12 dB) | Below 7 dB (about 6 dB under baseline, about 2 dB above where QPSK 3/4 locks) |
 | AGC compensation in use | < 2 dB | 2-6 dB | At max gain |
 | Modem lock | Locked | Brief drops | Sustained unlock |
 | HPA back-off | 10 dB | - | - |
@@ -170,7 +173,7 @@ reality. The standing trigger conditions for flipping the call from "hold" to
 
 - AGC has headroom remaining (compensation in use is well below max).
 - Modem lock is maintained.
-- Beacon C/N is above the watch threshold.
+- RX modem 1 Raw C/N is above the 7 dB action threshold.
 - Customer has stated SLA preference for hold.
 - A fallback station is not available without impact (ME-02 is busy on TM-2).
 
@@ -178,7 +181,7 @@ reality. The standing trigger conditions for flipping the call from "hold" to
 
 - AGC is at or near max compensation **and** fade is still deepening.
 - Modem drops lock for more than a brief dip.
-- C/N falls below the action threshold and is not recovering.
+- RX modem 1 Raw C/N falls below 7 dB (the action threshold) and is not recovering.
 - The forecast is going to outlast AGC's remaining cushion.
 
 <Aside type="caution">
@@ -210,14 +213,14 @@ the responsible move is to not spend it. Keep back-off nominal through the front
 
 - [ ] Feed heater enabled
 - [ ] Dashboard clean, no pre-existing alarms
-- [ ] Beacon C/N noted at baseline (write it down)
+- [ ] RX modem 1 Raw C/N noted at baseline (write it down: about 13 dB)
 - [ ] Modem locked with margin
 
 ### Through the Fade (1325-1345)
 
 - [ ] Hold until the cell has passed (wait it out or skip ahead)
 - [ ] Receiver lock maintained
-- [ ] C/N held above 7 dB (action threshold)
+- [ ] RX modem 1 Raw C/N held above 7 dB (action threshold)
 - [ ] AGC gain far below max (it wanders about a dB on its own)
 - [ ] Antenna still locked on TIDEMARK-1
 - [ ] HPA back-off unchanged at 10 dB
@@ -226,7 +229,7 @@ the responsible move is to not spend it. Keep back-off nominal through the front
 
 - [ ] C/N recovering toward baseline
 - [ ] AGC gain backing down
-- [ ] Customer notified that service held
+- [ ] SeaLink told on the customer portal that service held (recorded in the log entry)
 - [ ] Log entry captures decision, thresholds watched, recovery
 
 ---
@@ -261,15 +264,17 @@ entry captures:
 - Time, station, weather event characterization.
 - Customer SLA preference (hold) and that it was honored.
 - Peak AGC compensation in use; minimum C/N observed.
-- The handover triggers that were being watched but did not fire.
-- Whether the customer was notified post-event.
+- The handover triggers that were being watched but did not fire (RX modem 1 Raw C/N
+  under 7 dB, AGC at max with continued fade, modem unlock).
+- That the customer was notified post-event.
 
 Example:
 
 > *"1325-1345 - Heavy rain cell over VT-01, under 1 dB of C/N lost at peak (mostly sky
 > noise). Held TM-1 service per SeaLink SLA preference. AGC gain far below max (no change
-> beyond its normal wander), beacon C/N within 1 dB of baseline. Triggers watched: AGC at max with continued fade; modem unlock.
-> Neither fired. SeaLink notified by reply on customer portal."*
+> beyond its normal wander), RX modem 1 Raw C/N within 1 dB of its 13 dB baseline. Triggers
+> watched: Raw C/N under 7 dB; AGC at max with continued fade; modem unlock. None fired.
+> SeaLink notified by reply on customer portal."*
 
 If the hold had failed - if the call had flipped to handover - the same entry
 records the trigger that fired and the time it did.

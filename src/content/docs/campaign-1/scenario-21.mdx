@@ -75,11 +75,15 @@ Then the signature questions, in order of diagnostic power:
    either rotating machinery (radar - seconds, not minutes) or a hand on a
    transmit switch.
 2. **Bandwidth and shape.** Cross-pol leakage mirrors a known neighbor's
-   carrier. An errant uplink looks like a modulated carrier. Broadband noise
-   centered on OUR allocation, sized to OUR carrier, matches nothing in the
-   coordination database - that is what deliberate denial looks like.
-3. **Frequency behavior.** Drifting = cheap oscillator (accidental). Parked
-   dead-center on the victim carrier = aimed.
+   carrier. An errant uplink looks like a modulated carrier at a coordinated
+   slot. Featureless noise inside OUR allocation matches nothing in the
+   coordination database - that is what deliberate denial looks like, whether
+   it covers our whole carrier (centered on it, sized to it) or only a slice of
+   it (partial-band: a narrower noise band parked on part of our carrier puts
+   all of the jammer's power there, and a slice is enough to break the demod).
+3. **Frequency behavior.** Drifting = cheap oscillator (accidental). Parked on
+   the victim carrier, dead-center or on the same slice burst after burst =
+   aimed.
 4. **Correlation with our traffic.** Interference that starts when your carrier
    does, or follows a retune, is watching you.
 

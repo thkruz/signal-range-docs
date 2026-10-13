@@ -56,10 +56,10 @@ TIDEMARK-2 completed station-keeping at 45°W and the Halifax spacecraft team ha
 
 | Satellite | Orbital Slot | Azimuth (from VT-01) | Elevation |
 |-----------|--------------|----------------------|-----------|
-| TIDEMARK-1 | 53°W | 161.9° | 34.2° |
-| TIDEMARK-2 | 45°W | 219.7° | 26.3° |
+| TIDEMARK-1 | 53°W | 153.2° | 35.2° |
+| TIDEMARK-2 | 45°W | 143.4° | 31.9° |
 
-Azimuths are the ACU's program-track values (it reads 161.92° on TIDEMARK-1). Older logs round TIDEMARK-1 to 161.8°; the tenth of a degree is inside the beam.
+Angles are the ACU's program-track values (it reads about 153.2° on TIDEMARK-1). Both slots are east of Vermont's 72.6°W, so both birds sit in the south-east sky; the slot farther east (45°W) sits further from due south and lower. The Overview card's satellite angles can differ from the ACU by about a tenth of a degree (the ephemeris offset); that is inside the beam.
 
 ### Frequency Allocation
 
@@ -87,7 +87,7 @@ TIDEMARK-2 frequencies differ from TIDEMARK-1. Verify each value against the ref
 | Center Frequency | 1,070 MHz | TIDEMARK-2 beacon IF |
 | Span | 10 kHz (enter 0.01; the field is in MHz) | Narrow for CW beacon |
 | RBW | Auto | About 30 Hz at a 10 kHz span: a narrow RBW lowers the noise floor under the CW line |
-| Amplitude | Min Amp -100 dBm, Max Amp -20 dBm | The beacon reads about -50 dBm |
+| Amplitude | Min Amp -100 dBm, Max Amp -20 dBm | The beacon reads about -43 dBm (within 2 dB) |
 
 ---
 
@@ -125,7 +125,7 @@ Before making changes, confirm:
 
 - [ ] Current antenna target: TIDEMARK-1
 - [ ] Tracking mode: Program-track
-- [ ] Antenna position: Az 161.9°, El 34.2°
+- [ ] Antenna position: Az 153.2°, El 35.2°
 
 ### Phase 2: Antenna Slew
 
@@ -134,10 +134,10 @@ Command antenna to TIDEMARK-2:
 - [ ] Set tracking mode: Program-track
 - [ ] Select target: TIDEMARK-2, then press Move to Target
 - [ ] Wait for slew to complete
-- [ ] Verify position: Az 219.7°, El 26.3°
+- [ ] Verify position: Az 143.4°, El 31.9°
 
 <Aside type="caution">
-The antenna will slew approximately 58° in azimuth and 8° in elevation. This takes time - don't interrupt the slew.
+The antenna will slew about 10° east in azimuth and drop about 3° in elevation. It is a short move, but let the ACU finish it - don't interrupt the slew.
 </Aside>
 
 ### Phase 3: Beacon Acquisition

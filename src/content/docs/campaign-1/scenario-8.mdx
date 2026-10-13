@@ -62,6 +62,7 @@ AURORA-7 is a legacy C-band satellite you've worked with before. It stopped nort
 | Parameter | RF (MHz) | LO (MHz) | IF (MHz) |
 |-----------|----------|----------|----------|
 | Beacon (Downlink) | 4,165 | 5,250 (LNB) | 1,085 |
+| Carrier (Downlink) | 3,828 | 5,250 (LNB) | 1,422 |
 | Carrier (Uplink) | 6,053 | 7,100 (BUC) | 1,047 |
 
 ### Modem Configuration
@@ -167,6 +168,19 @@ Never enable the HPA with the BUC muted - the HPA sees no drive and the link won
 
 Before transmitting live RF, validate the low-power chain using BUC loopback mode. This routes the upconverted signal internally back to the receive path without radiating through the antenna.
 
+**Where the loop carrier lands:** a C-band LNB only receives about 3.4-4.2 GHz, so it never sees the 6 GHz uplink itself and you do not retune it. The test loop couples the BUC output (about 66 dB down) through a loop translator that shifts it down by the satellite's 2,225 MHz translation, so with the LNB LO left at 5,250 MHz the loop carrier shows up where our AURORA-7 downlink will:
+
+| Stage | Frequency |
+|-------|-----------|
+| TX modem IF | 1,047 MHz |
+| BUC output (7,100 - 1,047) | 6,053 MHz |
+| Loop translator (6,053 - 2,225) | 3,828 MHz |
+| LNB IF (5,250 - 3,828) | 1,422 MHz |
+
+View it at Center 1,422 MHz, Span 40 MHz, Min / Max Amp -100 / -30 dBm. The beacon stays at 1,085 MHz.
+
+**Drive level for the loop:** tonight's LNB runs 65 dB of gain, so it compresses at about -55 dBm in (output P1dB +10 dBm). At the standard 23 dB BUC gain the -7 dBm modem puts +16 dBm out of the BUC and -50 dBm into the LNB, well past that point ("LNB input overload"). Back the BUC off to 15 dB for the test (-58 dBm in, 3 dB under) and set it back to 23 dB before the HPA goes on.
+
 **What You'll See:**
 
 - **CW Beacon:** Narrow spike (unmodulated carrier)
@@ -242,12 +256,12 @@ A fully operational link requires all of the following:
 - [ ] Antenna tracking: Step-track (for AURORA-7)
 - [ ] Beacon lock: Acquired
 - [ ] Beacon signal: Visible at 1,085 MHz IF
-- [ ] Receiver: Steady lock on our own carrier, C/N about 10.5 dB
+- [ ] Receiver: Steady lock on our own carrier (no dropouts)
 
 ### Transmit Path
 - [ ] BUC reference: Locked
 - [ ] BUC mute: Unmuted
-- [ ] BUC loopback: Disabled
+- [ ] BUC loopback: Disabled, gain back to 23 dB
 - [ ] HPA: Enabled, nominal power
 
 ### System

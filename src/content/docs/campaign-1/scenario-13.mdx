@@ -70,7 +70,7 @@ SeaLink has not reported anything. The customer is unaware. Whatever you do, the
 
 ## BUC Thermal Trend Log
 
-Station temperature log readings, last 10 minutes (sampled every 2 min). TX Chain shows the same curve live (BUC Thermal: Trend, a 30-minute sparkline with the 70°C trip line, and a 10 min ago readout). The 10 min ago readout is rolling: at 1003 it shows the 0953 value, 57°C, and it moves with the clock after that.
+Station temperature log readings, last 10 minutes (sampled every 2 min). TX Chain shows the same curve live (BUC THERMAL: Trend (1 min), the slope over the last minute; a 30-minute sparkline with the 70°C trip line; and a 10 min ago readout). The 10 min ago readout is rolling: at 1003 it shows the 0953 value, 57°C, and it moves with the clock after that.
 
 | Time | Temp (°C) | Current (A) | Notes |
 |------|-----------|-------------|-------|
@@ -83,7 +83,7 @@ Station temperature log readings, last 10 minutes (sampled every 2 min). TX Chai
 
 **Slope:** ~+0.3°C/min now (it was nearer +0.8°C/min ten minutes ago; easing, not flat)
 
-**Headroom to trip (70°C):** ~25 minutes if the current slope held. The easing slope says it may level off below the trip; nothing on the board says where.
+**Headroom to trip (70°C):** about half an hour (8°C at ~0.3°C/min) if the current slope held. The easing slope says it may level off below the trip; nothing on the board says where.
 
 Note the shape: current draw stepped up first and held flat; temperature is following it with thermal lag. Cause precedes effect.
 
@@ -144,7 +144,7 @@ If the de-rate is the right call, execute it live - no mute, no theater:
 1. Lower BUC gain in a single adjustment (target 23 dB operating value, down from 33 dB)
 2. Verify HPA still in linear region. With the ALC on, the HPA output and back-off stay put: its gain rises by the 10 dB you took out of the BUC, which is what keeps the customer's EIRP steady
 3. Verify BUC not saturated: its output drops about 10 dB, to about 16 dBm, and the P1dB Margin readout grows from about 2 dB to about 12 dB
-4. Watch the BUC on TX Chain until the curve turns over: current drops to about 3.1 A within seconds; the temperature turns down at once and passes 61°C 2-3 minutes after the de-rate (about 58°C after 5 minutes, then easing toward the mid-50s)
+4. Watch the BUC on TX Chain until the curve turns over: current drops to about 3.1 A within seconds and Trend (1 min) goes negative within about half a minute; the temperature passes 61°C about 3 minutes after the de-rate (2 to 4, depending on how warm it got before you acted), reads about 60°C after 5 minutes, then eases toward the mid-50s
 5. Open maintenance ticket for BUC swap on next planned window
 6. Log the action
 

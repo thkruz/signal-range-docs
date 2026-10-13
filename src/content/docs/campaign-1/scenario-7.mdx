@@ -91,7 +91,7 @@ RF = LO - IF, so IF = LO - RF
 | Center Frequency | 1,074.5 MHz | TIDEMARK-1 beacon IF |
 | Span | 2 kHz | Narrow for CW beacon |
 | RBW | Auto | |
-| Min / Max Amplitude | -100 / -50 dBm | Frames the beacon level |
+| Min / Max Amplitude | -100 / -30 dBm | Frames the beacon (about -49 dBm) with headroom |
 
 ---
 
@@ -154,7 +154,7 @@ Test the low-power TX chain before engaging the HPA:
 - [ ] Reduce BUC gain to 20 dB for loopback (keeps the LNB linear, see below)
 - [ ] Enable BUC loopback mode
 - [ ] Unmute BUC
-- [ ] Verify loopback signal on spectrum analyzer
+- [ ] Verify the loop carrier on the spectrum analyzer at 1,532 MHz IF (normal LNB LO, see below)
 - [ ] Confirm TX modem output is clean
 
 <Aside type="note">
@@ -168,7 +168,6 @@ After successful loopback validation:
 - [ ] Verify encryption status (AES-256 required)
 - [ ] Disable BUC loopback mode
 - [ ] Set BUC gain back to 23 dB (at 20 dB the HPA is 3 dB short of drive)
-- [ ] Restore LNB LO to 5,250 MHz (RX Analysis)
 - [ ] Enable HPA output
 - [ ] Adjust HPA backoff for required output power: above 400 W (TIDEMARK-1 link budget minimum). The HPA makes 60 dBm (1 kW) at P1dB, so 3 dB of back-off gives 57 dBm (501 W) and 4 dB gives 56 dBm (398 W, just short). Below 3 dB the overdrive alarm trips.
 - [ ] Verify uplink operational
@@ -181,15 +180,18 @@ After successful loopback validation:
 
 Loopback testing catches configuration errors before they cause interference. A misconfigured TX frequency or incorrect modulation settings are much easier to diagnose in loopback than by analyzing satellite return signals.
 
-### LNB Configuration for Loopback
+### Where the Loop Carrier Appears
 
-To view the loopback signal at the same IF frequency as the TX modem output:
+A C-band LNB only receives about 3.4-4.2 GHz, so it never sees the 6 GHz uplink directly and you do not retune it. The station's test loop runs the coupled BUC sample through a loop translator that shifts it down by the satellite's own translation frequency (2,225 MHz), so the loop carrier arrives where our downlink will be:
 
-| Parameter | Normal Operation | Loopback Test |
-|-----------|-----------------|---------------|
-| LNB LO | 5,250 MHz | 7,000 MHz |
+| Stage | Frequency |
+|-------|-----------|
+| TX modem IF | 1,057 MHz |
+| BUC output (7,000 - 1,057) | 5,943 MHz |
+| Loop translator (5,943 - 2,225) | 3,718 MHz |
+| LNB IF, normal LO 5,250 (5,250 - 3,718) | 1,532 MHz |
 
-Setting the LNB LO to match the BUC LO (7,000 MHz) allows direct IF comparison. The spectrum analyzer will show the TX modem output at 1,057 MHz. Set the LNB LO back to 5,250 MHz when the test is done, or the receive chain stays off the satellite.
+Leave the LNB LO at 5,250 MHz and look at 1,532 MHz IF (Span 50 MHz, Min / Max Amp -100 / -20 dBm, RBW Auto). The 36 MHz carrier sits in the same slot the RX modem watches for our downlink, so the loop also shows you what the receive side will see once the uplink is live.
 
 ### BUC Gain for Loopback
 
@@ -198,7 +200,7 @@ Setting the LNB LO to match the BUC LO (7,000 MHz) allows direct IF comparison. 
 | Normal TX | 23 dB | About 16 dBm drive to the HPA from the -7 dBm modem, well under the BUC's 28 dBm P1dB |
 | Loopback Test | 20 dB | Keeps the LNB linear (below) |
 
-The test loop is a directional coupler and pad that feed the BUC output into the LNB about 66 dB down. At 60 dB gain the LNB compresses at about -50 dBm in (its output P1dB is +10 dBm). At 23 dB the loop puts -50 dBm into it: 0.7 dB of compression and an "LNB input overload" alarm, so the carrier you measure is distorted by the test itself. At 20 dB it gets -53 dBm, 3 dB under, about 0.2 dB of compression: a clean, linear look at the modem and BUC. Put the gain back to 23 dB before the HPA goes on.
+The test loop (a directional coupler, a pad and the loop translator) feeds the BUC output into the LNB about 66 dB down. At 60 dB gain the LNB compresses at about -50 dBm in (its output P1dB is +10 dBm). At 23 dB the loop puts -50 dBm into it: 0.7 dB of compression and an "LNB input overload" alarm, so the carrier you measure is distorted by the test itself. At 20 dB it gets -53 dBm, 3 dB under, about 0.2 dB of compression: a clean, linear look at the modem and BUC. Put the gain back to 23 dB before the HPA goes on.
 
 ---
 

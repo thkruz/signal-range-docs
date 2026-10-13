@@ -6,7 +6,7 @@ lastUpdated: 2026-05-25
 
 import { Aside } from '@astrojs/starlight/components';
 
-**Duration:** 35-45 minutes
+**Duration:** 15-20 minutes
 
 **Difficulty:** Advanced
 
@@ -160,7 +160,7 @@ continues to dissipate power and the temperature will not fall.
 
 1. Disable the HPA output FIRST - never mute the BUC under an enabled HPA.
 2. Mute the BUC.
-3. Confirm temperature trending downward.
+3. Confirm temperature trending downward (Trend (1 min) on the BUC THERMAL readout turns negative within about half a minute of the mute).
 4. Wait for temperature `< 70°C`. Muting takes the bias off the failing stage, so current drops to the 2.6 A idle within seconds and the temperature passes 70°C about a minute after the mute.
 5. Do not unmute until both hold.
 
@@ -280,8 +280,9 @@ picture. A correct entry captures:
 Example:
 
 > *"0934 - VT-01 cascade event. Concurrent unrelated faults: BUC over-temp (72°C),
-> LNB ref unlock (sticky), HPA back-off drift (2 dB). Recovery in order: BUC mute, HPA
-> 10 dB, LNB power cycle, BUC unmute. SeaLink (Okafor) notified. Impact report to
+> LNB ref unlock (sticky), HPA back-off drift (2 dB). Recovery in order: HPA output
+> disabled, BUC muted, HPA back-off restored to 10 dB, BUC cooled under 70°C, LNB power
+> cycled, BUC unmuted, HPA re-enabled. SeaLink (Okafor) notified. Impact report to
 > follow."*
 
 Trend the BUC temperature and HPA back-off readings against prior shifts - if either

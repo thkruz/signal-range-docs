@@ -46,19 +46,25 @@ import { Aside } from '@astrojs/starlight/components';
 
 | Month | Relative beacon level (dB) |
 |-------|----------------------------|
-| 24 months ago | 0.0 (reference) |
-| 18 months ago | -0.4 |
-| 12 months ago | -1.1 |
-| 9 months ago | -1.6 |
-| 6 months ago | -2.4 |
-| 3 months ago | -3.1 |
-| This month | **-4.0** |
-| *Step-track floor (beacon lock: 6.5 dB C/N on the ACU, 1 kHz tracking bandwidth)* | *about -6.3* |
+| 36 months ago | 0.0 (reference) |
+| 30 months ago | -0.6 |
+| 24 months ago | -1.3 |
+| 18 months ago | -2.2 |
+| 12 months ago | -3.3 |
+| 9 months ago | -4.0 |
+| 6 months ago | -4.7 |
+| 3 months ago | -5.5 |
+| This month | **-6.3** |
+| *Step-track floor (beacon lock: 6.5 dB C/N on the ACU, 1 kHz tracking bandwidth)* | *about -8.6* |
 
-The 24-month reference read about **-63 dBm** on the VT-01 spectrum analyzer's Peak
-readout. The log is always taken the same way: step-tracked, beacon at 1,085 MHz IF,
-with nothing of ours on the bird (the AGC on noise alone; keying a carrier makes the
-AGC back off and the beacon reads about 12 dB lower).
+The 36-month reference read about **-63 dBm** on the VT-01 spectrum analyzer's Peak
+readout, so this month's median is about -69 dBm. The log is always taken the same
+way: step-tracked, beacon at 1,085 MHz IF, with nothing of ours on the bird. The AGC
+then levels on noise alone and the alarm list shows "AGC on noise only - passband
+power is noise, no traffic carrier": the beacon is a narrow CW line, far below the
+noise integrated across the whole passband, so that alarm is expected while you
+measure. Keying a carrier makes the AGC back off and the beacon reads about 12 dB
+lower.
 
 Today the step-tracked beacon reads about 9 dB C/N on the ACU, so about 2.3 dB
 separates it from the 6.5 dB beacon lock below which step-track cannot hold the
@@ -68,8 +74,9 @@ two.
 
 The decline is consistent with solar array / power subsystem aging: the bus is
 running out of watts, and the spacecraft sheds load by reducing RF output. The
-slope has been **steepening** - the last 6 months lost 1.6 dB, more than the whole
-first year of the record (1.1 dB).
+slope has been **steepening** - every six months has lost more than the six before
+(0.6, 0.7, 0.9, 1.1, 1.4, 1.6 dB), and the last 6 months alone lost more than the
+whole first year of the record (1.3 dB).
 
 <Aside type="note">
 Step-track needs a usable beacon. The operational cliff is not "the transponder
@@ -93,7 +100,7 @@ leaves TIDEMARK-1.
 - [ ] Verify step-track still holds lock at current beacon power
 - [ ] Measure the beacon at 1,085 MHz IF on the spectrum analyzer before keying
       anything: read the Peak readout and compare it with the -63 dBm reference
-      (this month's -4.0 dB figure is the median from the beacon log)
+      (this month's -6.3 dB figure is the median from the beacon log)
 - [ ] Bring the AURORA-7 test carrier up on TX Chain, drive first: TX modem
       transmitting, BUC unmuted, HPA enabled
 - [ ] Confirm receiver modem 1 is locked on the carrier at 1,422 MHz IF with

@@ -1,6 +1,6 @@
 ---
 title: 'Scenario 18 - Satellite Anomaly: TIDEMARK-2 Station-Keeping Drift'
-description: 'TIDEMARK-2 thruster degradation reported by Halifax - hold the link from ME-02 with step-track while the spacecraft team works the vehicle.'
+description: 'TIDEMARK-2 north-south burn overrun reported by Halifax (about 1.3 deg of inclination) - hold the link from ME-02 with step-track while the spacecraft team works the vehicle.'
 lastUpdated: 2026-06-11
 ---
 
@@ -8,16 +8,17 @@ import { Aside } from '@astrojs/starlight/components';
 
 ## Shift Turnover Notes
 
-**Date:** Monday, 0915 Local
+**Date:** Tuesday, 0915 Local
 **Station:** Maine (ME-02) - you are covering for Catherine (training day)
 **Operator on Duty:** You
 **Supervisor:** Dana Torres (remote from VT-01, incident-handling support)
 **Spacecraft Liaison:** Marcus Chen (SeaLink Halifax) - **primary voice this shift**
 
 > Marcus called the ops line at 0850. TIDEMARK-2's north-south station-keeping
-> burns have been coming up short - thruster degradation, vehicle team
-> investigating. The bird is drifting more than the ephemeris predicts and
-> Halifax expects it to get worse over the next several hours.
+> burn this morning ran long on a stuck thruster valve and left the bird with
+> over a degree of inclination. Further burns are suspended, vehicle team
+> investigating. The published ephemeris predates the burn, and Halifax expects
+> the gap between it and the satellite to keep opening through the morning.
 >
 > Your job is the ground side: keep the link alive while they work the
 > spacecraft. The vehicle is their problem. The lock is yours.
@@ -25,11 +26,12 @@ import { Aside } from '@astrojs/starlight/components';
 > — Dana (text, 0907)
 
 **Marcus (call note, 0850):**
-> *"Halifax here. TM-2's station-keeping is degraded - we're seeing residual
-> inclination building, which means a growing daily figure-eight from your
-> perspective. Program-track will fall off the bird because the ephemeris no
-> longer matches reality. You've flown AURORA-7 - same playbook. I'll feed you
-> vehicle status as we have it."*
+> *"Halifax here. The 0800 north-south burn on TM-2 overran - stuck valve - and
+> left about 1.3 degrees of inclination, so from your dish the bird now swings a
+> daily figure-eight of about plus or minus 1.3 degrees. The ephemeris we
+> published predates the burn. Program-track will fall off the bird as the gap
+> opens. You've flown AURORA-7 - same playbook. I'll feed you vehicle status as
+> we have it."*
 
 ---
 
@@ -54,16 +56,34 @@ import { Aside } from '@astrojs/starlight/components';
 
 | Parameter | Nominal | Current |
 |-----------|---------|---------|
-| Nominal slot position (from ME-02) | Az 222.7°, El 24.4° | Drifting ±1.3° (figure-8, growing) |
-| Ephemeris validity | Good | **Stale - drift exceeds prediction** |
-| Station-keeping | Automatic N-S burns | **Degraded thrusters - burns suspended** |
+| Nominal slot position (from ME-02) | Az 147.0°, El 32.4° (45° W) | Swinging ±1.3° in a daily figure-8 |
+| Inclination | ~0.05° (station-kept) | **~1.3° since the 0800 burn** |
+| Ephemeris validity | Good | **Stale - computed before the burn** |
+| Station-keeping | Automatic N-S burns | **0800 burn overran (stuck valve) - further burns suspended** |
 | Transponders / beacon | Nominal | Nominal (payload unaffected) |
 
 Look angles are live on every panel, so expect them to differ by a few tenths of a degree:
 the Overview shows the selected station's live look angles to the bird (select ME-02 first;
 with VT-01 selected it shows Vermont's angles), the Dashboard and ACU show where ME-02's dish
-is actually pointing. As the figure-eight grows, the live position wanders around the
+is actually pointing. Through the morning the live position swings further from the
 nominal slot and program-track keeps pointing at the stale prediction.
+
+### How Fast It Gets Worse
+
+The burn fired near the node, where the figure-eight crosses the nominal slot, so the gap
+between the ephemeris and the satellite started at zero around 0800 and opens with the daily
+swing: about 0.4° at 0915, growing about 0.3° an hour, reaching the full 1.3° early in the
+afternoon before it closes again toward evening. Pointing loss on a ~0.6° beam grows with
+the square of the error, about 12 x (gap / beamwidth)² dB:
+
+| Gap | Pointing loss | What you see |
+|-----|---------------|--------------|
+| 0.4° (now) | ~6 dB | Beacon about 28 dB instead of 34; carrier still locked near 7 dB |
+| ~0.55° (within the hour) | ~9-10 dB | Carrier drops out of lock |
+| 1.3° (early afternoon) | Tens of dB | Beacon gone - the bird is outside the beam |
+
+The size of the figure-eight is fixed by the burn; only another burn changes it. What grows
+is the gap between where the ephemeris says the bird is and where it is.
 
 <Aside type="note">
 The payload is healthy - this is a propulsion problem, not a communications
@@ -90,10 +110,10 @@ the satellite actually *is*.
       half a minute of stepping, not an instant fix
 - [ ] RX Analysis: verify the carrier is back - locked, C/N at or above 12 dB (it sits near
       7 dB on the stale ephemeris, about 3 dB above the lock point)
-- [ ] Watch it on ACU Control for a while - the drift grows slowly; step-track keeps up
+- [ ] Watch it on ACU Control for a while - the gap opens about 0.3° an hour; step-track keeps up
 
 <Aside type="caution">
-Do not chase the bird manually. Manual pointing against a growing figure-eight
+Do not chase the bird manually. Manual pointing against a daily figure-eight
 is a losing game and risks driving the dish off the beacon entirely. Step-track
 exists precisely for a satellite whose ephemeris cannot be trusted.
 </Aside>

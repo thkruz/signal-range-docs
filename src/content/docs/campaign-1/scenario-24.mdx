@@ -17,7 +17,7 @@ import { Aside } from '@astrojs/starlight/components';
 > Everything at once this morning. Storm front on top of Vermont in minutes.
 > Maine's BUC is running hot again - same unit, same signature you caught
 > before, and the swap never made it through procurement. AURORA-7 has a SeaLink sync pass
-> booked at 0800 on a beacon that's four dB weaker than the day you qualified.
+> booked at 0800 on a beacon that's six dB under its reference level.
 > James is already calling, and Francis wants a board note by end of morning.
 >
 > You've done every piece of this before. Today you do all of it, in the right
@@ -42,7 +42,7 @@ Five tracks. Three are clocks you do not control (storm, pass window, board
 deadline). Two are trends you can bend (BUC heat, customer confidence).
 
 The storm is the nearest clock: the feed heater has to be on before the front
-arrives. **Timed: running out fails the shift.**
+arrives. **Timed: three minutes once you are on VT-01; running out fails the shift.**
 
 <Aside type="note">
 Nothing on this board is new. You have ridden storms on the feed heater, de-rated
@@ -72,7 +72,7 @@ writing it all down while you do it.
 | Uplink | TX IF 983 MHz -> BUC LO 7,000 -> 6,017 MHz (TP-1) |
 | BUC | Gain 10 dB above operating value, 63°C climbing ~0.2°C/min, current 4.0 A (3.1 A at 23 dB), cooling-fault warning (fan) |
 | Fix | The thermal-trend playbook: de-rate to the 23 dB operating gain, verify linearity, swap ticket |
-| De-rate took | On TX Chain: current drops to about 3.1 A within seconds, the temperature Trend turns negative (the reading itself lags: still in the low 60s a minute later), P1dB Margin about 12 dB, carrier still locked |
+| De-rate took | On TX Chain: current drops to about 3.1 A within seconds; the one-minute temperature Trend turns negative within about half a minute (the reading itself lags: still in the low 60s a minute later); P1dB Margin about 12 dB; carrier still locked |
 
 ### VT-01 / AURORA-7 (0800-0820 customer pass)
 

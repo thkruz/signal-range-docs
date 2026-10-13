@@ -42,7 +42,7 @@ import { Aside } from '@astrojs/starlight/components';
 | Window Opened | 0700 Local |
 | Window Closed | 0905 Local |
 | Crew Signed Off | 0908 Local |
-| Antenna Position | Stowed (Az 161.8°, El 90°) since 0655 |
+| Antenna Position | Stowed (Az 153.1°, El 90°) since 0655 |
 | RF Chain State at Handoff | LNB / BUC / HPA all powered down |
 
 ---
@@ -64,8 +64,8 @@ SeaLink is on Catherine's uplink right now. Marcus Chen (Halifax spacecraft side
 | Parameter | Value |
 |-----------|-------|
 | Tracking Mode | Program-track (TIDEMARK-1 is a stable GEO bird) |
-| Azimuth | 161.8° |
-| Elevation | 34.2° |
+| Azimuth | 153.1° |
+| Elevation | 35.1° |
 
 ### Frequency Allocation
 
@@ -90,16 +90,27 @@ SeaLink is on Catherine's uplink right now. Marcus Chen (Halifax spacecraft side
 | Equipment | State | Notes |
 |-----------|-------|-------|
 | GPSDO | Locked | Stayed up through the window for timing continuity |
-| Antenna | Stowed | Az 161.8°, El 90° — repoint required |
+| Antenna | Stowed | Az 153.1°, El 90° — repoint required |
 | LNB | Powered off | LO and gain preserved at operational values |
-| BUC | Powered off | **Bench-test value left in place — see Aside below** (gain and LO read `--` until the BUC is powered) |
+| BUC | Powered off | Gain and LO read `--` until the BUC is powered; check them against the shift card below |
 | HPA | Powered off, output disabled | |
 | TX Modem | Configured, not transmitting | IF 1,057 MHz, QPSK 3/4, 36 MHz |
 | Feed Heater | Off | Not required — clear weather forecast |
 
 <Aside type="caution">
-Maintenance crews leave bench-test values behind. The loopback incident at the uplink validation (BUC left unmuted in loopback at a 50 dB test gain) was the same crew. Power the BUC up muted, then inspect the TX chain panel before anything else is energized — anything outside the operating baseline gets corrected first.
+Maintenance crews leave bench-test values behind; the loopback incident at the uplink validation was the same crew. Power the BUC up muted, then inspect the TX chain panel against the shift card before anything else is energized. Anything outside the operating baseline gets corrected first.
 </Aside>
+
+### TX Chain Operating Baseline (Shift Card)
+
+| Item | Operating Value |
+|------|-----------------|
+| BUC LO | 7,000 MHz (LSB) |
+| BUC gain | 23 dB (16 dBm out from the -7 dBm modem, 12 dB under the BUC's 28 dBm P1dB) |
+| BUC state until the handover | Muted, loopback off |
+| HPA back-off | 10 dB (50 dBm, 100 W) |
+| HPA state until the handover | Powered, output disabled |
+| TX modem | 1,057 MHz IF, 36 MHz, QPSK 3/4, -7 dBm |
 
 ---
 
@@ -109,7 +120,7 @@ The standard restoration order — reverse of shutdown — is RX before TX, low-
 
 ### Receive Path
 
-1. Repoint antenna to TIDEMARK-1 (program-track)
+1. Repoint antenna to TIDEMARK-1: ACU Control, PROGRAM, pick TIDEMARK-1 in Target Satellite (the pick only stages it), then Move to Target
 2. Power up LNB → wait out the warm-up (the LNB panel reads "Thermal: Warming m:ss" for about 90 seconds after power-on) until it reads Stable with the noise temperature under 100 K and reference lock, held for 30 seconds
 3. Tune spectrum analyzer to the TM-1 beacon IF (the crew left it parked elsewhere)
 4. Verify RX modem regains lock with healthy C/N margin
@@ -118,7 +129,7 @@ The standard restoration order — reverse of shutdown — is RX before TX, low-
 
 1. Power up BUC → confirm reference lock (BUC stays muted from the safed state)
 2. Inspect TX chain panel — identify anything outside the operating baseline (the BUC card shows its values only once powered)
-3. Correct the maintenance leftover — BUC gain back to 23 dB (powered + muted = safe to adjust)
+3. Confirm every TX chain value against the shift card and correct anything off it (powered + muted = safe to adjust)
 4. Power up HPA → output stays disabled
 5. Enable TX modem transmit — the modem drives into a muted BUC
 6. **Stop there.** The chain stays staged cold until the handover return
@@ -217,6 +228,6 @@ The hand-off and return cycle is a planned maintenance procedure. There is no ti
 
 ## End of Briefing
 
-Catherine's been holding the link clean since last Wednesday. Marcus is waiting for the all-clear from our side. When you're done, type the close-out into the Ops Log: VT-01 back in service and the leftover you caught. The maintenance crew left a small surprise in the BUC gain field — catch it before you energize the chain.
+Catherine's been holding the link clean since last Wednesday. Marcus is waiting for the all-clear from our side. When you're done, type the close-out into the Ops Log: VT-01 back in service and anything you found off the baseline and corrected. Check the TX chain against the shift card before you energize it.
 
 Bring Vermont back the way you'd want the next operator to bring it back if it were you handing off.
