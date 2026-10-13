@@ -7,8 +7,8 @@ const forceDark = url.searchParams.get("dark") === "true";
 const forceLight = url.searchParams.get("dark") === "false";
 ---
 
+{/* Force dark mode when ?dark=true, override localStorage */}
 {forceDark && (
-  <!-- Force dark mode when ?dark=true, override localStorage -->
   <script is:inline>
     // Set dark theme immediately, before any other scripts run
     document.documentElement.setAttribute("data-theme", "dark");
@@ -26,8 +26,8 @@ const forceLight = url.searchParams.get("dark") === "false";
   </script>
 )}
 
+{/* Force light mode when ?dark=false, override localStorage */}
 {forceLight && (
-  <!-- Force light mode when ?dark=false, override localStorage -->
   <script is:inline>
     // Set light theme immediately
     document.documentElement.setAttribute("data-theme", "light");
@@ -46,4 +46,4 @@ const forceLight = url.searchParams.get("dark") === "false";
 )}
 
 <!-- Include default theme provider -->
-<Default {...Astro.props} />
+<Default />

@@ -2,7 +2,10 @@
 	// Cloudflare Workers configuration for signal-range
 	// Astro SSR with Cloudflare adapter
 	"name": "signal-range-docs",
-	"main": "dist/_worker.js/index.js",
+	// @astrojs/cloudflare 13+ unified entrypoint (used by `astro dev` and the
+	// build). `astro build` writes the resolved Worker config to
+	// dist/server/wrangler.json, which `wrangler deploy` picks up.
+	"main": "@astrojs/cloudflare/entrypoints/server",
 	// Compatibility date - using a recent date for latest features
 	"compatibility_date": "2025-11-01",
 	// Enable Node.js compatibility layer
@@ -10,10 +13,9 @@
 		"nodejs_compat",
 		"global_fetch_strictly_public"
 	],
-	// Static assets configuration
+	// Static assets configuration (the directory is set by the adapter build)
 	"assets": {
 		"binding": "ASSETS",
-		"directory": "./dist",
 		"html_handling": "none",
 		"not_found_handling": "none"
 	},

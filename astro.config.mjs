@@ -3,6 +3,23 @@ import starlight from '@astrojs/starlight';
 import cloudflare from '@astrojs/cloudflare';
 
 import mdx from "@astrojs/mdx";
+import { fileURLToPath } from 'node:url';
+
+// Starlight's <Steps>/<Tabs>/<FileTree> call `satteri`'s htmlToHast at request
+// time. Inside the Cloudflare Worker that resolves to satteri's WASM build,
+// which cannot run on workerd, so server environments get a pure-JS
+// equivalent. See src/lib/satteri-workerd-shim.ts.
+const satteriWorkerdShim = {
+  name: 'signal-range:satteri-workerd-shim',
+  enforce: 'pre',
+  applyToEnvironment: (environment) => environment.config.consumer === 'server',
+  resolveId(id) {
+    if (id === 'satteri') {
+      return fileURLToPath(new URL('./src/lib/satteri-workerd-shim.ts', import.meta.url));
+    }
+    return null;
+  },
+};
 
 // GA4 measurement ID for the SignalRange property. The same stream is used by
 // the app (signal-range/src/analytics.ts) and the home site
@@ -32,6 +49,13 @@ export default defineConfig({
   adapter: cloudflare({
     imageService: 'passthrough', // This is where the setting is used
   }),
+  // The site never uses Astro.session. Without this, @astrojs/cloudflare 13+
+  // enables KV-backed sessions and adds a SESSION KV binding that
+  // `wrangler deploy` would auto-provision.
+  session: false,
+  vite: {
+    plugins: [satteriWorkerdShim],
+  },
   site: 'https://docs.signalrange.space',
   integrations: [starlight({
     prerender: false,
@@ -49,9 +73,9 @@ export default defineConfig({
       PageFrame: './src/components/PageFrame.astro',
       ThemeProvider: './src/components/ThemeProvider.astro',
     },
-    social: {
-      github: 'https://github.com/thkruz/signal-range-docs',
-    },
+    social: [
+      { icon: 'github', label: 'GitHub', href: 'https://github.com/thkruz/signal-range-docs' },
+    ],
     customCss: [
       './src/styles/global.css',
     ],
@@ -64,9 +88,11 @@ export default defineConfig({
       ]
     }, {
       label: 'Equipment',
-      autogenerate: {
-        directory: 'equipment'
-      }
+      items: [{
+        autogenerate: {
+          directory: 'equipment'
+        }
+      }]
     },
     {
       label: 'Campaign 1: North Atlantic Teleport Services',
