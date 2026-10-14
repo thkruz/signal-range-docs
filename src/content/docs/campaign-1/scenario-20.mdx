@@ -50,7 +50,7 @@ import { Aside } from '@astrojs/starlight/components';
 | Event | Severe winter storm over the site, in progress |
 | Symptom | Ice accumulating on feed (about 2.5 dB at 0712, growing about 0.6 dB/min unheated). Ice on the feed costs both directions: the TM-1 carrier you receive is your own uplink, so it loses uplink EIRP and downlink margin at once. At 0712 the carrier reads about 5 dB C/N, a dB above the lock point; another dB of ice takes it under |
 | Feed heater | **OFF** (the failure: it should have been on before the front arrived) |
-| Where to read it | ACU Control: precipitation, ice accumulation and the feed heater switch; the alarm ticker carries "ICE ON FEED (x dB)" with the current ice loss |
+| Where to read it | ACU Control: precipitation, ice accumulation and the feed heater switch; the alarm ticker carries "ICE ON FEED (x dB)" with the current ice loss, and a "VT-01(RX1): Degraded margin" warning can come and go while the modem sits within 1 dB of its Required Es/N0 |
 | Recovery | Heater ON -> ice melts ~1 dB/min; C/N climbs back to about 12-13 dB once the feed is clear (the snow itself still costs a little) |
 | Time to recover | Minutes to tens of minutes, weather-dependent |
 
@@ -108,7 +108,9 @@ looks like. Before you tell James "bad luck," be able to defend it:
   (ME-02 TM-2 carrier at 1,458 MHz IF, VT-01 TM-1 carrier at 1,532 MHz IF)
 
 Document the rule-out in the log. The day the answer ISN'T bad luck, the value
-of having done this straight every other time is that someone believes you.
+of having done this straight every other time is that someone believes you. Close the
+entry with the process fix: the feed heater goes on the shift-change checklist, so the
+next storm does not inherit a cold feed.
 
 ### Frequency Plan (both sites, LNB LO 5,250 / BUC LO 7,000)
 

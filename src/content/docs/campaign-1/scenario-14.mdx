@@ -103,28 +103,29 @@ require Catherine to drop her own customers - not free.
 **Forecast (1320-1340):**
 - Heavy convective rain cell passing overhead (peak around 50 mm/h), ~20 minutes through
 - No freezing - temperatures stay well above 32°F
-- Expected link margin impact: under 1 dB of C/N at the heaviest part of the cell (C-band)
+- Expected link margin impact: about 1 dB of C/N at the heaviest part of the cell (C-band)
 - AGC compensation range available
 
 **Operational Considerations:**
 
-At C-band rain barely attenuates the carrier: a heavy cell takes a few tenths of a dB off
-the signal. Most of what you will see is noise: the wet path radiates at about 275 K into the
-beam and lifts the system noise temperature, so C/N drops by well under a dB while the input
-level hardly moves. The same cell would take several dB off a Ku link. Either way it is well
+At C-band rain barely attenuates the carrier: a heavy cell takes only a few tenths of a dB
+off the signal. Most of what you will see is noise: the wet path radiates at about 275 K into the
+beam and lifts the system noise temperature, so C/N drops by about 1 dB while the input
+level moves well under a dB. The same cell would take several dB off a Ku link. Either way it is well
 within AGC compensation range for a healthy link.
 
 **What the cell looks like on the console.** It is small, so know where to look:
 
-- RX modem 1 Raw C/N on the TIDEMARK-1 carrier (RX Analysis): about 13 dB before the rain, a
-  few tenths to under 1 dB lower with the cell overhead. That is about the size of the
-  readout's normal wander, which is why you write the baseline down first. This is the
+- RX modem 1 Raw C/N on the TIDEMARK-1 carrier (RX Analysis): about 13 dB before the rain,
+  about 1 dB lower with the cell overhead (single reads can dip a little further). That is not
+  much more than the readout's normal wander, which is why you write the baseline down first. This is the
   readout the action threshold below is measured on.
 - ACU Environmental card: Precipitation ACTIVE while the cell is overhead, and the beacon
-  C/N on the ACU down by under a dB.
-- AGC gain: it wanders by about a dB on its own, before and during the rain. The rain moves
-  the input level by a few tenths of a dB, too little to show there. What matters is that it
-  stays far below its maximum.
+  C/N on the ACU down by about 1 dB.
+- The RAIN FADE info alarm: it shows once the fade passes 0.5 dB, about 2 minutes into the
+  cell, carries the current depth in its detail, and clears as the cell passes.
+- AGC gain: it moves by about 1 dB as the cell comes over. What matters is that it stays far
+  below its maximum.
 
 The cell takes about twenty minutes to pass. Once your hold is set up and the link is
 holding, you can wait it out or skip ahead with the skip control in the command bar. The skip
@@ -162,7 +163,8 @@ heater doing both jobs. The Rain Blower is optional at C-band, even in a heavy c
 | HPA back-off | 10 dB | - | - |
 
 Where QPSK 3/4 locks: the modem shows Required Es/N0 5.0 dB; with Es/N0 about 0.8 dB above Raw C/N
-it acquires lock from about 4.7 dB C/N and holds it down to about 3.7 dB.
+it acquires lock from about 4.7 dB C/N (Required 5.0 plus a 0.5 dB acquisition margin, less the
+0.8 dB Es/N0 offset) and holds it down to about 3.7 dB.
 
 ---
 
@@ -198,7 +200,7 @@ distinguishes holding from inertia.
 ## HPA Back-off During a Fade
 
 It is technically possible to reduce HPA back-off to push more uplink power. For a
-sub-dB C-band rain fade with downlink AGC compensating cleanly, **don't.**
+1 dB C-band rain fade with downlink AGC compensating cleanly, **don't.**
 
 | Action | Benefit | Cost |
 |--------|---------|------|
@@ -224,8 +226,8 @@ the responsible move is to not spend it. Keep back-off nominal through the front
 - [ ] Hold until the cell has passed (wait it out or skip ahead)
 - [ ] Receiver lock maintained
 - [ ] RX modem 1 Raw C/N held above 7 dB (action threshold)
-- [ ] AGC gain far below max (it wanders about a dB on its own)
-- [ ] The ticker shows "RAIN FADE (x dB)" as an info alarm at the cell's peak (well under 1 dB: the C/N the rain costs, mostly sky noise); it clears as the cell passes
+- [ ] AGC gain far below max (it moves about 1 dB with the cell)
+- [ ] The ticker shows "RAIN FADE" as an info alarm once the fade passes 0.5 dB, about 2 minutes into the cell (the depth, about 1 dB at worst, is in its detail: the C/N the rain costs, mostly sky noise); it clears as the cell passes
 - [ ] Antenna still locked on TIDEMARK-1
 - [ ] HPA back-off unchanged at 10 dB
 
@@ -274,9 +276,9 @@ entry captures:
 
 Example:
 
-> *"1320-1340 - Heavy rain cell over VT-01, under 1 dB of C/N lost at peak (mostly sky
-> noise). Held TM-1 service per SeaLink SLA preference. AGC gain far below max (no change
-> beyond its normal wander), RX modem 1 Raw C/N within 1 dB of its 13 dB baseline. Triggers
+> *"1320-1340 - Heavy rain cell over VT-01, about 1 dB of C/N lost at peak (mostly sky
+> noise). Held TM-1 service per SeaLink SLA preference. AGC gain far below max (about 1 dB
+> of movement), RX modem 1 Raw C/N about 1 dB under its 13 dB baseline at worst. Triggers
 > watched: Raw C/N under 7 dB; AGC at max with continued fade; modem unlock. None fired.
 > SeaLink notified by reply on customer portal."*
 

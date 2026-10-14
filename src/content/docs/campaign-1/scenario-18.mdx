@@ -72,15 +72,17 @@ nominal slot and program-track keeps pointing at the stale prediction.
 
 The burn fired near the node, where the figure-eight crosses the nominal slot, so the gap
 between the ephemeris and the satellite started at zero around 0800 and opens with the daily
-swing: about 0.4° at 0915, growing about 0.3° an hour, reaching the full 1.3° early in the
-afternoon before it closes again toward evening. Pointing loss on a ~0.6° beam grows with
+swing: about 0.4° at 0915 and growing about 0.6° an hour this morning. On ACU Control that
+is a beacon C/N shedding a few tenths of a dB a minute, about 1.5 dB over the first five
+minutes, while program-track reads LOCKED on the stale prediction. Left alone the gap
+heads for the full 1.3° before it closes again later in the day. Pointing loss on a ~0.6° beam grows with
 the square of the error, about 12 x (gap / beamwidth)² dB:
 
 | Gap | Pointing loss | What you see |
 |-----|---------------|--------------|
 | 0.4° (now) | ~6 dB | Beacon about 28 dB instead of 34; carrier still locked near 7 dB |
-| ~0.55-0.6°, about one beamwidth (within the hour, at 0.3° an hour from 0.4° now) | ~10-12 dB | Carrier drops out of lock |
-| 1.3° (early afternoon) | Tens of dB | Beacon gone - the bird is outside the beam |
+| ~0.55-0.6°, about one beamwidth (in about twenty minutes, at 0.6° an hour from 0.4° now) | ~10-12 dB | Carrier drops out of lock |
+| 1.3° (later in the day) | Tens of dB | Beacon gone - the bird is outside the beam |
 
 The size of the figure-eight is fixed by the burn; only another burn changes it. What grows
 is the gap between where the ephemeris says the bird is and where it is.
@@ -110,7 +112,7 @@ the satellite actually *is*.
       half a minute of stepping, not an instant fix
 - [ ] RX Analysis: verify the carrier is back - locked, C/N at or above 12 dB (it sits near
       7 dB on the stale ephemeris, about 3 dB above the lock point)
-- [ ] Watch it on ACU Control for a while - the gap opens about 0.3° an hour; step-track keeps up
+- [ ] Watch it on ACU Control for a while - the gap opens about 0.6° an hour; step-track keeps up
 
 <Aside type="caution">
 Do not chase the bird manually. Manual pointing against a daily figure-eight

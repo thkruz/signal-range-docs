@@ -119,7 +119,7 @@ Both local oscillators sit above their RF frequencies, so the TX IF uses the sam
 
 ## Security Configuration
 
-Charlie has verified the encryption configuration for AURORA-7:
+Charlie has verified the encryption configuration for AURORA-7. Check it yourself in the TX ENCRYPTION section of the TX Payload Data card on the TX Chain tab:
 
 | Parameter | Value |
 |-----------|-------|
@@ -146,7 +146,7 @@ Never transmit without verifying encryption status. Pacific Rim traffic includes
 ### Step-Track Transition
 
 - [ ] Tracking mode: Switch to step-track
-- [ ] Beacon lock: Acquired (ACU shows "Tracking")
+- [ ] Beacon lock: Acquired (ACU Control shows "Beacon Lock: LOCKED")
 - [ ] Signal quality: Stable (step-track optimizing)
 
 ### Receive Chain
@@ -172,7 +172,7 @@ Expect an empty slot at 1,422 MHz and no modem lock yet. VT-01 is off-air on AUR
 ### Full Duplex Verification
 
 - [ ] RX modem: Locked on our own carrier, C/N ≥ 8 dB (expect about 14 dB, give or take a dB or two as step-track works the inclined orbit)
-- [ ] TX path: Active, no alarms
+- [ ] TX path: Active, no warning or critical alarms
 - [ ] Dashboard: All indicators green
 
 ---

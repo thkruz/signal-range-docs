@@ -6,7 +6,7 @@ lastUpdated: 2026-05-25
 
 import { Aside } from '@astrojs/starlight/components';
 
-**Duration:** 10-15 minutes
+**Duration:** 5-10 minutes
 
 **Difficulty:** Advanced
 
@@ -124,7 +124,8 @@ For this incident the order resolves to:
 - Final Dashboard sweep, customer notification, log entry.
 
 The first two (HPA output off, BUC mute) are **timed safety steps**: two minutes each from
-when they come up on the checklist. Running out fails the shift.
+when they come up on the checklist. Running out fails the shift. Both are yours to do: the
+BUC stays unmuted until you mute it.
 
 <Aside type="caution">
 **Sequencing rule (same as every power-down):** the HPA comes down before its
@@ -157,9 +158,9 @@ event, not a judgment call.
 
 ## BUC Over-Temperature
 
-The BUC's thermal protection is intended to mute the output if it reaches the
-over-temperature threshold. When that protection does not fire on its own, the operator
-mutes manually. **Muting is the action that allows cooling to begin** - an unmuted BUC
+This BUC has no automatic thermal mute: past the over-temperature threshold it raises the
+alarm and keeps running hot. Nothing on the station mutes it for you; the operator mutes it
+by hand on TX Chain. **Muting is the action that allows cooling to begin** - an unmuted BUC
 continues to dissipate power and the temperature will not fall.
 
 ### Recovery

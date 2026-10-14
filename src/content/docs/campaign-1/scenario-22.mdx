@@ -59,8 +59,9 @@ import { Aside } from '@astrojs/starlight/components';
 
 The 36-month reference read about **-63 dBm** on the VT-01 spectrum analyzer's Peak
 readout, so this month's median is about -69 dBm. The log is always taken the same
-way: step-tracked, beacon at 1,085 MHz IF on the **2 kHz span (RBW 3 Hz)** preset,
-with nothing of ours on the bird. The span matters: a wider span brings a wider RBW,
+way: step-tracked, beacon at 1,085 MHz IF with the analyzer at **Span 0.002 MHz, RBW
+Auto (3 Hz)**, with nothing of ours on the bird. There is no preset button: if the span has
+been changed, type 0.002 into the Span field and set the RBW select back to Auto. The span matters: a wider span brings a wider RBW,
 which adds noise power to a CW line's Peak reading (about -67.7 dBm at 10 kHz and
 -66 dBm at 1 MHz on the same beacon), so only a 2 kHz reading compares with the log. The AGC
 then levels on noise alone and the alarm list shows "AGC on noise only - passband
@@ -101,14 +102,15 @@ leaves TIDEMARK-1.
 - [ ] Acquire AURORA-7: in ACU Control select it as the target, Move to Target
       (program-track), then engage step-track (standard SOP-TK-002)
 - [ ] Verify step-track still holds lock at current beacon power
-- [ ] Measure the beacon at 1,085 MHz IF on the spectrum analyzer (2 kHz span, RBW 3 Hz)
-      before keying anything: read the Peak readout and compare it with the -63 dBm reference
+- [ ] Measure the beacon at 1,085 MHz IF on the spectrum analyzer (type Span 0.002 MHz,
+      RBW Auto (3 Hz)) before keying anything: read the Peak readout and compare it with the -63 dBm reference
       (this month's -6.3 dB figure is the median from the beacon log)
 - [ ] Bring the AURORA-7 test carrier up on TX Chain, drive first: TX modem
       transmitting, BUC unmuted, HPA enabled
 - [ ] Confirm receiver modem 1 is locked on the carrier at 1,422 MHz IF with
       C/N of at least 8 dB (it reads about 14 dB, far above the about 4.7 dB C/N
-      where QPSK 3/4 acquires lock: the transponder is not what is failing)
+      where QPSK 3/4 acquires lock, which is Required 5.0 plus a 0.5 dB acquisition
+      margin, less the 0.8 dB Es/N0 offset: the transponder is not what is failing)
 - [ ] Confirm with Marcus what the vehicle telemetry says about power trend
 - [ ] Type the delivery entry in the Ops Log (sidebar) when the report goes to
       the board

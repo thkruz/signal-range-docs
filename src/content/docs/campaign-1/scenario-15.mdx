@@ -64,7 +64,7 @@ coordination notice.
 **Reference:** RST-COORD-2026-0331
 
 > Per ITU coordination procedure, we are notifying NATS VT-01 that RedSky Teleport
-> will bring a new uplink online at **0937 Local** on TIDEMARK-3 TP-2 (cross-pol
+> will bring a new uplink online at **0922 Local** on TIDEMARK-3 TP-2 (cross-pol
 > slot).
 >
 > | Parameter | Value |
@@ -73,9 +73,9 @@ coordination notice.
 > | Bandwidth | 8 MHz |
 > | Polarization | V |
 > | Satellite | TIDEMARK-3 (47W) |
-> | Start Time | 0937 Local |
+> | Start Time | 0922 Local |
 >
-> Please confirm by 0930 Local that your active TP-1 H-pol carrier produces
+> Please confirm by 0920 Local that your active TP-1 H-pol carrier produces
 > adjacent-channel emissions below the coordination floor in the 5957-5965 MHz
 > band. A clean response is sufficient; no SLA-grade reply required.
 >
@@ -114,7 +114,7 @@ Carrier occupies 5,967 - 6,003 MHz at RF.
 | Bandwidth | 8 MHz |
 | Polarization | V (cross-pol of ours) |
 | Occupied Range | 5,957 - 5,965 MHz |
-| Start Time | 0937 Local (T+25 min) |
+| Start Time | 0922 Local (T+10 min) |
 
 ### Guard Band
 
@@ -232,7 +232,7 @@ A correct reply to RedSky looks like:
 
 > *"Confirmed clear. TIDEMARK-3 TP-1 carrier holds 5,967 - 6,003 MHz H-pol with
 > adjacent-channel emissions well below coordination floor in your planned slot.
-> Proceed with 5,961 MHz V-pol uplink at 0937 as scheduled."*
+> Proceed with 5,961 MHz V-pol uplink at 0922 as scheduled."*
 
 What it does **not** look like:
 
@@ -278,10 +278,10 @@ back-off change and the coordination commitment. A correct entry captures:
 
 Example:
 
-> *"0937 - VT-01. RedSky coordination notice RST-COORD-2026-0331 received and
+> *"0919 - VT-01. RedSky coordination notice RST-COORD-2026-0331 received and
 > confirmed. TIDEMARK-3 TP-1 HPA back-off raised from 5 to 10 dB to suppress
 > adjacent-channel IMD into RedSky's planned 5,957 - 5,965 MHz V-pol slot.
-> SeaLink carrier remains nominal. RedSky cleared for 0937 uplink."*
+> SeaLink carrier remains nominal. RedSky cleared for 0922 uplink."*
 
 If RedSky's carrier behaves unexpectedly after they come up, the next operator
 will know we touched the back-off and why.

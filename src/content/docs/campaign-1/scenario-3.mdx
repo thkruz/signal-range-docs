@@ -80,7 +80,7 @@ Both LOs sit above their RF: IF = LO - RF on the downlink, RF = LO - IF on the u
 - Wind-driven snow creating significant signal attenuation
 
 **Link Impact:**
-- Clear-sky C/N on the TIDEMARK-1 carrier: about 12.7 dB. For QPSK 3/4 the modem shows Required Es/N0 5.0 dB; with Es/N0 about 0.8 dB above Raw C/N it acquires lock from about 4.7 dB C/N and holds it down to about 3.7 dB, so Vermont starts with roughly 8 dB of margin over the acquisition point.
+- Clear-sky C/N on the TIDEMARK-1 carrier: about 12.7 dB. For QPSK 3/4 the modem shows Required Es/N0 5.0 dB; with Es/N0 about 0.8 dB above Raw C/N it acquires lock from about 4.7 dB C/N (Required 5.0 plus a 0.5 dB acquisition margin, less the 0.8 dB Es/N0 offset) and holds it down to about 3.7 dB, so Vermont starts with roughly 8 dB of margin over the acquisition point.
 - At C-band, falling snow itself costs well under 1 dB. The damage comes from snow and ice loading the feed: the first dB of ice on the feed takes about 3 dB off C/N, because the wet feed both absorbs the carrier and radiates its own noise into the LNB. About 4 dB of ice is enough to lose lock.
 - The feed heater is sized for about an inch of snow an hour in moderate wind. At 2+ inches an hour with 40 mph gusts stripping its heat, the snow loads the feed faster than the heater melts it: with the heater on, ice still builds, only slower. Projected at storm peak: Vermont cannot hold lock (the modem holds QPSK 3/4 down to about 3.7 dB C/N), roughly fifteen minutes out. The heater buys time and protects the feed; plan to be off VT-01 before then.
 - Timing is unaffected: snow in the air costs under 1 dB at L-band too, and the GPSDO's GPS antenna is a sealed patch under a radome with no feed to load, so both GPSDOs stay GNSS-locked.
@@ -146,7 +146,7 @@ Maine's look angles differ from Vermont's. Program Track calculates correct poin
 **Receive Chain**
 - [ ] LNB powered, LO: 5,250 MHz, Gain: 65 dB
 - [ ] LNB ready: LOCK shows LOCKED, noise temperature under 100 K, Thermal reads Stable (a cold LNB warms up for about 90 s after power-on)
-- [ ] Spectrum analyzer: Center 1,074.5 MHz, Span 0.002 MHz (2 kHz; the span field is in MHz), Min Amp -100 dBm, Max Amp -30 dBm (the beacon reads around -55 to -45 dBm)
+- [ ] Spectrum analyzer: Center 1,074.5 MHz, Span 0.002 MHz (2 kHz; the span field is in MHz), Min Amp -100 dBm, Max Amp -30 dBm, RBW Auto (3 Hz at this span; at 1 MHz RBW the CW beacon is buried in the noise). The beacon reads around -60 to -55 dBm
 - [ ] Beacon visible at 1,074.5 MHz IF
 
 **Receiver (Modem)**
