@@ -234,6 +234,7 @@ The GPSDO is the foundation. If it's unhappy, nothing downstream will work corre
 **4. Check the Transmit Chain (if bidirectional)**
 
 - VT-01's receiver modem listens to our own AURORA-7 carrier, relayed back down by the satellite: it doubles as a loopback through the bird. If the beacon is steady but our carrier keeps dropping lock, the receive side is fine and the carrier is dropping out before it reaches the satellite.
+- A transmit level with nothing behind it reads "-- dBm" (a muted BUC reads "MUTED"). If the Dashboard RF Chain shows BUC Output or HPA Power as "-- dBm" for a moment while the HPA is enabled, the drive from the modem dropped out at that instant.
 - A faulted modem stays in the alarm list while it is powered: take it out of service (power it off) once its replacement carries the link.
 - BUC reference locked?
 - Loopback test passing?

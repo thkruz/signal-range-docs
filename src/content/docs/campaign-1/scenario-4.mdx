@@ -59,7 +59,7 @@ TIDEMARK-2 completed station-keeping at 45°W and the Halifax spacecraft team ha
 | TIDEMARK-1 | 53°W | 153.2° | 35.2° |
 | TIDEMARK-2 | 45°W | 143.4° | 31.9° |
 
-Angles are the ACU's program-track values (it reads about 153.2° on TIDEMARK-1). Both slots are east of Vermont's 72.6°W, so both birds sit in the south-east sky; the slot farther east (45°W) sits further from due south and lower. The Overview card's satellite angles can differ from the ACU by about a tenth of a degree (the ephemeris offset); that is inside the beam.
+Angles are the ACU's program-track values (it reads about 153.2° on TIDEMARK-1). Both slots are east of Vermont's 72.6°W, so both birds sit in the south-east sky; the slot farther east (45°W) sits further from due south and lower. The Overview card's satellite angles can differ from the ACU by about a tenth of a degree (the ephemeris offset); that is inside the beam. The ACU's POLARIZATION readout moves with the slot as well: about +18.8° on TIDEMARK-1 and +25.2° on TIDEMARK-2, the same sign and about 6° apart, because both slots are east of the station.
 
 ### Frequency Allocation
 
@@ -87,7 +87,7 @@ TIDEMARK-2 frequencies differ from TIDEMARK-1. Verify each value against the ref
 | Center Frequency | 1,070 MHz | TIDEMARK-2 beacon IF |
 | Span | 10 kHz (enter 0.01; the field is in MHz) | Narrow for CW beacon |
 | RBW | Auto | About 30 Hz at a 10 kHz span: a narrow RBW lowers the noise floor under the CW line |
-| Amplitude | Min Amp -100 dBm, Max Amp -20 dBm | The beacon reads about -43 dBm (within 2 dB) |
+| Amplitude | Min Amp -115 dBm, Max Amp -35 dBm | The beacon reads about -43 dBm (within 2 dB) on the Peak readout next to Peak Search; the noise floor near -100 dBm stays clear of the bottom edge |
 
 ---
 
@@ -145,7 +145,7 @@ The antenna will slew about 10° east in azimuth and drop about 3° in elevation
 Verify antenna pointing with beacon:
 
 - [ ] Configure spectrum analyzer for 1,070 MHz IF
-- [ ] Set narrow span (10 kHz, entered as 0.01 MHz), RBW on Auto, Min Amp -100 dBm, Max Amp -20 dBm
+- [ ] Set narrow span (10 kHz, entered as 0.01 MHz), RBW on Auto, Min Amp -115 dBm, Max Amp -35 dBm
 - [ ] Confirm beacon signal at expected frequency
 
 ### Phase 4: Receive Chain

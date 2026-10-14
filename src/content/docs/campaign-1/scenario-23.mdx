@@ -51,7 +51,7 @@ import { Aside } from '@astrojs/starlight/components';
 |-----------|-------|
 | Azimuth | 153.1° |
 | Elevation | 35.1° |
-| Polarization | 14.0° |
+| Polarization | 18.8° (TIDEMARK-1 skew from VT-01; the feed is already there) |
 | Beacon proof | CW spike at 1,074.5 MHz IF (5,250 LO - 4,175.5 RF) |
 | Carrier proof | 36 MHz carrier at 1,532 MHz IF, receiver locked, C/N 9 dB or better (it reads about 14 dB, within a dB or so) |
 
@@ -64,7 +64,8 @@ failed processor: they read UNKNOWN (and "PROGRAM TRACK (OFFLINE)") until IT
 restores it. The automation fault itself shows on the alarm ticker, and the Dashboard's Antenna card
 (mode badge and status dot) turns red. The beacon at the right IF is
 the only pointing proof that does not depend on the failed controller. Verify on the spectrum after
-every manual input - fly instruments, not feel.
+every manual input - fly instruments, not feel. (The ACU's "RF signals in view" count is every
+carrier arriving at the feed, not a lock; the Dashboard's Signals count is the locked carriers.)
 </Aside>
 
 ---

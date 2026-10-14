@@ -50,7 +50,7 @@ import { Aside } from '@astrojs/starlight/components';
 | Event | Severe winter storm over the site, in progress |
 | Symptom | Ice accumulating on feed (about 2.5 dB at 0712, growing about 0.6 dB/min unheated). Ice on the feed costs both directions: the TM-1 carrier you receive is your own uplink, so it loses uplink EIRP and downlink margin at once. At 0712 the carrier reads about 5 dB C/N, a dB above the lock point; another dB of ice takes it under |
 | Feed heater | **OFF** (the failure: it should have been on before the front arrived) |
-| Where to read it | ACU Control: precipitation, ice accumulation and the feed heater switch |
+| Where to read it | ACU Control: precipitation, ice accumulation and the feed heater switch; the alarm ticker carries "ICE ON FEED (x dB)" with the current ice loss |
 | Recovery | Heater ON -> ice melts ~1 dB/min; C/N climbs back to about 12-13 dB once the feed is clear (the snow itself still costs a little) |
 | Time to recover | Minutes to tens of minutes, weather-dependent |
 

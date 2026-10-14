@@ -6,13 +6,13 @@ lastUpdated: 2026-05-25
 
 import { Aside } from '@astrojs/starlight/components';
 
-**Duration:** 15-20 minutes
+**Duration:** 10-15 minutes
 
 **Difficulty:** Advanced
 
 **Mission Type:** Incident Response
 
-**Time Limit:** 45 minutes
+**Time Limit:** 25 minutes
 
 ---
 
@@ -84,6 +84,12 @@ Three concurrent, unrelated alarms have appeared simultaneously on VT-01:
 | BUC | Over-temperature (>70°C, still climbing while driven), high current draw (5.4 A), cooling-fault warning | Failing output stage drawing 2.3 A extra on a slow fan; muting removes the stage bias and lets it cool |
 | LNB | Reference unlocked | Sticky reference-lock fault; clears on power cycle. The free-running LO costs the TIDEMARK-1 carrier about 3 dB of Es/N0 (still locked) |
 | HPA | Overdriven (back-off 2 dB: 58 dBm, 631 W) | Back-off has drifted from the standard 10 dB margin |
+
+On the Dashboard's Active Alarms the board reads: "BUC over-temperature (72.3 °C)", "BUC high
+current draw (5.37 A)" (the numbers move with the readings), "BUC cooling fault - fan/heatsink degraded", "HPA overdrive - IMD
+degradation" and "LNB not locked to reference". The alarm ticker in the command bar shows the
+count and the first few, most severe first, with "+N more" for the rest; hover it for the full
+list.
 
 <Aside type="caution">
 The faults are independent. Do not assume one is causing the others. Treat each on its
@@ -160,6 +166,7 @@ continues to dissipate power and the temperature will not fall.
 
 1. Disable the HPA output FIRST - never mute the BUC under an enabled HPA.
 2. Mute the BUC.
+   The BUC OUTPUT readout on TX Chain reads MUTED while it is muted.
 3. Confirm temperature trending downward (Trend (1 min) on the BUC THERMAL readout turns negative within about half a minute of the mute).
 4. Wait for temperature `< 70°C`. Muting takes the bias off the failing stage, so current drops to the 2.6 A idle within seconds and the temperature passes 70°C about a minute after the mute.
 5. Do not unmute until both hold.
@@ -175,7 +182,7 @@ cannot recover from without a power cycle.
 ### Recovery
 
 While the reference is unlocked the LNB's LO free-runs: the RX Analysis **LO Error**
-readout wanders by tens of kHz and the phase noise degrades. The TIDEMARK-1 carrier's
+readout sits around 100 kHz or more off and wanders, and the phase noise degrades. The TIDEMARK-1 carrier's
 Es/N0 runs about 3 dB low (around 11 dB against about 14 dB locked). The modem holds lock,
 but that lost margin is what SeaLink is feeling.
 
@@ -185,6 +192,10 @@ but that lost margin is what SeaLink is feeling.
 4. Confirm reference lock acquired.
 5. Confirm thermal stabilization complete before relying on the link (about 90 s after
    power-on).
+
+While the LNB is off the board carries "LNB powered off - no receive path". Right after
+power-on it can show "LNB noise temperature high" for a few seconds while the LNB settles;
+both clear on their own.
 
 <Aside type="note">
 Power cycling the LNB briefly drops your receive path. While you are mid-recovery on a

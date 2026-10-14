@@ -80,9 +80,9 @@ Both LOs sit above their RF: IF = LO - RF on the downlink, RF = LO - IF on the u
 - Wind-driven snow creating significant signal attenuation
 
 **Link Impact:**
-- Clear-sky C/N on the TIDEMARK-1 carrier: about 12.7 dB. The modem holds lock down to about 4.2 dB (QPSK 3/4), so Vermont starts with roughly 8 dB of margin.
+- Clear-sky C/N on the TIDEMARK-1 carrier: about 12.7 dB. For QPSK 3/4 the modem shows Required Es/N0 5.0 dB; with Es/N0 about 0.8 dB above Raw C/N it acquires lock from about 4.7 dB C/N and holds it down to about 3.7 dB, so Vermont starts with roughly 8 dB of margin over the acquisition point.
 - At C-band, falling snow itself costs well under 1 dB. The damage comes from snow and ice loading the feed: the first dB of ice on the feed takes about 3 dB off C/N, because the wet feed both absorbs the carrier and radiates its own noise into the LNB. About 4 dB of ice is enough to lose lock.
-- The feed heater is sized for about an inch of snow an hour in moderate wind. At 2+ inches an hour with 40 mph gusts stripping its heat, the snow loads the feed faster than the heater melts it: with the heater on, ice still builds, only slower. Projected at storm peak: Vermont cannot hold the 4.2 dB threshold, roughly fifteen minutes out. The heater buys time and protects the feed; plan to be off VT-01 before then.
+- The feed heater is sized for about an inch of snow an hour in moderate wind. At 2+ inches an hour with 40 mph gusts stripping its heat, the snow loads the feed faster than the heater melts it: with the heater on, ice still builds, only slower. Projected at storm peak: Vermont cannot hold lock (the modem holds QPSK 3/4 down to about 3.7 dB C/N), roughly fifteen minutes out. The heater buys time and protects the feed; plan to be off VT-01 before then.
 - Timing is unaffected: snow in the air costs under 1 dB at L-band too, and the GPSDO's GPS antenna is a sealed patch under a radome with no feed to load, so both GPSDOs stay GNSS-locked.
 
 <Aside type="caution">
@@ -109,7 +109,7 @@ Don't wait for the AGC to warn you. The AGC card shows its **Gain** (dB), its **
 | Equipment | Current State | Notes |
 |-----------|---------------|-------|
 | GPSDO | Locked | Verify before configuring RF |
-| LNB | Powered off | Cold start required |
+| LNB | Powered off | Cold start required (the alarm bar shows "LNB powered off - no receive path" until it is on) |
 | BUC | Muted | Will enable during handover |
 | HPA | Disabled | Will enable during handover |
 | TX Modem | Powered off, parked from its last job | Power on and set to match Vermont |
@@ -124,7 +124,7 @@ Don't wait for the AGC to warn you. The AGC card shows its **Gain** (dB), its **
 Operations rolled out this procedure last month after the January ice storm revealed gaps in our ad-hoc approach. This is the first time VT-01 has needed to execute it.
 
 <Aside type="caution">
-Maine's look angles differ from Vermont's. Program Track calculates correct pointing automatically - never manually enter Vermont's coordinates at Maine.
+Maine's look angles differ from Vermont's. Program Track calculates correct pointing automatically - never manually enter Vermont's coordinates at Maine. The TIDEMARK-1 satellite page lists both: "Az / El from VT-01" and "Az / El from ME-02", about 4° apart in azimuth.
 </Aside>
 
 ### Pre-Handover: Protect Vermont

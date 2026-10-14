@@ -134,7 +134,7 @@ This SOP differs from the weather-handover procedure (SOP-WX-003) you ran when t
 ### Transmit-Side Staging (Maine)
 
 - [ ] TX modem: transmitting (into the muted BUC)
-- [ ] BUC: still muted
+- [ ] BUC: still muted (OUTPUT reads "MUTED" with the modem driving it)
 - [ ] HPA: still disabled
 
 <Aside type="caution">
@@ -153,14 +153,20 @@ have Maine staged so the swap finds a ready chain.
 - [ ] Execute transfer: VT-01 → ME-02
 - [ ] Verify ME-02 is the new traffic owner
 - [ ] Service continuity confirmed on ME-02's RX Analysis: the receiver still locked on TP-1, now hearing ME-02's own carrier relayed by TIDEMARK-1 (zero packet loss target)
-- [ ] Ops Log shows the transfer: "Handover VT-01 -> ME-02 executed (TIDEMARK-1)" with ME-02's BUC/HPA coming up and VT-01's going down, each line tagged with its station
+- [ ] Ops Log shows the transfer as one block in the same second, every line tagged with its station and each automatic equipment action marked "(handover)" (newest first):
+  - "HPA enabled (handover) [ME-02 RF FE]"
+  - "BUC output UNMUTED (handover) [ME-02 RF FE]"
+  - "M1: Transmission STOPPED (handover) [VT-01 TX]"
+  - "BUC output MUTED (handover) [VT-01 RF FE]"
+  - "HPA disabled (handover) [VT-01 RF FE]"
+  - "Handover VT-01 -> ME-02 executed (TIDEMARK-1) [HANDOVER]"
 
 ### Post-Handover: Safe Vermont for Crew
 
 - [ ] Return to VT-01 station view
 - [ ] HPA: disabled
-- [ ] BUC: muted
-- [ ] Antenna tracking mode: Maintenance (MAINT stages El 5°; press APPLY to move the dish)
+- [ ] BUC: muted (a muted BUC's OUTPUT reads "MUTED")
+- [ ] Antenna tracking mode: Maintenance (MAINT only stages El 5°: the ACU card shows "MAINTENANCE pending APPLY" and the dish keeps tracking; press APPLY to switch the mode and move the dish)
 - [ ] Antenna position: El 5° reached
 
 ---

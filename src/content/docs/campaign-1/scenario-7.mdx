@@ -158,7 +158,7 @@ Test the low-power TX chain before engaging the HPA:
 - [ ] Confirm TX modem output is clean
 
 <Aside type="note">
-Loopback testing routes the BUC output back to the receive chain without transmitting through the antenna. This validates the TX modem and BUC are working before you commit RF power to the air.
+Loopback testing feeds a coupled sample of the BUC output back into the receive chain without transmitting through the antenna. Nothing in the transmit path is switched out: the BUC still drives the HPA input, so the HPA stays disabled until the loop test is done. This validates the TX modem and BUC are working before you commit RF power to the air.
 </Aside>
 
 ### Phase 5: Uplink Enable
@@ -171,6 +171,8 @@ After successful loopback validation:
 - [ ] Enable HPA output
 - [ ] Adjust HPA backoff for required output power: above 400 W (TIDEMARK-1 link budget minimum). The HPA makes 60 dBm (1 kW) at P1dB, so 3 dB of back-off gives 57 dBm (501 W) and 4 dB gives 56 dBm (398 W, just short). Below 3 dB the overdrive alarm trips.
 - [ ] Verify uplink operational
+
+The Ops Log records each power setting as you change it, for example "BUC gain set to 23 dB (was 20 dB)" and "HPA back-off set to 3 dB (was 10 dB)", so the shift log can be read back from it.
 
 ---
 

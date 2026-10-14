@@ -90,8 +90,8 @@ SeaLink is on Catherine's uplink right now. Marcus Chen (Halifax spacecraft side
 | Equipment | State | Notes |
 |-----------|-------|-------|
 | GPSDO | Locked | Stayed up through the window for timing continuity |
-| Antenna | Stowed | Az 153.1°, El 90° — repoint required |
-| LNB | Powered off | LO and gain preserved at operational values |
+| Antenna | Stowed | Az 153.1°, El 90° — repoint required; no target, so the ACU's Beacon Freq reads "-- GHz" |
+| LNB | Powered off | LO and gain preserved at operational values; the Dashboard shows the warning "LNB powered off - no receive path" until it is powered |
 | BUC | Powered off | Gain and LO read `--` until the BUC is powered; check them against the shift card below |
 | HPA | Powered off, output disabled | |
 | TX Modem | Configured, not transmitting | IF 1,057 MHz, QPSK 3/4, 36 MHz |
@@ -133,6 +133,17 @@ The standard restoration order — reverse of shutdown — is RX before TX, low-
 4. Power up HPA → output stays disabled
 5. Enable TX modem transmit — the modem drives into a muted BUC
 6. **Stop there.** The chain stays staged cold until the handover return
+
+The Ops Log records each step, so the order can be read back afterwards (newest first, station clock stamps omitted):
+
+- "M1: Transmission STARTED, 1057.00 MHz, QPSK 3/4 [VT-01 TX]"
+- "HPA Power ON [VT-01 RF FE]"
+- "BUC gain set to 23 dB (was 50 dB) [VT-01 RF FE]"
+- "BUC Power ON [VT-01 RF FE]"
+- "LNB Power ON [VT-01 RF FE]"
+- "Tracking mode: PROGRAM-TRACK, ... Beacon freq: 4175.50 MHz [VT-01 ANT]" (from Move to Target)
+
+Until Move to Target the antenna has no target: the ACU's Beacon Freq (RF) reads "-- GHz" and the PROGRAM line carries no beacon frequency. A powered, muted BUC reads OUTPUT "MUTED".
 
 <Aside type="caution">
 Do not unmute the BUC or enable the HPA output before the handover executes.

@@ -82,7 +82,7 @@ SeaLink Global runs maritime data services for commercial shipping. Their contra
 | FEC Rate | 3/4 |
 | Polarization | Horizontal (TP-1) |
 | Nominal C/N | 14-16 dB |
-| Demod lock threshold | Es/N0 5.0 dB (about 4.2 dB C/N on a clean carrier) |
+| Demod lock threshold | Required Es/N0 5.0 dB: with Es/N0 about 0.8 dB above Raw C/N, the modem acquires lock from about 4.7 dB C/N and holds it down to about 3.7 dB |
 | Service minimum | 8 dB C/N |
 
 ---
@@ -138,6 +138,8 @@ Notch filters are effective against:
 
 They cannot help with broadband interference or interference centered on your signal.
 
+A notch in our receive chain cleans up only our own receiver. Interference inside the transponder is on the downlink every terminal in the beam receives, so SeaLink's ships keep seeing it until its source is fixed.
+
 ---
 
 ## C/N Degradation Quick Reference
@@ -153,7 +155,7 @@ The modem works on Es/N0, not C/N: QPSK 3/4 needs Es/N0 5.0 dB, RX Analysis show
 
 The table is for the 9 m hub at VT-01. SeaLink's ships run 1-2 m terminals with 15-20 dB less G/T, so the same interference in the transponder puts them much closer to their threshold. TIDEMARK-1's carrier is concatenated-coded (Viterbi K=7 rate 3/4 inside, Reed-Solomon 223/255 outside; the Payload Data Integrity card shows both). That pair decodes error-free while Reed-Solomon can still correct every block the Viterbi decoder hands it, then fails abruptly within a fraction of a dB: the hub's **Payload Data Integrity** card can show BER around 1e-12 and 0 CRC errors while the remotes are losing packets. Judge the customer's link by the hub's margin, not its BER.
 
-C/N drops when carrier power decreases OR when in-band noise/interference increases: an interferer inside our passband counts as noise to the demodulator (C/(N+I)), and one inside the transponder also takes a share of its output power. The receiver's AGC responds to total power in the passband, so a strong spike makes it cut its gain - but that gain applies to carrier and noise alike, so the AGC's gain change is a symptom of the extra power, not the cause of the C/N loss.
+C/N drops when carrier power decreases OR when in-band noise/interference increases: an interferer inside our passband counts as noise to the demodulator (C/(N+I)), and one inside the transponder also takes a share of its output power. The receiver's AGC responds to total power in the passband, so a spike makes its gain sit lower (the AGC card shows only the current GAIN and INPUT; a narrow spike is worth well under a dB) - but that gain applies to carrier and noise alike, so the AGC's gain change is a symptom of the extra power, not the cause of the C/N loss.
 
 ---
 

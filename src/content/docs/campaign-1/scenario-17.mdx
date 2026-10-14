@@ -95,8 +95,8 @@ the thing you can get wrong.
 
 - [ ] Do **not** repoint, do not handover, do not adjust the RX chain
 - [ ] Keep the uplink exactly as it is - the satellite still hears us fine
-- [ ] Watch the sky-noise alarm rise, peak, and fall on the alarm ticker at the top of the screen (ACU Control's Sky Temp readout climbs with it) - that is the event working as predicted
-- [ ] Expect demod loss of lock near peak; expect it to recover on its own
+- [ ] Watch the sky-noise alarm rise, peak, and fall on the alarm ticker at the top of the screen: one alarm, "SUN TRANSIT: ELEVATED SKY NOISE (x dB)", whose number and colour follow the noise (info under 2 dB, warning 2-6 dB, error 6 dB and up). ACU Control's Sky Temp readout climbs with it. That is the event working as predicted
+- [ ] Expect demod loss of lock near peak; expect it to recover on its own after the peak (10:35:00) as the noise falls
 
 ### After the Window (1037+)
 
@@ -152,7 +152,7 @@ Sun transit is the textbook case of the first kind.
 ### Inform Dana
 
 - Lock does not recover within 5 minutes of window close
-- Any alarm that is NOT the elevated-sky-noise alarm during the window
+- Any alarm that is NOT the "SUN TRANSIT: ELEVATED SKY NOISE" alarm during the window
 - Actual peak degradation grossly exceeds the prediction (suggests something else is also wrong)
 
 ---

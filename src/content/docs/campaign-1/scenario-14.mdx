@@ -33,7 +33,7 @@ import { Aside } from '@astrojs/starlight/components';
 ### Turnover from Morning Shift
 
 > Routine morning. TIDEMARK-1 link nominal, customer traffic at SLA. Weather radar shows
-> a heavy rain cell moving in from the west - arrival around 1325, twenty minutes
+> a heavy rain cell moving in from the west - arrival around 1320, twenty minutes
 > through. No freezing, just rain. Feed heater off; bring it up before the front arrives.
 > SeaLink left a note for the next shift on the customer portal - check it before the
 > rain hits.
@@ -100,7 +100,7 @@ require Catherine to drop her own customers - not free.
 - Precipitation: None yet
 - Visibility: 10 miles
 
-**Forecast (1325-1345):**
+**Forecast (1320-1340):**
 - Heavy convective rain cell passing overhead (peak around 50 mm/h), ~20 minutes through
 - No freezing - temperatures stay well above 32°F
 - Expected link margin impact: under 1 dB of C/N at the heaviest part of the cell (C-band)
@@ -156,10 +156,13 @@ heater doing both jobs. The Rain Blower is optional at C-band, even in a heavy c
 
 | Parameter | Nominal | Watch Threshold | Action Threshold |
 |-----------|---------|-----------------|------------------|
-| RX modem 1 Raw C/N (TIDEMARK-1 carrier) | Within 1 dB of the baseline you wrote down (about 13 dB) | 1-6 dB under baseline (7-12 dB) | Below 7 dB (about 6 dB under baseline, about 2 dB above where QPSK 3/4 locks) |
+| RX modem 1 Raw C/N (TIDEMARK-1 carrier) | 12 dB or more: within 1 dB of the baseline you wrote down (about 13 dB) | 1-6 dB under baseline (7-12 dB) | Below 7 dB (about 6 dB under baseline, about 2.3 dB above where QPSK 3/4 acquires lock) |
 | AGC compensation in use | < 2 dB | 2-6 dB | At max gain |
 | Modem lock | Locked | Brief drops | Sustained unlock |
 | HPA back-off | 10 dB | - | - |
+
+Where QPSK 3/4 locks: the modem shows Required Es/N0 5.0 dB; with Es/N0 about 0.8 dB above Raw C/N
+it acquires lock from about 4.7 dB C/N and holds it down to about 3.7 dB.
 
 ---
 
@@ -209,19 +212,20 @@ the responsible move is to not spend it. Keep back-off nominal through the front
 
 ## Monitoring Checklist
 
-### Before the Front (1318-1325)
+### Before the Front (1318-1320)
 
 - [ ] Feed heater enabled
 - [ ] Dashboard clean, no pre-existing alarms
 - [ ] RX modem 1 Raw C/N noted at baseline (write it down: about 13 dB)
-- [ ] Modem locked with margin
+- [ ] Modem locked with margin (Raw C/N 12 dB or more, the nominal band)
 
-### Through the Fade (1325-1345)
+### Through the Fade (1320-1340)
 
 - [ ] Hold until the cell has passed (wait it out or skip ahead)
 - [ ] Receiver lock maintained
 - [ ] RX modem 1 Raw C/N held above 7 dB (action threshold)
 - [ ] AGC gain far below max (it wanders about a dB on its own)
+- [ ] The ticker shows "RAIN FADE (x dB)" as an info alarm at the cell's peak (well under 1 dB: the C/N the rain costs, mostly sky noise); it clears as the cell passes
 - [ ] Antenna still locked on TIDEMARK-1
 - [ ] HPA back-off unchanged at 10 dB
 
@@ -270,7 +274,7 @@ entry captures:
 
 Example:
 
-> *"1325-1345 - Heavy rain cell over VT-01, under 1 dB of C/N lost at peak (mostly sky
+> *"1320-1340 - Heavy rain cell over VT-01, under 1 dB of C/N lost at peak (mostly sky
 > noise). Held TM-1 service per SeaLink SLA preference. AGC gain far below max (no change
 > beyond its normal wander), RX modem 1 Raw C/N within 1 dB of its 13 dB baseline. Triggers
 > watched: Raw C/N under 7 dB; AGC at max with continued fade; modem unlock. None fired.
