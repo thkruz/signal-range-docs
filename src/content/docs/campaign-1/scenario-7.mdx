@@ -193,7 +193,7 @@ A C-band LNB only receives about 3.4-4.2 GHz, so it never sees the 6 GHz uplink 
 | Loop translator (5,943 - 2,225) | 3,718 MHz |
 | LNB IF, normal LO 5,250 (5,250 - 3,718) | 1,532 MHz |
 
-Leave the LNB LO at 5,250 MHz and look at 1,532 MHz IF (Span 50 MHz, Min / Max Amp -100 / -20 dBm, RBW Auto). The 36 MHz carrier sits in the same slot the RX modem watches for our downlink, so the loop also shows you what the receive side will see once the uplink is live.
+Leave the LNB LO at 5,250 MHz and look at 1,532 MHz IF (Span 50 MHz, Min / Max Amp -100 / -20 dBm, RBW Auto). The 36 MHz carrier sits in the same slot the RX modem watches for our downlink, so the loop also shows you what the receive side will see once the uplink is live. On RX Analysis a carrier this clean reads Effective C/N well under Raw C/N with ADC Status OPTIMAL: the grey ceiling line (about 40 dB) is the converter's own limit, and Raw C/N combined with it gives the Effective figure. It is not a fault.
 
 ### BUC Gain for Loopback
 
