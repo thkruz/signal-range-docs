@@ -140,7 +140,9 @@ Build the package as you observe; every field timestamped:
 
 - Victim: satellite, transponder, polarization, center frequency, bandwidth
 - Interference: center frequency, bandwidth, measured duty cycle, first/last seen
-- Evidence: spectrum captures at documented analyzer settings
+- Evidence: spectrum captures at documented analyzer settings (every analyzer retune writes a
+  "SPEC A: ..." line to the Ops Log with its center, span, RBW and amplitude window, and Peak Search
+  writes the peak frequency and level, so the captures are timestamped there)
 - Cross-station confirmation: which other sites see it (transponder vs local)
 - Service impact: C/N degradation, demod events, customer effect
 - Mitigation applied and its cost
