@@ -103,7 +103,9 @@ the thing you can get wrong.
 - [ ] Receiver re-locked, C/N back at baseline
 - [ ] No warning or critical alarms
 - [ ] Impact documented: actual window, peak degradation, lock-loss duration (the Ops Log holds the
-      lock-loss times as the "ALARM raised: ... Carrier lock lost" and "ALARM cleared: ... Carrier lock lost" lines)
+      lock-loss times as the "ALARM raised: ... Carrier lock lost" and "ALARM cleared: ... Carrier lock lost" lines,
+      and the transit's clear line carries the peak, e.g. "ALARM cleared: SUN TRANSIT: ELEVATED SKY NOISE (0.5 dB, peak 16.0 dB)",
+      so the impact record can quote it after the window closes)
 - [ ] Marcus confirms spacecraft-side view matches ours
 
 <Aside type="caution">

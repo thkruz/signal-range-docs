@@ -86,7 +86,7 @@ All TIDEMARK beacons are V-pol CW carriers. The constellation clusters its beaco
 <Aside type="note">
 The TM-3 check is receive-only. No transmit configuration is required - the only question this morning is whether the bird's beacon is where the commissioning crew says it is, seen independently from our own antenna.
 
-Never slew a keyed dish. With VT-01's HPA on, the dish sweeping off TIDEMARK-1 would paint every satellite along the arc with 100 W, and while the sister teleport carries TM-1 a second VT-01 carrier on the same frequency would interfere with it. Inhibit TX first, move, and bring the HPA back only once you are locked on TIDEMARK-1 again. While TX is inhibited VT-01's Dashboard shows "AGC on noise only": with our carrier off, the receive modem's passband holds noise and no traffic carrier. That alarm is expected and clears once VT-01 takes TM-1 back.
+Never slew a keyed dish. With VT-01's HPA on, the dish sweeping off TIDEMARK-1 would paint every satellite along the arc with 100 W, and while the sister teleport carries TM-1 a second VT-01 carrier on the same frequency would interfere with it. Inhibit TX first, move, and bring the HPA back only once you are locked on TIDEMARK-1 again. While TX is inhibited VT-01's Dashboard shows two alarms: "AGC on noise only" (with our carrier off, the receive modem's passband holds noise and no traffic carrier) and "Carrier lock lost" (Modem 1 has no carrier to lock to). Both are expected, both clear once VT-01 takes TM-1 back, and both belong in the shift log as raised and cleared.
 </Aside>
 
 <Aside type="caution">
@@ -111,7 +111,7 @@ A clean CW spike at the expected IF confirms two things at once: the antenna is 
 
 ### Inform Dana
 
-- Any active alarm on either station
+- Any active alarm on either station, other than the two expected on VT-01 during the TX inhibit
 - TM-3 beacon missing, off-frequency, or degraded
 - Sister teleport reports any TM-1 customer impact during the spot-check window
 

@@ -125,8 +125,9 @@ within AGC compensation range for a healthy link.
   C/N on the ACU down by about 1 dB.
 - The RAIN FADE info alarm: it shows once the fade passes 0.5 dB, about 2 minutes into the
   cell, and clears as the cell passes. Its detail reads the downlink loss alone, about 0.7 dB at
-  the peak, so it sits a little under the modem's 1 dB dip.
-- AGC gain: it moves by only a few tenths of a dB as the cell comes over, because the AGC follows
+  the peak, so it sits a little under the modem's 1 dB dip. The fade steps (the Raw C/N watch, then
+  the AGC and HPA reads) wait for this alarm: until it is up, the cell is not overhead yet.
+- AGC gain: it moves by under 1 dB as the cell comes over, because the AGC follows
   the total passband power and rain barely moves that. What matters is that it stays far below its
   maximum.
 
@@ -229,7 +230,7 @@ the responsible move is to not spend it. Keep back-off nominal through the front
 - [ ] Hold until the cell has passed (wait it out or skip ahead)
 - [ ] Receiver lock maintained
 - [ ] RX modem 1 Raw C/N held above 7 dB (action threshold)
-- [ ] AGC gain far below max (it moves a few tenths of a dB with the cell)
+- [ ] AGC gain far below max (it moves under 1 dB with the cell)
 - [ ] The ticker shows "RAIN FADE" as an info alarm once the fade passes 0.5 dB, about 2 minutes into the cell (its detail reads the downlink loss, about 0.7 dB at the peak, mostly sky noise; the modem's C/N drops about 1 dB because our own uplink is rained on too); it clears as the cell passes
 - [ ] Antenna still locked on TIDEMARK-1
 - [ ] HPA back-off unchanged at 10 dB
@@ -280,8 +281,8 @@ entry captures:
 Example:
 
 > *"1320-1340 - Heavy rain cell over VT-01, about 1 dB of C/N lost at peak (mostly sky
-> noise). Held TM-1 service per SeaLink SLA preference. AGC gain far below max (a few tenths
-> of a dB of movement), RX modem 1 Raw C/N about 1 dB under its 13 dB baseline at worst. Triggers
+> noise). Held TM-1 service per SeaLink SLA preference. AGC gain far below max (under 1 dB
+> of movement), RX modem 1 Raw C/N about 1 dB under its 13 dB baseline at worst. Triggers
 > watched: Raw C/N under 7 dB; AGC at max with continued fade; modem unlock. None fired.
 > SeaLink notified by reply on customer portal."*
 
