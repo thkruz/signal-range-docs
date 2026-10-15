@@ -56,7 +56,7 @@ import { Aside } from '@astrojs/starlight/components';
 
 | Parameter | Nominal | Current |
 |-----------|---------|---------|
-| Nominal slot position (from ME-02) | Az 147.0°, El 32.4° (45° W) | Swinging ±1.3° in a daily figure-8 |
+| Nominal slot position (from ME-02) | Az 147.0°, El 32.4° (45° W; Az 143.3°, El 31.8° from VT-01) | Swinging ±1.3° in a daily figure-8 (once a day: at most about 0.34° an hour in elevation, so it sits within a few hundredths of the slot through this shift) |
 | Inclination | ~0.05° (station-kept) | **~1.3° since the 0800 burn** |
 | Ephemeris validity | Good | **Stale - computed before the burn** |
 | Station-keeping | Automatic N-S burns | **0800 burn overran (stuck valve) - further burns suspended** |
@@ -65,8 +65,8 @@ import { Aside } from '@astrojs/starlight/components';
 Look angles are live on every panel, so expect them to differ by a few tenths of a degree:
 the Overview shows the selected station's live look angles to the bird (select ME-02 first;
 with VT-01 selected it shows Vermont's angles), the Dashboard and ACU show where ME-02's dish
-is actually pointing. Through the morning the live position swings further from the
-nominal slot and program-track keeps pointing at the stale prediction.
+is actually pointing. The bird itself moves slowly on its daily figure-eight; what you
+watch open is the gap between it and the stale prediction program-track keeps pointing at.
 
 ### How Fast It Gets Worse
 

@@ -141,7 +141,11 @@ Never transmit without verifying encryption status. Pacific Rim traffic includes
 - [ ] Change target: Select AURORA-7
 - [ ] Tracking mode: Program-track (for initial acquisition)
 - [ ] Antenna position: Wait for slew to complete
-- [ ] Beacon signal: Visible on spectrum analyzer at 1,085 MHz IF
+- [ ] Beacon signal: Visible on spectrum analyzer at 1,085 MHz IF once the dish is on AURORA-7
+      (about -74 dBm under program-track; nothing there while the dish is still on TIDEMARK-1,
+      35° away). Step-track adds about 2 dB. Later, when your own carrier comes back down, the AGC
+      turns its gain down by about 7 dB and the beacon reads that much lower on the analyzer: the
+      AGC holding its output level, not the pointing (the ACU beacon C/N does not move)
 
 ### Step-Track Transition
 
