@@ -81,7 +81,7 @@ writing it all down while you do it.
 | Beacon | 4,165 MHz -> 1,085 MHz IF - **weak (end-of-life decline)** |
 | Pass config | Step-track required (SeaLink brings the carrier up at 0800) |
 | TM-1 during the window | SeaLink's backup hub carries the TM-1 trunk for the AURORA-7 window (booked with the pass); VT-01's own TM-1 carrier comes off the air before the dish moves |
-| Before you repoint | VT-01 is still radiating its TM-1 carrier. Take it off the air on TX Chain first, amplifier before drive: HPA output disabled, then BUC muted. A carrier keyed through a slew sweeps every satellite on the arc |
+| Before you repoint | VT-01 is still radiating its TM-1 carrier. Take it off the air on TX Chain first, amplifier before drive: HPA output disabled, then BUC muted. A carrier keyed through a slew sweeps every satellite on the arc. Taking TM-1 off the air raises two expected alarms on VT-01: "AGC on noise only" (with our carrier off, the receive passband holds noise and no traffic carrier) and "Carrier lock lost" (Modem 1 has no carrier to lock to). Both stay up while SeaLink's backup hub carries TM-1; they belong in the log, not in a ticket |
 | Slew | About a minute from TIDEMARK-1 to AURORA-7; the lock comes once the dish arrives |
 | Go/no-go | Step-track must hold the beacon; if it cannot, the pass scrubs - tell the customer BEFORE 0800, not during |
 

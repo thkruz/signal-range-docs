@@ -53,7 +53,7 @@ This is not the routine AURORA-7 maritime VSAT traffic. SeaLink scheduled a 30-m
 **Acceptance:** No dropouts, no overdrive events, no manual handover
 
 <Aside type="note">
-This is a paid pass window. The customer expects measurable additional margin over baseline operations - not just "the link works." Tightening HPA backoff during the window buys them real EIRP. Returning backoff to baseline after the window protects the amp between passes.
+This is a paid pass window. Tightening HPA backoff buys 4 dB of uplink EIRP: margin against an uplink fade or the pointing loss of an inclined bird, so the transponder stays fully driven through the window. Do not expect the receive C/N to jump: at 10 dB backoff our on-peak carrier already drives AURORA-7's transponder within about 3 dB of saturation, so the extra 4 dB mostly pushes it into saturation and the downlink rises well under a dB. Returning backoff to baseline after the window protects the amp between passes.
 </Aside>
 
 ---
