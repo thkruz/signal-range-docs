@@ -126,7 +126,8 @@ Notch 1 goes to **1,470 MHz center, 8 MHz wide, 30 dB deep**, enabled, then
 jammer out and costs the 36 MHz carrier the energy in its 8 MHz slice, about 1 dB.
 On RX modem 1, C/N during a burst goes from about 6 dB (lock margin about 1.5 dB)
 to about 9 dB (margin about 5 dB); in the off periods it reads about 12 dB against
-about 13 dB clean.
+about 13 dB clean. Degraded margin raises when Es/N0 is less than 1.0 dB over the
+lock threshold and clears again at 1.5 dB over it.
 
 There is no transmit-side mitigation for uplink jamming available to a ground
 station: power escalation ("burn through") degrades neighbors, violates
