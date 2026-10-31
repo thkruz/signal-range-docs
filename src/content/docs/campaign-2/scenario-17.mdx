@@ -45,7 +45,7 @@ Nothing tonight is loud. A spray is designed to look like three unrelated warnin
 | MERIDIAN-SAR-1 | 02:20:00 | 187° | 30.0° | 02:24:46 (717 km) | 02:29:34 | 339° |
 | MERIDIAN-SAR-2 | 02:40:01 | 137° | 26.3° | 02:44:46 (809 km) | 02:49:30 | 354° |
 
-Both northbound. Decode window (C/N ≥ 8 dB) roughly the middle third of each pass: 02:22:30-02:27:00 and 02:42:30-02:47:00.
+Both northbound. Decode window (C/N ≥ 8 dB) roughly the middle third of each pass: 02:22:30-02:27:00 and 02:42:30-02:47:00. On SAR-1 the second carrier (below) cuts into the end of that window, so decode early.
 
 ## Frequency Plan
 
@@ -74,7 +74,7 @@ Few attempts per account, many accounts, one source, stopping just under the loc
 
 ## The Carrier
 
-Once the SAR-1 pass is past its high point, a second carrier keys up at 1,410 MHz IF (11,690 MHz RF) - a megahertz wide, 4 MHz below the video and inside its band. The video's C/N drops by about 8 dB while it is on.
+Shortly after SAR-1 passes its high point (about 02:25, depending on how quickly you reach this step), a second carrier keys up at 1,410 MHz IF (11,690 MHz RF) - a megahertz wide, 4 MHz below the video and inside its band. The video's C/N drops by about 8 dB while it is on.
 
 Two things to check before calling it:
 
@@ -89,7 +89,7 @@ This is the first **decision** in the campaign. It is graded on what the station
 
 ## The Export
 
-While you are writing up the carrier, the log moves: **02:33, a full station-configuration export by the legacy telemetry account** - antenna, LNB LO, modem plan, contact schedule. No change ticket. Thirty-five minutes after that account failed three logins.
+While you are writing up the carrier, the log moves: **a few minutes later (about 02:26, depending on your pace), a full station-configuration export by the legacy telemetry account** - antenna, LNB LO, modem plan, contact schedule. No change ticket. Roughly half an hour after that account failed three logins.
 
 A contact schedule is a list of where an antenna will point, when, on what frequency. Flag it, note the time, then disable the account - in that order.
 
