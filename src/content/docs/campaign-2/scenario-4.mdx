@@ -26,8 +26,8 @@ import { Aside } from '@astrojs/starlight/components';
 
 | Key | Where | What it does | State at turnover | Today |
 |-----|-------|--------------|-------------------|-------|
-| **Command-link authentication key** | TT&C console, COMSEC panel | Signs every command so the spacecraft can prove who sent it. `requireValidKey` is on: Pending Rotation is a NAK. | **Pending Rotation** (new material loaded, not active) | Rotate it, in two steps, **before** the pass |
-| **Traffic key** | Payload crypto panels (TX Chain and RX Analysis) | AES-256-GCM, symmetric. Encrypts what you send, decrypts what comes down, verifies the auth tag. | Valid, 62 days to expiry | Rotterdam rotates the fleet traffic key on its own schedule. Watch it after the pass. |
+| **Command-link authentication key** | TT&C console, COMSEC panel | Signs every command so the spacecraft can prove who sent it. `requireValidKey` is on: Pending Rotation is a NAK. | Valid, due for its scheduled rotation; **Pending Rotation** between Initiate and Confirm (new material loaded, not active) | Rotate it, in two steps, **before** the pass |
+| **Traffic key** | Payload crypto panels (TX Chain and RX Analysis) | AES-256-GCM, symmetric. Encrypts what you send, decrypts what comes down, verifies the auth tag. | Valid on both payload panels (read the days left off the panel) | Rotterdam rotates the fleet traffic key on its own schedule. Watch it after the pass. |
 
 Different custody, different schedules. People confuse them constantly. Read both before you touch either.
 
@@ -120,6 +120,7 @@ Chain order is the same three steps up (carrier into the muted BUC, unmute, HPA)
 ### Before the Pass (13:45 – 14:03)
 - [ ] TX Chain and RX Analysis payload panels: encryption ACTIVE both ways, traffic key Valid
 - [ ] TT&C: Initiate Key Rotation, then Confirm; key badge reads Valid
+- [ ] TX Chain: BUC Lock badge reads Locked on the external reference
 - [ ] GPS Timing: GPSDO locked; TX Chain: BUC on external reference
 - [ ] Pass Schedule: window 14:03:40 – 14:10:00 confirmed
 - [ ] TT&C: uplink Doppler compensation engaged
