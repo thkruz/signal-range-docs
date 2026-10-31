@@ -53,7 +53,7 @@ import { Aside } from '@astrojs/starlight/components';
 | 03:21:30-03:28:30 | GW-01 | Terrestrial carrier 1,410 MHz IF in SAR-1's band, 60 s on / 30 s off | Notch 1410 / 2 MHz / 30 dB; keep the collect |
 | 03:25 → | SH-02 | GNSS spoof on Shetland's reference; Galway reads zero | Shetland to holdover; Galway stays on GNSS |
 | 03:40-04:10 | GW-01 | Sleet | Feed heater on **before** 03:40 |
-| 03:55-04:01:40 | SAR-3 | Jammer on the 14,065 MHz command carrier | Call the denial; hop; PLD-SAFE through it |
+| From shortly after HK-DUMP ACKs, about 400 s | SAR-3 | Jammer on the 14,065 MHz command carrier | Call the denial; hop; PLD-SAFE through it |
 
 Every one of those has a procedure from an earlier shift. The capstone is whether they hold together, in order, with the storm on top.
 
@@ -67,7 +67,7 @@ The spoof is on Shetland this time. On the 19th Galway walked and Shetland was t
 
 ## The Command Contact
 
-SAR-3 rises into sleet on a heated feed. Centre the analyzer on the 1,315 MHz beacon with a 2 MHz span and confirm it on RX analysis. Chain up at 03:52:21, HK-DUMP on the fixed carrier, then PLD-SAFE - which comes back **Uplink denied - carrier jammed** at 03:55.
+SAR-3 rises into sleet on a heated feed. Centre the analyzer on the 1,315 MHz beacon with a 2 MHz span and confirm it on RX analysis. Chain up at 03:52:21, HK-DUMP on the fixed carrier, then PLD-SAFE - which comes back **Uplink denied - carrier jammed** shortly after HK-DUMP is acknowledged.
 
 | Suspect | Why it is not |
 |---------|---------------|
@@ -86,6 +86,6 @@ Write the incident log as you go. Half the hour is logged before the half that m
 | Section | Line |
 |---------|------|
 | Incident Log | First half hour: rain, burn, SAR-1 under the carrier, spoof on Shetland, SAR-2 on the oscillator. Second: heater, SAR-3, the NAK, the hop, PLD-SAFE, safed |
-| Handover | What is still true at 04:15, what is staged for it, and that no procedure changed - because every event had one and they held together |
+| Handover | What is still true at handover, what is staged for it, and that no procedure changed - because every event had one and they held together |
 
 Three contacts delivered. That is the sentence the board reads, and it is the end of the arc.
