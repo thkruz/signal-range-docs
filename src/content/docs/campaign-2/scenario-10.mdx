@@ -106,7 +106,7 @@ Build it from the modem outward. GW-01's HPA is a 2.5 W Ku solid-state amplifier
 | 1 | BUC compression | 11 dBm out, far under the 28 dBm P1dB | 16 dBm at 23 dB, still 12 dB under P1dB: out of compression |
 | 2 | HPA back-off | 10 dB | **4 dB** (6 dB more EIRP: 24 dBm becomes 30 dBm). Below 3 dB the amplifier is overdriven and the IMD alarm trips; the IM3 (2-tone) readout worsens about 2 dB per dB of back-off given up (about −46 dBc at 10 dB, −35 dBc at 4) |
 | 3 | HPA output, amplifier up | Disabled | At least **0.5 W** into the feed (about 1 W expected at 4 dB on this chain); read on the TX chain power meter once the modem is on air and the HPA is enabled |
-| After LOS | HPA back-off | 4 dB | **Back to 10 dB.** 4 dB was the exception for one geometry; on a normal pass it is 6 dB over the coordinated level and an interference risk |
+| After the collect | HPA back-off | 4 dB | **Back to 10 dB.** 4 dB was the exception for one geometry; on a normal pass it is 6 dB over the coordinated level and an interference risk |
 
 An amplifier driven past its linear region makes new frequencies out of the ones it was given; they go up the same dish at the same EIRP into channels that belong to somebody else.
 
@@ -164,7 +164,7 @@ Order on the transmit chain is unchanged by urgency: modem on air first, then HP
 - [ ] RX modem locked on 1,414 MHz; C/N above 6 dB held for 30 s
 - [ ] Commit Link pressed at max elevation with live margin at or above 3 dB
 
-### After LOS (15:44:03)
+### After the collect (no need to wait for LOS, 15:44:03)
 - [ ] Chain down: HPA off, BUC muted, carrier off
 - [ ] HPA back-off restored to 10 dB
 - [ ] Tasking log: command and ACK, the EIRP exception and its restoration, measured C/N against 8.3 predicted at 18°
