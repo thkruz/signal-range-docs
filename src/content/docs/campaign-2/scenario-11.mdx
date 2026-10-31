@@ -96,7 +96,7 @@ Downlink Doppler runs to about ±270 kHz across the pass. With the high-side LO 
 
 At the station's 60 MHz / 1 MHz RBW default a CW tone is one pixel above a 1 MHz noise bin, and 1,315 is not on the screen at all. Span decides what you can see; RBW decides how well.
 
-Rotterdam wants the beacon level as a number near culmination, not "present". A level against the link prediction is the transmitter's health, and today's number is the baseline every later pass is compared with. Expect the beacon comfortably above **−65 dBm** at the analyzer input up high.
+Rotterdam wants the beacon level as a number near culmination, not "present". A level against the link prediction is the transmitter's health, and today's number is the baseline every later pass is compared with. Expect the beacon comfortably above **−65 dBm** at the analyzer input up high. The analyzer tap sits after the AGC, so its level stays nearly flat all pass; the number that climbs is the ACU Beacon C/N, from about 16 dB at AOS to about 27 dB at the top. The level is logged once she is past culmination.
 
 ---
 

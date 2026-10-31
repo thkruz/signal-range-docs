@@ -15,7 +15,7 @@ import { Aside } from '@astrojs/starlight/components';
 **SH-02 Shetland:** Fiona MacLeod, on site; on the pedestal with a torch from 13:50
 **Customer:** Erik Halvorsen, Nordic Maritime Watch (priority-1 SAR-3 collect at 13:52)
 
-> Quiet morning, no faults on the board. Both modems on 1,414, analyzers at default, trackers parked. The week's pass log is attached; Rotterdam has questions about it. The planners have booked the 13:12 SAR-2 for us: 89 degrees, straight over the top. Erik's SAR-3 collect at 13:52 is on the board for both sites - Galway sees it at 10 degrees, Shetland at 32.
+> Quiet morning. The board carries two LNB alarms on Galway, noise temperature high (250 K) and noise figure degraded (2.70 dB), and the RX AGC no-carrier warning, which is only empty sky. Both modems on 1,414, analyzers at default, trackers parked. The week's pass log is attached; Rotterdam has questions about it. The planners have booked the 13:12 SAR-2 for us: 89 degrees, straight over the top. Erik's SAR-3 collect at 13:52 is on the board for both sites - Galway sees it at 10 degrees, Shetland at 32.
 >
 > - Morning shift (turnover log, 1248)
 
@@ -100,10 +100,12 @@ An elevation-over-azimuth pedestal has a keyhole at the zenith. SAR-2 rises from
 | Leg | Expect |
 |-----|--------|
 | Ascending, from about 25° | Lock, C/N ≥ 8 dB, rising toward the top |
-| Through 13:16:56 | The pedestal loses the bird and the receiver drops lock for several seconds. Watch it on RX analysis; do not touch the pedestal |
+| Through 13:16:56 | The pedestal loses the bird and the receiver drops lock for about twenty seconds, and the Carrier lock lost alarm stays up until the next lock. Watch it on RX analysis; do not touch the pedestal |
 | Descending | Lock comes back once the azimuth rate falls. Hold it for 100 s, then record the cause |
 
 This is an operations note, not a fault. Maintenance cannot repair geometry.
+
+The Carrier lock lost alarm stays up until the next lock, and the Best SNR and Raw C/N readouts keep their last finite value after a loss. Both are by design; neither means the receiver still has the carrier.
 
 ---
 

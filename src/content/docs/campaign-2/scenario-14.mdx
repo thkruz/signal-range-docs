@@ -39,7 +39,7 @@ import { Aside } from '@astrojs/starlight/components';
 
 | Loss | Where it is | Fix | Number for today |
 |------|-------------|-----|------------------|
-| Rain attenuation | In the air, along the whole slant path | None on the rack. Reallocate, or ride through on margin | 30 mm/h at 11.7 GHz on a 19° pass: about **7 dB** (ITU-R P.838, 2.5 km rain height), plus a warmer sky |
+| Rain attenuation | In the air, along the whole slant path | None on the rack. Reallocate, or ride through on margin | 30 mm/h at 11.7 GHz on a 19° pass: about **10 dB** at the peak (ITU-R P.838, 2.5 km rain height), plus a warmer sky |
 | Ice on the feed | On the horn | **Feed heater**, before it forms | Severe sleet builds to 10 dB with a 12 min time constant; melts at 1 dB/min once the heater is on |
 
 Rain attenuation rises steeply with frequency: a tenth of a decibel at C-band becomes whole decibels at Ku. A low pass makes it worse twice: a longer path through the rain, and less clear-sky margin to spend. The heater does nothing for rain.
@@ -80,7 +80,7 @@ Every priority-1 and priority-2 contact must be assigned for the plan to read DE
 | Pass | Clear sky | Today | Decode window |
 |------|-----------|-------|---------------|
 | SAR-2 from Shetland, 34° | ~12 dB at 11:15:35 | ~12 dB (dry) | C/N ≥ 8 dB about 11:13:30 to 11:17:40 |
-| SAR-2 from Galway, 19° | ~8.5 dB at 11:17:30 | **~2 dB** in 30 mm/h | None. Flown unattended for the measurement only |
+| SAR-2 from Galway, 19° | ~8.5 dB at 11:17:30 | **about -1 dB, no lock at the peak** in 30 mm/h (10 dB of rain) | None. Flown unattended for the measurement only |
 | SAR-1 from Galway, 30°, heater on from 11:24 | ~11 dB at 11:49:43 | ~11 dB, feed loss 0 dB | C/N ≥ 8 dB about 11:47:30 to 11:52:00 |
 | SAR-1 from Galway, 30°, heater never on | ~11 dB | ~2 dB: 8.6 dB of ice on the horn at culmination | None |
 
