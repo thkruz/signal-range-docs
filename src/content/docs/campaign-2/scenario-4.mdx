@@ -64,13 +64,17 @@ Rotation is a handshake, not a swap: **Initiate Key Rotation**, then **Confirm K
 
 | Item | Time |
 |------|------|
-| MERIDIAN-SAR-1 AOS | 14:03:10 |
+| MERIDIAN-SAR-1 AOS (Pass Schedule, receivable horizon) | 14:01:59 |
+| MERIDIAN-SAR-1 above the 5° mask | 14:03:10 |
 | Command window opens | 14:03:40 |
 | Max elevation (28°) | 14:06:45 |
 | Command window closes | 14:10:00 |
-| MERIDIAN-SAR-1 LOS | 14:10:18 |
+| MERIDIAN-SAR-1 below the 5° mask | 14:10:18 |
+| MERIDIAN-SAR-1 LOS (Pass Schedule) | 14:11:28 |
 | Fleet traffic key rotation (Rotterdam) | 14:11:00 |
 | MERIDIAN-SAR-2 AOS / max el / LOS | 14:18:42 / 25° at 14:22:10 / 14:25:40 |
+
+The Pass Schedule tab lists AOS and LOS where the signal starts and stops (the receivable horizon), so it reads earlier and later than the 5° mask times. The command window is set by the TT&C console, not by either.  
 
 SAR-2 is not tasked for commanding. It is available, optionally, to prove the new traffic key on live frames (RX modem 1 to 1,370 MHz).
 
