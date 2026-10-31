@@ -104,7 +104,7 @@ The plan, the rotation and the budget do not depend on the spacecraft being in v
 
 ### Chain order
 
-The chain stays cold until the downlink is proven: an uplink on this rack spoils the receive measurement, and Accept Link samples the live C/N. Then, inside the window: uplink Doppler compensation on the TT&C console; transmit modem on air into the muted BUC; unmute; HPA enable. Down after LOS: HPA off, BUC muted, carrier off. Nobody checks the order for you tonight.
+The chain stays cold until the downlink is proven: an uplink on this rack spoils the receive measurement, and Accept Link samples the live C/N. Then, inside the window: uplink Doppler compensation on the TT&C console; transmit modem on air into the muted BUC; unmute; HPA enable. Down after LOS: HPA off, BUC muted, carrier off; the two-minute timer on that step starts at LOS, not before. Nobody checks the order for you tonight.
 
 ---
 
@@ -112,13 +112,13 @@ The chain stays cold until the downlink is proven: an uplink on this rack spoils
 
 ### 02:54 from Shetland: telemetry, on holdover
 
-A 13° pass at 1,233 km will not meet the imagery delivery standard: expect C/N to peak near 6.6 dB, a clean lock with only a couple of dB over threshold and well short of the 8 dB delivery line. Hold lock above 5 dB through culmination for the state-of-health frames. That is 20 log(1233 / 581) = 6.5 dB more path loss than the 00:31 pass, plus atmosphere at 13°. A site is underperforming only when its number is worse than its geometry.
+A 13° pass at 1,233 km will not meet the imagery delivery standard: expect C/N to peak near 7 dB, a clean lock with only a couple of dB over threshold and well short of the 8 dB delivery line. Hold lock above 5 dB through culmination for the state-of-health frames. That is 20 log(1233 / 581) = 6.5 dB more path loss than the 00:31 pass, plus atmosphere at 13°. A site is underperforming only when its number is worse than its geometry.
 
 The SH-02 GNSS antenna has been unreliable in the wind. If the GPS Timing panel shows the receiver locked with HOLDOVER active, the GNSS input switch up and zero satellites, that is an outage at the site, not a switch left down. The disciplined oscillator coasts on its last correction; a few minutes of holdover is a few microseconds and a few hertz at Ku. Fly the pass on it, leave the switch alone (cycling it cannot conjure a signal), and confirm re-lock when the signal returns. Then put the outage in the handover: the day shift decides whether it was weather or a failing antenna, and cannot decide without the record.
 
 ### 04:27 over Galway: steep, after the key roll
 
-Peak C/N near 16.5 dB at 73° and 408 km, the best number of the night. The azimuth rate at the top of a 73° pass is a few degrees a second, inside what the 10°/s pedestal can do; the keyhole is a near-zenith problem, for a different shift. Before AOS, read the payload crypto: the fleet traffic key rolled at 04:15 and the station did not follow. Re-key from the TX chain payload panel (one load, both directions) and confirm TX and RX read Valid, or the imagery will not decrypt.
+Peak C/N near 17 dB at 73° and 408 km, the best number of the night. The azimuth rate at the top of a 73° pass is a few degrees a second, inside what the 10°/s pedestal can do; the keyhole is a near-zenith problem, for a different shift. Before AOS, read the payload crypto: the fleet traffic key rolled at 04:15 and the station did not follow. Re-key from the TX chain payload panel (one load, both directions) and confirm TX and RX read Valid, or the imagery will not decrypt.
 
 ---
 
@@ -184,7 +184,7 @@ Doppler: ±270 kHz on the downlink (receiver follows), ±325 kHz on the uplink (
 - [ ] SH-02 selected: BUC temperature normal, LNB stable, RX modem 1 to 1,370 MHz
 - [ ] GPS Timing read: holdover diagnosed, switch left alone
 - [ ] Program-track on MERIDIAN-SAR-2; carrier on Shetland's RX analysis; lock, C/N ≥ 5 dB through culmination
-- [ ] After 02:59: GNSS receiving again, holdover cleared; contact and outage logged
+- [ ] Once the GNSS signal returns: GNSS receiving again, holdover cleared; contact and outage logged
 
 ### Contact 3, Galway (04:23 – 04:35)
 - [ ] GW-01 selected: payload crypto reads Mismatch; re-keyed; TX and RX Valid
