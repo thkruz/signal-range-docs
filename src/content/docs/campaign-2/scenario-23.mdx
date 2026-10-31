@@ -72,11 +72,11 @@ Then the pass as normal: pre-position on 022°, program-track on the post-burn s
 
 ## The Denial
 
-From 21:24:30 PLD-SAFE comes back **Uplink denied - carrier jammed**. Key Valid, Doppler engaged, window OPEN, reference in holdover.
+About ten seconds after the first command ACKs and you open the denial, PLD-SAFE comes back **Uplink denied - carrier jammed**. Key Valid, Doppler engaged, window OPEN, reference in holdover.
 
 | Suspect | Why it is not |
 |---------|---------------|
-| The holdover reference | HK-DUMP ACKed on it four minutes earlier; an OCXO drifts nanoseconds an hour. Putting GNSS back hands the reference to the spoofer again |
+| The holdover reference | HK-DUMP ACKed on it earlier in the window; an OCXO drifts nanoseconds an hour. Putting GNSS back hands the reference to the spoofer again |
 | The key | Valid at both ends; a key rejection is its own reason on the console |
 | Standing down | Shetland has no command key; the payload has no next window |
 
