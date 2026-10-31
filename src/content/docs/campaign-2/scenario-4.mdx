@@ -1,6 +1,6 @@
 ---
 title: 'Scenario 4 - Keys to the Bird'
-description: 'Command-link COMSEC - read both keys, complete the scheduled command-key rotation before the pass, send an authenticated payload safe-mode command, then diagnose and clear a traffic-key mismatch after LOS'
+description: 'Command-link COMSEC - complete the scheduled command-key rotation before the pass, read both keys, send an authenticated payload safe-mode command, then diagnose and clear a traffic-key mismatch after LOS'
 lastUpdated: 2026-09-12
 ---
 
@@ -26,10 +26,10 @@ import { Aside } from '@astrojs/starlight/components';
 
 | Key | Where | What it does | State at turnover | Today |
 |-----|-------|--------------|-------------------|-------|
-| **Command-link authentication key** | TT&C console, COMSEC panel | Signs every command so the spacecraft can prove who sent it. `requireValidKey` is on: Pending Rotation is a NAK. | Valid, due for its scheduled rotation; **Pending Rotation** between Initiate and Confirm (new material loaded, not active) | Rotate it, in two steps, **before** the pass |
-| **Traffic key** | Payload crypto panels (TX Chain and RX Analysis) | AES-256-GCM, symmetric. Encrypts what you send, decrypts what comes down, verifies the auth tag. | Valid on both payload panels (read the days left off the panel) | Rotterdam rotates the fleet traffic key on its own schedule. Watch it after the pass. |
+| **Command-link authentication key** | TT&C console, COMSEC panel | Signs every command so the spacecraft can prove who sent it. `requireValidKey` is on: Pending Rotation is a NAK. | **Pending Rotation** at turnover: KEY-2027-Q1, 4 days left, new material loaded but not active. Confirming the rotation moves the unit to KEY-2027-Q1b and the badge reads Valid | Rotate it, in two steps, **before** the pass |
+| **Traffic key** | Payload crypto panels (TX Chain and RX Analysis) | AES-256-GCM, symmetric. Encrypts what you send, decrypts what comes down, verifies the auth tag. | Valid on both payload panels once the rotation is confirmed (read the key id and days left off the panel) | Rotterdam rotates the fleet traffic key on its own schedule. Watch it after the pass. |
 
-Different custody, different schedules. People confuse them constantly. Read both before you touch either.
+Different custody, different schedules. People confuse them constantly. Rotate the command key first; then read both.
 
 <Aside type="caution">
 Rotation is a handshake, not a swap: **Initiate Key Rotation**, then **Confirm Key Rotation**. The far end acknowledges the new key is loaded before the old one is retired. A one-step swap can leave the two ends on different keys, which is exactly what a **Mismatch** is.
@@ -108,7 +108,7 @@ Chain order is the same three steps up (carrier into the muted BUC, unmute, HPA)
 | Display | Meaning |
 |---------|---------|
 | Key badge | Valid / Pending Rotation / Zeroized |
-| Initiate Key Rotation | Marks the current key Pending Rotation and stages the new material |
+| Initiate Key Rotation | Stages the new material (the key already reads Pending Rotation at turnover) |
 | Confirm Key Rotation | Completes the handshake; the key reads Valid |
 | Zeroize (armed-then-fire) | Destroys the key material. **Not part of any rotation.** A zeroized station cannot command anything until re-keyed by Rotterdam, and that does not happen inside a seven-minute pass. |
 | NAK: key invalid | Sent under a key that is not Valid |
@@ -118,8 +118,8 @@ Chain order is the same three steps up (carrier into the muted BUC, unmute, HPA)
 ## Commanding Checklist
 
 ### Before the Pass (13:45 – 14:03)
+- [ ] TT&C: key badge reads Pending Rotation; Initiate Key Rotation, then Confirm; key badge reads Valid (KEY-2027-Q1b)
 - [ ] TX Chain and RX Analysis payload panels: encryption ACTIVE both ways, traffic key Valid
-- [ ] TT&C: Initiate Key Rotation, then Confirm; key badge reads Valid
 - [ ] TX Chain: BUC Lock badge reads Locked on the external reference
 - [ ] GPS Timing: GPSDO locked; TX Chain: BUC on external reference
 - [ ] Pass Schedule: window 14:03:40 – 14:10:00 confirmed
