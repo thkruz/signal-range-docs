@@ -53,7 +53,7 @@ The console gives four reasons for a NAK. Three of them are its own:
 | Uplink not compensated | TT&C console Doppler toggle | Engage it |
 | COMSEC key invalid | TX chain key badge | Rotate |
 | Outside command window | Window badge | Wait |
-| **Uplink denied - carrier jammed** | Everything above reads clean; the transponded return on the analyzer shows a carrier that is not yours | **Hop** |
+| **Uplink denied - carrier jammed** | Everything above reads clean; the transponded return shows a carrier that is not yours, at 1,320 MHz IF (center 1,320 MHz, span 10 MHz; the 1,370 MHz video window does not reach it) | **Hop** |
 
 <Aside type="caution">
 A NAK with the key reading **Valid** at both ends, Doppler engaged and the window **OPEN** is not a station problem and not a key problem. It is the satellite failing to hear you because something louder is sitting on your uplink frequency at the bird. Rotating a good key in an open window spends the window on nothing. Standing down hands them the window.

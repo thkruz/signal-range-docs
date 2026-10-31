@@ -36,7 +36,7 @@ import { Aside } from '@astrojs/starlight/components';
 |--------|----|----|----|
 | SAR-2 TT&C uplink | 14,035 MHz | 1,435 MHz (TX) | BUC 12,600 low-side: IF = RF − LO |
 | SAR-2 video | 11,730 MHz | 1,370 MHz (RX) | LNB 13,100 high-side: IF = LO − RF |
-| SAR-2 beacon | 11,703 MHz | 1,397 MHz | |
+| SAR-2 beacon | 11,703 MHz | 1,397 MHz | Any framing that shows the beacon counts, including the 60 MHz video span at 1,370 |
 
 ---
 
@@ -57,7 +57,7 @@ Ninety seconds after HK-DUMP ACKs, two entries land on the Security console:
 | Entry | Actor | What it says |
 |-------|-------|--------------|
 | Counter reject | Monitoring service | SAR-2 telemetry: 3 inbound TT&C frames rejected at the spacecraft, authentication counter stale |
-| Unit log | KG-01 | 3 frames observed on the return matching command traffic sent 09:25 (HK-DUMP), counter 0x2F13 stale, **source not this station** |
+| Unit log | KG-01 | 3 frames observed on the return matching your HK-DUMP, counter 0x2F13 stale, **source not this station** |
 
 The first says the bird said no. The second says why, and to what. Together they say: someone recorded your frame and sent it back, and the key held.
 
@@ -80,7 +80,7 @@ You cannot un-record what they recorded. You can make the recording worthless.
 | Initiate / Confirm rotation | TT&C console, COMSEC card | Key badge PENDING, then **VALID** |
 | Resend PLD-STATUS | TT&C console | **ACK received** under Q2b |
 
-Rotation retires the traffic they hold. It costs two minutes of a nine-minute window. Zeroize would cost the key, the unit and the evidence, for a key that was never in anyone else's hands - only in their recorder.
+Rotation retires the traffic they hold. The rotation takes seconds on the console; the cost is the pause before PLD-STATUS goes out under the new key. Zeroize would cost the key, the unit and the evidence, for a key that was never in anyone else's hands - only in their recorder.
 
 <Aside type="note">
 **Zeroize is for physical compromise.** It clears the unit, and the unit is where the log lives. If Q2 is zeroized - in the window or afterwards on principle - the KG-01 line that names the source is gone, and tomorrow's attribution report has a gap where the command link should be.
@@ -88,7 +88,7 @@ Rotation retires the traffic they hold. It costs two minutes of a nine-minute wi
 
 ## What to Keep
 
-The retired key is out of service and harmless in the store. The KG-01 log is the only record anywhere of where the frames came from and when. Both go under seal for CSIRT, exactly as they read. Export the unit log to the incident record on any counter reject; do not tidy it.
+The retired key is out of service and harmless in the store. The KG-01 log is the only record anywhere of where the frames came from and when. Both go under seal for CSIRT, exactly as they read. Request the unit log export to the incident record on any counter reject (the order is the decision you record; the Security console only flags); do not tidy it.
 
 ## COMSEC Incident Record CI-2027-0421-GW01
 
