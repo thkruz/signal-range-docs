@@ -53,6 +53,9 @@ export default defineConfig({
   // enables KV-backed sessions and adds a SESSION KV binding that
   // `wrangler deploy` would auto-provision.
   session: false,
+  redirects: {
+    '/checklists/5-0-gpsdo-power-on': '/equipment/gps-disciplined-oscillator/',
+  },
   vite: {
     plugins: [satteriWorkerdShim],
   },
@@ -143,11 +146,6 @@ export default defineConfig({
           slug: 'campaign-1/scenario-8'
         }
       ]
-      // }, {
-      //   label: 'Checklists',
-      //   autogenerate: {
-      //     directory: 'checklists'
-      //   }
     }, {
       collapsed: true,
       label: 'Campaign 2: NATS Europe',
@@ -345,10 +343,6 @@ export default defineConfig({
         }
       ]
       }]
-      },
-      {
-        label: 'Checklists',
-        items: [{ autogenerate: { directory: 'checklists' } }],
       },
       {
       label: 'Contributing',
