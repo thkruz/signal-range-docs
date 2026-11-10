@@ -1,0 +1,96 @@
+---
+title: 'Scenario 11 - A Contact Through Space'
+description: 'Plan and work a simulated amateur satellite pass: prepare both radio paths, follow Doppler, and exchange a grid locator through the satellite'
+lastUpdated: 2026-11-09
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+**Session:** Sunday evening, Riley's backyard
+
+**Station:** Handheld on UHF transmit, USB SDR on VHF receive, hand-held directional antenna
+
+**Operator:** You (KF0SRT)
+
+**Riley (KD0RLY):** Holding the pass card and a flashlight
+
+---
+
+## Note on the Pass Card
+
+> The satellite is only above us for a few minutes. Connect both paths and find
+> its downlink before we transmit anything.
+>
+> Listen first. If you can't hear yourself coming back, stop transmitting.
+>
+> — Riley
+
+---
+
+## Kit
+
+| Item | Class | Notes |
+|------|-------|-------|
+| Antenna | Directional dual-band antenna | Pointed by hand |
+| Transmit radio | 5 W dual-band FM handheld | UHF uplink |
+| Receive path | USB SDR and laptop | VHF downlink, with isolation from the transmitter |
+| Audio | Headphones | Avoid speaker feedback |
+| Power | Battery | |
+| Data | Pass information | Current authored orbital elements |
+
+A two-radio arrangement is an acceptable alternative. Two devices on one
+antenna do not by themselves give full-duplex operation; the transmitter can
+desensitize the receiver unless isolation is provided.
+
+---
+
+## CUBEHOP Fixtures (fictional training satellite)
+
+| Item | Value |
+|------|-------|
+| Uplink (U) | 435.900 MHz |
+| Downlink (V) | 145.900 MHz nominal |
+| Access tone | 67.0 Hz |
+| Mode | FM cross-band repeater |
+| Doppler | Generated from the pass; both frequencies drift |
+| Contact target | A second operator through the satellite, with grid locator |
+| Pass table | Rise direction, usable interval and maximum elevation on the pass card |
+
+The satellite, its transponder and the other operators are simulation fixtures.
+
+---
+
+## Privileges Relied On
+
+| Rule | Use here |
+|------|----------|
+| 47 CFR 97.301(e) | Technician privileges include 420-450 MHz (uplink) and 144-148 MHz (downlink) |
+| 47 CFR 97.305 | FM is authorized on both bands |
+| 47 CFR 97.207 | Space station operation and its sub-bands |
+| 47 CFR 97.313(a) | Use the minimum power necessary |
+| 47 CFR 97.119 | Identify during the pass and at the end |
+
+<Aside type="note">
+Hearing your own voice back through the satellite is not a two-person contact.
+A weaker signal does not always mean a broken cable; check pointing,
+polarization and frequency drift first.
+</Aside>
+
+---
+
+## Pass Checklist
+
+- [ ] Pass card read: rise direction, usable interval, bands, mode
+- [ ] Both radio paths connected with isolation, headphones on
+- [ ] Antenna pointed until the downlink is audible, receive only at first
+- [ ] Downlink retuned through the pass for Doppler, manual before automatic
+- [ ] Uplink power and tone set modestly while monitoring the downlink
+- [ ] Call sign and grid locator exchanged with another station; time left for others
+- [ ] Fading causes told apart: rotation, polarization, frequency drift, obstruction
+
+---
+
+## End of Briefing
+
+The window is short and the pass will not wait. Be ready on the downlink before
+you press the transmit button.

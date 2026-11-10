@@ -1,131 +1,89 @@
 ---
-title: 'Scenario 5 - The Noise Bump'
-description: 'Look for GPS and find only noise, then watch someone lie to your clock'
-lastUpdated: 2026-10-06
+title: 'Scenario 5 - Build the Better Antenna'
+description: 'Calculate, site, assemble and tune a 2 m dipole, match its polarization and check the exposure plan'
+lastUpdated: 2026-11-09
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 
-**Session:** Monday, 16:00 UTC
+**Session:** Saturday morning, Riley's backyard and workbench
 
-**Station:** BKYD-GPS — patch antenna on a paint-stick mast
+**Station:** Dipole kit on the picnic table, mounting fixture at the fence
 
-**Operator:** You
+**Operator:** You (KF0SRT)
 
-**Riley:** Here, in experiment mode
+**Riley (KD0RLY):** Holding the end of the tape measure
 
 ---
 
-## Riley's Note
+## Note on the Tape Measure
 
-> New toy. Ten-dollar GPS patch antenna on a paint stick, pointed straight up,
-> because tonight is not about catching a pass — the GPS constellation is
-> always up there. NAVSTAR-77 is nearly at zenith right now and stays high all
-> evening.
+> We've got enough material for a simple dipole. Work out its length and
+> choose a safe place before we start building.
 >
-> Tonight is about a signal you will not see at all. A GPS satellite puts
-> about 27 dBW toward the ground, and from twenty thousand kilometers that
-> arrives at your antenna around **−128 to −130 dBm** — spread across two
-> megahertz, that puts it *below your own noise floor*. Below. It is quieter than
-> the static. Point the patch at it and the waterfall shows noise. Just noise.
->
-> And yet every phone on earth uses it. Work out how before you look at the
-> waterfall — I'll quiz you.
+> Cut long and trim in small steps. You can't glue it back.
 >
 > — Riley
 
 ---
 
-## Tonight's Sky
+## Kit
 
-| Satellite | Type | Elevation |
-|-----------|------|-----------|
-| NAVSTAR-77 | GPS Block III, MEO | 89° at start, still 62° an hour later |
-
-MEO birds don't rise and set on your timescale. There is no pass to catch and
-no rotator to fly. The signal is simply *there*, all evening.
+| Item | Class | Notes |
+|------|-------|-------|
+| Antenna | Adjustable 2 m dipole kit | Elements are deliberately long at the start |
+| Mount | Mounting fixture at the fence | Plus alternate sites on the site diagram |
+| Feed line | Short low-loss coax | Strain relief supplied |
+| Analyzer | Antenna analyzer | Sweeps a frequency range, receive-only test, no transmitting |
+| Tools | Tape measure, exposure worksheet, site diagram | |
 
 ---
 
-## Link Reference
+## Antenna Fixtures
 
-| Signal | Frequency | Bandwidth | Modulation |
-|--------|-----------|-----------|------------|
-| NAVSTAR-77 L1 | 1575.42 MHz | **2.046 MHz** | Spread spectrum |
+| Item | Value |
+|------|-------|
+| Target frequency | 146.550 MHz (inside the 144-148 MHz band) |
+| Length approximation | Total length in meters = 143 / f (MHz), a starting estimate only |
+| Reference station | Vertically polarized |
+| Site hazards on the diagram | Overhead service wire, unstable mounting, occupied antenna space |
+| Exposure worksheet inputs | Power, antenna gain, frequency, duty cycle, distance, public or controlled area |
 
-### The Rig, Configured Wide
+The formula's result is the total length, not the length of each side.
 
-| Setting | Value | Why |
-|---------|-------|-----|
-| Spectrum span | 8 MHz | All two megahertz of L1 in view, with floor on both sides |
-| IF filter | 5 MHz | Wide enough to pass a 2 MHz signal |
-| Modem channel | 2.5 MHz, BPSK 1/2 | Deliberately mismatched — see below |
+All stations here are simulation fixtures.
+
+---
+
+## Privileges Relied On
+
+| Rule | Use here |
+|------|----------|
+| 47 CFR 97.301(e) | Technician privileges include 144-148 MHz |
+| 47 CFR 97.305 | FM is authorized in the part of the band used here |
+| 47 CFR 97.13(c) | Stations must be evaluated for RF exposure where the rules require it |
 
 <Aside type="caution">
-This receiver will **never** show GPS and will **never** say LOCKED on it,
-and that is not a fault. A spread-spectrum signal is smeared across two
-megahertz by a code your demodulator does not have. Without the code, the
-signal genuinely *is* noise: its power sits several decibels under the floor,
-so the trace stays flat — no stripe, no bump. A GPS receiver correlates
-against the code and gets back about 43 dB of processing gain; that is the
-only reason it works.
-
-The flip side is a rule worth keeping: on L1, real satellites never stand
-above the floor. Anything you *can* see there did not come from orbit.
+No tower climbing and no work near overhead wires. Adjust the elements with the
+analyzer connected and the transmitter off. An acceptable match reading says
+nothing about exposure compliance, and it is only part of the evidence for
+antenna performance.
 </Aside>
 
 ---
 
-## Timing on This Station
+## Build Checklist
 
-The rig's reference is GPS-disciplined. The console's **SOURCE** section
-reports it:
-
-| Readout | Meaning |
-|---------|---------|
-| `REF` | Clock source — `GPS · n SATS`, `HOLDOVER`, or `ACQUIRING` |
-| `CLK ΔT` | Accumulated timing offset, microseconds |
-| `HOLD` / `GPS` button | Switches the reference between disciplined and free-running |
-
-**Holdover** means the oven-controlled oscillator free-runs on its own
-stability and ignores GPS entirely. It drifts slowly — but it drifts
-*honestly*, which tonight may be the more valuable property.
-
----
-
-## Failure Signatures Worth Knowing
-
-| Symptom | Satellite count | Timing offset | Diagnosis |
-|---------|----------------|---------------|-----------|
-| Antenna disconnected | Drops to 0 | Freezes, then drifts | Outage |
-| Sky obstructed | Drops | Degrades | Obstruction |
-| **Healthy count, offset walking steadily** | **Unchanged** | **Growing** | **Something is lying** |
-
-A real GPS failure takes satellites *away* from you. It is loud and obvious.
-The dangerous case is the one where every indicator stays green and the
-numbers quietly stop being true.
-
----
-
-## Tonight's Work
-
-- [ ] Look for L1 on the waterfall with NAVSTAR-77 overhead — and find only noise
-- [ ] Understand why a signal you cannot see still runs every GPS fix around you
-- [ ] Watch the SOURCE panel through the evening
-- [ ] If the clock starts walking while the satellite count stays healthy,
-      decide what to do about it — and do it
-- [ ] Come back to GPS only when you can point at evidence that it's safe
+- [ ] Starting length calculated from the formula
+- [ ] Site rejected or accepted against the hazards on the diagram
+- [ ] Elements cut slightly long, feed line connected, strain relief fitted
+- [ ] Sweep read; both elements shortened by equal small amounts
+- [ ] Orientation compared with the vertically polarized reference
+- [ ] Worksheet filled in and installation checked against it
+- [ ] Before-and-after reports saved as the baseline
 
 ---
 
 ## End of Briefing
 
-Everything with a clock in it trusts GPS: the power grid, financial
-timestamps, cell networks, and the little oscillator in this radio. It's a
-timing signal broadcast from twenty thousand kilometers up, at less power than
-a lightbulb, with **no authentication of any kind**.
-
-Nothing in the signal proves who sent it. The only things a liar can't fake
-are the physics: how strong it should be, how wide, and how it should move.
-
-Watch the numbers tonight.
+Keep the readings. Later sessions compare against the numbers you save today.

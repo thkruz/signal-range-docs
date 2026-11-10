@@ -1,0 +1,89 @@
+---
+title: 'Scenario 9 - Send the Message'
+description: 'Connect a laptop to a radio through an audio and PTT interface, decode a packet, and send a message that the far station acknowledges'
+lastUpdated: 2026-11-09
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+**Session:** Saturday afternoon, Riley's shack
+
+**Station:** FM mobile radio, laptop and a USB audio/PTT interface
+
+**Operator:** You (KF0SRT)
+
+**Riley (KD0RLY):** Reading the packet window over your shoulder
+
+---
+
+## Note on the Interface
+
+> The radio can hear the packets, but the computer isn't decoding them. Follow
+> the audio connection before changing anything at the antenna.
+>
+> A programming cable is not an audio interface. Don't let anyone talk you
+> into using one as the other.
+>
+> — Riley
+
+---
+
+## Kit
+
+| Item | Class | Notes |
+|------|-------|-------|
+| Radio | Dual-band FM mobile | Healthy RF path from earlier sessions |
+| Interface | USB audio and PTT interface class | Radio lead verified compatible with this radio |
+| Computer | Laptop with packet software | Sound input, sound output and PTT settings |
+| Remote station | KD0RLY (fictional), training channel | Acknowledges addressed packets |
+
+---
+
+## Digital Fixtures
+
+| Item | Value |
+|------|-------|
+| Training channel | 145.570 MHz FM, simulation fixture |
+| Your call sign | KF0SRT |
+| Destination | KD0RLY |
+| Path | WIDE1-1 |
+| Message | Short text supplied on the exercise card |
+| Starting state | Wrong computer input device selected |
+
+<Aside type="caution">
+Computer notification sounds go out the same output device as the packet audio.
+Silence them before transmit. Audio drive that is too high distorts the packet
+and defeats decoding. Encoding a message is not secrecy, and an Internet
+connection does not grant transmit privileges.
+</Aside>
+
+---
+
+## Privileges Relied On
+
+| Rule | Use here |
+|------|----------|
+| 47 CFR 97.301(e) | Technician privileges include 144-148 MHz |
+| 47 CFR 97.305 | Data emissions are authorized on the part of the band used here |
+| 47 CFR 97.309 | Digital codes must be publicly documented |
+| 47 CFR 97.113(a)(4) | No message may be encoded to obscure its meaning |
+| 47 CFR 97.119 | Station identification applies to digital transmissions |
+
+---
+
+## Setup Checklist
+
+- [ ] Receive audio, transmit audio and PTT traced between computer, interface and radio
+- [ ] Interface input selected as the receive device; reference packet decoded
+- [ ] Transmit level in the indicated clean range, correct output device, notifications silenced
+- [ ] Call sign, destination and path entered
+- [ ] Message sent and the acknowledgment from the far station received
+- [ ] Lost-frame behavior observed and understood
+- [ ] Position reports, linked voice, Winlink and mesh told apart on the reference page
+
+---
+
+## End of Briefing
+
+The packet window saying "sent" proves nothing about the far end. Wait for the
+acknowledgment.

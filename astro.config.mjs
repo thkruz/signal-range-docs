@@ -268,36 +268,52 @@ export default defineConfig({
       label: 'Campaign 3: Backyard Operator',
       items: [
         {
-          label: 'Scenario 1 - First Light',
+          label: 'Scenario 1 - The First Signal',
           slug: 'campaign-3/scenario-1'
         },
         {
-          label: 'Scenario 2 - The Slippery Bird',
+          label: 'Scenario 2 - Power on the Bench',
           slug: 'campaign-3/scenario-2'
         },
         {
-          label: 'Scenario 3 - Wrong-Handed',
+          label: 'Scenario 3 - Your First Contact',
           slug: 'campaign-3/scenario-3'
         },
         {
-          label: 'Scenario 4 - Set and Forget',
+          label: 'Scenario 4 - I Can Hear Them',
           slug: 'campaign-3/scenario-4'
         },
         {
-          label: 'Scenario 5 - The Noise Bump',
+          label: 'Scenario 5 - Build the Better Antenna',
           slug: 'campaign-3/scenario-5'
         },
         {
-          label: 'Scenario 6 - The Network Wants Vermont',
+          label: 'Scenario 6 - Where Did the Watts Go?',
           slug: 'campaign-3/scenario-6'
         },
         {
-          label: 'Scenario 7 - Margin Call',
+          label: 'Scenario 7 - It Only Fails When I Transmit',
           slug: 'campaign-3/scenario-7'
         },
         {
-          label: 'Scenario 8 - Callsign',
+          label: 'Scenario 8 - Noise in the Shack',
           slug: 'campaign-3/scenario-8'
+        },
+        {
+          label: 'Scenario 9 - Send the Message',
+          slug: 'campaign-3/scenario-9'
+        },
+        {
+          label: 'Scenario 10 - Beyond the Local Horizon',
+          slug: 'campaign-3/scenario-10'
+        },
+        {
+          label: 'Scenario 11 - A Contact Through Space',
+          slug: 'campaign-3/scenario-11'
+        },
+        {
+          label: 'Scenario 12 - Your Station, Your Call',
+          slug: 'campaign-3/scenario-12'
         }
       ]
     }, {
