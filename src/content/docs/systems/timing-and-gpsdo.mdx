@@ -1,0 +1,67 @@
+---
+title: Timing and GPSDO
+description: How the GPS disciplined oscillator warms up, locks, coasts in holdover and passes its frequency error to every converter downstream.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 6
+---
+
+Every converter in the RF chain takes its frequency from one 10 MHz reference. The GPS disciplined oscillator (GPSDO) provides it. Whatever error the reference has, the BUC and LNB local oscillators carry it, scaled up by their own frequency. This page explains the states the reference moves through and how a timing problem turns into a frequency problem on the link.
+
+![GPSDO holdover after switching GNSS Input off, showing elapsed holdover time and accumulated timing error. This is a stand-in capture taken with the GNSS switch off, not a scenario-staged outage.](/images/shots/systems/timing-and-gpsdo.webp)
+
+## The four conditions
+
+| Condition | When | Frequency error |
+|---|---|---|
+| Off | Power is off | None. Downstream converters run on their own free oscillators |
+| Free-running | Warming up, or powered with no lock yet | Large, and improving as the oven settles |
+| Locked | Warm, GNSS present, switch up | A few parts in 10^12 |
+| Holdover | Was locked, then lost GNSS | About 46 parts in 10^11, plus slow ageing |
+
+**Warm-up.** Powering on starts a warm-up of about ten minutes while the oven heats toward 70 degC. The readouts start poor and improve. The unit will not lock until warm-up ends, and it needs a GNSS signal to lock after that. The warm-up clock is equipment time, so it does not move during a pass skip. See [Scenario Clock and Time Skip](/systems/scenario-clock-and-time-skip/).
+
+**Lock.** When warm and receiving GNSS, the unit locks and the oscillator is disciplined to GPS time. UTC accuracy reads about 30 ns. After you flip the GNSS switch up, expect about five seconds of acquisition before the satellite count returns.
+
+**Holdover.** Without GNSS the oscillator keeps running on its own. It coasts at a fixed offset, which grows slowly with ageing. The timing error accumulates from zero. At the modelled rate it reaches about 1.7 microseconds per hour and hits the 40 microsecond specification limit after about a day. The holdover alarm appears as soon as holdover begins, and a second alarm appears when the error passes 30 microseconds. UTC accuracy reads 0, because without GNSS the unit has no absolute time.
+
+Two causes put the unit in holdover, and they look different. Flip the GNSS switch down and you did it. If a scenario drops the GNSS signal with the switch still up, the satellite count reads zero and you are in holdover through no action of yours. When the signal returns, the unit re-locks and the error resets.
+
+## How timing errors show up downstream
+
+A reference error becomes a frequency error on every converter locked to it. The frequency error is the fractional error times the LO frequency. For a 13.1 GHz LO:
+
+- Locked, at a few parts in 10^12, the error is a few hundredths of a hertz.
+- In holdover, at about 4.6 parts in 10^10, the error is about 6 Hz.
+
+That is small next to carrier bandwidths. It shows up as a slow shift of the received carrier in the spectrum, or as a receiver working a little harder to hold lock. It matters more on narrow carriers and long passes. A converter with no reference at all runs on its own oscillator, which wanders by tens of ppm and shows up as a much larger offset. If a carrier you tuned correctly lands in the wrong place, check the reference first.
+
+The 1PPS timing error matters to anything that depends on time, such as geolocation. See [Geolocation tab](/mission-control/geolocation/).
+
+## GNSS spoofing
+
+A scenario can also spoof GNSS. The tell is different from an outage. The satellite count stays healthy while the timing solution walks off the reference, which shows as a growing difference between GNSS and reference time. A locked unit that still trusts GNSS follows the spoof and drags its own frequency with it. The remedy is to stop trusting GNSS and force the unit to run on its oscillator until the all-clear.
+
+## What to watch
+
+- Lock status and the holdover badge on the GPS Timing tab.
+- Satellites tracked. Zero while locked means an outage. A healthy count with a growing time difference means a spoof.
+- Frequency accuracy, in parts in 10^11. Compare it with the locked and holdover values above.
+- The holdover timing error, against its 40 microsecond limit.
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Never locks | Warm-up not finished, GNSS switch down, or no signal | Wait out warm-up and raise the GNSS switch |
+| Holdover with GNSS switch up | External outage | Wait for the signal. Log the outage start and end |
+| Carrier sits a few Hz off | Reference in holdover | Retune, or wait for lock |
+| Satellites healthy but time walks | Spoofing | Force holdover and stop trusting GNSS |
+
+## Related pages
+
+- [GPS Timing tab](/mission-control/gps-timing/)
+- [GPS Disciplined Oscillator](/equipment/gps-disciplined-oscillator/)
+- [Block Upconverter](/equipment/block-upconverter/)
+- [Low Noise Block Downconverter](/equipment/low-noise-block-downconverter/)
+- [Faults](/systems/faults/)

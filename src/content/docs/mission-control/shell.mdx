@@ -1,0 +1,146 @@
+---
+title: Mission Control Shell
+description: The frame around every Mission Control tab - asset tree, command bar, tab bar, Contact Timeline, alarms and the skip controls.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 1
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+The shell is the part of Mission Control that stays put while you move between tabs. The asset tree on the left picks what you are looking at. The command bar across the top shows the mission clock, alarms and the skip controls. The tab bar shows the pages for the selected asset. The Contact Timeline along the bottom shows when satellites will be in view.
+
+![Mission Control shell: global command bar, asset tree, tab bar and Contact Timeline.](/images/shots/mission-control/shell.webp)
+
+## Asset tree
+
+The Assets panel on the left lists everything you can select. Click an item to change the tabs and the page on the right.
+
+![Asset tree listing ground stations and satellites.](/images/shots/mission-control/shell-asset-tree.webp)
+
+| Item | What it does | Typical value |
+| --- | --- | --- |
+| Mission Overview | Opens the overview of every station and satellite in the scenario. | varies |
+| Mission Brief | Opens the read-ahead for the scenario in a movable window. Only shown when the scenario has a brief. | varies |
+| Checklist | Opens the objective list in a movable window. It refreshes as you complete objectives. | varies |
+| Working Doc, Campaign Record, Dialog History, Ops Log | Each opens the matching reference window. | varies |
+| Ground Stations | One entry per station. Selecting one shows that station's tabs. | varies |
+| Satellites | One entry per satellite, or a tree when the scenario has a constellation. Selecting one shows the satellite tabs. | varies |
+| Collapse button (top of the panel) | Folds the panel to icons so the work area is wider. | Expanded |
+
+The Mission section (Checklist, Dialog History, Ops Log and Working Doc) shows for any scenario that has objectives, even when it has no Mission Brief.
+
+An item can be locked while a scenario step needs your attention elsewhere. On a collapsed panel, hover a locked item to see why.
+
+## Command bar
+
+The command bar runs across the top of the page.
+
+![Global command bar with the mission clock, skip controls and the alarm summary.](/images/shots/mission-control/shell-command-bar.webp)
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| Station name | Shows the facility you are working at. | varies |
+| Scenario line | Shows the scenario number and title. | varies |
+| Pause | Opens the pause menu and stops the scenario clock. The Escape key does the same. | Off |
+| Skip | Moves the scenario clock forward to the next satellite contact. Present only in scenarios that allow time skip. See "Skipping time" below. | varies |
+| Skip to (time) or Skip (minutes) | Appears while a timed wait is running. It jumps to the end of the wait. The mission clock is held during the wait, so skipping and waiting score the same. | varies |
+| Loadout | Sandbox scenarios only. Opens the equipment loadout. | varies |
+| Mission clock | Shows the scenario time in UTC. Hover for the day of the week. Some scenarios show the same instant in a military date-time format. | varies |
+| Alarm summary | Shows the number of errors, warnings and info alarms, and the top alarm. Click it to open the full list. | No active alarms |
+| Alarm mute | Silences alarm tones. Alarms stay visible. | Tones on |
+| Objective and scenario timers | Appear on the right when an objective or the scenario has a time limit. A HOLD tag shows while the scenario clock is held. | Hidden |
+
+<Aside type="note">
+The mission clock is the scenario clock, not your computer's clock. It can run faster than real time and it jumps when you skip.
+</Aside>
+
+## Alarms
+
+Click the alarm summary to open the Active alarms panel. It lists every active alarm for every station, most severe first. Each entry shows the station, the equipment and the message, with a detail line when there is one.
+
+![Active alarms panel opened from the command bar.](/images/shots/mission-control/shell-alarms.webp)
+
+| Severity | Meaning |
+| --- | --- |
+| Error | Something has failed or the link is lost. Fix it before you continue. |
+| Warning | A limit is near or margin is low. The link still works. |
+| Info | A fact you should know. No action is needed. |
+
+Close the panel with the Close button, the Escape key, or a click outside it. When nothing is active the bar reads "No active alarms".
+
+## Tab bar
+
+The tab bar shows the pages for the selected asset. A ground station has Dashboard, one ACU Control tab for each antenna, RX Analysis, TX Chain and GPS Timing. Other tabs, such as Pass Schedule, Link Analysis, TT&C, Telemetry and Security, appear only when the scenario uses them. A greyed-out tab belongs to a station that is offline. In scenarios with a physical plant, the tent control sits at the right end of the tab header on every tab, and the scenario opens on the Site tab. See [Site](/mission-control/site/).
+
+## Contact Timeline
+
+The Contact Timeline is the strip along the bottom. It shows when each satellite is above the horizon.
+
+![Contact Timeline along the bottom of Mission Control.](/images/shots/mission-control/shell-timeline.webp)
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| 2H, 6H, 24H | Sets how far ahead the timeline looks. | varies |
+| Collapse arrow | Folds the strip away. | Open |
+| Coloured block | One pass. The number inside is its highest elevation in degrees. Hover for AOS, LOS, maximum elevation and length. | varies |
+| Playhead | The vertical line that marks the current scenario time. | n/a |
+| Eclipse shading | Marks the part of a row where the satellite is in Earth's shadow. | n/a |
+
+Block colour grades the pass by its highest elevation:
+
+| Colour | Highest elevation |
+| --- | --- |
+| Good | 40 degrees or more |
+| Average | 15 degrees up to 40 |
+| Marginal | under 15 degrees |
+
+When a scenario has a large constellation, the timeline adds one summary lane per group. It shows how many members are above the horizon at once.
+
+## Skipping time
+
+Some scenarios let you skip the quiet time between passes. The Skip button is in the command bar only when the scenario allows it.
+
+<Steps>
+1. Look at the Skip button. It reads "Skip" followed by the wait, such as "Skip 14m", when a pass is coming. In some scenarios it reads "Skip to AOS".
+2. Click Skip. The Skip Ahead window opens. It shows the satellite and its maximum elevation, the AOS time, where the clock will stop, and how much scenario time will pass.
+3. Read the window. If the loaded COMSEC key expires during the skip, a warning says so. Rotate the key before you command.
+4. Click Skip Ahead (or Skip to AOS). Cancel has the focus when the window opens, so Enter does not skip by accident.
+5. An overlay shows the advancing clock and a progress bar until the clock stops.
+</Steps>
+
+![Skip Ahead window showing the next contact and where the clock will stop.](/images/shots/mission-control/shell-time-skip.webp)
+
+The clock stops at AOS, or a short time before it. You still point the antenna and set up the chain yourself. Skipped time counts toward your shift, and everything scheduled during it still happens.
+
+### Why Skip is greyed out
+
+Hover over the button to see the reason.
+
+| Message | Cause | Fix |
+| --- | --- | --- |
+| Scenario clock is paused | The pause menu or a brief is open. | Resume the scenario. |
+| (Satellite) is in view - work the pass | A satellite is above the horizon. | Finish the pass. |
+| A timed objective is running | An objective timer is counting. | Finish the objective, or use the timed-wait Skip button if one appears. |
+| Skip already running | A skip is in progress. | Wait for it to end. |
+| No upcoming contact to skip to | No contact is predicted. | Wait, or use a timed-wait Skip button if one appears. |
+| Next contact (satellite) in (time), too close to skip | The pass is nearly here. | Wait for it. |
+| Pass missed: skip to next (satellite) pass | You missed a pass. | Click Skip to go to the next one. |
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| No Skip button | The scenario does not allow time skip. | Wait the time out, or look for a timed-wait Skip button. |
+| A tab is missing | The scenario does not use that equipment or tab. | Check the Mission Brief for what the scenario provides. |
+| A tab is greyed out | The station is offline. | Bring the station online, or select another station. |
+| The timeline shows no blocks | No orbital satellites are in the scenario, or the horizon is too short. | Switch to 6H or 24H. |
+| Alarm tones stopped | Alarm mute is on. | Click the mute button again. The panel still lists alarms. |
+
+## Related pages
+
+- [Dashboard](/mission-control/dashboard/)
+- [Mission Overview](/mission-control/mission-overview/)
+- [Pass Schedule](/mission-control/pass-schedule/)
+- [Scenario clock and time skip](/systems/scenario-clock-and-time-skip/)
+- [Faults](/systems/faults/)

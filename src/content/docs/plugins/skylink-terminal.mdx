@@ -1,0 +1,141 @@
+---
+title: SkyLink Terminal
+description: The consumer-style app on field stations that shows what a satellite terminal reports about itself.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 2
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+SkyLink is the app that comes with a consumer satellite terminal. The plugin adds it as a station
+tab named **SkyLink** on field stations, such as the posts in the Frontline campaign. It shows
+what the dish says about itself: status, speeds, outages and a sky map. It does not show the real
+cause of a fault. Use it as one clue and confirm with your own measurements.
+
+![The SkyLink app home screen on a field station.](/images/shots/plugins/skylink-terminal.webp)
+
+## When the app is available
+
+The app talks to the dish over the router. What you see depends on the link between them.
+
+| What you see | Meaning |
+| --- | --- |
+| **Cannot connect** | The router is off, still booting, or the laptop is not on it. The app shows nothing else. |
+| **Can't reach your SkyLink** | The router is fine but the dish is off, still booting, or the cable is cut. You see the last data it sent, with a "Last updated" time. |
+| Normal screens | The dish answers. |
+
+## Screens
+
+Use the **SkyLink menu** to move between screens.
+
+### Home
+
+| Item | What it shows |
+| --- | --- |
+| **Status** | One word: Online, Searching, Booting, Offline or Sleeping. |
+| **Alerts** | Active alerts, or "No active alerts." |
+| **Download**, **Upload** | Current speed in Mbps. |
+| **Latency** | Round trip in ms. |
+| **Uptime** | Time since the last start. |
+
+### Obstructions
+
+A sky map with north at the top. It fills in over time as the dish follows satellites.
+
+*   **Clear sky**, **Blocked sky** and **Not seen yet** are the three cell colours.
+*   **Blocked** and **Sky seen** give the percentages.
+*   **Check for obstructions** starts a 15 minute check. Let time run. **Stop check** ends it early.
+*   **Reset map** deletes the map after you confirm. The dish starts a new one.
+
+### Statistics
+
+Pick a **Time range** of 15 minutes, 6 hours or 12 hours. The app plots **Download**, **Upload**,
+**Latency** and **Ping drop**. An **Outages** table lists each outage with **Started**,
+**Duration** and **Cause**.
+
+### Speed test
+
+**Start speed test** runs for about 25 seconds. The result shows **Download**, **Upload**,
+**Latency** and **Limited by**. Limited by reads SkyLink when the dish set the speed, or Local
+network when the router Wi-Fi did. Earlier tests are listed below.
+
+### Settings
+
+| Setting | What it does |
+| --- | --- |
+| **Restart SkyLink** | Restarts the dish after you confirm. No service until it has started, which can take several minutes. |
+| **Snow melt** | **Automatic** heats only when snow is on the dish. **Pre-heat** also heats when it is cold. **Off** never heats. The heater uses extra power. |
+| **Power save** | **Use a sleep schedule** with **Sleep from** and **Wake at** times. The dish has no service while it sleeps. |
+| **Wi-Fi** | Network name and a password of at least 8 characters. |
+
+Settings are not available while the dish cannot be reached.
+
+### Advanced
+
+Read-only debug data for support: **Software version**, **Uptime**, **Boot count**, **Location**
+(Valid or Not valid), **GNSS satellites**, **Active alerts**, **Tilt / boresight** and
+**Obstruction**. **Copy debug data** puts it on the clipboard.
+
+## Common tasks
+
+### Check whether the dish is blocked
+
+<Steps>
+
+1. Open **Obstructions**.
+2. Press **Check for obstructions** and let time run for the 15 minutes shown.
+3. Read **Blocked**. Blocked cells show where trees, a net or a building cut the view.
+
+</Steps>
+
+### Tell a slow dish from a slow network
+
+<Steps>
+
+1. Open **Speed test** and press **Start speed test**.
+2. Wait for the result.
+3. Read **Limited by**. Local network means the router, not the dish, is the limit.
+
+</Steps>
+
+### Read the outage history
+
+<Steps>
+
+1. Open **Statistics** and choose a **Time range**.
+2. Read the **Outages** table.
+3. Compare the **Cause** with what you measure at the station.
+
+</Steps>
+
+## Status and what it means
+
+The cause labels are deliberately vague. Several real faults share one label.
+
+| Label | What the dish could observe | Real causes that look like this |
+| --- | --- | --- |
+| **Obstructed** | A blocked field of view. | Snow, a net, a tree line. |
+| **Searching** | Dish is up but not locked. | A normal beam handover, no position fix, a link that will not register. |
+| **Booting** | The dish restarted. | A cut cable, a power sag, a restart by the user, a power loss. |
+| **Thermal shutdown** | The dish shut itself down hot. | Overheating. |
+| **Offline** | The network refuses the terminal. | Account or provider problem. Shown with "Network unavailable". |
+
+Alerts: **Obstructed**, **Thermal throttle**, **Thermal shutdown** and **Heating**.
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| Cannot connect | Router off or laptop not on it. | Power the router and join the laptop to it. |
+| Can't reach your SkyLink | Dish off, booting, or cable path broken. | Check power and the dish cable. Wait out the boot. |
+| Searching for a long time | No position fix, or no registration. | Check **Location** and **GNSS satellites** on **Advanced**. |
+| Booting repeats | A cable or supply fault. | Inspect the cable and connectors, then the supply. |
+| Map is empty | It needs time to fill. | Let time run. |
+| Settings unavailable | The dish cannot be reached. | Restore the link first. |
+
+## Related pages
+
+*   [Plugins overview](/plugins/)
+*   [Phased Array](/plugins/phased-array/)
+*   [Constellation Sandbox](/plugins/constellation-sandbox/)

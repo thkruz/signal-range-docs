@@ -1,0 +1,98 @@
+---
+title: Scenario Clock and Time Skip
+description: How scenario time differs from run time, when the clock pauses, and the rules for skipping dead time between passes.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 7
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+SignalRange runs on one clock with two readings. Knowing which reading a mechanic uses explains why the sky stops while a briefing is open, why some equipment keeps warming up, and why a time skip moves some things and not others.
+
+![Command bar with the mission clock, Pause button and the Skip control, with time skip enabled in the scenario.](/images/shots/systems/scenario-clock-and-time-skip.webp)
+
+## Scenario time and run time
+
+| Reading | Advances | Used by |
+|---|---|---|
+| Run time | Every moment the simulation is running | Equipment: antenna motion, AGC, lock delays, GPSDO warm-up and holdover |
+| Scenario time | Run time, minus every pause, plus every skip | Orbits, the UTC display, pass predictions, scheduled events, weather, interference, faults, countdowns and scoring time |
+
+The simulation advances in fixed steps, so a run plays out the same way at any frame rate.
+
+Scenario time pauses while:
+
+- the mission brief is on screen
+- a quiz or decision prompt is open
+- the mission has failed
+- the game menu is open
+- the browser tab is hidden
+
+While a brief or quiz is open, run time keeps going. You can still work the rack, and equipment keeps settling. A hidden tab stops both readings.
+
+The practical result is that scheduled events do not drift against the sky. A rain event set for 25 minutes in starts 25 minutes of scenario time in, however long you spent reading the brief. The mission clock in the command bar shows scenario time.
+
+## Time skip
+
+Many low-orbit scenarios leave long stretches of empty sky before the pass the lesson is about. A scenario can opt in to time skip. When it does, the command bar shows a Skip control. A scenario that does not opt in shows none.
+
+Time skip is a fast-forward and not a jump. The clock runs at several hundred times normal speed for a short animation, about 2.5 seconds by default, and the whole simulation steps through the interval. Orbits propagate, and events and objectives are evaluated along the way. Nothing scheduled in the gap is missed.
+
+### Pass skip
+
+The pass skip runs to a point shortly before the next pass starts. The defaults are:
+
+- It stops 120 seconds before the satellite rises, so you still point the antenna and tune the receiver. A scenario may set the lead to zero, which stops at the start of the pass.
+- It is not offered for waits shorter than 300 seconds, because short waits are part of the job.
+- It looks ahead 12 hours for the next pass.
+
+A confirmation window shows the contact, its maximum elevation, the rise time, where the clock will stop and how long the skip covers. If the loaded crypto key would expire during the skip, the window warns you to rotate it before you command.
+
+### Blocked skips
+
+The Skip control is unavailable, with the reason shown, when:
+
+- a skip is already running
+- the scenario clock is paused
+- a satellite is already in view, because you should be working that pass
+- a timed objective is running
+
+If the next contact is too close to be worth skipping, the bar says how far away it is and that it is too close to skip.
+
+### Objective skip
+
+Some objectives wait on something real, such as a crew maintenance window, a rain cell or a fixed standby. Those can offer their own skip, labelled with the length or the clock time it ends at. It differs from the pass skip in four ways:
+
+- It runs to the end of the wait and stops as soon as the objective completes.
+- It advances run time as well as scenario time, because the station sat through the wait. Warm-up, lock delays and ice buildup all progress.
+- It is allowed even with a timed hold running or a satellite overhead, because the wait it skips is the objective's own. Another objective's timer blocks it.
+- It can be used once per objective, and the Ops Log records it.
+
+The mission countdown is held during the wait, so waiting and skipping score the same.
+
+### Recovering from a missed pass
+
+If you miss a pass an active objective needed, the bar can offer a skip to that satellite's next pass, searching up to 24 hours ahead.
+
+<Aside type="caution">
+A pass skip moves scenario time only. Equipment that runs on run time does not catch up. A GPSDO powered on before the skip is still warming up when it ends, and an ice-covered feed has not melted. Power equipment on early and let it settle before you skip.
+</Aside>
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| No Skip control | The scenario does not use time skip | Wait the interval out |
+| Skip greyed out | A satellite is in view, a timed objective is running, or the clock is paused | Read the reason in the control and clear it |
+| Skip stops before the pass | Lead time of 120 seconds | Acquire the satellite normally |
+| Equipment still warming after a skip | Pass skips do not advance run time | Let it finish warming before the next pass |
+| Key expired after a skip | The skip crossed the key's validity | Rotate the key before commanding |
+
+## Related pages
+
+- [Shell tab](/mission-control/shell/)
+- [Pass Schedule tab](/mission-control/pass-schedule/)
+- [Timing and GPSDO](/systems/timing-and-gpsdo/)
+- [Weather and Rain Fade](/systems/weather-and-rain-fade/)
+- [Faults](/systems/faults/)

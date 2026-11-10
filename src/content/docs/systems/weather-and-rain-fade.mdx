@@ -1,0 +1,70 @@
+---
+title: Weather and Rain Fade
+description: How rain, ice, wind and sun transit are modelled at a ground station and how they appear as lost C/N and alarms.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 2
+---
+
+Scenarios schedule weather events at a station. Each event has a type, a severity, a start time and a duration. The simulation turns an event into physical effects on the station's antennas, and those effects flow through the same link budget as everything else. You do not see a weather map. You see C/N fall, alarms appear, and a margin you worked out earlier stop being true.
+
+![Link Analysis tab while rain fade reduces the Galway link margin.](/images/shots/systems/weather-and-rain-fade.webp)
+
+## Event types
+
+| Type | What it does |
+|---|---|
+| Rain | Attenuates the signal and raises sky noise. Depends on frequency and antenna elevation |
+| Storm | Rain one step heavier than its severity, plus wind |
+| Ice, snow and hail | Builds up on the feed over minutes. The feed heater melts it |
+| Wind | Pushes the dish off boresight, which costs pointing loss |
+| Sun transit | The Sun crosses the antenna beam and raises noise |
+
+Hail builds ice on the feed like ice and snow. Other types, such as fog, exist in the scenario format; their effect is whatever the scenario authors for them.
+
+## Rain fade
+
+Rain absorbs and scatters signal. The loss grows steeply with frequency. At C-band it is a few tenths of a dB even in heavy rain, and most of the C/N cost comes from the extra sky noise the rain layer adds. At Ku-band it is large: 25 mm/h at 12 GHz costs about 4 dB at 30 degrees elevation and about 8 dB at 10 degrees. Low elevation means a longer path through the rain.
+
+Rain rate follows the event. When the scenario does not name a rate, severity sets it: minor 4, moderate 12, severe 30 and extreme 50 mm/h. The rate ramps up and down over the first and last part of the event, capped at five minutes each way, so a fade builds and clears like a front instead of switching on.
+
+The operator sees it in three places.
+
+- The live C/N on the receiver and on the Link Analysis tab falls, and the live margin falls with it.
+- The antenna raises a RAIN FADE alarm once the loss reaches 0.5 dB. It is a warning from 2 dB and an error from 6 dB.
+- The Active alarms panel in the command bar lists it with the station and antenna.
+
+You cannot clear rain. The skill is to anticipate it, check your margin against it, and decide whether to ride it out, wait or log it.
+
+## Ice on the feed
+
+Ice and snow add loss at the feed, up to a ceiling set by severity: 2 dB for minor, 5 dB for moderate and 10 dB for severe. Buildup is exponential, with a time constant of 40, 20 and 12 minutes. Most of the loss arrives in the first half hour. The ICE ON FEED alarm shows the current loss and turns to an error at 5 dB.
+
+The feed heater is the operator's control. Turned on, it melts ice at 1 dB per minute. A scenario can set a storm that loads ice faster than the heater melts it. The heater then holds the loss below the ceiling and does not clear it. Turned off during an ice event, buildup resumes from whatever ice is already on the feed.
+
+## Wind
+
+Wind follows the same ramp as rain. Default speeds are 8, 14 and 22 m/s for minor, moderate and severe wind events, and a little more for a storm. Each antenna turns wind speed into a pointing error using its own sensitivity. Some antennas have no wind sensitivity set and ignore it. Others lose gain as the pointing error grows.
+
+## Sun transit
+
+When the Sun sits behind the satellite, it pours noise into the beam. The effect rises and falls smoothly over the event and peaks in the middle by the amount the scenario sets. The carrier keeps its power and the noise climbs, so C/N falls. A SUN TRANSIT alarm shows the added sky noise. There is no operator fix. Anticipate it, ride through it and document it.
+
+## Time skip and weather
+
+An objective-anchored time skip fast-forwards weather along with the clock, so ice builds and rain ends in step. See [Scenario Clock and Time Skip](/systems/scenario-clock-and-time-skip/).
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| C/N drops with no alarm | Loss is under 0.5 dB, or the cause is not weather | Check pointing and interference before blaming weather |
+| ICE ON FEED stays after the storm ends | Heater is off | Turn the feed heater on. Melt rate is 1 dB per minute |
+| Margin passed on the worksheet but fails live | The worksheet is clear-sky | Read the live margin during the event |
+
+## Related pages
+
+- [Link Budget](/systems/link-budget/)
+- [Link Budget tab](/mission-control/link-budget/)
+- [Dashboard](/mission-control/dashboard/)
+- [Antenna Control Unit](/equipment/antenna-control-unit/)

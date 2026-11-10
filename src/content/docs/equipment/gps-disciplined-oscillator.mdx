@@ -1,7 +1,9 @@
 ---
 title: GPS Disciplined Oscillator
-description: A beginner's guide to using the GPS Disciplined Oscillator in SignalRange
-lastUpdated: 2026-10-06
+description: How to power the GPSDO, watch its warm-up and lock, and read holdover when GPS is lost.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 12
 ---
 
 import { Steps } from '@astrojs/starlight/components';
@@ -11,36 +13,42 @@ The GPSDO (GPS Disciplined Oscillator) is the frequency reference heart of your 
 
 The GPSDO works by disciplining (controlling) a high-quality oven-controlled crystal oscillator (OCXO) using GPS satellite timing signals. GPS satellites carry atomic clocks accurate to nanoseconds, and by comparing the local oscillator to GPS time, the GPSDO achieves frequency accuracy better than 1 part per billion - far beyond what any free-running crystal could achieve.
 
-### Key controls
+![GPS Timing tab showing the GPSDO lock and power status, GNSS constellation, oven control and reference quality cards.](/images/shots/equipment/gps-disciplined-oscillator.webp)
 
-*   **POWER** - enables or disables the GPSDO. When powered on, the unit begins a warmup sequence (typically 10 minutes) where the oven heats the crystal to its stable operating temperature (~70°C). During warmup, frequency accuracy is poor and gradually improves. Once warmed up and GPS-locked, the reference is ready for use.
-*   **GNSS** - a switch to enable or disable GPS satellite reception. When up (enabled), the GPSDO attempts to acquire GPS signals and lock. When down (disabled), the unit enters "holdover mode" where it maintains accuracy using only the OCXO, with gradual degradation over time. Use GNSS disable only for testing or troubleshooting - normal operation requires GPS lock.
+## Where to find it
 
-### Readouts you will see
+The GPSDO is on the **GPS Timing** tab of Mission Control. The tab is split into cards: Lock & Power Status, GNSS Constellation, OCXO Oven Control, 10 MHz Distribution, Reference Quality Metrics and Holdover Performance. See [GPS Timing](/mission-control/gps-timing/) and [Timing and the GPSDO](/systems/timing-and-gpsdo/).
 
-*   **FREQ ACCURACY (×10⁻¹¹)** - fractional frequency error in parts per 100 billion. Lower is better. The readouts follow the unit's condition and do not jitter. When GPS-locked and warmed up, expect about 0.2 ×10⁻¹¹ (2 parts per trillion). For reference, 0.2 ×10⁻¹¹ at 10 MHz means the frequency is accurate to within 0.00002 Hz - incredibly precise. In holdover it reads about 46 ×10⁻¹¹ (plus any ageing), and during warmup it is much larger and improving.
-*   **STABILITY (×10⁻¹¹)** - short-term stability measured by Allan deviation at 1 second. This indicates how much the frequency varies over short time periods. Lower is better. It is the oscillator's own property, so once warmed up it reads 1.0 ×10⁻¹¹ whether GPS-locked or in holdover.
-*   **PHASE NOISE (dBc/Hz)** - phase noise at 10 Hz offset from the carrier, measured in dBc/Hz (decibels relative to carrier per Hz bandwidth). More negative is better (less noise). Once warmed up it is the oven oscillator's own -127 dBc/Hz (excellent), GPS-locked or in holdover. During warmup it starts at -80 dBc/Hz (poor) and improves as the oven settles.
-*   **SATELLITES** - number of GPS satellites currently being tracked. Minimum 4 satellites required for 3D position fix and accurate timing. Typical range: 4–12. More satellites generally means better accuracy and reliability. If satellite count drops below 4, timing accuracy degrades and lock may be lost.
-*   **UTC (ns)** - UTC (Coordinated Universal Time) accuracy in nanoseconds. This measures how accurately the GPSDO knows the absolute time. GPS-locked: about 30 ns (excellent for timing applications). When GPS is lost, UTC accuracy becomes meaningless (displays 0) - the oscillator maintains frequency but has no absolute time reference.
-*   **TEMP (°C)** - oven temperature in degrees Celsius. The OCXO uses an oven to maintain the crystal at a precise temperature (~70°C) regardless of ambient conditions. This thermal stability is critical for frequency stability. Normal range: 65–75°C. Outside this range indicates oven malfunction.
-*   **WARMUP** - time remaining until the oven reaches stable operating temperature. Displays as MM:SS countdown during warmup, "READY" when complete. Warmup typically takes 10 minutes from cold start. During this time, frequency specs are degraded and the unit should not be used as a reference.
-*   **OUTPUTS** - number of active 10 MHz outputs versus total available (e.g., "2/5" means 2 of 5 outputs are currently in use). The GPSDO distributes its reference to multiple pieces of equipment. Each output is buffered and impedance-matched.
-*   **HOLDOVER (μs)** - accumulated timing error in microseconds since entering holdover mode. When GPS is lost, the GPSDO maintains accuracy using only the OCXO, which slowly drifts. Specification: \<40 μs over 24 hours. Color-coded: green when GPS-locked (0 μs), yellow in holdover (\<30 μs), red when approaching limit (\>30 μs).
+## Controls
 
-### LED indicators
+| Control | What it does | Typical value |
+|---|---|---|
+| Power | Powers the GPSDO. It then begins a warm-up of about 10 minutes while the oven heats the crystal to about 70 degrees C. Accuracy is poor and improves during warm-up. | On |
+| GNSS Input | Enables or disables GPS reception. With it off the unit enters holdover and runs on the oven oscillator alone, drifting slowly. | On |
 
-*   **LOCK** - overall system lock status.
-    *   **Green** - GPS-locked, warmed up, frequency reference stable and accurate.
-    *   **Amber** - acquiring lock. GPS signals present, attempting to lock.
-    *   **Red** - not locked. Either no GPS, still warming up, or in holdover with degraded accuracy.
-*   **GNSS** - GPS/GNSS satellite reception status.
-    *   **Green** - good satellite reception (4+ satellites tracked).
-    *   **Amber** - marginal reception (\<4 satellites). Lock unstable or degraded.
-    *   **Red** - no GPS signal. Check antenna, cable, or sky visibility.
-*   **WARM** - warmup status of the oven-controlled oscillator.
-    *   **Green** - warmup complete, oven at operating temperature (70°C).
-    *   **Amber** - warming up. Wait until green before using as reference.
+Two things put the unit in holdover. Switching GNSS Input off is one. The other is a GNSS outage staged by the scenario while the switch stays on: GNSS Signal reads NO SIGNAL, Satellites Tracked drops to 0, Holdover reads ACTIVE, and Lock Status still reads LOCKED. When the signal returns, the unit re-locks and the holdover error resets to zero.
+
+## Readouts
+
+| Card | Readout | What it shows |
+|---|---|---|
+| Lock & Power Status | Lock Status | LOCKED once warmed up with GNSS good. It stays LOCKED during an external GNSS outage, so read Holdover too. |
+| Lock & Power Status | GNSS Signal | The GPS signal state: a satellite count such as 9 SATS when good, WEAK, ACQUIRING or NO SIGNAL. |
+| Lock & Power Status | Warmup | A MM:SS countdown, then READY. Do not use the unit as a reference before READY. |
+| Lock & Power Status | Holdover | INACTIVE while disciplined; ACTIVE after the switch goes off or GNSS drops out. |
+| GNSS Constellation | Satellites Tracked | Typical range 4 to 12. Fewer than 4 degrades timing and can lose lock. |
+| GNSS Constellation | Constellation | The satellite system in use. |
+| GNSS Constellation | UTC Accuracy | About 30 ns when locked. It is meaningless when GPS is lost. |
+| OCXO Oven Control | Oven Temperature | About 70 degrees C. The normal range is 65 to 75. |
+| OCXO Oven Control | Operating Hours | Run time of the unit. |
+| 10 MHz Distribution | Active Outputs | Outputs in use out of the total. Each is buffered. |
+| Reference Quality Metrics | Frequency Accuracy | Fractional error in units of 10 to the minus 11. About 0.2 when locked and warm, about 46 in holdover, larger during warm-up. Lower is better. |
+| Reference Quality Metrics | Allan Deviation (1s) | Short-term stability. 1.0 once warm, locked or not. |
+| Reference Quality Metrics | Phase Noise @ 10Hz | -127 dBc/Hz once warm, starting at -80 during warm-up. More negative is better. |
+| Reference Quality Metrics | Lock Duration | How long the unit has held lock. |
+| Holdover Performance | Status, Duration, Error, Time to Limit | Accumulated timing error in microseconds since GPS was lost. The specification is under 40 microseconds in 24 hours; the alarm threshold is 30. |
+
+## How it works
 
 ### What is GPS disciplining and why does it matter?
 
@@ -56,23 +64,23 @@ Crystal oscillators are temperature-sensitive - their frequency changes with tem
 
 When you first power on the GPSDO, the oven is cold (room temperature, ~25°C). It takes approximately 10 minutes to heat up to operating temperature. During this warmup period:
 
-*   The WARM LED is amber, showing warmup in progress
+*   The Warmup is counting down, showing warmup in progress
 *   The WARMUP display counts down minutes:seconds remaining
 *   Frequency accuracy is poor (about 10 parts per billion at first) and gradually improves
-*   The LOCK LED is red - the unit cannot achieve GPS lock while warming up
+*   The Lock Status reads UNLOCKED - the unit cannot achieve GPS lock while warming up
 *   Temperature reading climbs from ~25°C toward 70°C
 
-Once warmup completes (WARMUP shows "READY", WARM LED is green), the oven has reached thermal equilibrium and frequency stability is achieved. Only then can the GPS disciplining loop lock and provide the specified accuracy.
+Once warmup completes (Warmup shows "READY", Warmup reads READY), the oven has reached thermal equilibrium and frequency stability is achieved. Only then can the GPS disciplining loop lock and provide the specified accuracy.
 
-**Important:** Do not use the GPSDO as a reference during warmup. Wait until WARM LED is green and LOCK LED is green before connecting downstream equipment or transmitting.
+**Important:** Do not use the GPSDO as a reference during warmup. Wait until Warmup reads READY and Lock Status is LOCKED before connecting downstream equipment or transmitting.
 
 ### Holdover mode - maintaining accuracy when GPS is lost
 
-Holdover is the ability to maintain frequency accuracy for some time after losing GPS signal. When the GNSS switch is disabled or GPS reception is lost (antenna disconnected, jammed, indoors, etc.), the GPSDO enters holdover mode:
+Holdover is the ability to maintain frequency accuracy for some time after losing GPS signal. When the GNSS Input is disabled or GPS reception is lost (antenna disconnected, jammed, indoors, etc.), the GPSDO enters holdover mode:
 
-*   The GNSS LED turns red (no GPS signals)
+*   The GNSS Signal reads NO SIGNAL (no GPS signals)
 *   The GPSDO continues operating using only the OCXO
-*   The frequency settles at a small constant offset, about 4.6 ×10⁻¹⁰ (FREQ ACCURACY reads about 46 ×10⁻¹¹), plus any configured crystal ageing
+*   The frequency settles at a small constant offset, about 4.6 ×10⁻¹⁰ (Frequency Accuracy reads about 46 ×10⁻¹¹), plus any configured crystal ageing
 *   That offset builds up a time error of ~1.67 μs per hour
 *   Specification: \<40 μs drift over 24 hours
 
@@ -80,7 +88,7 @@ During holdover, the 10 MHz frequency remains very stable (the OCXO is still tem
 
 ### GNSS spoofing
 
-A GPSDO trusts the GNSS time it receives. A spoofer that walks that time away from the truth at X μs per second steers the disciplined frequency off by X parts per million for as long as the GPSDO keeps trusting GNSS, and every LO locked to it moves with it: 1 μs/s is 7 kHz at 7 GHz. The LOCK LED can stay green the whole time; the clues are a FREQ ACCURACY far above its usual 0.2 ×10⁻¹¹ and a UTC reading that keeps growing.
+A GPSDO trusts the GNSS time it receives. A spoofer that walks that time away from the truth at X μs per second steers the disciplined frequency off by X parts per million for as long as the GPSDO keeps trusting GNSS, and every LO locked to it moves with it: 1 μs/s is 7 kHz at 7 GHz. The Lock Status can stay LOCKED the whole time; the clues are a Frequency Accuracy far above its usual 0.2 ×10⁻¹¹ and a UTC reading that keeps growing.
 
 The HOLDOVER readout shows accumulated error. When it exceeds 30 μs, an alarm is raised. At 40 μs (24 hours), the holdover specification is exceeded and frequency accuracy may no longer meet requirements for satellite communications.
 
@@ -105,37 +113,39 @@ Phase noise represents random phase fluctuations in the oscillator output. These
 
 The GPSDO's phase noise specification (-127 dBc/Hz at 10 Hz offset once warmed up) is excellent and ensures that the reference contributes negligible phase noise to the overall system. For comparison, a typical free-running crystal might have -90 to -100 dBc/Hz, and a low-cost oscillator might be -70 to -80 dBc/Hz.
 
-### Alarms and warning conditions
+## Status and alarms
 
 The system will raise alarms for several conditions:
 
-*   **GPSDO not locked** - Warmup is complete but GPS lock has not been achieved. Check GNSS switch is enabled, antenna is connected, and GPS reception is adequate (4+ satellites). Verify no RF interference or jamming.
-*   **GNSS signal lost** - GPS reception has failed. Check antenna cable connection, verify antenna has clear sky view (not obstructed by buildings, trees, or indoors), and ensure GNSS switch is enabled. If indoors, you may need an external antenna with cable to a window or roof.
+*   **GPSDO not locked** - Warmup is complete but GPS lock has not been achieved. Check GNSS Input is on, antenna is connected, and GPS reception is adequate (4+ satellites). Verify no RF interference or jamming.
+*   **GNSS signal lost** - GPS reception has failed. Check antenna cable connection, verify antenna has clear sky view (not obstructed by buildings, trees, or indoors), and ensure GNSS Input is on. If indoors, you may need an external antenna with cable to a window or roof.
 *   **GPSDO in holdover (X μs error)** - GPS is lost and the unit is operating in holdover mode. Accuracy is degrading. Shows accumulated holdover error. Restore GPS reception to exit holdover and re-lock.
 *   **GPSDO holdover approaching limit (>30 μs)** - Holdover error exceeds 30 μs. The 24-hour specification (40 μs) is approaching. Frequency accuracy is marginal. GPS must be restored immediately or frequency reference will become unreliable.
 *   **GPSDO oven temperature out of range (X °C)** - Oven temperature is outside the normal 65–75°C range. This indicates oven control malfunction. Frequency stability is compromised. Power cycle the unit; if alarm persists, hardware service is required.
 *   **GPSDO self-test failed** - Internal diagnostics detected a fault. The reference may not be trustworthy. Power cycle and retry. If failure persists, contact technical support - the unit may require calibration or repair.
 
-### Simple troubleshooting steps
+## Troubleshooting
 
-1.  **LOCK LED is red, WARM LED is amber** - Unit is still warming up. This is normal on power-on. Wait 10 minutes for warmup to complete (WARMUP shows "READY", WARM LED turns green). Then GPS lock will be attempted.
-2.  **LOCK LED is red, WARM LED is green, GNSS LED is red** - Warmup complete but no GPS signal. Check GNSS switch is enabled (up position). Verify GPS antenna is connected and has clear sky view. If indoors, GPS reception is usually impossible - move antenna to window or outside.
-3.  **LOCK LED is amber (acquiring lock)** - GPS signals present, attempting to lock. This can take 30 seconds to several minutes depending on satellite geometry and signal strength. Wait for LOCK LED to turn green. If stuck in acquiring for >5 minutes, power cycle the GPSDO.
-4.  **GNSS LED is amber (low satellite count)** - Fewer than 4 satellites tracked. GPS lock is marginal or impossible. Improve antenna location for better sky visibility. Ensure antenna has unobstructed view of horizon in all directions. Nearby buildings or terrain can block satellites.
-5.  **HOLDOVER error is increasing** - GPS reception was lost and the unit is in holdover mode. Check GNSS switch (should be up/enabled). Inspect antenna cable for damage or disconnection. Verify antenna has not been moved or blocked. Once GPS is restored, holdover error will reset to 0 and the unit will re-lock.
-6.  **Frequency accuracy is poor despite green LEDs** - A locked GPSDO reads about 0.2 ×10⁻¹¹. If all LEDs are green but the accuracy is far higher and the UTC reading keeps growing, the GPSDO is faithfully following GNSS timing that is wrong: suspect spoofing (see *GNSS spoofing* above), and remember that every LO locked to the reference is moving too. Report it before trusting the reference.
-7.  **Downstream equipment (BUC, LNB) won't lock to reference** - Verify GPSDO is powered, warmed up (WARM LED green), and locked (LOCK LED green). Check 10 MHz output cables are connected and not damaged. Confirm OUTPUTS readout shows the expected number of active outputs. Verify downstream equipment is powered and configured to lock to external reference.
+1.  **Lock Status is UNLOCKED, Warmup is counting down** - Unit is still warming up. This is normal on power-on. Wait 10 minutes for warmup to complete (Warmup shows "READY", Warmup reads READY). Then GPS lock will be attempted.
+2.  **Lock Status is UNLOCKED, Warmup reads READY, GNSS Signal is NO SIGNAL** - Warmup complete but no GPS signal. Check GNSS Input is on (up position). Verify GPS antenna is connected and has clear sky view. If indoors, GPS reception is usually impossible - move antenna to window or outside.
+3.  **Lock Status is ACQUIRING** - GPS signals present, attempting to lock. This can take 30 seconds to several minutes depending on satellite geometry and signal strength. Wait for LOCK status to turn green. If stuck in acquiring for >5 minutes, power cycle the GPSDO.
+4.  **GNSS Signal is WEAK (low satellite count)** - Fewer than 4 satellites tracked. GPS lock is marginal or impossible. Improve antenna location for better sky visibility. Ensure antenna has unobstructed view of horizon in all directions. Nearby buildings or terrain can block satellites.
+5.  **HOLDOVER error is increasing** - GPS reception was lost and the unit is in holdover mode. Check GNSS Input (should be up/enabled). Inspect antenna cable for damage or disconnection. Verify antenna has not been moved or blocked. Once GPS is restored, holdover error will reset to 0 and the unit will re-lock. If GNSS Input is already up and Satellites Tracked reads 0, the outage is external. Wait for the signal and log the start and end times.
+6.  **Frequency accuracy is poor despite a LOCKED status** - A locked GPSDO reads about 0.2 ×10⁻¹¹. If Lock Status is LOCKED but the accuracy is far higher and the UTC reading keeps growing, the GPSDO is faithfully following GNSS timing that is wrong: suspect spoofing (see *GNSS spoofing* above), and remember that every LO locked to the reference is moving too. Report it before trusting the reference.
+7.  **Downstream equipment (BUC, LNB) won't lock to reference** - Verify GPSDO is powered, warmed up (Warmup reads READY), and locked (Lock Status is LOCKED). Check 10 MHz output cables are connected and not damaged. Confirm OUTPUTS readout shows the expected number of active outputs. Verify downstream equipment is powered and configured to lock to external reference.
 
-### Short examples
+## Examples
 
-*   **Example A - Normal operation:** Power ON, GNSS enabled, LOCK LED = Green, GNSS LED = Green, WARM LED = Green, Freq Accuracy = 0.2 ×10⁻¹¹, Stability = 1.0 ×10⁻¹¹, Phase Noise = -127.0 dBc/Hz, Satellites = 9, UTC = 30 ns, Temp = 70.1°C, Warmup = READY, Outputs = 2/5, Holdover = 0.000 μs (green). GPSDO is fully operational with excellent performance. Ready to provide reference to all equipment.
-*   **Example B - Just powered on (warmup):** Power ON, LOCK LED = Red, GNSS LED = Red, WARM LED = Amber, Freq Accuracy = 447 ×10⁻¹¹, Stability = 30 ×10⁻¹¹, Phase Noise = -92.3 dBc/Hz, Satellites = 0, Temp = 32.4°C, Warmup = 7:23 (7 min 23 sec remaining). Oven is heating, GPS receiver not yet active. All specs are poor during warmup. Wait for WARMUP to reach "READY" before using.
-*   **Example C - Warmup complete, acquiring GPS lock:** Power ON, LOCK LED = Amber, GNSS LED = Green, WARM LED = Green, Satellites = 6, Temp = 70.0°C, Warmup = READY. Oven is at operating temperature, GPS satellites are being tracked, disciplining loop is converging to lock. Expect LOCK LED to turn green within 1–2 minutes.
-*   **Example D - In holdover (GPS lost):** Power ON, GNSS disabled, LOCK LED = Red, GNSS LED = Red, WARM LED = Green, Freq Accuracy = 46 ×10⁻¹¹, Stability = 1.0 ×10⁻¹¹, Phase Noise = -127.0 dBc/Hz, Satellites = 0, UTC = 0 ns, Temp = 70.0°C, Holdover = 12.3 μs (yellow). GPS reception lost (GNSS switch disabled or antenna problem). Operating on OCXO alone. The frequency is off by a small, steady 4.6 ×10⁻¹⁰, and the time error that offset builds keeps accumulating (~12 μs, about 7 hours of holdover). Enable GNSS and restore GPS reception to exit holdover.
+*   **Example A - Normal operation:** Power ON, GNSS enabled, Lock Status = LOCKED, GNSS Signal = 9 SATS, Warmup = READY, Freq Accuracy = 0.2 ×10⁻¹¹, Stability = 1.0 ×10⁻¹¹, Phase Noise = -127.0 dBc/Hz, Satellites = 9, UTC = 30 ns, Temp = 70.1°C, Warmup = READY, Outputs = 2/5, Holdover = 0.000 μs (green). GPSDO is fully operational with excellent performance. Ready to provide reference to all equipment.
+*   **Example B - Just powered on (warmup):** Power ON, Lock Status = UNLOCKED, GNSS Signal = NO SIGNAL, Warmup = counting down, Freq Accuracy = 447 ×10⁻¹¹, Stability = 30 ×10⁻¹¹, Phase Noise = -92.3 dBc/Hz, Satellites = 0, Temp = 32.4°C, Warmup = 7:23 (7 min 23 sec remaining). Oven is heating, GPS receiver not yet active. All specs are poor during warmup. Wait for WARMUP to reach "READY" before using.
+*   **Example C - Warmup complete, acquiring GPS lock:** Power ON, Lock Status = ACQUIRING, GNSS Signal = 6 SATS, Warmup = READY, Satellites = 6, Temp = 70.0°C, Warmup = READY. Oven is at operating temperature, GPS satellites are being tracked, disciplining loop is converging to lock. Expect LOCK status to turn green within 1–2 minutes.
+*   **Example D - In holdover (GPS lost):** Power ON, GNSS disabled, Lock Status = UNLOCKED, GNSS Signal = NO SIGNAL, Warmup = READY, Freq Accuracy = 46 ×10⁻¹¹, Stability = 1.0 ×10⁻¹¹, Phase Noise = -127.0 dBc/Hz, Satellites = 0, UTC = 0 ns, Temp = 70.0°C, Holdover = 12.3 μs (yellow). GPS reception lost (GNSS Input disabled or antenna problem). Operating on OCXO alone. The frequency is off by a small, steady 4.6 ×10⁻¹⁰, and the time error that offset builds keeps accumulating (~12 μs, about 7 hours of holdover). Enable GNSS and restore GPS reception to exit holdover.
 *   **Example E - Holdover approaching limit:** Holdover = 34.8 μs (red), alarm raised. Unit has been in holdover for ~20 hours. Approaching 24-hour spec (40 μs). Frequency accuracy is degraded but still usable. GPS must be restored immediately - beyond 40 μs, reference is out of specification and may cause frequency errors in satellite links.
-*   **Example F - GPS antenna problem:** Power ON, GNSS enabled, LOCK LED = Red, GNSS LED = Amber, WARM LED = Green, Satellites = 2, Temp = 70.0°C, Warmup = READY. Oven warmed up, GPS receiver active, but only 2 satellites tracked (need 4 minimum). GPS lock cannot be achieved. Likely causes: antenna has poor sky view (obstructed), antenna cable damaged, or antenna is indoors. Relocate antenna for better visibility or check cable.
+*   **Example F - GPS antenna problem:** Power ON, GNSS enabled, Lock Status = UNLOCKED, GNSS Signal = WEAK, Warmup = READY, Satellites = 2, Temp = 70.0°C, Warmup = READY. Oven warmed up, GPS receiver active, but only 2 satellites tracked (need 4 minimum). GPS lock cannot be achieved. Likely causes: antenna has poor sky view (obstructed), antenna cable damaged, or antenna is indoors. Relocate antenna for better visibility or check cable.
 
-### Advanced: How GPS disciplining works (PLL control)
+## Advanced
+
+### How GPS disciplining works (PLL control)
 
 The GPS disciplining circuit is a phase-locked loop (PLL) that compares the local 10 MHz oscillator to GPS time signals. GPS satellites transmit a precise 1PPS (one pulse per second) timing signal synchronized to atomic clocks. The GPSDO's receiver generates a local 1PPS derived from the 10 MHz oscillator (by dividing 10,000,000 Hz by 10,000,000 to get 1 Hz).
 
@@ -148,7 +158,7 @@ The PLL generates a control voltage that adjusts the oscillator's frequency to b
 
 Once locked, the PLL continuously monitors and corrects for any drift, aging, or temperature effects, keeping the oscillator accurate to GPS even as conditions change.
 
-### Advanced: Why 10 MHz and not other frequencies?
+### Why 10 MHz and not other frequencies?
 
 10 MHz is a standard reference frequency in RF and test equipment for several reasons:
 
@@ -159,7 +169,7 @@ Once locked, the PLL continuously monitors and corrects for any drift, aging, or
 
 Your BUC, LNB, and modems all have internal PLLs that lock to this 10 MHz reference and multiply it up to the gigahertz frequencies used for satellite communications, maintaining the same fractional accuracy as the reference.
 
-### Final notes
+## Final notes
 
 The GPSDO is arguably the most critical single component in a professional satellite ground station. Without a stable, accurate frequency reference, every downstream system suffers: transmitted signals are off-frequency (missing the transponder or interfering with others), received signals cannot be properly tuned, and modulation quality degrades.
 
@@ -168,7 +178,7 @@ Best practices for GPSDO operation:
 *   Install GPS antenna with clear view of the sky (ideally rooftop, minimum window location)
 *   Use quality low-loss coaxial cable for GPS antenna (LMR-400 or better, keep runs short)
 *   Allow full 10-minute warmup after power-on before using the reference
-*   Verify LOCK LED is green before transmitting or operating other equipment
+*   Verify Lock Status is LOCKED before transmitting or operating other equipment
 *   Monitor satellite count - if it drops below 6, investigate antenna positioning
 *   Never operate in holdover mode for more than a few hours - it's emergency backup only
 *   Keep the GPSDO powered continuously (24/7 operation) to avoid repeated warmup cycles

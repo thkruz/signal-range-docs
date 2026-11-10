@@ -1,0 +1,82 @@
+---
+title: Contact Plan
+description: Assign each upcoming satellite contact to a ground station and clear all conflicts.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 10
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+The Contact Plan tab (heading: Ground Network Contact Plan) is where you give each upcoming contact to one station in the network. A contact is a satellite pass that needs a ground station. Two contacts on the same station with overlapping times are a conflict. Important contacts must not be left without a station.
+
+The tab appears only in scenarios that use multi-station planning.
+
+![Contact Plan tab with the contact allocation table and deconfliction panel.](/images/shots/mission-control/contact-schedule.webp)
+
+## Controls
+
+### Contact Allocation table
+
+| Column | What it shows | Typical value |
+| --- | --- | --- |
+| Contact | Name of the contact. | varies |
+| NORAD | Catalog number of the satellite. | varies |
+| PRI | Priority, written P1, P2 and so on. A lower number is more important. | varies |
+| PLAN WINDOW (UTC) | Start and end of the contact for planning. | varies |
+| Site | A drop-down to pick the station, or Unallocated. | Unallocated at the start |
+
+Plan windows use only the part of each pass above the planning elevation. They start later and end earlier than the first and last signal on the [Pass Schedule](/mission-control/pass-schedule/) tab.
+
+## Readouts
+
+### Deconfliction panel
+
+| Item | Meaning |
+| --- | --- |
+| Plan badge | The overall state of the plan. |
+| Required note | Which priorities must be allocated. For example, "All P2 and higher-priority contacts must be allocated." If the scenario sets no limit, every contact must be allocated. |
+| Unallocated (required) | Count of required contacts that still have no station. |
+| Conflicts | Count of overlapping contact pairs on the same station. Each is listed as two contacts and the station. |
+
+### Plan badge
+
+| Badge | Meaning |
+| --- | --- |
+| UNALLOCATED | At least one required contact has no station. |
+| CONFLICT | Two contacts overlap on the same station. |
+| DECONFLICTED | No conflicts, and every required contact has a station. |
+
+The plan is valid only when it reads DECONFLICTED.
+
+## Common tasks
+
+### Build a plan
+
+<Steps>
+
+1. Read the contacts in the table, starting with the lowest PRI numbers.
+2. For each contact, open the Site drop-down and choose a station.
+3. Check the Conflicts count and list. A line such as "Contact A x Contact B on Station" names the pair.
+4. Resolve each conflict by moving one of the pair to a different station.
+5. Allocate any required contacts still counted under Unallocated (required).
+6. Confirm the badge reads DECONFLICTED.
+
+</Steps>
+
+Choose Unallocated in a drop-down to take a contact back off a station.
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| Badge stays UNALLOCATED. | A required contact has no station. | Read the Unallocated (required) count and fill the remaining rows. |
+| Badge shows CONFLICT. | Two plan windows overlap on one station. | Move one contact of the pair to another station. |
+| A low-priority contact is unallocated and the plan is still fine. | Only contacts at or above the required priority must be allocated. | Check the required note. |
+| Windows differ from the Pass Schedule. | Plan windows are trimmed to the planning elevation. | Use Contact Plan times for the plan and Pass Schedule times for tracking. |
+
+## Related pages
+
+- [Pass Schedule](/mission-control/pass-schedule/) shows the full signal window of each pass.
+- [Ground Track](/mission-control/ground-track/) shows where stations and satellites are.
+- [TT&C Commanding](/mission-control/commanding/) is where you work a contact once it starts.

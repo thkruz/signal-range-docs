@@ -1,0 +1,117 @@
+---
+title: TT&C Commanding
+description: Send commands to the satellite, manage the COMSEC key, and read the ACK and NAK history.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 11
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+The TT&C tab (heading: TT&C Commanding) is where you send telemetry, tracking and command messages up to the satellite. A command is accepted only when four things are right at once. Uplink Doppler compensation is on. The COMSEC key is valid. The command window is open. The carrier is not jammed. The tab shows each of these and a history of every command you sent.
+
+It appears only in scenarios that include commanding. The heading shows the satellite being commanded.
+
+![TT&C commanding tab with command uplink, COMSEC and command stack panels.](/images/shots/mission-control/commanding.webp)
+
+## Controls
+
+### Command Uplink panel
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| Uplink Doppler Compensation | Switch. Corrects the uplink frequency for the satellite's motion so it can hear you. | On before sending |
+| Command window | The span of mission time in which commands are allowed. Reads Unrestricted if there is no limit. | varies |
+| Window status | OPEN or CLOSED, based on the current mission time. | OPEN |
+
+### COMSEC panel
+
+COMSEC is the encryption key that authenticates your commands.
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| Key status | VALID, PENDING ROTATION or ZEROIZED, with a status light. | VALID |
+| Key ID | Identifier of the current key. | varies |
+| Initiate Key Rotation | Starts a scheduled key change. The key becomes PENDING ROTATION. | not applicable |
+| Confirm Key Rotation | Finishes the change. The key returns to VALID. | not applicable |
+| Arm zeroize switch | Safety switch. ZEROIZE KEY stays disabled until this is on. | Off |
+| ZEROIZE KEY | Emergency destruction of the key. All later commands are refused until the key is replaced. | Do not press unless ordered |
+
+<Aside type="caution">
+Zeroize cannot be undone from this tab. Rotation buttons stop working after it.
+</Aside>
+
+### Command Stack panel
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| Command rows with XMIT | One row per prepared command. XMIT sends it. | varies |
+| Ranging tone with TONE | Appears when the scenario needs ranging. Sends a tone and records a range. The row counts measurements against the number needed and shows the last range in km. | varies |
+| Manual mnemonic with XMIT | Type a command name and send it. | varies |
+
+## Readouts
+
+### Command History
+
+A table of every command sent, with columns #, Mnemonic, Status and Detail.
+
+| Status | Meaning |
+| --- | --- |
+| ACK | The satellite accepted the command. If it was a ranging tone, the detail shows the range. |
+| NAK | The satellite refused the command. The Detail column says why. |
+| QUEUED | The command is waiting. |
+
+## How it works
+
+### Why a command is refused
+
+Checks run in this order and the first failure is reported.
+
+| Detail text | Cause | Fix |
+| --- | --- | --- |
+| Refused - satellite is not operated (observed member) | You do not operate this satellite. | Command only satellites you operate. |
+| Uplink not compensated | Doppler compensation is off. | Switch on Uplink Doppler Compensation. |
+| COMSEC key invalid | Key is pending rotation or zeroized. | Confirm the rotation. A zeroized key stays invalid. |
+| Outside command window | Window status is CLOSED. | Wait for OPEN, or check the window times. |
+| Uplink denied - carrier jammed | A jammer is blocking the uplink. | Clear or avoid the interference. See [Interference and Electronic Attack](/systems/interference-and-ea/). |
+
+## Common tasks
+
+### Send a command
+
+<Steps>
+
+1. Make sure the station is tracking the satellite and the pass is under way.
+2. Turn on Uplink Doppler Compensation.
+3. Check Key status reads VALID and Window status reads OPEN.
+4. Press XMIT on the command you want, or type a mnemonic and press its XMIT.
+5. Read the new row in Command History. You want ACK.
+
+</Steps>
+
+### Rotate the key
+
+<Steps>
+
+1. Press Initiate Key Rotation. Key status changes to PENDING ROTATION.
+2. Press Confirm Key Rotation when the procedure calls for it.
+3. Check Key status is VALID again before sending commands.
+
+</Steps>
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| Every command gets NAK. | One of the four conditions is wrong. | Read the Detail text and use the table above. |
+| Rotation buttons do nothing. | The key was zeroized. | The key must be replaced outside this tab. |
+| Ranging count does not rise. | The tone was refused. | Check the Detail text for the reason. |
+| Tab is greyed out. | The station is not operational. | Restore the station first. |
+
+## Related pages
+
+- [Pass Schedule](/mission-control/pass-schedule/) tells you when the window will be open.
+- [Crypto Unit](/equipment/crypto-unit/) holds the key hardware.
+- [TRANSEC and Security](/systems/transec-and-security/) covers key handling in more depth.
+- [Security Console](/mission-control/security-console/) reports security events.
+- [Telemetry](/mission-control/telemetry/) shows how the satellite responds.

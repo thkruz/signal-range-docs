@@ -1,0 +1,117 @@
+---
+title: Crypto Unit
+description: How the crypto unit encrypts and decrypts traffic, how to read its key status and how to re-key or zeroize it.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 14
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+The crypto unit encrypts the data you transmit and decrypts the data you receive. Both directions share one key. If the key is good, you see nothing special: traffic flows. If the key is expired, mismatched or destroyed, the far end cannot read what you send, and you cannot read what it sends.
+
+The crypto unit has no panel of its own. Its status appears on the payload cards of two tabs, and its key lifecycle is managed from a third.
+
+![TX Payload Data card showing the TX Encryption section: mode, algorithm, key ID, key status, expiry and auth tag.](/images/shots/equipment/crypto-unit.webp)
+
+## Where to find it
+
+| Where | What you see or do |
+|---|---|
+| **TX Chain** tab, TX Payload Data card | TX Encryption status and the **Load New Key** button. See [TX Chain](/mission-control/tx-chain/). |
+| **RX Analysis** tab, Payload Data Integrity card | RX Decryption status. See [RX Analysis](/mission-control/rx-analysis/). |
+| **TT&C** tab | Initiate Key Rotation, Confirm Key Rotation and the zeroize switch. See [Commanding](/mission-control/commanding/). |
+
+## Readouts
+
+| Readout | What it shows | Typical value |
+|---|---|---|
+| Mode | ACTIVE (encrypting or decrypting), DISABLED (off) or BYPASSED (traffic passes in the clear, for testing). | ACTIVE |
+| Algorithm | The cipher in use: AES-256-GCM, AES-256-CBC, TDES-168 or NONE. | AES-256-GCM |
+| Key ID | The name of the loaded key. It reads ZEROIZED after a key is destroyed. | varies |
+| Key Status | Valid, Pending Rotation, Expired, Mismatch or Zeroized. | Valid |
+| Expires | Days left on the key. | varies |
+| Auth Tag (RX only) | Whether the integrity check on each frame passes (Verified or Failed). | Verified |
+| Decryption (RX only) | Whether the received data decrypts (Success or not). | Success |
+| Re-key (TX only) | The Load New Key button, which loads the next traffic key from the fill device. | n/a |
+
+### Key status values
+
+| Status | Meaning |
+|---|---|
+| Valid | The key is in date and matches the far end. |
+| Pending Rotation | The key has 7 days or fewer left, or a rotation was started. It still works. |
+| Expired | The key ran out. Encryption is no longer trusted. |
+| Mismatch | The far end holds a different key. Decryption fails. |
+| Zeroized | The key was destroyed. Crypto is off until a new key is loaded. |
+
+## Common tasks
+
+### Load a new traffic key
+
+Use this when the key is Expired or Mismatch, or to clear a Zeroized state.
+
+<Steps>
+
+1. Open the **TX Chain** tab and find the TX Encryption section of the TX Payload Data card.
+2. Press **Load New Key**.
+3. The Key ID moves to the next number, Key Status returns to Valid, and the life counter resets to 90 days.
+4. Open the **RX Analysis** tab and confirm the RX Decryption section also reads Valid and Decryption reads Success.
+
+</Steps>
+
+One key serves both directions, so a single load fixes the TX and RX panels together.
+
+### Rotate the key on schedule
+
+<Steps>
+
+1. Open the **TT&C** tab.
+2. Press **Initiate Key Rotation**. Key Status changes to Pending Rotation.
+3. Press **Confirm Key Rotation** to finish. The new key goes live and Key Status returns to Valid.
+
+</Steps>
+
+### Zeroize the key in an emergency
+
+Zeroizing destroys the key and shuts crypto off. All TT&C commands are then rejected until a new key is loaded.
+
+<Steps>
+
+1. Open the **TT&C** tab.
+2. Turn on **Arm zeroize switch**. This enables the red button.
+3. Press **ZEROIZE KEY**.
+4. To recover, press **Load New Key** on the TX Chain tab.
+
+</Steps>
+
+## Alarms
+
+The payload cards raise these messages:
+
+- **CRYPTO ZEROIZED - Re-key required**
+- **Crypto key expired**
+- **Crypto key mismatch - decryption failing**
+- **Crypto key expires in N days**
+- **TX encryption disabled** or **TX encryption bypassed**
+- **RX decryption disabled** or **RX decryption bypassed**
+- **RX auth tag verification failed**
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Decryption reads failed, Key Status Mismatch | The far end has a different key. | Load a new key. |
+| Everything encrypted stops, Key ID reads ZEROIZED | The key was destroyed. | Load a new key. |
+| Key Status Pending Rotation with days left | The key is near the end of its life. | Rotate it on the TT&C tab before it expires. |
+| TT&C commands are rejected | The key is zeroized or invalid. | Load a new key, then resend. |
+| Auth Tag Failed with a valid key | The frame integrity check failed, often a fault injected by the scenario. | Load a new key and check the link for errors. |
+
+## Related pages
+
+- [Transmitter](/equipment/transmitter/)
+- [Receiver](/equipment/receiver/)
+- [TX Chain tab](/mission-control/tx-chain/)
+- [RX Analysis tab](/mission-control/rx-analysis/)
+- [Commanding tab](/mission-control/commanding/)
+- [TRANSEC and security](/systems/transec-and-security/)

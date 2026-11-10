@@ -1,0 +1,72 @@
+---
+title: Mission Overview
+description: See every ground station and satellite in the scenario on one page and jump to any of them.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 18
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Mission Overview is the first page of a mission. It lays out a card for every ground station and every satellite in the scenario, with a live status on each. Click a card to open that asset. Use it to check the whole picture at the start of a shift and to see at a glance which station needs attention.
+
+![Mission Overview with ground station cards above and satellite cards below.](/images/shots/mission-control/mission-overview.webp)
+
+## What each card shows
+
+### Ground Stations
+
+| Field | What it shows | Typical value |
+| --- | --- | --- |
+| Name and ID | The station's name and short identifier. | varies |
+| Status badge | OFFLINE, MAINTENANCE, STOWED, DEGRADED or OPERATIONAL. Updates live. | OPERATIONAL |
+| Latitude, Longitude | Where the station is. | varies |
+| ANT, RF-FE, TX MODEMS, RX MODEMS | Counts of antennas, RF front ends, transmit modems and receive modems. | varies |
+
+### Satellites
+
+| Field | What it shows | Typical value |
+| --- | --- | --- |
+| Name and NORAD ID | The satellite and its catalog number. | varies |
+| Health badge | Health as a percentage. Green at 90 percent or more, yellow below. | 100% |
+| Azimuth, Elevation | Where the satellite is in the sky. A caption says which station the angles are from. | varies |
+| TRANSPONDERS | Transponder count and how many are active. | varies |
+
+The look angles on satellite cards follow the last station you selected. Before you select one they use the first station in the scenario.
+
+<Aside type="note">
+In scenarios with a large constellation, only the satellites the scenario authors and the ones you pin get a card. To add one, search the constellation in the asset tree and pin it. Pinned satellites then appear here.
+</Aside>
+
+## Common tasks
+
+- **Open a station.** Click its card. The tab bar changes to that station's tabs.
+- **Open a satellite.** Click its card to open its [Satellite Dashboard](/mission-control/satellite-dashboard/).
+- **Spot a problem fast.** Scan the status badges. Anything other than OPERATIONAL or a healthy green badge needs a look.
+
+## Status and what it means
+
+| Station status | Meaning |
+| --- | --- |
+| OPERATIONAL | The station is up and no error alarm is active on it. |
+| DEGRADED | An error-level alarm is active on the station. Open the Dashboard tab to see which. |
+| STOWED | The antenna is stowed. |
+| MAINTENANCE | The antenna is parked in maintenance mode. |
+| OFFLINE | The station is not operational. |
+
+A lost carrier at the end of a pass does not make a station DEGRADED. The satellite has simply set.
+
+## Troubleshooting
+
+- **A station shows DEGRADED.** Open its Dashboard tab and read the active alarms.
+- **A station shows STOWED when you expected tracking.** Open its ACU Control tab and switch the antenna out of stow.
+- **A satellite is missing from the cards.** In a constellation scenario, pin it from the asset tree.
+- **Look angles are for the wrong station.** Select the station you want in the asset tree. The cards update to its view.
+
+## Related pages
+
+- [Mission Control overview](/mission-control/)
+- [Dashboard](/mission-control/dashboard/)
+- [ACU Control](/mission-control/acu-control/)
+- [Satellite Dashboard](/mission-control/satellite-dashboard/)
+- [Shell](/mission-control/shell/)

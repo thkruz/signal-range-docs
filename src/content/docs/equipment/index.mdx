@@ -1,0 +1,37 @@
+---
+title: Equipment
+description: The ground station hardware in SignalRange, in signal-chain order, with a page for each unit.
+lastUpdated: 2026-11-09
+sidebar:
+  label: Overview
+  order: 0
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+Each piece of equipment has a page that says what it is for, where its controls are in Mission Control, what the readouts mean and how to fix common problems. The pages follow the signal chain.
+
+## The signal chain
+
+**Downlink (receive).** The antenna collects the signal. The orthomode transducer (OMT) separates the receive polarization. The low-noise block downconverter (LNB) amplifies it and shifts it down to IF. The IF filter bank limits the bandwidth, the notch filter removes narrow interferers, and the AGC holds the level steady. The receiver demodulates the carrier.
+
+**Uplink (transmit).** The transmitter modem makes the IF carrier. The block upconverter (BUC) shifts it up to RF. The high power amplifier (HPA) raises it to uplink power. The OMT sends it to the antenna feed, and the antenna points it at the satellite.
+
+**Support.** The GPSDO supplies the 10 MHz reference to the BUC and LNB. The coupler taps the chain so the spectrum analyzer can show any point. The crypto unit encrypts the payload on transmit and decrypts it on receive.
+
+<CardGrid>
+  <LinkCard title="Antenna Control Unit" description="Point, track and monitor the dish." href="/equipment/antenna-control-unit/" />
+  <LinkCard title="Orthomode Transducer" description="Polarization and cross-pol isolation between the feed and the RF chain." href="/equipment/orthomode-transducer/" />
+  <LinkCard title="Low-Noise Block Downconverter" description="Amplify the downlink and shift it to IF." href="/equipment/low-noise-block-downconverter/" />
+  <LinkCard title="IF Filter Bank" description="Choose the receive bandwidth." href="/equipment/if-filter-bank/" />
+  <LinkCard title="Notch Filter" description="Cut a narrow interferer out of the IF." href="/equipment/notch-filter/" />
+  <LinkCard title="Automatic Gain Control" description="Hold the signal level for the receiver." href="/equipment/automatic-gain-control/" />
+  <LinkCard title="Coupler" description="Tap points that feed the spectrum analyzer." href="/equipment/coupler/" />
+  <LinkCard title="Receiver" description="Four modems that demodulate the downlink." href="/equipment/receiver/" />
+  <LinkCard title="Transmitter" description="Four modems that make the uplink carrier." href="/equipment/transmitter/" />
+  <LinkCard title="Block Upconverter" description="Shift the IF carrier up to RF." href="/equipment/block-upconverter/" />
+  <LinkCard title="High Power Amplifier" description="Set the uplink power and back-off." href="/equipment/high-power-amplifier/" />
+  <LinkCard title="GPS Disciplined Oscillator" description="The 10 MHz reference, warm-up and holdover." href="/equipment/gps-disciplined-oscillator/" />
+  <LinkCard title="Real-Time Spectrum Analyzer" description="See signals, noise and interference at any tap." href="/equipment/real-time-spectrum-analyzer/" />
+  <LinkCard title="Crypto Unit" description="Encryption keys, rotation and zeroize." href="/equipment/crypto-unit/" />
+</CardGrid>

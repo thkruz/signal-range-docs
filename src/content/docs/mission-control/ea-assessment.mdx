@@ -1,0 +1,66 @@
+---
+title: EA Assessment
+description: Read the live jam-to-signal picture and see whether the target link is denied.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 15
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+The EA Assessment tab is a read-only scoreboard for electronic attack. It tells you whether your jam signal is reaching the target uplink, whether the jam antenna is pointed at the target, and how strong the jam is compared with the victim's own signal. You do not set anything here. You change the transmit chain and the antenna on their own tabs and watch the result here.
+
+<Aside type="note">
+The tab only exists in scenarios that include electronic attack.
+</Aside>
+
+![EA Assessment tab with the Denial Status badge and the Link Assessment table.](/images/shots/mission-control/ea-assessment.webp)
+
+## Readouts
+
+| Readout | What it shows | Typical value |
+| --- | --- | --- |
+| Denial Status badge | STANDBY, DEGRADED or DENIED. | DENIED is the goal |
+| Status detail | A short line that explains the badge. | varies |
+| Jam radiating in target band | YES when your waveform is on air inside the target uplink band. | YES |
+| Jam antenna on target | YES when the jam antenna is pointed at the target satellite. | YES |
+| Pointing error | Angle between the jam antenna and the target, in degrees. A dash means no value yet. | near 0 |
+| Jam uplink EIRP (J) | Your jam power at the satellite end, in dBm. | varies |
+| Victim uplink EIRP (S) | The target's own uplink power, in dBm. | varies |
+| Jam-to-signal ratio (J/S) | Jam power minus victim power, in dB. | at least 6 dB unless the scenario sets another threshold |
+
+Uplink power values are EIRP, which means transmitter power plus antenna gain. Raising the antenna gain raises J as much as raising the amplifier.
+
+## Common tasks
+
+<Steps>
+1. Point the jam antenna at the target satellite on its ACU Control tab. Watch Pointing error fall and "Jam antenna on target" change to YES.
+2. Set up the jam waveform in the target uplink band on the TX Chain tab, then enable the amplifier and transmit.
+3. Watch "Jam radiating in target band" change to YES.
+4. Check J/S. If the badge reads DEGRADED, raise jam power or antenna gain until J/S reaches the threshold and the badge reads DENIED.
+</Steps>
+
+## Status and what it means
+
+| Badge | Detail line | Meaning |
+| --- | --- | --- |
+| STANDBY | No jam waveform on the target uplink | You are neither radiating in band nor on target. |
+| DEGRADED | Radiating — antenna off target | There is jam power in the band, but the antenna is not on the target. |
+| DEGRADED | Antenna on target — no jam in band | The antenna is right, but nothing is transmitting in the target band. |
+| DEGRADED | On target — J/S below threshold | Pointing and band are right, but the jam is too weak. |
+| DENIED | Target link denied | In band, on target and J/S at or above the threshold. |
+
+## Troubleshooting
+
+- **Stuck on STANDBY.** You are not radiating in the target band and the jam antenna is not on target. Check both. For the transmit side, check the BUC and HPA are powered and not muted, and the carrier frequency is inside the target uplink band.
+- **Radiating shows YES but pointing error is large.** The antenna has not finished slewing, or is aimed at the wrong satellite. Re-select the target on the ACU Control tab.
+- **On target and radiating, still DEGRADED.** J/S is below the threshold. Increase transmit power, or check whether the victim has raised its own power.
+- **All readouts show a dash.** The electronic attack system has not started yet. Wait for the scenario to begin.
+
+## Related pages
+
+- [TX Chain](/mission-control/tx-chain/)
+- [ACU Control](/mission-control/acu-control/)
+- [Block upconverter](/equipment/block-upconverter/)
+- [High-power amplifier](/equipment/high-power-amplifier/)
+- [Link Budget](/mission-control/link-budget/)

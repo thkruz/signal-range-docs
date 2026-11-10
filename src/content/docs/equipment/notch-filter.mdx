@@ -1,0 +1,86 @@
+---
+title: Notch Filter
+description: How to remove a narrow interferer from the receive IF with the three-stage notch filter.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 5
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+The notch filter removes a narrow slice of the IF band. Where the IF Filter Bank keeps one wide block of spectrum, a notch cuts a gap in it. Use it to take out a jammer or a stray carrier that sits close to your signal, without losing the signal itself.
+
+It sits after the IF filter and before the AGC. It has three independent notch stages.
+
+![Notch Filter card with three notch stages, each with an enable switch, center frequency, width and depth.](/images/shots/equipment/notch-filter.webp)
+
+## Where to find it
+
+The Notch Filter card is on the **RX Analysis** tab of Mission Control. See [RX Analysis](/mission-control/rx-analysis/).
+
+## Controls
+
+Each of the three stages has the same controls. A header badge shows whether that stage's applied settings are on.
+
+| Control | What it does | Typical value |
+|---|---|---|
+| Power | Powers the whole notch filter. When off, the stages are bypassed and their fields read "--". | On |
+| Enable | Turns one stage on or off. A new stage starts off. | Off until needed |
+| Center Freq (MHz) | The IF frequency to cut. Range 950 to 2150 MHz. The arrow buttons step by 10 or 100 MHz. | Stages start at 1200, 1500 and 1800 MHz |
+| Width (MHz) | The width of the cut. Range 0.1 to 50 MHz. | 1 MHz |
+| Depth (dB) | How much the stage attenuates at its center. Range 1 to 60 dB. | 20 dB |
+| Apply Changes | Commits the staged values of all three stages. | n/a |
+
+The notch filter uses staged values. Changes you type or step stay pending until you press **Apply Changes**. The button highlights when something is waiting. A pending change survives a power toggle, so you do not lose it by mistake.
+
+## Common tasks
+
+### Notch out an interferer
+
+<Steps>
+
+1. Open the **RX Analysis** tab and find the interferer on the spectrum analyzer. Note its frequency and width.
+2. On the Notch Filter card, set a stage's **Center Freq** to the interferer's frequency.
+3. Set **Width** a little wider than the interferer, and **Depth** deep enough to bring it down (20 dB or more).
+4. Turn the stage's **Enable** switch on.
+5. Press **Apply Changes**.
+6. Check the analyzer. The interferer should drop and your carrier should be unchanged.
+
+</Steps>
+
+### Check you have not cut your own signal
+
+<Steps>
+
+1. Look at the receiver's lock and C/N after you apply a notch.
+2. If your carrier fell, the notch is overlapping it. Move the center frequency off your carrier, or reduce Width.
+
+</Steps>
+
+## How a notch affects a carrier
+
+A notch removes more of a carrier the more of it overlaps. A notch centered on a narrow interferer takes the full depth off it. A notch that only covers the edge of a wide carrier takes off a small share. Keep the notch narrow when your own carrier is close.
+
+## Status and alarms
+
+- **Notch N and M overlap**: two enabled stages cover the same frequencies. Move one so they do not overlap.
+
+The notch filter raises no other alarms.
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| The interferer did not drop | The change is still staged. | Press Apply Changes. |
+| The interferer did not drop | The stage is not enabled, or the center is off the interferer. | Turn Enable on and re-center using the analyzer marker. |
+| Your carrier also dropped | The notch overlaps it. | Narrow Width or move Center Freq. |
+| Fields read "--" and cannot be edited | The notch filter is powered off. | Turn Power on. |
+| Overlap alarm | Two stages cover the same band. | Separate them, or use one wider stage. |
+
+## Related pages
+
+- [IF Filter Bank](/equipment/if-filter-bank/)
+- [Automatic Gain Control (AGC)](/equipment/automatic-gain-control/)
+- [Real-Time Spectrum Analyzer](/equipment/real-time-spectrum-analyzer/)
+- [Receiver](/equipment/receiver/)
+- [RX Analysis tab](/mission-control/rx-analysis/)

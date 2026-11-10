@@ -64,14 +64,14 @@ export default defineConfig({
     description: 'Learn how to start communicating with satellites using SignalRange',
     favicon: './favicon.ico',
     logo: {
-      light: '/src/assets/logo-red.png',
-      dark: '/src/assets/logo-white.png',
+      src: './src/assets/logo-white.png',
       replacesTitle: true,
     },
     components: {
       TableOfContents: './src/components/TableOfContents.astro',
       PageFrame: './src/components/PageFrame.astro',
       ThemeProvider: './src/components/ThemeProvider.astro',
+      ThemeSelect: './src/components/ThemeSelect.astro',
     },
     social: [
       { icon: 'github', label: 'GitHub', href: 'https://github.com/thkruz/signal-range-docs' },
@@ -79,22 +79,35 @@ export default defineConfig({
     customCss: [
       './src/styles/global.css',
     ],
-    sidebar: [{
-      label: 'Introduction to SignalRange',
-      items: [{
-        label: 'Overview',
-        slug: 'intro/overview'
+    sidebar: [
+      {
+        label: 'Getting Started',
+        items: [
+          { label: 'Welcome', slug: 'getting-started' },
+          { label: 'Overview', slug: 'intro/overview' },
+        ],
       },
-      ]
-    }, {
-      label: 'Equipment',
-      items: [{
-        autogenerate: {
-          directory: 'equipment'
-        }
-      }]
-    },
-    {
+      {
+        label: 'Mission Control',
+        items: [{ autogenerate: { directory: 'mission-control' } }],
+      },
+      {
+        label: 'Equipment',
+        items: [{ autogenerate: { directory: 'equipment' } }],
+      },
+      {
+        label: 'Systems',
+        items: [{ autogenerate: { directory: 'systems' } }],
+      },
+      {
+        label: 'Plugins',
+        items: [{ autogenerate: { directory: 'plugins' } }],
+      },
+      {
+        label: 'Campaigns',
+        collapsed: true,
+        items: [{
+      collapsed: true,
       label: 'Campaign 1: North Atlantic Teleport Services',
       items: [
         {
@@ -136,6 +149,7 @@ export default defineConfig({
       //     directory: 'checklists'
       //   }
     }, {
+      collapsed: true,
       label: 'Campaign 2: NATS Europe',
       items: [
         {
@@ -252,6 +266,7 @@ export default defineConfig({
         }
       ]
     }, {
+      collapsed: true,
       label: 'Campaign 3: Backyard Operator',
       items: [
         {
@@ -288,6 +303,7 @@ export default defineConfig({
         }
       ]
     }, {
+      collapsed: true,
       label: 'Campaign 4: Counter Communications',
       items: [
         {
@@ -308,6 +324,7 @@ export default defineConfig({
         }
       ]
     }, {
+      collapsed: true,
       label: 'Campaign 5: Signal Hunter',
       items: [
         {
@@ -327,7 +344,13 @@ export default defineConfig({
           slug: 'campaign-5/scenario-4'
         }
       ]
-    }, {
+      }]
+      },
+      {
+        label: 'Checklists',
+        items: [{ autogenerate: { directory: 'checklists' } }],
+      },
+      {
       label: 'Contributing',
       items: [{
         label: 'Contributing',

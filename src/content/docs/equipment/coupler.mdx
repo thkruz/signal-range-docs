@@ -1,0 +1,99 @@
+---
+title: Coupler (Tap Points)
+description: How the coupler samples the signal at points along the chain so the spectrum analyzer can look at it.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 7
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+The coupler is a passive device that samples a small part of the signal at a chosen point in the chain and sends the sample to the spectrum analyzer. The main signal is not interrupted. On screen it appears as the **Tap Points** card. You choose where to look, and the analyzer shows the signal at that point.
+
+![Tap Points card showing the selected tap point, its status and the coupling value.](/images/shots/equipment/coupler.webp)
+
+## Where to find it
+
+The Tap Points card is on the **RX Analysis** tab of Mission Control, below the Notch Filter card. See [RX Analysis](/mission-control/rx-analysis/).
+
+## Default mode
+
+By default there is one tap, and it can sit on one of two points:
+
+| Control | What it does | Typical value |
+|---|---|---|
+| Tap Point (switch) | Turns the tap on or off. When off, the analyzer gets no signal from the coupler. | On |
+| Tap Point (list) | Picks **TX IF** (the transmit IF going to the upconverter) or **RX IF** (the receive IF coming out of the LNB chain). | RX IF |
+| Status | Active when the tap is on and signal can flow at that point. | Active |
+| Coupling | How much the tap takes off the line. | -20 dB |
+
+## Engineering mode
+
+Engineering mode adds a second tap and eight tap points. Turn it on with the **Engineering Mode** button in the header. The button appears only in advanced scenarios.
+
+With engineering mode on, the card shows **Tap Point A** and **Tap Point B**, each with its own switch, list, Status and Coupling. Tap A is -30 dB and starts off. Tap B is -20 dB and starts on. Each list offers:
+
+| Tap point | Where it samples |
+|---|---|
+| TX IF | Transmit IF, before the BUC |
+| TX RF POST BUC | After the BUC, before the HPA |
+| TX RF POST HPA | After the HPA, before the OMT |
+| TX RF POST OMT | After the OMT, at the antenna feed (transmit) |
+| RX RF PRE OMT | At the antenna feed (receive), before the OMT |
+| RX RF POST OMT | After the OMT, before the LNB |
+| RX RF POST LNA | After the LNB's low-noise amplifier |
+| RX IF | Receive IF, after the LNB |
+
+A tap is Active only when it is switched on and its point carries signal. A transmit tap shows signal while the transmitter is sending. A receive tap shows signal while the receive chain is receiving.
+
+## Common tasks
+
+### Look at the receive IF
+
+<Steps>
+
+1. Open the **RX Analysis** tab.
+2. On the Tap Points card, make sure the switch is on and the list reads **RX IF**.
+3. Check that Status reads **Active**.
+4. Read the signal on the spectrum analyzer. See [Real-Time Spectrum Analyzer](/equipment/real-time-spectrum-analyzer/).
+
+</Steps>
+
+### Check your own transmit signal
+
+<Steps>
+
+1. Choose **TX IF** in the list (or **TX RF POST HPA** in engineering mode).
+2. Confirm the transmitter is sending on the [TX Chain](/mission-control/tx-chain/) tab.
+3. Read the carrier on the analyzer.
+
+</Steps>
+
+### Compare two points
+
+<Steps>
+
+1. Turn on engineering mode.
+2. Set Tap A to one point and Tap B to another, and switch both on.
+3. Compare the two traces on the analyzer. The level difference shows the gain or loss of the equipment between the two points.
+
+</Steps>
+
+## Status and alarms
+
+The coupler is passive and raises no alarms. The status light is green when a tap is on and its point has signal. It is off otherwise.
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Analyzer shows only noise | The tap is off, or the chosen point has no signal. | Switch the tap on and choose a point on an active path. |
+| Status is not Active on a TX point | The transmitter is not sending. | Start a carrier on the TX Chain tab. |
+| Only two tap points are in the list | Engineering mode is off. | Turn on Engineering Mode in the header (advanced scenarios). |
+| Analyzer level looks low | The tap takes only a small sample (-20 or -30 dB). | Read the level with the coupling value in mind. |
+
+## Related pages
+
+- [Real-Time Spectrum Analyzer](/equipment/real-time-spectrum-analyzer/)
+- [Notch Filter](/equipment/notch-filter/)
+- [RX Analysis tab](/mission-control/rx-analysis/)

@@ -1,7 +1,9 @@
 ---
 title: IF Filter Bank
 description: A beginner's guide to using the IF Filter Bank in SignalRange
-lastUpdated: 2026-10-06
+lastUpdated: 2026-11-09
+sidebar:
+  order: 4
 ---
 
 import { Steps } from '@astrojs/starlight/components';
@@ -11,14 +13,24 @@ The IF Filter Bank is a selectable bandpass filter that sits between the LNB (wh
 
 Satellite transponders carry multiple signals at different frequencies, often separated by just a few MHz. Without filtering, your receiver would see everything - wanted signals, unwanted signals, noise, and interference all mixed together. The filter bank lets you select just the bandwidth you need, improving signal-to-noise ratio and reducing processing load on downstream equipment.
 
-### Key controls
+![IF Filter card with the bandwidth list, insertion loss and noise floor readouts.](/images/shots/equipment/if-filter-bank.webp)
 
-*   **BANDWIDTH** - a rotary knob that selects the filter bandwidth from 13 preset values ranging from 30 kHz (very narrow) to 320 MHz (very wide). The selected bandwidth determines what frequency range of signals will pass through with minimal attenuation. Signals outside this bandwidth are heavily attenuated or blocked entirely.
+## Where to find it
+
+The IF Filter card is on the **RX Analysis** tab of Mission Control, between the AGC and Notch Filter cards. See [RX Analysis](/mission-control/rx-analysis/). In the signal chain it follows the LNB, then the [Notch Filter](/equipment/notch-filter/), the [AGC](/equipment/automatic-gain-control/) and the [Receiver](/equipment/receiver/).
+
+## Controls
+
+*   **BANDWIDTH** - a drop-down list that selects the filter bandwidth from 17 preset values ranging from 100 Hz (very narrow) to 320 MHz (very wide). The default is 20 MHz. The selected bandwidth determines what frequency range of signals will pass through with minimal attenuation. Signals outside this bandwidth are heavily attenuated or blocked entirely.
 
 ### Available bandwidth settings
 
-The filter bank provides 13 selectable bandwidths, each optimized for different applications:
+The filter bank provides 17 selectable bandwidths, each optimized for different applications:
 
+*   **100 Hz** - Insertion Loss: 6.0 dB, Noise Floor: -154 dBm (narrow beacon and CW work)
+*   **500 Hz** - Insertion Loss: 5.5 dB, Noise Floor: -147 dBm (narrow beacon and CW work)
+*   **1 kHz** - Insertion Loss: 5.0 dB, Noise Floor: -144 dBm (beacon tracking)
+*   **10 kHz** - Insertion Loss: 4.0 dB, Noise Floor: -134 dBm (narrow telemetry)
 *   **30 kHz** - Insertion Loss: 3.5 dB, Noise Floor: -129 dBm (narrowband voice, telemetry)
 *   **100 kHz** - Insertion Loss: 3.2 dB, Noise Floor: -124 dBm (SCPC voice channels)
 *   **200 kHz** - Insertion Loss: 3.0 dB, Noise Floor: -121 dBm (narrow data links)
@@ -33,20 +45,18 @@ The filter bank provides 13 selectable bandwidths, each optimized for different 
 *   **160 MHz** - Insertion Loss: 1.5 dB, Noise Floor: -92 dBm (transponder monitoring)
 *   **320 MHz** - Insertion Loss: 1.5 dB, Noise Floor: -89 dBm (full transponder, wide scan)
 
-### Readouts and indicators
+## Readouts
 
 *   **BANDWIDTH** - displays the currently selected filter bandwidth (e.g., "20 MHz"). This is the filter's passband - signals within this bandwidth pass with minimal loss, signals outside are attenuated.
-*   **INSERTION LOSS (dB)** - the signal power loss introduced by the filter itself, measured in dB. Even signals within the passband experience some loss due to the filter's physical components (capacitors, inductors, dielectrics). Narrower filters have higher insertion loss (3.5 dB for 30 kHz) because they require sharper cutoffs and more filter stages. Wider filters have lower insertion loss (1.5 dB for 320 MHz).
+*   **INSERTION LOSS (dB)** - the signal power loss introduced by the filter itself, measured in dB. Even signals within the passband experience some loss due to the filter's physical components (capacitors, inductors, dielectrics). Narrower filters have higher insertion loss (6.0 dB for 100 Hz, 3.5 dB for 30 kHz) because they require sharper cutoffs and more filter stages. Wider filters have lower insertion loss (1.5 dB for 320 MHz).
 *   **NOISE FLOOR (dBm)** - the total noise power at the filter output, measured in dBm. This includes thermal noise from the filter components themselves and noise passed through from upstream (antenna, LNB). Narrower filters have lower noise floor (better) because they pass less total noise power: noise power = noise density × bandwidth. A 30 kHz filter passes only 30 kHz worth of noise (-129 dBm), while a 320 MHz filter passes 320 MHz worth of noise (-89 dBm) - a 40 dB difference.
-*   **INSERTION LOSS LED (orange)** - brightness indicates insertion loss magnitude. Brighter = higher loss. This gives a quick visual indication of the filter's impact on signal power.
-*   **NOISE FLOOR LED (color-coded)** - indicates external noise floor quality:
-    *   **Green** - excellent noise floor (≤ -100 dBm)
-    *   **Orange** - moderate noise floor (-70 to -100 dBm)
-    *   **Red** - high noise floor (> -70 dBm, problematic)
+*   **Signal** - a status line that reads Nominal when the carriers fit the passband, Clipped when the filter cuts into a carrier, or -- when there is nothing to judge. Hidden on advanced difficulty.
 
-### Understanding the bandwidth/noise trade-off
+## How it works
 
-The fundamental trade-off in filter selection is between bandwidth and noise. Thermal noise power is proportional to bandwidth - wider filters pass more noise. This is described by the formula:
+### Understanding the bandwidth and noise balance
+
+The fundamental balance in filter selection is between bandwidth and noise. Thermal noise power is proportional to bandwidth - wider filters pass more noise. This is described by the formula:
 
 Noise Power (watts) = k × T × B
 
@@ -66,20 +76,9 @@ Insertion loss is the price you pay for filtering. All filters introduce some lo
 *   Sharp transitions from passband to stopband demand higher quality factor (Q) resonators
 *   Tighter tolerances and better components mean more loss mechanisms
 
-The insertion loss values range from 3.5 dB (30 kHz filter) down to 1.5 dB (160–320 MHz filters). This loss directly reduces signal power - a -90 dBm signal passing through the 30 kHz filter emerges at -93.5 dBm.
+The insertion loss values range from 6.0 dB (100 Hz filter) down to 1.5 dB (160–320 MHz filters). This loss directly reduces signal power - a -90 dBm signal passing through the 30 kHz filter emerges at -93.5 dBm.
 
-**When does insertion loss matter?** For strong signals (e.g., -60 dBm), a few dB of loss is insignificant. But for weak signals near the noise floor (-100 to -110 dBm), every dB counts. If your signal is -105 dBm and noise floor is -100 dBm, you have 5 dB SNR. Losing 3.5 dB to insertion loss reduces your signal to -108.5 dBm, giving 8.5 dB SNR - but you also improved noise floor by using a narrow filter, so the net effect is usually positive.
-
-### How to select the right filter bandwidth
-
-Choosing the correct filter bandwidth depends on your signal's characteristics:
-
-1.  **Know your signal bandwidth.** A QPSK signal at 1 Msym/s occupies ~1.2 MHz (symbol rate × 1.2 for typical roll-off). An HDTV signal at 30 Msym/s occupies ~36 MHz. FM voice might be 30 kHz. Check your modem or signal specifications.
-2.  **Add margin.** Select a filter 1.5–2× wider than your signal to avoid clipping the signal edges, which causes distortion and increases bit errors. For a 1 MHz signal, use a 2 MHz filter. For a 30 MHz signal, use a 40 MHz filter.
-3.  **Consider adjacent signals.** If there are strong signals near yours, use a narrower filter to reject them. If the transponder is lightly loaded with no nearby signals, you can use a wider filter for convenience.
-4.  **Balance SNR vs convenience.** Narrower is better for SNR, but if you're receiving multiple signals simultaneously (e.g., a 50 MHz wide transponder with many carriers), use a wider filter (80 or 160 MHz) to capture everything.
-
-**Rule of thumb:** Start with a filter 2× your signal bandwidth. If SNR is poor, try narrowing the filter. If signal quality degrades (distortion, errors), widen the filter.
+**When does insertion loss matter?** For strong signals (e.g., -60 dBm), a few dB of loss is insignificant. But for weak signals near the noise floor (-100 to -110 dBm), every dB counts. If your signal is -105 dBm and the 20 MHz floor is -101 dBm, SNR is -4 dB. Switch to a 1 MHz filter: the signal drops 0.8 dB more (2.8 vs 2.0 dB loss), but the floor falls 13 dB to -114 dBm, so SNR becomes about +8 dB.
 
 ### What happens to signals wider than the filter?
 
@@ -92,6 +91,19 @@ For example: You receive a 10 MHz wide signal but select a 5 MHz filter. The fil
 *   Demodulator may lose lock or fail to acquire carrier
 
 **Avoid this situation!** Always use a filter wider than your signal. If you're unsure of signal bandwidth, start with a wide filter (20–40 MHz) and narrow it down while monitoring signal quality.
+
+## Common tasks
+
+### How to select the right filter bandwidth
+
+Choosing the correct filter bandwidth depends on your signal's characteristics:
+
+1.  **Know your signal bandwidth.** A QPSK signal at 1 Msym/s occupies ~1.2 MHz (symbol rate × 1.2 for typical roll-off). An HDTV signal at 30 Msym/s occupies ~36 MHz. FM voice might be 30 kHz. Check your modem or signal specifications.
+2.  **Add margin.** Select a filter 1.5–2× wider than your signal to avoid clipping the signal edges, which causes distortion and increases bit errors. For a 1 MHz signal, use a 2 MHz filter. For a 20 MHz signal, use a 40 MHz filter.
+3.  **Consider adjacent signals.** If there are strong signals near yours, use a narrower filter to reject them. If the transponder is lightly loaded with no nearby signals, you can use a wider filter for convenience.
+4.  **Balance SNR vs convenience.** Narrower is better for SNR, but if you're receiving multiple signals simultaneously (e.g., a 50 MHz wide transponder with many carriers), use a wider filter (80 or 160 MHz) to capture everything.
+
+**Rule of thumb:** Start with a filter 2× your signal bandwidth. If SNR is poor, try narrowing the filter. If signal quality degrades (distortion, errors), widen the filter.
 
 ### When to use narrow vs wide filters
 
@@ -116,20 +128,22 @@ For example: You receive a 10 MHz wide signal but select a 5 MHz filter. The fil
 *   Using spectrum analyzer or monitoring equipment
 *   Signal is very strong and noise is not a concern
 
-### Alarms and warning conditions
+## Status and alarms
 
-*   **Filter insertion loss high (> 3.0 dB)** - You're using a very narrow filter (typically 30–200 kHz). This is normal for those settings, but be aware that 3+ dB of loss is being applied to your signal. If signal is weak, this might impact link margin. Consider whether you really need such a narrow filter or if a slightly wider one (lower loss) would suffice.
+*   **Filter insertion loss high (> 3.0 dB)** - You're using a very narrow filter (100 Hz to 100 kHz). This is normal for those settings, but be aware that 3+ dB of loss is being applied to your signal. If signal is weak, this might impact link margin. Consider whether you really need such a narrow filter or if a slightly wider one (lower loss) would suffice.
 
-### Short examples
+## Examples
 
-*   **Example A - Narrowband voice reception:** Bandwidth = 30 kHz, Insertion Loss = 3.5 dB, Noise Floor = -129 dBm, Noise LED = Green. Receiving a single narrowband FM voice channel (~25 kHz wide). Filter is well-matched to signal, providing excellent noise rejection. Noise floor is very low (-129 dBm), giving maximum SNR for weak signals. The 3.5 dB insertion loss is acceptable trade-off for the 40 dB improvement in noise floor compared to a wide filter.
-*   **Example B - Standard data link:** Bandwidth = 2 MHz, Insertion Loss = 2.6 dB, Noise Floor = -111 dBm, Noise LED = Green. Receiving a 1.5 MHz wide data signal (e.g., 1 Msym/s QPSK). Filter provides adequate margin (2 MHz vs 1.5 MHz signal) without clipping. Noise floor is low, insertion loss is moderate, and SNR is optimized for this signal bandwidth.
-*   **Example C - Default wideband setting:** Bandwidth = 20 MHz, Insertion Loss = 2.0 dB, Noise Floor = -101 dBm, Noise LED = Green. General-purpose setting (default). Accommodates most single carriers up to ~15 MHz wide. Good balance between flexibility and noise performance. Suitable for HD video, high-speed data, and most typical satellite signals.
-*   **Example D - Full transponder monitoring:** Bandwidth = 160 MHz, Insertion Loss = 1.5 dB, Noise Floor = -92 dBm, Noise LED = Orange. Receiving or monitoring an entire transponder with multiple carriers spanning 100+ MHz. Low insertion loss (1.5 dB) but high noise floor (-92 dBm) because 160 MHz of noise is being passed. Acceptable when signals are strong or when monitoring many carriers simultaneously.
+*   **Example A - Narrowband voice reception:** Bandwidth = 30 kHz, Insertion Loss = 3.5 dB, Noise Floor = -129 dBm. Receiving a single narrowband FM voice channel (~25 kHz wide). Filter is well-matched to signal, providing excellent noise rejection. Noise floor is very low (-129 dBm), giving maximum SNR for weak signals. The 3.5 dB insertion loss is acceptable balance for the 40 dB improvement in noise floor compared to a wide filter.
+*   **Example B - Standard data link:** Bandwidth = 2 MHz, Insertion Loss = 2.6 dB, Noise Floor = -111 dBm. Receiving a 1.5 MHz wide data signal (e.g., 1 Msym/s QPSK). Filter provides adequate margin (2 MHz vs 1.5 MHz signal) without clipping. Noise floor is low, insertion loss is moderate, and SNR is optimized for this signal bandwidth.
+*   **Example C - Default wideband setting:** Bandwidth = 20 MHz, Insertion Loss = 2.0 dB, Noise Floor = -101 dBm. General-purpose setting (default). Accommodates most single carriers up to ~15 MHz wide. Good balance between flexibility and noise performance. Suitable for HD video, high-speed data, and most typical satellite signals.
+*   **Example D - Full transponder monitoring:** Bandwidth = 160 MHz, Insertion Loss = 1.5 dB, Noise Floor = -92 dBm. Receiving or monitoring an entire transponder with multiple carriers spanning 100+ MHz. Low insertion loss (1.5 dB) but high noise floor (-92 dBm) because 160 MHz of noise is being passed. Acceptable when signals are strong or when monitoring many carriers simultaneously.
 *   **Example E - Filter too narrow (problem):** Bandwidth = 1 MHz, signal is 5 MHz wide. The filter clips 4 MHz of the 5 MHz signal, passing only the center 1 MHz. Signal is distorted, power is reduced by ~7 dB (5 MHz / 1 MHz = 5×, or 7 dB), and demodulator will likely fail. **Solution:** Increase bandwidth to at least 5 MHz, preferably 10 MHz to provide margin.
 *   **Example F - Filter too wide (suboptimal SNR):** Bandwidth = 320 MHz, signal is 2 MHz wide, Noise Floor = -89 dBm. Receiving a narrow 2 MHz signal with a very wide filter. Noise floor is -89 dBm (poor), whereas using a 2 MHz filter would give -111 dBm - a 22 dB improvement in SNR. If the signal is weak or link margin is tight, this 22 dB matters. **Solution:** Narrow filter to 2 or 5 MHz for better SNR.
 
-### Advanced: Filter types and characteristics
+## Advanced
+
+### Filter types and characteristics
 
 RF and IF filters come in various types - Butterworth, Chebyshev, Elliptic, etc. - each balancing passband flatness, stopband rejection, and phase linearity differently. In SignalRange each bandwidth is a Butterworth bandpass (6th order by default): maximally flat across the passband, with skirts that steepen with the order.
 
@@ -140,12 +154,12 @@ By default the filter is centred on whichever carrier you are looking at, like a
 *   **Transition region:** The region between passband and stopband. Narrower transition requires more filter stages and higher insertion loss.
 *   **Shape factor:** Ratio of 60 dB bandwidth to 3 dB bandwidth. Lower is better (sharper filter). Typical values are 2:1 to 5:1.
 
-### Advanced: Link budget impact
+### Link budget impact
 
 The filter affects your link budget in two ways:
 
 *   **Signal power:** Reduced by insertion loss. For a -100 dBm signal through a 3 dB filter, output is -103 dBm.
-*   **Noise power:** Determined by filter bandwidth and system noise temperature. A 1 MHz filter with 100 K system temperature has noise floor of -174 + 10×log₁₀(100/290) + 10×log₁₀(1×10⁶) ≈ -114 dBm.
+*   **Noise power:** Determined by filter bandwidth and system noise temperature. A 1 MHz filter with 100 K system temperature has noise floor of -174 + 10×log₁₀(100/290) + 10×log₁₀(1×10⁶) ≈ -119 dBm (the table's -114 dBm assumes 290 K).
 
 The signal-to-noise ratio (SNR) at the filter output is:
 
@@ -153,7 +167,7 @@ SNR = (Signal - Insertion Loss) - Noise Floor
 
 For weak signals, reducing filter bandwidth improves noise floor more than insertion loss hurts, resulting in net SNR improvement. For strong signals, insertion loss dominates and wide filters are preferable.
 
-### Final notes
+## Final notes
 
 The IF Filter Bank is a critical but often overlooked component in receive systems. Proper filter selection can mean the difference between successful reception and complete failure, especially for weak signals or crowded spectrum.
 
@@ -163,7 +177,6 @@ Best practices for filter operation:
 *   When in doubt, start wide and narrow down while monitoring signal quality
 *   For weak signals, prioritize narrow filters to maximize SNR
 *   For strong signals or multi-carrier reception, use wider filters
-*   Monitor the noise floor LED - green is good, orange is marginal, red needs attention
 *   Don't use filters narrower than your signal - causes distortion and errors
 *   Remember: noise floor improvements from narrower filters often outweigh insertion loss penalties
 

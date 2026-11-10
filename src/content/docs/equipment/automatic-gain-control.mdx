@@ -1,0 +1,101 @@
+---
+title: Automatic Gain Control (AGC)
+description: How the AGC keeps the receive level steady, what its readouts mean and why it can hide an interferer.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 6
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+The AGC is the last stage of the RF front end in the receive chain. It sits after the IF filter and the notch filter, just before the receiver. It measures the total power in the IF passband and raises or lowers its gain so the output stays near a fixed level. That keeps the receiver's input steady when a satellite fades, rises or sets.
+
+The AGC measures everything in the passband: your carrier, any interferer, and the receive noise. It cannot tell them apart. A strong interferer makes it turn the gain down for every signal, including the one you want.
+
+![AGC card showing mode, gain, input power and output power on the RX Analysis tab.](/images/shots/equipment/automatic-gain-control.webp)
+
+## Where to find it
+
+The AGC card is on the **RX Analysis** tab of Mission Control, next to the IF Filter card. See [RX Analysis](/mission-control/rx-analysis/).
+
+## Controls and readouts
+
+The AGC is automatic. Its only control is the Bypass switch. Everything else is a readout.
+
+| Control or readout | What it does | Typical value |
+|---|---|---|
+| Bypass | Switches the AGC out. Signals pass unchanged and the gain reads 0.0 dB. | Off |
+| Mode | Shows Active, Bypassed, No Input, At Max or At Min. | Active |
+| Gain | The gain the AGC is applying right now. It can swing between -30 dB and +30 dB. | varies |
+| Input | Total power measured in the passband (carriers plus noise). It reads no lower than -120 dBm. | varies |
+| Output | Total power leaving the AGC. | about -30 dBm once settled |
+
+The AGC aims for an output of about -30 dBm. It reduces gain quickly when the input rises (about 10 ms) and raises it more slowly when the input falls (about 100 ms). After a large drop in input it holds its gain for about 2 seconds before it starts to release.
+
+## Common tasks
+
+### Check that the AGC is levelling your carrier
+
+<Steps>
+
+1. Open the **RX Analysis** tab.
+2. Find the AGC card. Mode should read **Active**.
+3. Compare Output with -30 dBm. If it is close, the AGC is levelling the passband.
+4. Look at Gain. A value well inside the -30 to +30 dB range means the loop has room to work.
+
+</Steps>
+
+### Find out whether the AGC is hiding an interferer
+
+<Steps>
+
+1. Note the Gain reading with only your carrier present.
+2. If Gain has dropped by several dB and your carrier looks weaker at the receiver, something else is raising the passband power.
+3. Look at the spectrum analyzer for a second carrier. See [Real-Time Spectrum Analyzer](/equipment/real-time-spectrum-analyzer/).
+4. Remove it with the [Notch Filter](/equipment/notch-filter/) or narrow the [IF Filter Bank](/equipment/if-filter-bank/).
+
+</Steps>
+
+### Bypass the AGC for a test
+
+<Steps>
+
+1. Turn the **Bypass** switch on. Mode reads **Bypassed** and Gain reads 0.0 dB.
+2. Watch the receiver. Without levelling, its input follows the signal level directly.
+3. Turn Bypass off when the test is done.
+
+</Steps>
+
+## Status and alarms
+
+| Mode | Meaning |
+|---|---|
+| Active | The AGC is levelling. |
+| Bypassed | The AGC is switched out. No alarms are raised. |
+| No Input | The LNB or IF filter is powered off, so there is no IF to level. |
+| At Max | The gain is at its upper limit. |
+| At Min | The gain is at its lower limit. |
+
+The alarm light on the card shows these messages:
+
+- **AGC on noise only**: the passband holds noise and no traffic carrier. This shows on an empty sky before a pass. It raises after about 1 second of noise-only power. A narrow beacon can still show on the analyzer while this alarm is up.
+- **AGC at max gain - weak signal**: the signal is too weak for the AGC to bring up to level.
+- **AGC at min gain - possible interference**: something strong is in the passband. This is an error-level alarm.
+
+While the antenna is stowed or slewing, the max and min gain alarms are held off. With the LNB off, the light stays grey and reads "LNB off".
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Mode reads No Input | The LNB or IF filter is powered off. | Power them on. See [Low-Noise Block Downconverter](/equipment/low-noise-block-downconverter/). |
+| At Max with a carrier you expect | Weak signal: antenna off target, wrong polarization, or a wide IF filter admitting too much noise. | Check the antenna on the [ACU Control](/mission-control/acu-control/) tab and the filter bandwidth. |
+| At Min, or a gain that sags | An interferer is in the passband. | Find it on the analyzer and notch or filter it out. |
+| Receiver level jumps when Bypass is on | The AGC was holding the level for you. | Turn Bypass off. |
+
+## Related pages
+
+- [Notch Filter](/equipment/notch-filter/)
+- [IF Filter Bank](/equipment/if-filter-bank/)
+- [Receiver](/equipment/receiver/)
+- [RX Analysis tab](/mission-control/rx-analysis/)

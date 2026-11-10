@@ -1,0 +1,139 @@
+---
+title: SDR Console
+description: Tune, track and decode satellites on a hobbyist software-defined radio station.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 16
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+The SDR Console is the whole radio rig on a backyard (hobbyist) station. It looks like free amateur radio software: a big frequency readout, a spectrum trace with a waterfall below it, and a menu on the left. You tune the receiver, point the rotator, and watch the decoder. On stations that have a transmitter you can also key it from here.
+
+<Aside type="note">
+Backyard stations have no ACU racks and no professional RX or TX chain tabs. The SDR Console is the main tab, plus an Observations tab when the scenario has orbiting satellites.
+</Aside>
+
+![SDR Console with the frequency readout, spectrum and waterfall, and the left menu.](/images/shots/mission-control/sdr-console.webp)
+
+## Controls and fields
+
+### Top bar
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| Frequency digits | The tuned frequency. Scroll over a digit or click it to tune. | Set from a bookmark or the briefing |
+| « and ‹ | Step down by 10 kHz and 1 kHz. | |
+| › and » | Step up by 1 kHz and 10 kHz. | |
+| SIGNAL meter | Bar and C/N readout in dB for the tuned signal. | varies |
+| Lock indicator | Shows why the decoder is or is not locked. See the table below. | LOCKED |
+
+### SOURCE
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| RF GAIN | Front-end gain slider, 40 to 100 dB. | varies |
+| ADC | Input level to the converter in dBFS with a status word. | OPTIMAL |
+| REF | Clock source. Shows GPS with a satellite count, ACQUIRING or HOLDOVER. | GPS |
+| HOLD / GPS button | Switches the clock between GPS-disciplined and free-running holdover. | GPS |
+| CLK ΔT | Clock offset in microseconds. | near +0.0 µs on GPS |
+
+### RADIO
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| MODE | Demodulator: BPSK, QPSK, 8QAM or 16QAM. | Must match the signal |
+| FEC | Code rate: 1/2, 2/3, 3/4, 5/6 or 7/8. | Must match the signal |
+| BW kHz | Receive channel width. It must bracket the signal. | Slightly wider than the signal |
+| AFC | Automatic frequency control. Follows the carrier's offset. | On for drifting signals |
+| POL: RHCP / LHCP | Circular polarization handedness. Only shown with a circular antenna. | Match the satellite |
+
+### TRANSMIT
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| TX FRQ | Uplink frequency in MHz. | varies |
+| PA OUT | Power amplifier output in watts. | varies |
+| TX | Keys the transmitter. | Press only when you mean to radiate |
+| Status | STANDBY, ON AIR or FAULT. | STANDBY |
+
+Stations without a transmitter show "RX ONLY - NO TRANSMITTER".
+
+### FILTER
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| IF BW | Front-end filter width. A narrower filter gives a lower noise floor. | varies |
+| NOTCH and frequency | Switch on a notch filter at a chosen MHz to remove a strong unwanted signal. | Off unless interference is present |
+
+### FREQUENCY MANAGER, ROTATOR and DECODER
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| Frequency manager bookmarks | One button per known beacon. Click to tune to it. | Start here |
+| Rotator AZ and EL | Current pointing in degrees. | varies |
+| Satellite list and TRACK | Pick a satellite and tick TRACK to follow it. | Tick for a pass |
+| MAN AZ and GO | Enter an azimuth and slew there. This turns TRACK off. | 0 to 360 |
+| DECODER panel, ID, OFFSET | Decoded content, the signal ID and the carrier offset in Hz. | NO SIGNAL until locked |
+
+Stations on a fixed mount show "FIXED MOUNT - NO ROTATOR". A status bar at the bottom repeats the VFO frequency, mode and FEC. The Recorder, Theme and Module Manager sections are only decoration.
+
+A band plan strip labels known allocations: WX SAT, 2M AMATEUR, 70CM AMATEUR and GNSS L1.
+
+## Common tasks
+
+### Decode a beacon
+
+<Steps>
+1. Pick a satellite in the ROTATOR list and tick **TRACK**. Wait for the status to read TRACKING.
+2. Click a bookmark in the FREQUENCY MANAGER to tune to the beacon.
+3. Set MODE and FEC to match the beacon. Set BW kHz a little wider than the signal.
+4. Turn on **AFC** if the carrier is off frequency.
+5. Adjust RF GAIN until the ADC readout says OPTIMAL.
+6. Wait for the lock indicator to read LOCKED and for the DECODER panel to fill in.
+</Steps>
+
+### Transmit
+
+<Steps>
+1. Set TX FRQ to the uplink frequency.
+2. Point the rotator at the satellite and wait for TRACKING.
+3. Press **TX**. The status reads ON AIR and PA OUT shows the power.
+4. Press **TX** again to stop.
+</Steps>
+
+## Status and what it means
+
+| Lock indicator | Meaning | Fix |
+| --- | --- | --- |
+| LOCKED | The decoder has the signal. | None |
+| NO LOCK | No carrier found at this frequency. | Tune to the signal, point the rotator |
+| ACQUIRING | A carrier is present and the decoder is settling. | Wait |
+| MODE? | MODE or FEC does not match the signal. | Try other settings |
+| BW TOO WIDE | The channel is much wider than the signal. | Reduce BW kHz |
+| BW TOO NARROW | The channel is narrower than the signal. | Increase BW kHz |
+| LOW SNR | Right settings, but the carrier is too weak. | Point better, raise gain, use a narrower IF BW |
+
+| ADC status | Meaning |
+| --- | --- |
+| OPTIMAL | Input level is in range. |
+| CLIPPING or SEVERE-CLIPPING | Too much level. Lower RF GAIN. |
+| LOW-LEVEL or SEVERE-LOW | Too little level. Raise RF GAIN. |
+
+Rotator status reads IDLE, or TRACKING followed by the satellite name.
+
+## Troubleshooting
+
+- **Signal meter is flat.** The rotator is not pointed at the satellite. Tick TRACK or enter MAN AZ and press GO.
+- **LOCKED never appears but a carrier is visible.** Check MODE, FEC and BW kHz in that order.
+- **Frequency drifts and lock drops.** Turn on AFC, and check REF reads GPS, not HOLDOVER.
+- **A strong nearby signal swamps the display.** Turn on NOTCH and enter that frequency, or narrow IF BW.
+- **TX button does nothing or shows FAULT.** The transmit chain is faulted or powered off. Check the modem and the equipment on the TX path.
+
+## Related pages
+
+- [Pass Schedule](/mission-control/pass-schedule/)
+- [RX Analysis](/mission-control/rx-analysis/)
+- [GPS Timing](/mission-control/gps-timing/)
+- [Receiver](/equipment/receiver/)
+- [Low-noise block downconverter](/equipment/low-noise-block-downconverter/)

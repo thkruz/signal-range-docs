@@ -1,0 +1,88 @@
+---
+title: Dashboard
+description: The station summary page - status, equipment counts, quick stats, chain summaries and active alarms.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 2
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+The Dashboard is the first tab for a ground station. It does not control anything. It summarises the station so you can see what is on, what is locked and what is alarming. Click a summary card to jump to the tab that controls it.
+
+![Dashboard tab with station information, equipment summary and chain status cards.](/images/shots/mission-control/dashboard.webp)
+
+## Cards
+
+| Card | What it shows | Click goes to |
+| --- | --- | --- |
+| Station Information | Station name and ID, latitude, longitude, elevation in metres, and a Status badge. | n/a |
+| Equipment Summary | Counts of Antennas, RF Front-Ends, TX Modems and RX Modems installed. | n/a |
+| Quick Stats | RX Modems On, TX Modems On, Signals, Alarms. | n/a |
+| Antenna | Mode, Position (azimuth and elevation), Lock, Beacon C/N (1 kHz). | ACU Control |
+| GPSDO | Lock, Satellites, Status, Warm-up. | GPS Timing |
+| RF Chain RX | LNB Lock, Noise Temp, Filter BW, LNB Power. | RX Analysis |
+| RF Chain TX | BUC Lock, BUC Output, HPA Power, HPA Status. | TX Chain |
+| Receivers | Active modems, Best SNR, Signals locked, Quality. | RX Analysis |
+| Transmitters | Active modems, TX Status, Power Budget, Faults. | TX Chain |
+| Active Alarms | Every alarm active at this station, most severe first. | n/a |
+
+Counts are per modem. A receiver case holds four modems, so one case with one modem powered reads "1/4 Modems", not "1".
+
+## Status badge
+
+The Status badge on Station Information shows the first of these that applies:
+
+| Badge | Meaning |
+| --- | --- |
+| OFFLINE | The station is not operational. |
+| MAINTENANCE | The antenna is in maintenance mode. |
+| STOWED | The antenna is stowed. |
+| DEGRADED | An error alarm is active at the station. A carrier lock loss that only means the satellite has set does not count. |
+| OPERATIONAL | None of the above. |
+
+## Reading the cards
+
+- Small round lights on a card header turn amber or red when that part of the chain has an alarm. They stay grey when the equipment is off. Hover a light to see why.
+- Mode on the Antenna card reads MANUAL, PROGRAM TRACK, STOW or MAINTENANCE. "+ STEP" is added when step-track is on. If the antenna controller's automation has failed, the badge turns red because nothing is tracking, and a program track reads "PROGRAM TRACK (OFFLINE)".
+- Beacon C/N (1 kHz) is measured in the beacon receiver's narrow bandwidth. It reads higher than the carrier C/N on an RX modem, which is measured across the whole carrier.
+- GPSDO Status reads OK, WARMING, HOLDOVER or OFF.
+- Best SNR is the highest effective C/N among powered modems that see a carrier. It matches the number on the modem card.
+- HPA Status can read DISABLED or OVERDRIVE. OVERDRIVE means the amplifier is pushed into compression.
+- Power Budget is the share of the transmitter's power budget in use.
+- The Alarms figure in Quick Stats counts every row in Active Alarms, including info rows. It matches the count in the command bar for this station.
+
+## Active alarms
+
+Each row shows the message and a time stamp from the scenario clock for when it was raised. Hover a row for detail. A green check and "No active alarms" shows when the list is empty.
+
+## Common tasks
+
+<Steps>
+1. Check station health before a pass. Confirm Status is OPERATIONAL, GPSDO Lock is LOCKED, and the RF Chain RX and RF Chain TX cards show LOCKED.
+2. Find what is wrong. Look for the amber or red light, click that card, and read the alarm on the tab.
+3. Confirm your carrier. After you set up the receiver, check that Signals shows a locked count and the Quality light is not red.
+</Steps>
+
+<Aside type="note">
+Signals on the Dashboard counts locked carriers. The "RF signals in view" figure on ACU Control counts carriers inside the dish's main beam, locked or not, so the two can differ.
+</Aside>
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| Status reads DEGRADED | An error alarm is active. | Read Active Alarms and clear the cause. |
+| Status reads STOWED | The antenna is stowed. | Open ACU Control, choose MANUAL or PROGRAM, then press APPLY. |
+| Everything shows OFF or "--" | Equipment is powered down. | Power it on from its own tab. |
+| Best SNR shows "-- dB" | No powered modem sees a carrier. | Check the antenna pointing and the modem frequency on RX Analysis. |
+| The Receivers light is grey | No modem is powered, or there is no carrier. | Power a modem and tune it. |
+
+## Related pages
+
+- [Mission Control Shell](/mission-control/shell/)
+- [ACU Control](/mission-control/acu-control/)
+- [RX Analysis](/mission-control/rx-analysis/)
+- [TX Chain](/mission-control/tx-chain/)
+- [GPS Timing](/mission-control/gps-timing/)
+- [Mission Overview](/mission-control/mission-overview/)

@@ -1,0 +1,75 @@
+---
+title: Constellation Sandbox
+description: The Range Watch campaign, open-play scenarios with real satellite catalogs.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 3
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+Range Watch is a sandbox campaign. Its scenarios load real satellite catalogs and let you explore.
+There is no timer, nothing can fail and nothing is locked. It is marked alpha. Each scenario has a
+short list of objectives that guide you, but you can ignore them.
+
+![GEO Belt Survey scenario at the High Desert station.](/images/shots/plugins/constellation-sandbox.webp)
+
+## The two scenarios
+
+| Scenario | Station | Catalog | Equipment |
+| --- | --- | --- | --- |
+| **Starlink Interference** | Cedar Mesa, CM-01 | The Starlink fleet, about 11,200 satellites, plus one GEO satellite, KU-SAT 1 at 98 W | Ku-band phased array user terminal, Ku-band RF front end, spectrum analyzer, RX modem |
+| **GEO Belt Survey** | High Desert, HD-01 | The geostationary belt | 3-meter Ku-band manual antenna, Ku-band RF front end, spectrum analyzer, RX modem |
+
+Both start on 9 November 2026 at 18:00:00 UTC.
+
+## Starlink Interference
+
+You run a phased array terminal under the GEO arc and see how it hands over between Starlinks.
+See [Phased Array](/plugins/phased-array/) for the page and its controls.
+
+<Steps>
+
+1. **Open Array Control.** Open the tab on CM-01.
+2. **Watch Two Handovers.** Leave the terminal in AUTO until it hands over twice. Skip time forward if you like.
+3. **Lock a Starlink by Hand.** Use MANUAL and click a satellite low in the sky until the scan loss passes 1 dB.
+4. **Test the GEO Protection Zone.** Turn the zone off, lock a satellite whose beam lies in the GEO arc, then turn the zone on again.
+5. **Report the Link Drop.** Return to AUTO and let it hand over. Read **Last link drop**, then open the report form. File the NORAD number of the serving satellite and a UTC window of at most 10 minutes. The report is accepted only if the terminal logged a drop by that satellite in that window.
+
+</Steps>
+
+## GEO Belt Survey
+
+You look for occupied slots in the geostationary belt and identify satellites by their beacons.
+
+<Steps>
+
+1. **Open the World Map.** Turn on the GEO belt layer.
+2. **Pin a GEO Satellite.** Search the asset tree for a GEO payload above the horizon.
+3. **Point the Dish at It.** On ACU Control, in MANUAL, step azimuth and elevation to the values on the pinned satellite page, then press APPLY. The dish moves slowly. The beam is under 1 degree wide and slots are about 1 degree apart.
+4. **Read the Carriers.** Open RX Analysis and nudge the dish until modem 1 reads LOCKED with a C/N of at least 10 dB. Only the vertical carriers can lock. A narrow spike is a beacon, not a carrier.
+5. **Convert IF to RF.** The LNB local oscillator is at 13100 MHz.
+6. **Tune a Beacon.** Find a narrow spike between 11200 and 11700 MHz RF and tune modem 1 to it with a 1 MHz bandwidth.
+7. **Confirm Which Satellite It Is.** Use the Beacon ID form. Its lookup turns a NORAD number into a beacon frequency and back. The answer is accepted only if modem 1 is measuring that satellite.
+
+</Steps>
+
+An occupied slot shows a row of carriers on the spectrum analyzer. An empty one shows only noise.
+Traffic carriers look the same on every slot because operators reuse frequencies. Beacons differ
+because each satellite's beacon frequency is set by its NORAD number.
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| Modem will not lock on a carrier | Horizontal carriers are rejected by this feed, or the dish is slightly off. | Use a vertical carrier and nudge in 0.01 degree steps. |
+| Nothing on the analyzer | The slot is empty, or the dish is between slots. | Re-check the pinned satellite's az and el. |
+| Outage report rejected | The window is longer than 10 minutes, or no drop by that satellite is in it. | Read **Last link drop** again and narrow the window. |
+| No handover happens | The terminal is in MANUAL or STOW. | Press **AUTO**. |
+
+## Related pages
+
+*   [Plugins overview](/plugins/)
+*   [Phased Array](/plugins/phased-array/)
+*   [Receiver](/equipment/receiver/)
+*   [Antenna Control Unit](/equipment/antenna-control-unit/)

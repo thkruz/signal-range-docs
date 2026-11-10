@@ -1,0 +1,97 @@
+---
+title: Site
+description: A picture of the physical station with a hotspot for each part, plus the way in and out of the equipment area.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 19
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+The Site tab shows the physical plant of a field station as a painted scene. Each piece of equipment, such as a power source, a modem or a dish, is a hotspot you can hover and click. A small light on each hotspot tells you what you can see from there: powered, restarting or dark. Click a hotspot to open a close-up of that part and work on it. A strip across the top shows how many spares you hold and the state of the station's network paths. Where you are, your trip count and the button to step outside or back in sit in the tab header (see below).
+
+<Aside type="note">
+The tab only exists on scenarios that set up a physical plant. On a field station the scenario opens on it. The field panels (power, service checks, workloads, notebook, handover, records and service paths) open underneath the scene. See [Field Panels](/mission-control/field-panels/).
+</Aside>
+
+![Site tab showing the painted station scene with hotspots and the header strip.](/images/shots/mission-control/site.webp)
+
+## Tent control
+
+![The tent control in the tab header, right of the tabs.](/images/shots/mission-control/tent-control.webp)
+
+In scenarios with a physical plant, the right of the tab header carries the tent control. It stays visible on every tab, so you can step outside or back in without returning to the Site tab.
+
+| Item | What it shows or does | Typical value |
+| --- | --- | --- |
+| Location badge | Inside the tent or Outside. | Inside the tent |
+| Trips | Trips n/limit: how many times you have gone outside against the scenario's limit. Hover for the rule. | varies |
+| Spotted | Appears if you break the trip rule. | Hidden |
+| Step outside / Go back in | One button that moves you between the inside view and the outside view. | Step outside |
+
+Some scenarios place you at a single forward site with no inside and outside. There the tent control is not shown, and the trip counter and Spotted flag do not apply.
+
+If you try to open another asset from the sidebar while you are outside, a prompt asks you to go back in first. The laptop and the equipment racks are in the tent.
+
+## Header strip
+
+The strip above the scene is short. The location, trip count and Spotted badge live only in the tent control, and the SkyLink app opens from the SkyLink tab.
+
+| Item | What it shows or does | Typical value |
+| --- | --- | --- |
+| Spares | How many spare parts you hold. | varies |
+| SkyLink, VSAT | Whether each network path is up or down. | up |
+| Outside note | Appears while you are outside: go inside to use the laptop. | Hidden |
+| Trainer | Only shown in sandbox scenarios when the trainer unlock is on. | Hidden |
+
+## Hotspots
+
+| Pip color | Meaning |
+| --- | --- |
+| Green | The part has power. |
+| Amber | The part is off but restarting. For the SkyLink dish, also a reduced state. |
+| Red | The part has no power. For the SkyLink dish, also thermal shutdown. |
+
+Pips never show hidden faults. A pip shows what you can observe. It does not prove the service works end to end. Use the service checks to confirm that.
+
+The scene picture changes with the weather.
+
+## Common tasks
+
+### Inspect a part
+
+<Steps>
+1. Hover a hotspot to read its label.
+2. Click it to open the close-up.
+3. Read the lights and labels. Use the close-up controls to power it, reseat a cable or swap a spare, as the part allows.
+4. Return to the scene and check the pip.
+</Steps>
+
+### Go outside to reach equipment
+
+<Steps>
+1. Press **Step outside** in the tab header. The location badge changes to Outside.
+2. Click the hotspot you need and work on it.
+3. Press **Go back in** before you use the laptop or the terminal app.
+</Steps>
+
+Every action takes scenario time. Plan the trip before you leave.
+
+## Status and what it means
+
+- **Trips n/m.** You have used n of m allowed outside trips.
+- **Spotted.** You exceeded the trip rule. The scenario may score this.
+- **Path readouts show down.** That network path has no usable link. Check power and cabling on its parts.
+
+## Troubleshooting
+
+- **The close-up will not open.** You are probably on the wrong side. Equipment outside needs the outside view.
+- **A pip is green but the service is down.** The pip only shows that the part has power. Run a check from the service panel.
+- **There is no Site tab.** The scenario does not use a physical plant.
+
+## Related pages
+
+- [Field Panels](/mission-control/field-panels/)
+- [Dashboard](/mission-control/dashboard/)
+- [GPS Timing](/mission-control/gps-timing/)
+- [Mission Overview](/mission-control/mission-overview/)

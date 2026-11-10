@@ -1,0 +1,19 @@
+---
+title: Plugins
+description: Optional modules that extend the station, and how to write your own.
+sidebar:
+  label: Overview
+  order: 0
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+Plugins add equipment and features to SignalRange. The built-in plugins are listed here. If you
+want to write your own, start with Writing a Plugin.
+
+<CardGrid>
+  <LinkCard title="Phased Array" description="Flat-panel Ku terminal and the Array Control page." href="/plugins/phased-array/" />
+  <LinkCard title="SkyLink Terminal" description="The consumer terminal app on field stations." href="/plugins/skylink-terminal/" />
+  <LinkCard title="Constellation Sandbox" description="Range Watch: Starlink and GEO belt sandboxes." href="/plugins/constellation-sandbox/" />
+  <LinkCard title="Writing a Plugin" description="Build your own plugin." href="/contributing/plugins/" />
+</CardGrid>

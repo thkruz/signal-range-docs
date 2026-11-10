@@ -1,0 +1,126 @@
+---
+title: Link Analysis
+description: Fill in the link budget worksheet, check it against the simulator, and accept the link.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 8
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+The Link Analysis tab is a worksheet for planning a satellite link and then proving it. You enter the numbers for the downlink, optionally the uplink, and compute the carrier-to-noise ratio (C/N). Then you compare that prediction with the C/N the modem measures, and accept the link if the margin is good enough.
+
+This page covers the tab. The formulas and the reasoning behind each term are in [Link Budget](/systems/link-budget/).
+
+The tab appears only in scenarios that ask for a link check, and the heading shows the name of the link being planned.
+
+![Link Analysis worksheet with downlink budget, uplink budget and link verification panels.](/images/shots/mission-control/link-budget.webp)
+
+## Controls
+
+### Downlink Budget fields
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| Satellite EIRP (dBm) | Power the satellite radiates toward you, including antenna gain. | varies |
+| Free-space path loss (dB) | Loss from distance between satellite and station. | varies |
+| RX antenna gain (dBi) | Gain of your receiving dish. | varies |
+| System noise temp (K) | Total noise temperature of the receive chain. Must be at least 1. | varies |
+| Occupied bandwidth (MHz) | Width of the signal. Must be above 0. | varies |
+| Implementation loss (dB) | Extra losses such as cabling or modem imperfection. Starts at 0. | 0 |
+| Compute C/N | Calculates the predicted C/N from the fields above. | not applicable |
+
+### Uplink Budget fields
+
+Leave this panel blank for a direct downlink. Fill it in for a transponded link, where the signal is relayed through the satellite. The composite C/N is the one that is graded.
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| Uplink EIRP (dBW) | Power your station radiates toward the satellite, including antenna gain. | varies |
+| Uplink path loss (dB) | Loss on the path up to the satellite. | varies |
+| Satellite G/T (dB/K) | Receive quality of the satellite. | varies |
+| C/IM (optional) (dB) | Optional intermodulation term. | blank |
+
+The panel shows C/N uplink, C/N downlink and Composite C/N once you press Compute C/N.
+
+<Aside type="note">
+Uplink power in the simulator is EIRP, the radiated power after the antenna. Enter the value your station radiates, not the amplifier output.
+</Aside>
+
+### Link Verification fields
+
+| Item | What it shows |
+| --- | --- |
+| Measured C/N (active modem) | Live C/N from the modem. |
+| Demod threshold | Lowest C/N at which the demodulator works. |
+| Required margin | How far above the threshold the link must be. The default is 3 dB. |
+| Live margin | Measured C/N minus the demod threshold. |
+| Accept Link | Locks in the live margin. Disabled until the modem gives a measurement. |
+| Accepted margin | The margin you locked in. |
+
+## How it works
+
+### Panels
+
+The tab has three panels.
+
+- **Downlink Budget - Predicted:** your calculation for the satellite-to-ground path.
+- **Uplink Budget - Predicted:** optional, for links that go through a transponder.
+- **Link Verification - Measured:** what the simulator measures, and the Accept Link button.
+
+## Common tasks
+
+### Complete the worksheet
+
+<Steps>
+
+1. Collect the station and satellite values you need from your briefing and the equipment pages.
+2. Enter all six downlink fields. Every one is required.
+3. If the link goes through a transponder, enter Uplink EIRP, Uplink path loss and Satellite G/T. Leave all three blank otherwise. C/IM may stay blank.
+4. Press Compute C/N.
+5. Read Predicted C/N and the badge beside it.
+6. Compare with the measured value on the right. If they differ, find which input is wrong and recompute.
+
+</Steps>
+
+### Accept the link
+
+<Steps>
+
+1. Make sure the modem is locked on the carrier so Measured C/N shows a number.
+2. Check Live margin is at or above Required margin.
+3. Press Accept Link.
+4. Read the badge under Accepted margin.
+
+</Steps>
+
+## Status and alarms
+
+### Badges and what they mean
+
+| Badge | Where | Meaning |
+| --- | --- | --- |
+| NO SOLUTION | Next to Predicted C/N | No worksheet has been computed yet. |
+| IN FAMILY | Next to Predicted C/N | Your predicted C/N is within tolerance of the simulator's own clear-sky value. The default tolerance is 1 dB. |
+| OUT OF FAMILY | Next to Predicted C/N | Your prediction is too far from the simulator's value. An input is probably wrong. |
+| PENDING | Under Accepted margin | You have not accepted the link. |
+| LINK GO | Under Accepted margin | The accepted margin meets the required margin. |
+| NO-GO | Under Accepted margin | The accepted margin is below the required margin. |
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| "Budget incomplete — all fields required." | A downlink field is blank. | Fill every downlink field. Implementation loss may be 0. |
+| "Uplink budget incomplete — fill in EIRP, path loss and G/T, or leave all three blank." | Only some of the three required uplink fields are filled. | Fill Uplink EIRP, path loss and G/T, or clear all three. |
+| OUT OF FAMILY. | A wrong input, often path loss, bandwidth units or EIRP units. | Recheck each field. EIRP is in dBm on the downlink and dBW on the uplink. |
+| Accept Link is greyed out. | No measured C/N. | Lock the modem on the carrier and check the antenna is pointed. |
+| NO-GO after accepting. | Margin below the requirement. | Improve the link (pointing, rain fade, interference), then accept again. |
+| Measured C/N is far below prediction. | Weather, interference, mispointing or a fault. | See [Weather and Rain Fade](/systems/weather-and-rain-fade/) and [Interference and Electronic Attack](/systems/interference-and-ea/). |
+
+## Related pages
+
+- [Link Budget](/systems/link-budget/) explains the equations.
+- [Receiver](/equipment/receiver/) is the modem that supplies the measured C/N.
+- [Pass Schedule](/mission-control/pass-schedule/) tells you when the link is available.
+- [Telemetry](/mission-control/telemetry/) shows satellite health once the link is up.

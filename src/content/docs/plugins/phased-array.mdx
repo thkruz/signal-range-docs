@@ -1,0 +1,165 @@
+---
+title: Phased Array
+description: The flat-panel Ku-band user terminal and its Array Control page.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 1
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+The phased array plugin adds a Starlink-style Ku-band flat panel to SignalRange. It has no dish to
+point. It steers its beam electronically, follows one Starlink satellite at a time and hands over
+to the next one before the first sets. Its station tab is **Array Control**, and it replaces the
+ACU Control tab that dish antennas use.
+
+The plugin is built in and on by default. You meet it in the Range Watch sandbox called Starlink
+Interference, where the Cedar Mesa station (CM-01) carries the panel.
+
+![Array Control page with the sky view, beam card, GEO protection zone and handover strip.](/images/shots/plugins/phased-array.webp)
+
+## How the panel behaves
+
+*   The panel looks straight up. The beam can lean up to 57 degrees away from straight up. Anything
+    beyond that is outside the scan cone and cannot be used.
+*   Leaning costs gain. The farther the beam leans, the higher the **Scan loss**.
+*   The panel serves Starlink satellites only. A geostationary satellite is never selected, even if
+    it sits in view.
+*   Every handover, and the first acquisition, drops the link for about 100 ms.
+*   In AUTO the panel keeps the current satellite until another one is more than 8 degrees higher
+    in the sky. Then it hands over.
+*   The receive band is 10.7 to 12.7 GHz and the transmit band is 14.0 to 14.5 GHz.
+*   Gain and G/T are game values for a Ku flat panel. They are not measured Starlink figures.
+
+## Controls and readouts
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| **AUTO** | The panel picks a satellite and hands over by itself. | Default |
+| **MANUAL** | The beam holds the satellite you lock and never hands over. | Used for tests |
+| **STOW** | Parks the beam on the panel normal, straight up. No link. | Varies |
+| Sky view | Click a dot to lock that satellite. Shift-click or right-click pins it. | n/a |
+| **Keep the beam out of the GEO arc** | Switch for the GEO protection zone. | On |
+| **BAND HALF-WIDTH** | Distance the beam must stay clear of the GEO arc. Buttons step by 5 or 1. Range 0 to 30. | 8 DEG |
+| **APPLY** / **CANCEL** | Apply or discard a staged band width. | n/a |
+
+Readouts on the **Beam** card:
+
+| Readout | Meaning |
+| --- | --- |
+| **Target** | Satellite name and NORAD number. Reads No target or Stowed when nothing is tracked. |
+| **Beam az / el** | Where the beam points now. |
+| **Scan angle** | Angle from the panel normal, with the limit in brackets. |
+| **Beamwidth now** | Beam width at the current scan angle. It widens as the beam leans. |
+| **G/T now** | Receive figure of merit at the current scan angle. |
+| **Scan loss** | Gain lost to leaning, in dB, with a bar that fills toward the limit. |
+| **Last link drop** | UTC time of the last drop and the satellite that was serving. |
+
+Sky view dots:
+
+*   **visible** satellites can be locked.
+*   **outside scan cone** satellites cannot, or sit inside the protection band.
+*   **target** is the satellite being tracked.
+*   **next handover** marks the satellite the panel will move to.
+*   The shaded **GEO band** shows the protection zone. It stays drawn when the zone is off.
+
+## Common tasks
+
+### Watch a handover
+
+<Steps>
+
+1. Open the **Array Control** tab and make sure **AUTO** is lit.
+2. Look at the **Handovers, next 10 minutes** strip. The red line is now. Each block is one satellite.
+3. Read the note under the strip. It gives the time to the next handover and the reason.
+4. When the time comes, the status badge shows HANDOVER OUTAGE for a moment. Any modem fed by the
+   panel loses lock at the same time.
+
+</Steps>
+
+Skip time forward if you do not want to wait.
+
+### Lock a satellite by hand
+
+<Steps>
+
+1. Press **MANUAL**.
+2. Click a dot on the sky view.
+3. Check **Scan angle** and **Scan loss**. A satellite low in the sky gives a high loss.
+4. If a message says the lock was refused, see the refusal table below.
+
+</Steps>
+
+A manual lock is dropped if the satellite sets or leaves the scan cone. A notice then says why.
+
+### Test the GEO protection zone
+
+<Steps>
+
+1. Switch off **Keep the beam out of the GEO arc**.
+2. In **MANUAL**, lock a Starlink whose beam lies inside the GEO arc.
+3. Watch the red warning and the **GEO interference** badge.
+4. Switch the protection back on.
+
+</Steps>
+
+### Change the band width
+
+<Steps>
+
+1. Type a value or use the step buttons. The **APPLY** button becomes active.
+2. Press **APPLY**. **CANCEL** puts the old value back.
+
+</Steps>
+
+## Status and what it means
+
+Top badge:
+
+| Badge | Meaning |
+| --- | --- |
+| LINK UP (green) | The beam is on a satellite. |
+| HANDOVER OUTAGE (amber) | A handover is in progress. About 100 ms. |
+| NO LINK (red) | No satellite is tracked. |
+
+**GEO interference** badge:
+
+| Badge | Meaning |
+| --- | --- |
+| CLEAR (green) | Beam is well away from the arc, or there is no target. |
+| NEAR GEO ARC (amber) | Beam is within twice the band width of the arc. |
+| IN GEO ARC (red) | Beam points inside the band. A red warning also shows. |
+| MAIN BEAM ON ARC (red) | The arc sits within 3 dB of the beam peak. |
+
+The card shows geometry and the antenna pattern only. The terminal has no transmit power model
+here, so it does not report EIRP.
+
+Lock refusals:
+
+| Message | Cause |
+| --- | --- |
+| Lock refused: that satellite is not tracked. | The satellite is not in the Starlink set the panel serves. |
+| Lock refused: the satellite is below the horizon. | It is not up yet. |
+| Lock refused: outside the panel scan limit. | More than 57 degrees from straight up. |
+| Lock refused: inside the GEO protection band. | Protection is on and the satellite lies in the band. |
+
+Handover strip labels: SL-nnnn is a Starlink, **no coverage** is a gap with nothing to hand over
+to, and **not predicted** is the part of the 10 minutes the prediction does not reach yet.
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| Few or no dots | Few Starlinks are above the horizon or inside the scan cone. | Skip time forward. |
+| Link keeps dropping | Each handover costs about 100 ms. | This is normal. |
+| Cannot lock a GEO satellite | The panel serves Starlink only. | Use a dish antenna for GEO work. |
+| No handovers listed in the strip | The terminal is in MANUAL or STOW. | Press **AUTO**. |
+| Band width will not change | The change is staged. | Press **APPLY**. |
+
+## Related pages
+
+*   [Plugins overview](/plugins/)
+*   [Constellation Sandbox](/plugins/constellation-sandbox/)
+*   [SkyLink Terminal](/plugins/skylink-terminal/)
+*   [Antenna Control Unit](/equipment/antenna-control-unit/)
+*   [Receiver](/equipment/receiver/)

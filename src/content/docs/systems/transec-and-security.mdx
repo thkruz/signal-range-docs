@@ -1,0 +1,59 @@
+---
+title: TRANSEC and Security
+description: How the station audit trail, access control, TRANSEC frequency hopping and crypto keys are modelled, and what the operator is expected to do with them.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 5
+---
+
+Security in SignalRange is a station-level job, not a network simulation. There are no packets or firewalls. You have a reviewable audit trail, a small list of accounts, a hop-set key for an anti-jam waveform, and a crypto unit with a key that can expire or mismatch. The training point is judgment: tell the real anomaly from routine traffic, and act in the right order.
+
+![Security console with an anomalous audit entry flagged and a TRANSEC hop-set key loaded.](/images/shots/systems/transec-and-security.webp)
+
+## Audit trail and access control
+
+The audit trail is a time-ordered log of station events. Each entry has a time, an actor, an action, a category (authentication, configuration, command or access) and a severity. Most are ordinary traffic. A few are anomalies the scenario planted: logins at odd hours, a configuration change nobody owns, a command replayed from earlier.
+
+Entries appear as the scenario clock reaches them. Some appear a set time after an objective goes live. Some carry evidence forward from an earlier scenario. If a decision in that earlier scenario destroyed the evidence, the entry is missing here and the evidence chain reads as broken.
+
+What the operator does:
+
+- Flag the entries that are anomalies. Read the entry in context before you flag it.
+- Sign off the review once finished.
+- Set accounts to active, disabled or expired. Disable the account tied to the anomaly. Leave the rest alone.
+
+Review first, then act. The log tells you which account to touch.
+
+## TRANSEC frequency hopping
+
+A command or downlink carrier can run in two waveform modes.
+
+| Mode | Behaviour | Weakness |
+|---|---|---|
+| Fixed carrier | One centre frequency | A jammer parks on it and denies the link |
+| Frequency hopping | Slow hops over a keyed set of channels | Needs the key at both ends |
+
+Hop sync locks only when two things are true: the waveform is in hopping mode, and the hop-set key is loaded. Loading the key with the waveform still fixed does nothing. Switching to hopping with no key loaded does not lock either. Once sync is locked, scripted interference on the old fixed carrier no longer denies the link, because the signal is no longer there.
+
+Dropping the key zeroizes it and sync is lost. Do that only on purpose. The key badge reads NOT LOADED or LOADED, and the sync badge reads NO SYNC or SYNC LOCKED.
+
+## Crypto keys
+
+The crypto unit holds the traffic key. Its state is a status, an age and an expiry. A key about to expire shows as pending rotation. A key that no longer matches the spacecraft's shows as Mismatch, and decryption and the authentication tag fail. A time skip that crosses the expiry warns you before you start. Re-key before you command.
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Sync badge stays at NO SYNC | Key loaded but mode still fixed, or mode set but no key | Set hopping mode and load the key |
+| Link still jammed after switching | Sync not locked: mode or key missing | Check both badges; SYNC LOCKED appears as soon as hopping mode and the key are both set |
+| Not sure whether an entry is an anomaly | Routine and planted entries look alike | Compare actor, hour and category with the rest of the log |
+| Decrypt fails with good C/N | Key mismatch | Re-key the crypto unit |
+
+## Related pages
+
+- [Security Console tab](/mission-control/security-console/)
+- [Commanding tab](/mission-control/commanding/)
+- [Crypto Unit](/equipment/crypto-unit/)
+- [Interference and EA](/systems/interference-and-ea/)
+- [Faults](/systems/faults/)

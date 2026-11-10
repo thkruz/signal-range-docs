@@ -1,0 +1,23 @@
+---
+title: Systems
+description: The cross-cutting systems that tie equipment together, such as link budget, weather and security.
+sidebar:
+  label: Overview
+  order: 0
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+Systems pages explain behavior that spans several pieces of equipment. Each page covers how the simulation models the system and how the operator sees it, and links to the tabs and equipment involved.
+
+<CardGrid>
+  <LinkCard title="Link Budget" description="EIRP, path loss, G/T, C/N, Eb/N0 and margin, with a worked example." href="/systems/link-budget/" />
+  <LinkCard title="Weather and Rain Fade" description="Rain, ice, wind and sun transit, and the C/N they cost." href="/systems/weather-and-rain-fade/" />
+  <LinkCard title="Faults" description="Scheduled hardware failures and payload faults, and how they raise alarms." href="/systems/faults/" />
+  <LinkCard title="Interference and EA" description="Scripted interference, terrestrial emitters and jamming with J/S." href="/systems/interference-and-ea/" />
+  <LinkCard title="TRANSEC and Security" description="Audit trail, access control, frequency hopping and crypto keys." href="/systems/transec-and-security/" />
+  <LinkCard title="Timing and GPSDO" description="Warm-up, lock, holdover and how timing errors reach the link." href="/systems/timing-and-gpsdo/" />
+  <LinkCard title="Scenario Clock and Time Skip" description="Scenario time versus run time, and the rules for skipping dead time." href="/systems/scenario-clock-and-time-skip/" />
+  <LinkCard title="Equipment" description="The hardware each system runs through." href="/equipment/receiver/" />
+  <LinkCard title="Mission Control" description="The tabs that expose these systems." href="/mission-control/" />
+</CardGrid>

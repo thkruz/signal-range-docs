@@ -1,7 +1,9 @@
 ---
 title: Low Noise Block Downconverter
 description: Guide to using the Low Noise Block Downconverter in SignalRange
-lastUpdated: 2026-10-06
+lastUpdated: 2026-11-09
+sidebar:
+  order: 3
 ---
 
 import { Steps } from '@astrojs/starlight/components';
@@ -9,28 +11,28 @@ import { Aside } from '@astrojs/starlight/components';
 
 The LNB (Low Noise Block) converter is one of the most important components in satellite reception. It sits at the antenna and does two critical jobs: first, it amplifies extremely weak signals from space with minimal added noise; second, it downconverts the high-frequency RF signals (typically 3.7–4.2 GHz) to a lower intermediate frequency (IF) that can travel through coaxial cable without significant loss. The "low noise" part means it's designed to add as little extra noise as possible to the already-faint signals coming from satellites.
 
-### Key controls
+![LNB card with local oscillator, gain, noise temperature and lock status.](/images/shots/equipment/low-noise-block-downconverter.webp)
+
+## Where to find it
+
+The LNB card is on the **RX Analysis** tab of Mission Control, at the start of the receive chain. See [RX Analysis](/mission-control/rx-analysis/). Its reference lock comes from the [GPS Disciplined Oscillator](/equipment/gps-disciplined-oscillator/).
+
+## Controls
 
 *   **POWER** - turns the LNB on or off. When powered, the LNB amplifies and downconverts signals. When off, no signals pass through.
-*   **LO (MHz)** - sets the Local Oscillator frequency (5150 MHz is a common C-band choice). The LO is mixed with incoming RF signals to produce the IF output. For example, if you receive a 4000 MHz signal and the LO is set to 5000 MHz, the output IF will be 1000 MHz.
-*   **GAIN (dB)** - controls how much the LNB amplifies the signal (0–70 dB). Higher gain means stronger output signals, but also affects noise temperature. Typical LNBs operate around 50–65 dB of gain.
+*   **LO (MHz)** - sets the Local Oscillator frequency (range 5000 to 7000 MHz on C-band stations; Ku-band stations such as Galway run a fixed 13100 MHz LO; the default is 6080 MHz). Like the other RF settings, LO and gain are staged: change them, then press Apply. The LO is mixed with incoming RF signals to produce the IF output. For example, if you receive a 4000 MHz signal and the LO is set to 5000 MHz, the output IF will be 1000 MHz.
+*   **GAIN (dB)** - controls how much the LNB amplifies the signal (0–65 dB). Higher gain means stronger output signals, but also affects noise temperature. Typical LNBs operate around 50–65 dB of gain.
 
-### Readouts you will see
+## Readouts
 
-*   **LO (MHz)** - displays the current Local Oscillator frequency. This value determines which RF frequency band gets downconverted to which IF frequency.
-*   **NOISE TEMP (K)** - the system noise temperature in Kelvin. This is a critical performance metric. Lower is better. Typical consumer LNBs range from 45–90K when fully warmed up. Professional LNBs can achieve 15–30K. When first powered on, the noise temperature starts higher (around 2x nominal) and gradually decreases as components warm up and stabilize.
-*   **TEMP (°C)** - the physical operating temperature of the LNB components. This affects oscillator stability. The LNB warms from ambient (~25°C) to operating temperature (~50°C) over its stabilization time after power-on (2.5 minutes by default; each station sets its own).
-*   **FREQ ERR (MHz)** - frequency error of the Local Oscillator. When locked to the GPSDO's 10 MHz reference, the LO carries only the reference's own error: a few parts in 10^12 (millihertz) when the GPSDO is GPS-locked, so the readout is effectively zero. When unlocked, the oscillator free-runs and the error wanders (see *Reference lock* below), which shifts your received signals off-frequency.
+| Readout | What it shows |
+|---|---|
+| Noise Temp (K) | The system noise temperature in Kelvin. Lower is better. Typical consumer LNBs range from 45–90K when fully warmed up; professional LNBs can achieve 15–30K. When first powered on it starts higher (around 2x nominal) and falls as the components warm up. |
+| Lock | A Locked or Unlocked badge: whether the LO is locked to the 10 MHz reference from the GPSDO. |
+| Thermal | "Warming m:ss" counting down until the stabilization time has passed since power-on (2.5 minutes by default; each station sets its own), then "Stable". |
+| LO Error | The LO frequency error, in Hz or kHz. When locked to the GPSDO's 10 MHz reference the LO carries only the reference's own error: a few parts in 10^12 (millihertz) when the GPSDO is GPS-locked, so the readout is effectively zero. When unlocked, the oscillator free-runs and the error wanders (see *Reference lock* below), which shifts your received signals off-frequency. |
 
-The RX Analysis tab also shows the LNB's **Thermal** state ("Warming m:ss" counting down until the stabilization time has passed since power-on, then "Stable") and an **LO Error** readout in Hz or kHz.
-
-### LED indicators
-
-*   **LOCK** - shows whether the LNB's Local Oscillator is locked to an external reference source (typically a 10 MHz signal from a GPSDO).
-    *   **Green** - locked to external reference. Frequency is stable and accurate.
-    *   **Amber** - acquiring lock or reference signal quality degraded.
-    *   **Red** - not locked. LNB is free-running and will experience frequency drift.
-*   **NOISE TEMP** - a blue LED whose brightness indicates noise temperature. Brighter means lower (better) noise temperature. Dimmer means higher (worse) noise temperature. This gives you a quick visual indication of LNB performance quality.
+## How it works
 
 ### What noise temperature actually means
 
@@ -71,30 +73,33 @@ Most LNBs include bandpass filters to limit the input frequency range to just th
 
 They also include output filtering to ensure the IF signal is clean and free from unwanted spurs or harmonics generated during mixing. SignalRange's LNBs have a flat IF passband from 950 to 2150 MHz with skirts beyond each edge (3 dB down 25 MHz outside, falling steeply further out). A carrier that straddles an edge loses the part that falls on the skirt, and one far outside is not carried at all, so set the LO frequency to place your desired signals well inside this range.
 
-### Alarms and warning conditions
+## Status and alarms
 
 The system will raise alarms for several conditions:
 
 *   **Not locked to reference** - The LNB is powered but cannot lock to the external reference. The free-running oscillator makes signals wander off-frequency and adds phase noise that costs a few dB of Es/N0. Check that the GPSDO is powered, warmed up, and connected; if the reference is fine, power-cycle the LNB to clear a latched lock fault.
+*   **Input overload** - The input is strong enough to compress the LNB. The alarm shows the compression in dB. Lower the input level or move the dish off a strong source.
 *   **High noise temperature** - Noise temperature above 100K indicates degraded performance. This can be normal during warm-up, but if it persists after stabilization, the LNB may be damaged or operating outside specifications.
 *   **Degraded noise figure** - The LNA noise figure exceeds 1.0 dB. Professional LNBs should be well below this. High noise figure directly increases system noise temperature and reduces sensitivity.
 
-### Simple troubleshooting steps
+## Troubleshooting
 
-1.  **No signals received** - Check that the LNB is powered on. Verify the LOCK LED is green (locked to reference). Check that the LO places your carriers inside the 950–2150 MHz IF passband. Wait for the Thermal readout to show "Stable".
-2.  **Signals at wrong frequency** - Check the LO frequency setting (and remember the high-side inversion). Verify the FREQ ERR display shows near zero. If frequency error is large, the LNB is unlocked: check the GPSDO and the LOCK status.
+1.  **No signals received** - Check that the LNB is powered on. Verify the Lock badge reads Locked. Check that the LO places your carriers inside the 950–2150 MHz IF passband. Wait for the Thermal readout to show "Stable".
+2.  **Signals at wrong frequency** - Check the LO frequency setting (and remember the high-side inversion). Verify the LO Error readout shows near zero. If frequency error is large, the LNB is unlocked: check the GPSDO and the Lock badge.
 3.  **Weak or noisy signals** - Check the NOISE TEMP reading. If above 90–100K and stable, the LNB may have degraded performance. Try adjusting the GAIN setting - too little gain means weak signals, but excessive gain can cause other issues.
-4.  **LOCK LED is red** - Verify the GPSDO module is powered and warmed up. Check that the 10 MHz reference signal is present. The LNB cannot lock without a valid reference. If the reference is good and the LED stays red, power-cycle the LNB to clear a latched lock fault (then wait out its warm-up again).
-5.  **NOISE TEMP LED is dim** - This indicates high noise temperature. If the LNB was just powered on, wait for stabilization. If it persists, check the LNA noise figure and gain settings.
+4.  **Lock badge reads Unlocked** - Verify the GPSDO module is powered and warmed up. Check that the 10 MHz reference signal is present. The LNB cannot lock without a valid reference. If the reference is good and the badge stays Unlocked, power-cycle the LNB to clear a latched lock fault (then wait out its warm-up again).
+5.  **Noise Temp reads high** - This indicates high noise temperature. If the LNB was just powered on, wait for stabilization. If it persists, check the LNA noise figure and gain settings.
 
-### Short examples
+## Examples
 
-*   **Example A - Normal operation:** Power ON, LO = 5200 MHz, Gain = 55 dB, Noise Temp = 45K, Temp = 50°C, Freq Err = 0.000 MHz, LOCK = Green. The LNB is fully warmed up, locked to reference, and performing optimally.
-*   **Example B - Just powered on:** Power ON, Noise Temp = 90K, Temp = 28°C, Freq Err = 0.000 MHz, LOCK = Green, Thermal = Warming 2:10. The LNB is cold and stabilizing: noise temperature is high, but the LO is locked to the GPSDO so its frequency is already right. Wait for the Thermal readout to show "Stable".
-*   **Example C - Unlocked operation:** Power ON, LO = 5200 MHz, Noise Temp = 47K, Temp = 50°C, Freq Err = 0.062 MHz, LOCK = Red. The LNB is thermally stable with good noise performance, but its VCO is free-running about 12 ppm off. Signals are 62 kHz off-frequency and wandering, and the free-running phase noise costs a 36 MHz carrier about 3 dB of Es/N0. Check the GPSDO reference, then power-cycle the LNB.
-*   **Example D - Degraded LNB:** Power ON, Noise Temp = 120K, LNA NF = 1.5 dB, LOCK = Green. Even though locked, the noise performance is poor - likely component degradation or damage. Sensitivity will be reduced by several dB compared to a healthy LNB.
+*   **Example A - Normal operation:** Power ON, LO = 5200 MHz, Gain = 55 dB, Noise Temp = 45K, Thermal = Stable, LO Error = 0 Hz, Lock = Locked. The LNB is fully warmed up, locked to reference, and performing optimally.
+*   **Example B - Just powered on:** Power ON, Noise Temp = 90K, LO Error = 0 Hz, Lock = Locked, Thermal = Warming 2:10. The LNB is cold and stabilizing: noise temperature is high, but the LO is locked to the GPSDO so its frequency is already right. Wait for the Thermal readout to show "Stable".
+*   **Example C - Unlocked operation:** Power ON, LO = 5200 MHz, Noise Temp = 47K, Thermal = Stable, LO Error = 62 kHz, Lock = Unlocked. The LNB is thermally stable with good noise performance, but its VCO is free-running about 12 ppm off. Signals are 62 kHz off-frequency and wandering, and the free-running phase noise costs a 36 MHz carrier about 3 dB of Es/N0. Check the GPSDO reference, then power-cycle the LNB.
+*   **Example D - Degraded LNB:** Power ON, Noise Temp = 120K, LNA NF = 1.5 dB, Lock = Locked. Even though locked, the noise performance is poor - likely component degradation or damage. Sensitivity will be reduced by several dB compared to a healthy LNB.
 
-### Advanced: Understanding gain and noise figure
+## Advanced
+
+### Understanding gain and noise figure
 
 The LNB has two main noise contributors: the LNA (Low Noise Amplifier) and the mixer. Because the LNA comes first, its noise figure dominates the overall system noise. This is described by Friis' formula:
 
@@ -102,7 +107,7 @@ F\_total = F\_LNA + (F\_mixer - 1) / G\_LNA
 
 This means the mixer's noise contribution is reduced by the LNA gain. Therefore, high LNA gain is beneficial for noise performance (up to a point - excessive gain can cause other issues like compression or oscillation). The noise temperature is then calculated as: T\_noise = 290K × (F\_total - 1).
 
-### Final notes
+## Final notes
 
 The LNB is the most critical component for receiving weak satellite signals. Its noise performance directly determines the minimum signal level you can successfully receive. Good practice includes: allowing adequate warm-up time, ensuring a stable frequency reference, monitoring noise temperature, and protecting the LNB from extreme weather conditions that might degrade components over time.
 

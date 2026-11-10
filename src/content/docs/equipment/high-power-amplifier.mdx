@@ -1,29 +1,41 @@
 ---
 title: High Power Amplifier
-description: A beginner's guide to using the High Power Amplifier in SignalRange
-lastUpdated: 2026-10-06
+description: How to set the HPA back-off and ALC, read power, compression and temperature, and fix common faults.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 11
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 
 The HPA (High Power Amplifier) is the final amplification stage before signals are transmitted to the satellite. It takes the BUC's output (a few milliwatts to a watt) and boosts it to the power the uplink needs: a few watts for a small Ku-band SSPA, hundreds of watts to a kilowatt for a C-band teleport TWTA. The HPA sits after the BUC (Block Upconverter) in the transmit chain and drives the feed through the OMT.
 
-### Key controls
+![HPA card on the TX Chain tab with the back-off setpoint, switches and power readouts.](/images/shots/equipment/high-power-amplifier.webp)
 
-*   **POWER** - enables or disables the HPA. The HPA can only be powered on if the BUC is already powered (power sequencing requirement).
-*   **HPA ENABLE** - enables or disables the RF output. Even when powered, the HPA won't transmit until this switch is on.
+## Where to find it
+
+The **HPA (High Power Amplifier)** card is on the **TX Chain** tab of Mission Control, right of the BUC card. See [TX Chain](/mission-control/tx-chain/). Changes to the back-off setpoint are staged and need **Apply Changes**.
+
+## Controls
+
+*   **Power** - enables or disables the HPA. The HPA can only be powered on if the BUC is already powered (power sequencing requirement).
+*   **HPA Enable** - enables or disables the RF output. Even when powered, the HPA won't transmit until this switch is on.
 *   **ALC** - Automatic Level Control. With ALC on, the amplifier adjusts its own gain so the output stays at the back-off setpoint whatever the drive from the BUC. With ALC off the gain is fixed, and the output follows the drive dB for dB.
-*   **OUTPUT BACK-OFF FROM P1dB (dB)** - how far below the amplifier's 1 dB compression point (P1dB) you want to run (0-30 dB), applied with **Apply Changes**. With ALC on: output = P1dB - back-off. With ALC off: the back-off sets the gain so that the amplifier's rated drive comes out at P1dB - back-off.
+*   **Output Back-off from P1dB (ALC setpoint)** - how far below the amplifier's 1 dB compression point (P1dB) you want to run (0-30 dB), applied with **Apply Changes**. The label adds (ALC setpoint) with ALC on, or (fixed gain, at rated drive) with ALC off. With ALC on: output = P1dB - back-off. With ALC off: the back-off sets the gain so that the amplifier's rated drive comes out at P1dB - back-off.
 
-### Readouts you will see
+## Readouts
 
 *   **Input** - the composite drive from the BUC, dBm.
-*   **Output** - the composite RF output, dBm, with a power meter and the output in watts.
+*   **Output** - the composite RF output, dBm.
+*   **Power** - the output as a segmented meter and in watts.
 *   **P1dB** - the amplifier's 1 dB compression point, dBm.
 *   **Back-off** - the actual output back-off: P1dB minus the output. With ALC on it equals your setpoint; with ALC off it moves with the drive.
 *   **Gain** - output minus input. The readouts always add up: input + gain = output.
 *   **IM3 (2-tone)** - the third-order intermodulation level at the present drive, dBc: how far below each carrier the products of two equal carriers would be. More negative is cleaner.
+*   **Overdrive** - flags output back-off under 3 dB while carrying RF.
 *   **Temp** - case temperature. It follows the dissipated power (DC input minus RF output) with a lag of a couple of minutes, heating and cooling alike.
+
+## How it works
 
 ### What is P1dB and why does it matter?
 
@@ -73,7 +85,7 @@ The HPA turns DC power into RF and heat. Its DC draw rises with output (a class-
 
 The HPA can only be powered if the BUC is powered. An HPA enabled while the BUC is muted or off amplifies nothing but noise and fails the mission: disable the HPA before muting the BUC, and enable it only after the BUC is unmuted.
 
-### Alarms and warning conditions
+## Status and alarms
 
 *   **HPA overdrive - IMD degradation** - output back-off under 3 dB. Increase the back-off.
 *   **HPA ALC at maximum gain** - the drive is too low for the setpoint; check the BUC and the modem.
@@ -81,7 +93,7 @@ The HPA can only be powered if the BUC is powered. An HPA enabled while the BUC 
 *   **HPA over-temperature** - case above 85 °C. Reduce output, check cooling.
 *   **HPA enabled without BUC power** - power sequencing violation.
 
-### Simple troubleshooting steps
+## Troubleshooting
 
 1.  **No RF output** - check Power and HPA Enable, and that the BUC is powered, unmuted and carrying the modem's carrier (Input should read a level, not "--").
 2.  **Overdrive alarm** - output back-off is under 3 dB. Raise the back-off.

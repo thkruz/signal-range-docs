@@ -1,0 +1,97 @@
+---
+title: GPS Timing
+description: The GPS-disciplined oscillator - power, GNSS input, lock, warm-up, holdover and reference quality.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 6
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+The GPS Timing tab is the front panel of the GPS-disciplined oscillator (GPSDO). The GPSDO gives the station a 10 MHz reference and accurate time. The converters in the receive and transmit chains lock to that reference. If the GPSDO drifts or loses GNSS, those converters inherit the error.
+
+![GPS Timing tab with lock, GNSS constellation and holdover cards.](/images/shots/mission-control/gps-timing.webp)
+
+## Controls
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| Power | Turns the GPSDO on or off. After power-on it warms up before it can lock. | On |
+| GNSS Input | Connects or disconnects the GNSS antenna feed. Off simulates losing the signal. | On |
+
+## Status
+
+| Card | Readout | Meaning |
+| --- | --- | --- |
+| Lock & Power Status | Lock Status | LOCKED, ACQUIRING, UNLOCKED or OFF. |
+| Lock & Power Status | GNSS Signal | "(n) SATS" when healthy, WEAK with fewer than 4 satellites, NO SIGNAL, or OFF. |
+| Lock & Power Status | Warmup | READY, a countdown in minutes and seconds, or OFF. |
+| Lock & Power Status | Holdover | ACTIVE or INACTIVE. |
+| GNSS Constellation | Satellites Tracked, Constellation, UTC Accuracy | What the GNSS receiver sees and how close it is to UTC, in ns. |
+| GNSS Constellation | GNSS vs REF ΔT | The GNSS time solution minus the disciplined reference, in microseconds. |
+| OCXO Oven Control | Oven Temperature, Operating Hours | The oven that keeps the crystal stable. |
+| 10 MHz Distribution | Active Outputs, output list | How many 10 MHz outputs are in use out of those available. |
+| Reference Quality Metrics | Frequency Accuracy, Allan Deviation (1s), Phase Noise @ 10Hz, Lock Duration | How good the reference is now. |
+| Holdover Performance | Status, Duration, Error, Time to Limit | How the reference is coasting without GNSS. |
+
+## Lock, holdover and what they mean
+
+- **Warm-up.** The oven must reach temperature first. The Warmup badge counts down. The GPSDO cannot lock until it reads READY.
+- **Locked.** The oscillator is disciplined to GNSS. Downstream converters show Locked.
+- **Holdover.** When GNSS goes away, the GPSDO keeps going on its crystal. The error grows with time. The Holdover Performance card shows the error against a 40 microsecond limit, and Time to Limit estimates how long is left. If it passes the limit, Time to Limit reads EXCEEDED.
+- **GNSS vs REF ΔT.** With a healthy constellation, this number should stay near zero. If it walks while the constellation looks healthy, the GNSS signal is being spoofed, not lost.
+
+<Aside type="caution">
+A walking ΔT with a full satellite count is a spoofing sign, not an outage. Switching GNSS Input off will not cure it, because the oscillator would then coast in holdover.
+</Aside>
+
+## Common tasks
+
+### Bring the GPSDO up from cold
+
+<Steps>
+1. Turn Power on.
+2. Wait for Warmup to count down to READY.
+3. Check GNSS Input is on and that GNSS Signal shows a satellite count of 4 or more.
+4. Confirm Lock Status reads LOCKED.
+</Steps>
+
+### Test a GNSS outage
+
+<Steps>
+1. Turn GNSS Input off. GNSS Signal reads NO SIGNAL and Holdover turns ACTIVE.
+2. Watch Error and Time to Limit on the Holdover Performance card.
+3. Turn GNSS Input on again. The GPSDO re-acquires and Lock Status returns to LOCKED.
+</Steps>
+
+## Alarms and what they mean
+
+| Alarm | Meaning |
+| --- | --- |
+| GPSDO not locked | The reference is free-running. Only shown after warm-up ends. Downstream converters will lose lock. |
+| GNSS signal lost | No GNSS signal. The unit is in holdover or unlocked. |
+| GPSDO in holdover (x.x μs error) | The GPSDO is coasting. Restore GNSS before the error reaches its limit. |
+| GPSDO holdover approaching limit (>30 μs) | The holdover error is close to the limit. |
+| GPSDO oven temperature out of range (x.x °C) | The crystal oven is outside 65 to 75 °C. |
+| GPSDO self-test failed | The internal check has failed. |
+
+The GPSDO light on the Dashboard turns amber or red for these. It stays grey while the unit is off or warming up.
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| Lock Status stays UNLOCKED | Still warming up, GNSS Input is off, or there is no signal. | Wait for READY, turn on GNSS Input, check GNSS Signal. |
+| GNSS Signal reads WEAK | Fewer than 4 satellites tracked. | Wait, or check the station for a fault or interference. |
+| BUC or LNB Lock lost after a GPSDO fault | They take their 10 MHz from this unit. | Restore GPSDO lock. |
+| Time to Limit reads EXCEEDED | Holdover has run past its limit. | Restore GNSS and let the unit re-lock. |
+| ΔT walking with full satellites | Suspected GNSS spoofing. | Report it according to the scenario brief. |
+
+## Related pages
+
+- [GPS Disciplined Oscillator](/equipment/gps-disciplined-oscillator/)
+- [Timing and GPSDO](/systems/timing-and-gpsdo/)
+- [Interference and electronic attack](/systems/interference-and-ea/)
+- [Dashboard](/mission-control/dashboard/)
+- [TX Chain](/mission-control/tx-chain/)
+- [RX Analysis](/mission-control/rx-analysis/)

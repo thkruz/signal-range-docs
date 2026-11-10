@@ -1,0 +1,86 @@
+---
+title: Security Console
+description: Review the station audit trail, manage account status and control the TRANSEC waveform.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 13
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+The Security tab is the station's security desk. It has an audit trail you review and sign off, a list of station accounts whose status you can change, and a TRANSEC card for the waveform and its hop-set key. Use it when a scenario asks you to check who did what on the station, or to bring a secured link up.
+
+<Aside type="note">
+The tab is named **Security** in the tab bar. It only exists when the scenario turns on station security or TRANSEC. If you do not see it, the scenario does not use it.
+</Aside>
+
+![Security tab showing the audit trail, access control list and TRANSEC card.](/images/shots/mission-control/security-console.webp)
+
+The tab shows up to three cards. A scenario can enable the audit and access cards, the TRANSEC card, or both.
+
+## Controls and fields
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| Audit Trail table | Lists station events with Time, Actor, Action, Category and Severity. New entries can appear while the shift runs. | varies |
+| Flag | Marks one audit entry as suspicious. The button is replaced by a FLAGGED badge. | Flag only entries that look wrong |
+| Sign Off Review | Records that you have finished reviewing the audit trail. The badge changes from UNREVIEWED to SIGNED OFF and the button turns off. | Press once, after review |
+| Access Control: Status | Sets each account to active, disabled or expired. | active for staff, disabled or expired for stale accounts |
+| Waveform mode | Chooses Fixed carrier or Frequency hopping. | Fixed carrier until a hopping link is needed |
+| Load Hop-Set Key | Loads the hop-set key so the station can hop. | Load before switching to hopping |
+| Drop Key | Removes the loaded key. | Use to simulate losing the key |
+| Hop-set key badge | LOADED or NOT LOADED. | LOADED when hopping |
+| Hop sync badge | SYNC LOCKED or NO SYNC. | SYNC LOCKED when hopping |
+| Hop channels | The list of hop frequencies in MHz, shown when the scenario defines them. | varies |
+
+## Common tasks
+
+### Review the audit trail
+
+<Steps>
+1. Open the **Security** tab and read the Audit Trail from the top.
+2. Check each entry's Actor, Action and Category. Severity is shown as INFO, WARNING or CRITICAL.
+3. Press **Flag** on any entry that should not be there.
+4. When you have read every entry, press **Sign Off Review**. The badge reads SIGNED OFF.
+</Steps>
+
+Entries can be added on a timer, so check back during a long shift. The table only redraws when a new entry appears, so your Flag button does not move while you click it.
+
+### Disable an account
+
+<Steps>
+1. Find the account in the Access Control card. Each row shows the name and role.
+2. Change its Status to **disabled** or **expired**.
+3. Check the audit trail for any follow-up entry the scenario adds.
+</Steps>
+
+### Bring up a frequency-hopping link
+
+<Steps>
+1. In the TRANSEC card, press **Load Hop-Set Key**. The key badge reads LOADED.
+2. Set Waveform mode to **Frequency hopping**.
+3. Watch the hop sync badge. It reads SYNC LOCKED as soon as hopping is selected with the key loaded.
+</Steps>
+
+## Status and what it means
+
+| Indicator | Meaning |
+| --- | --- |
+| UNREVIEWED (grey) | You have not signed off the audit trail yet. |
+| SIGNED OFF (green) | The review is recorded. |
+| FLAGGED (red) | You marked this entry as suspicious. |
+| LOADED (green) / NOT LOADED (grey) | Whether a hop-set key is in the station. |
+| SYNC LOCKED (green) / NO SYNC (grey) | Whether hop timing is locked. |
+
+## Troubleshooting
+
+- **There is no Security tab.** The scenario does not use station security or TRANSEC. Nothing to fix.
+- **The audit table says "No audit entries yet."** Entries are released by the scenario over time. Wait, or check back after the next scenario event.
+- **Hopping selected but the hop sync badge stays NO SYNC.** The key is probably not loaded. Press Load Hop-Set Key. Sync locks at once when no key is required.
+- **Sign Off Review is greyed out.** It was already pressed. The review is recorded and cannot be undone.
+
+## Related pages
+
+- [GPS Timing](/mission-control/gps-timing/)
+- [Systems overview](/systems/) for how TRANSEC and security work in the simulation
+- [GPS-disciplined oscillator](/equipment/gps-disciplined-oscillator/)

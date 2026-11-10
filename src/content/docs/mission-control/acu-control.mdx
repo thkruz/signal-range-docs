@@ -1,0 +1,111 @@
+---
+title: ACU Control
+description: Point the antenna, choose a tracking mode, track a satellite and protect the feed from weather.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 3
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+ACU Control is the page for the antenna control unit. Use it to power the antenna, choose how it points, move it onto a satellite and watch the beacon. A station with two antennas has one ACU Control tab for each.
+
+![ACU Control tab tracking a satellite in program-track mode with the polar plot.](/images/shots/mission-control/acu-control.webp)
+
+## Tracking modes
+
+The four buttons at the top set the mode. A mode you pick is staged: the old mode keeps running until you press APPLY, and an amber badge reads "(mode) pending APPLY".
+
+| Mode | What it does |
+| --- | --- |
+| STOW | Parks the dish in its safe position. |
+| MAINT | Puts the dish in maintenance mode for service work. |
+| MANUAL | You set azimuth, elevation and polarization yourself. |
+| PROGRAM | The controller follows a chosen satellite from its orbit data. |
+
+## Controls
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| Power | Turns the antenna controller on or off. | On |
+| Loopback | Switches the antenna to loopback test mode. | Off |
+| APPLY and CANCEL | APPLY sends the staged position and mode to the dish. CANCEL throws the staged changes away. Both are greyed out when nothing is staged. | n/a |
+| Azimuth, Elevation, Polarization | Each has a row of arrow buttons. The arrows step by 10, 1 or 0.01 degrees, with more arrows meaning a bigger step. Changes are staged until APPLY. | varies |
+| Target Satellite | Picks the satellite for PROGRAM mode. | varies |
+| Move to Target | Sends the dish to the chosen satellite. Needs PROGRAM mode and a target. | n/a |
+| Step-Track Optimization | Turns on fine beacon correction on top of program tracking. | Off |
+| Beacon Frequency (RF) | The beacon the tracker listens for, in MHz. The line below shows the IF the beacon lands on at the LNB output, which is where to tune the spectrum analyzer. | varies |
+| Search Bandwidth | How wide the beacon receiver searches, in kHz. | varies |
+| Clear Offsets | Resets the step-track azimuth and elevation offsets to zero. | n/a |
+| Reverse Polarization | Appears on the OMT / Duplexer card in some scenarios. Swaps the polarization sense. | Off |
+| Feed Heater | Keeps ice off the feed and keeps it dry. | varies |
+| Rain Blower | Clears water from the radome. | varies |
+
+## Reading the page
+
+- **Antenna Position** is a polar plot of where the dish points now.
+- **Tracking** (the card title changes to Program Track or Program + Step Track) shows the Current Target, the Mode, Pointing (LOCKED or UNLOCKED) and RF signals in view. That last figure counts carriers inside the dish's main beam, locked or not.
+- **Beacon C/N** is measured in the beacon receiver's narrow bandwidth. The bar is red below 5 dB, amber below 10 dB and green above that. Beacon Lock reads LOCKED, UNLOCKED, or with step-track on: IDLE, SEARCHING or LOCKED.
+- **OMT / Duplexer** shows the TX and RX polarization, Cross-Pol Isolation and a Status badge.
+- **Environmental** shows Precipitation (CLEAR or ACTIVE) and Ice Accumulation in dB. The header light is green when the heater or blower is handling the weather, amber when precipitation is falling with no protection, and turns amber at 2 dB of ice and red at 5 dB.
+- **RF Metrics** shows Beacon Freq (RF), Gain, HPBW, G/T, Pol Loss and Sky Temp for the current pointing.
+
+## Common tasks
+
+### Track a satellite
+
+<Steps>
+1. Make sure Power is on.
+2. Press PROGRAM.
+3. Choose the satellite under Target Satellite. A hint says it is staged.
+4. Press Move to Target. The dish slews.
+5. Press APPLY if the mode badge still says pending.
+6. Watch Pointing change to LOCKED and the Beacon C/N bar rise.
+</Steps>
+
+### Point by hand
+
+<Steps>
+1. Press MANUAL, then APPLY.
+2. Use the arrow rows to stage new azimuth and elevation values.
+3. Press APPLY. The dish slews to the staged position.
+4. Adjust Polarization the same way until the beacon C/N is highest.
+</Steps>
+
+### Keep the feed clear in bad weather
+
+<Steps>
+1. Watch the Environmental header light and Precipitation.
+2. Turn on Feed Heater when snow, hail or freezing rain is falling.
+3. Turn on Rain Blower in rain.
+4. Check Ice Accumulation. If it climbs, a lower beacon C/N will follow.
+</Steps>
+
+## Alarms and what they mean
+
+| Display | Meaning |
+| --- | --- |
+| Red fault banner on the page | The antenna reports a fault. The message says which. |
+| PROGRAM greyed out and Pointing UNKNOWN | The controller's automation has failed. Servo modes (MANUAL, STOW, MAINT) still work. Move the dish by hand. |
+| Beacon C/N bar red | Less than 5 dB. Re-point or wait out the weather. |
+| Ice on feed (amber or red) | Ice accumulation has reached its warning or error level. Turn on the Feed Heater. |
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| APPLY is greyed out | Nothing is staged. | Change a value or a mode first. |
+| Move to Target is greyed out | Not in PROGRAM mode, no target chosen, or the automation is down. | Press PROGRAM and choose a target. |
+| Dish moved but Pointing is UNLOCKED | The beacon is too weak or the beacon frequency is wrong. | Check Beacon Frequency (RF) and fine-tune the position. |
+| Beacon Lock stays SEARCHING | Step-track is hunting. | Wait, or widen Search Bandwidth. |
+| Station Status reads STOWED | The antenna mode is STOW. | Choose MANUAL or PROGRAM and APPLY. |
+| Dish will not track at all | The ACU automation fault is active. | Use MANUAL until it clears. |
+
+## Related pages
+
+- [Antenna Control Unit equipment](/equipment/antenna-control-unit/)
+- [Orthomode Transducer](/equipment/orthomode-transducer/)
+- [Weather and rain fade](/systems/weather-and-rain-fade/)
+- [Faults](/systems/faults/)
+- [Dashboard](/mission-control/dashboard/)
+- [RX Analysis](/mission-control/rx-analysis/)

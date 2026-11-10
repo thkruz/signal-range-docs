@@ -1,0 +1,76 @@
+---
+title: Link Budget
+description: How a satellite link is sized, from EIRP and path loss to C/N and margin, with a worked example from a SignalRange scenario.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 1
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+A link budget adds up every gain and loss between a transmitter and a demodulator. The result is the carrier-to-noise ratio (C/N) the receiver will see. Compare that with the C/N the demodulator needs, and the difference is your margin. SignalRange models this chain live, and the Link Analysis tab lets you compute it by hand before you commit to a pass.
+
+![Link Analysis worksheet showing a predicted C/N, the measured C/N and the live margin during a rain fade.](/images/shots/systems/link-budget.webp)
+
+## The terms
+
+- **EIRP** is the transmit power plus the antenna gain, in the direction of the receiver. It is the power the link behaves as if it were radiating from an ideal point source. In SignalRange the authored uplink and transponder power is EIRP, not the amplifier output. The downlink side of the worksheet takes the satellite EIRP in dBm. The uplink side takes the station EIRP in dBW. The two units differ by 30 dB for the same power.
+- **Path loss** is free-space loss over the slant range. It grows with the square of range and with frequency, so it is lowest when the satellite is highest in the sky and highest at the horizon. Doubling the range costs 6 dB.
+- **G/T** is receive antenna gain minus 10 log of the system noise temperature, in dB/K. It is the single number that says how well a receive chain hears. A bigger dish raises G. A cleaner LNB or a warmer sky changes T.
+- **C/N** is received carrier power divided by thermal noise power in the occupied bandwidth. Noise power is Boltzmann's constant times system temperature times bandwidth.
+- **Eb/N0** is energy per information bit over noise density. It equals C/N plus 10 log of the ratio of bandwidth to bit rate. Use it to compare modulations and code rates fairly, because it does not depend on bandwidth.
+- **Margin** is the C/N you have minus the C/N the demodulator needs to lock. A scenario also sets a required margin on top of the demodulator threshold.
+
+For a link through a transponder, uplink and downlink noise add. The worksheet combines the two hops as reciprocals, so the weaker hop dominates. An optional carrier-to-intermodulation term joins the same sum when several carriers share a transponder.
+
+## Worked example
+
+This is the acceptance card from the Galway campaign scenario that introduces the Link Analysis console. The satellite is MERIDIAN-SAR-1 on a maximum-elevation pass.
+
+| Term | Value |
+|---|---|
+| Satellite EIRP | 31.3 dBm |
+| Slant range at maximum elevation | 761 km |
+| Free-space path loss at 11686 MHz | 171.4 dB |
+| Station receive gain | 50.4 dBi |
+| System noise temperature | 125 K |
+| Occupied bandwidth | 36 MHz |
+| Implementation loss | 1 dB |
+| Demodulator threshold | 4.2 dB |
+| Required margin | 4 dB |
+
+1. Received power is 31.3 - 171.4 + 50.4 - 1 = -90.7 dBm.
+2. Noise power in 36 MHz at 125 K is -102.1 dBm.
+3. C/N is -90.7 minus -102.1, about 11.4 dB. That matches the card.
+4. Margin over the 4.2 dB threshold is about 7.2 dB. The scenario asks for at least 4 dB, so the link passes.
+
+Two side figures from the same numbers: G/T is 50.4 - 21.0 = 29.4 dB/K, and C/N0 is C/N plus 75.6 dB-Hz, about 87 dB-Hz.
+
+Now check the edge of the pass. At the 5 degree mask the range is 2270 km. Path loss rises by 20 log of 2270 over 761, about 9.5 dB. The predicted C/N then falls below the demodulator threshold. That is why the useful part of a pass is the middle of it.
+
+## How the operator sees it
+
+The Link Analysis tab has two halves. The predicted half is your own arithmetic, graded against the scenario's expected C/N. If the scenario names no figure, the grade uses the engine's clear-sky value for that link. The result badge reads IN FAMILY when your number is within tolerance (1 dB by default) and OUT OF FAMILY when it is not. The measured half reads the live C/N from the active modem and shows the live margin. Commit Link stores the margin you have at that moment. The badge then reads LINK GO or NO-GO against the required margin.
+
+The measured value is not the predicted one. It includes everything the simulation applies to the real chain: antenna pointing, feed loss, rain and ice, sky noise and interference. If the measured C/N is well below your prediction, one of those is the cause, not your arithmetic. See [Weather and Rain Fade](/systems/weather-and-rain-fade/) and [Interference and EA](/systems/interference-and-ea/).
+
+<Aside type="tip">
+A worksheet is graded against clear-sky C/N. A rain fade does not make a correct worksheet wrong. It lowers the live margin on the measured side.
+</Aside>
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Predicted C/N is about 30 dB too high or low | EIRP entered in dBW where dBm is expected, or the reverse | Check the unit beside each field. Convert by adding or subtracting 30 dB |
+| Badge reads OUT OF FAMILY by about 1 to 3 dB | Implementation loss left at zero, or path loss taken at the wrong range | Re-read the survey numbers and recompute |
+| Measured C/N is far below the prediction | Fade, pointing error or interference on the carrier | Check active alarms, then the antenna pointing |
+| NO-GO after commit | Committed during a fade or away from maximum elevation | Wait for better geometry or conditions and commit again |
+
+## Related pages
+
+- [Link Budget tab](/mission-control/link-budget/)
+- [RX Analysis tab](/mission-control/rx-analysis/)
+- [Low Noise Block Downconverter](/equipment/low-noise-block-downconverter/)
+- [Receiver](/equipment/receiver/)
+- [Weather and Rain Fade](/systems/weather-and-rain-fade/)

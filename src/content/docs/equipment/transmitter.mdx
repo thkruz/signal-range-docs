@@ -1,7 +1,9 @@
 ---
 title: Transmitter
-description: A beginner's guide to using the Transmitter in SignalRange
-lastUpdated: 2026-10-06
+description: How to configure the four transmitter modems, stay inside the power budget and clear a fault.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 9
 ---
 
 import { Steps } from '@astrojs/starlight/components';
@@ -9,65 +11,50 @@ import { Aside } from '@astrojs/starlight/components';
 
 The Transmitter is a multi-modem case that generates IF (Intermediate Frequency) signals for satellite uplink. Each transmitter case contains 4 independent modems, allowing you to transmit multiple carriers simultaneously. The transmitter sits at the beginning of your uplink chain, producing IF signals that are fed to the BUC (Block Upconverter) for frequency translation to RF. Think of the transmitter as the signal source - it creates the baseband-modulated carriers that carry your data, voice, or video content to the satellite.
 
-### Key controls
+![Transmitter Modems card on the TX Chain tab with modem buttons, configuration fields, switches and the power budget bar.](/images/shots/equipment/transmitter.webp)
 
-*   **POWER** - enables or disables the selected modem. When powered on, the modem can generate IF signals. When off, no signal is produced from that modem. The power-on sequence takes approximately 4 seconds to allow the modem's internal oscillators to stabilize.
-*   **TX (Transmit toggle)** - activates or deactivates transmission for the current modem. When enabled, the modem outputs its configured IF signal. When disabled, the modem remains powered and configured but produces no output. The modem must be powered before transmission can be enabled.
-*   **FAULT RESET** - clears fault conditions on the current modem. When a fault occurs (such as power budget exceeded), flip this switch to reset the modem and clear the fault indicator. The reset process takes approximately 250ms. Note: faults cannot be cleared while transmission is active - disable transmission first.
-*   **LOOPBACK TO IF FILTER** - a test mode that routes the modem's output back to the receiver's IF filter instead of to the BUC. This allows you to verify signal generation without actually transmitting to the satellite. Useful for local testing and troubleshooting signal quality.
+## Where to find it
 
-### Configuration parameters
+The **Transmitter Modems** card is on the **TX Chain** tab of Mission Control, below the BUC and HPA cards. See [TX Chain](/mission-control/tx-chain/).
 
-Each modem has configurable parameters that are staged in input fields and applied with the Apply button:
+## Controls
 
-*   **Antenna** - selects which antenna (1 or 2) this modem's signal will be routed through. This determines which antenna feed and dish the signal uses for uplink.
-*   **Freq (MHz)** - the IF center frequency in MHz (typically 1400 MHz for IF band). This is the frequency at which your modulated signal is centered before upconversion.
-*   **BW (MHz)** - signal bandwidth in MHz (typically 10 MHz). Wider bandwidth allows higher data rates but consumes more of the transponder's capacity and requires more transmit power.
-*   **Power (dBm)** - output power level in dBm. This is the IF power delivered to the BUC. Typical values range from -30 dBm to 0 dBm. Higher power improves link margin but consumes more of the transmitter's power budget.
+Select a modem with the buttons **TX 1** to **TX 4**. The controls apply to the selected modem.
 
-### Modem selection buttons
+| Control | What it does | Typical value |
+|---|---|---|
+| Antenna | Chooses which antenna carries this modem's signal. | 1 |
+| Frequency (MHz) | The IF center frequency, 950 to 2150 MHz. | varies (about 1400 MHz) |
+| Bandwidth (MHz) | The signal width, 0.1 to 72 MHz. Wider carriers use more of the power budget. | varies |
+| Power (dBm) | The IF power the modem delivers to the BUC. | varies |
+| Modulation | BPSK, QPSK, 8QAM or 16QAM. The receiver must match. | varies |
+| FEC | 1/2, 2/3, 3/4, 5/6 or 7/8. The receiver must match. | varies |
+| Apply Changes | Commits the staged values. The button is disabled while a field has a validation error. | n/a |
+| Transmit | Puts the carrier on the IF output. The modem must be powered first. | Off until ready |
+| Loopback | Routes the modem output back to the receiver IF filter instead of to the BUC. | Off |
+| Power | Powers the selected modem. Power-on takes about 4 seconds. | On |
+| Reset Fault | Clears a fault on the selected modem. It stays disabled until the modem faults, and a fault cannot clear while Transmit is on. | n/a |
 
-The four numbered buttons (1, 2, 3, 4) at the top select which modem you're configuring and monitoring. The button styling indicates modem status:
+The "Current" label beside each field shows what the modem uses now. Fields hold staged values until you press **Apply Changes**. The Frequency and Bandwidth fields show an error message if you type a value outside the range.
 
-*   **Active (highlighted)** - the currently selected modem whose configuration is displayed
-*   **Transmitting (pulsing/animated)** - the modem is actively transmitting
-*   **Inactive** - the modem is powered but not transmitting
+The modem buttons show state: the selected modem is highlighted, a transmitting modem pulses, and a powered but idle modem is plain.
 
-Click a modem button to switch the control panel to that modem's configuration.
+The **Data Rate** readout shows the bit rate that your bandwidth, modulation and FEC give.
 
-### LED indicators
+## Readouts
 
-*   **Status LED (header)** - overall transmitter case status:
-    *   **Green** - at least one modem powered, no active transmission
-    *   **Red** - at least one modem is actively transmitting
-    *   **Off** - no modems powered
-*   **TX** - transmission status for the selected modem:
-    *   **On (lit)** - modem is transmitting
-    *   **Off** - modem is not transmitting
-*   **Fault** - fault condition indicator:
-    *   **On (lit)** - modem is powered (normal)
-    *   **Fault class active** - a fault condition exists (power budget exceeded, etc.)
-*   **Loopback to IF Filter** - loopback mode indicator:
-    *   **On (lit)** - loopback enabled, signal routed to IF filter
-    *   **Off** - normal mode, signal goes to BUC
-*   **Online** - power status for the selected modem:
-    *   **On (lit)** - modem is powered on
-    *   **Off** - modem is powered off
+The power bar shows how much of the transmitter's power budget the selected modem uses. The total budget is 10 dBm. The load is the power in dBm plus 10 times the base-10 logarithm of the bandwidth in MHz, so a wider carrier at the same power uses more of the budget.
 
-### Power meter
+*   **Within budget:** the bar is green.
+*   **Over 100%:** the bar turns red and the modem faults when you try to transmit.
 
-The power percentage bar shows how much of the transmitter's total power budget is being used by the current modem's configuration. The transmitter has a total power budget of 10 dBm (10 mW).
-
-*   **Green bar** - power consumption within budget
-*   **Red bar (over-budget)** - power consumption exceeds 100%, will trigger a fault when transmission is enabled
-
-The power budget calculation considers both the signal power and bandwidth: `Power Budget Load = Power (dBm) + 10 × log10(Bandwidth in MHz)`. Wider bandwidth signals at the same power level use more transmitter capacity because they represent more total energy. The percentage is a ratio of powers, not of dBm numbers: a load of 10 dBm is 100%, 7 dBm is 50%, and 0 dBm is 10%. For example, a -7 dBm carrier 36 MHz wide has a load of 8.6 dBm and reads 72%.
+## How it works
 
 ### Understanding IF signals
 
 The transmitter generates IF (Intermediate Frequency) signals rather than the final RF (Radio Frequency) signals. This is standard practice in satellite ground stations because:
 
-1. IF signals (typically 70-1400 MHz) are easier to generate, filter, and process
+1. IF signals (950 to 2150 MHz L-band in SignalRange) are easier to generate, filter, and process
 2. The same modem hardware can support multiple RF bands by changing only the BUC
 3. Cable losses at IF frequencies are much lower than at RF frequencies
 4. IF-level testing and troubleshooting is safer (no RF radiation)
@@ -85,43 +72,44 @@ A typical uplink signal path is:
 
 Each component must be properly configured and powered in sequence. The transmitter is the origin of your signal - if the IF signal is incorrect here, no downstream component can fix it.
 
-### Staged values and Apply button
+### Staged values and Apply Changes button
 
 The transmitter uses a "staged values" pattern for configuration changes:
 
 1. Adjust input fields (antenna, frequency, bandwidth, power) - these are "staged" changes
 2. The current values are displayed in the gray labels next to each input
-3. Click **Apply** to commit the staged values to the modem
+3. Click **Apply Changes** to commit the staged values to the modem
 4. Only after Apply are the new settings active
 
 This pattern prevents accidental changes to live transmissions and allows you to review settings before committing them.
 
-### Alarms and warning conditions
+## Status and alarms
 
 The system monitors for several fault conditions:
 
-*   **Modem X Faulted** - the modem has entered a fault state, typically due to power budget exceeded. Clear with FAULT RESET switch (after disabling transmission).
+*   **Modem X Faulted** - the modem has entered a fault state, typically due to power budget exceeded. Turn Transmit off, then press Reset Fault.
+*   **Modem X Intermittent Fault** - the modem is dropping out. A scenario can stage this.
 *   **Modem X in Loopback Mode** - the modem is in test mode. Signals are routed to IF filter, not to the antenna. This is informational, not an error.
 *   **Modem X Power Exceeds Max Transmit Power** - the configured power and bandwidth combination exceeds 100% of the power budget. Reduce power or bandwidth before transmission.
 *   **Modem X Power Approaching Max Transmit Power** - power consumption is between 90-100% of budget. Consider reducing power or bandwidth for headroom.
 
-### Simple troubleshooting steps
+## Troubleshooting
 
-1.  **No output signal** - Verify the modem is powered (Online LED lit). Check that TX switch is enabled. Verify power and bandwidth are configured (non-zero values). Check that LOOPBACK is disabled for actual transmission.
-2.  **Modem shows fault** - Disable transmission (TX switch off). Wait for fault indicator to clear after pressing FAULT RESET. Check power budget percentage - if over 100%, reduce power or bandwidth before re-enabling transmission.
+1.  **No output signal** - Verify the modem is powered (Power switch on). Check that Transmit is on. Verify power and bandwidth are configured (non-zero values). Check that Loopback is off for actual transmission.
+2.  **Modem shows fault** - Disable transmission (Transmit off). Wait for fault indicator to clear after pressing Reset Fault. Check power budget percentage - if over 100%, reduce power or bandwidth before re-enabling transmission.
 3.  **Power percentage shows over 100%** - The combination of power and bandwidth exceeds the transmitter's capacity. Reduce the output power (dBm) or narrow the bandwidth (MHz). The transmitter cannot physically deliver more power than its budget allows.
-4.  **Configuration changes not taking effect** - Remember to click the Apply button after changing input fields. The gray "current value" labels show what's actually active; input fields show staged changes.
-5.  **Want to test without transmitting to satellite** - Enable LOOPBACK TO IF FILTER. Your signal will be routed to the receiver chain for local testing. Disable loopback when ready for actual transmission.
-6.  **Modem won't start transmission** - The modem must be powered first (POWER switch on, wait 4 seconds for warm-up). Only then can TX be enabled. Also check that the power budget is not exceeded.
+4.  **Configuration changes not taking effect** - Remember to click the Apply Changes button after changing input fields. The gray "current value" labels show what's actually active; input fields show staged changes.
+5.  **Want to test without transmitting to satellite** - Enable Loopback. Your signal will be routed to the receiver chain for local testing. Disable loopback when ready for actual transmission.
+6.  **Modem won't start transmission** - The modem must be powered first (Power switch on, wait 4 seconds for warm-up). Only then can TX be enabled. Also check that the power budget is not exceeded.
 
-### Short examples
+## Examples
 
-*   **Example A - Normal transmission:** Modem 1 powered, TX enabled, Freq = 1400 MHz, BW = 10 MHz, Power = -20 dBm, Loopback OFF, Online LED on, TX LED on, Power = 1%. Signal is being transmitted at IF frequency through the uplink chain to the satellite.
-*   **Example B - Standby (ready to transmit):** Modem 2 powered, TX disabled, configuration set, Online LED on, TX LED off, Power = 15%. Modem is configured and ready. Enable TX switch to begin transmission.
-*   **Example C - Fault condition:** Modem 3 powered, TX enabled, Power = 5 dBm (very high), BW = 30 MHz (very wide), Power = 949% (over budget), Fault indicator active. Power budget exceeded caused fault. Disable TX, reduce power to -15 dBm (about 9%), press FAULT RESET, then re-enable TX. Narrowing the bandwidth to 10 MHz alone would not be enough: 5 dBm in 10 MHz still reads 316%.
-*   **Example D - Loopback test mode:** Modem 1 powered, TX enabled, Loopback ON, Loopback LED on. Signal is generated but routed to IF filter for local testing. Check receiver to verify signal quality. Disable loopback when testing complete.
+*   **Example A - Normal transmission:** Modem 1 powered, Transmit on, Freq = 1400 MHz, BW = 10 MHz, Power = -20 dBm, Loopback OFF, Power budget = 1%. Signal is being transmitted at IF frequency through the uplink chain to the satellite.
+*   **Example B - Standby (ready to transmit):** Modem 2 powered, Transmit off, configuration set, Power budget = 15%. Modem is configured and ready. Turn Transmit on to begin transmission.
+*   **Example C - Fault condition:** Modem 3 powered, Transmit on, Power = 5 dBm (very high), BW = 30 MHz (very wide), Power = 949% (over budget), Fault indicator active. Power budget exceeded caused fault. Disable TX, reduce power to -15 dBm (about 9%), press Reset Fault, then re-enable TX. Narrowing the bandwidth to 10 MHz alone would not be enough: 5 dBm in 10 MHz still reads 316%.
+*   **Example D - Loopback test mode:** Modem 1 powered, Transmit on, Loopback ON, Loopback switch on. Signal is generated but routed to IF filter for local testing. Check receiver to verify signal quality. Disable loopback when testing complete.
 *   **Example E - Multiple modems transmitting:** Modem 1 at 1350 MHz, Modem 2 at 1400 MHz, Modem 3 at 1450 MHz, all transmitting. Three carriers at different frequencies going to the satellite. Each modem's power budget is independent.
-*   **Example F - Powered off:** POWER switch off, all LEDs off except possibly Fault (which clears when power cycles). Modem is inactive, consuming no power, producing no signal.
+*   **Example F - Powered off:** Power switch off. Modem is inactive, consuming no power, producing no signal.
 
 <Aside type="tip" title="Developer Note: Power Budget Formula">
 The power budget calculation uses:
@@ -146,13 +134,13 @@ Each modem's IF signal includes metadata that tracks its origin and routing thro
 This metadata allows the simulation to track signals through the entire uplink chain, through the satellite transponder, and back down to receivers.
 </Aside>
 
-### Final notes
+## Final notes
 
 The Transmitter is where your uplink signal originates. Proper configuration here is essential for successful satellite communication. Key best practices:
 
 *   Always check power budget before enabling transmission - operating over 100% causes faults
 *   Use loopback mode for testing before going live
-*   The Apply button commits staged changes - don't forget to click it
+*   The Apply Changes button commits staged changes - don't forget to click it
 *   Power on sequence takes 4 seconds - be patient during warm-up
 *   Multiple modems can transmit simultaneously at different frequencies
 *   Faults can only be cleared when transmission is disabled

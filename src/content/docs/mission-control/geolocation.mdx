@@ -1,0 +1,79 @@
+---
+title: Geolocation
+description: Locate an interfering emitter using two satellites, then read the fix and error ellipse on the map.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 14
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+The Geolocation tab (page title "Interference Geolocation") finds where an interfering uplink is coming from. It listens to the interferer through your main satellite and a nearby satellite at the same time. The small difference in arrival time (TDOA) and in Doppler shift (FDOA) between the two paths gives lines of position on the ground. Where the lines cross is the emitter. You take several captures, compute a fix, and read the result on the map.
+
+<Aside type="note">
+The tab only exists in scenarios that include interference geolocation.
+</Aside>
+
+![Geolocation tab with the Correlator card, captured measurements and the Emitter Fix map.](/images/shots/mission-control/geolocation.webp)
+
+## Controls and fields
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| ADJACENT SATELLITE | Picks the second satellite for the pair. The primary (victim) satellite is shown underneath. | varies |
+| TARGET FREQUENCY | The uplink frequency to correlate on, in MHz. Buttons step by -10, -1, +1 and +10, or type a value. | The interferer's uplink |
+| CORRELATION BANDWIDTH | The width of the correlation window, in MHz. Buttons step by -1, -0.5, +0.5 and +1. Limits are 0.1 to 100 MHz. | Close to the interferer's width |
+| CAPTURE | Starts one integration. A progress bar fills while it runs. | One press per measurement |
+| AUTO | Repeats captures one after another so you catch the interferer whenever it comes up. Shows AUTO ● while on. | On for an interferer that switches on and off |
+| COMPUTE FIX | Solves for the emitter position from the captures of the selected pair. | After several good captures |
+| CLEAR | Clears the captures and the fix. | Use to start over |
+| Captured Measurements | One row per good capture: number, time, adjacent satellite, TDOA in microseconds and FDOA in hertz. | varies |
+| Emitter Fix | The map with both satellites and the FIX marker. The summary line gives latitude, longitude and a 95 percent error ellipse in kilometres. | Ellipse shrinks as captures are added |
+
+Scroll on the map to zoom and drag to pan. Zoom in where the TDOA and FDOA lines cross.
+
+## Common tasks
+
+### Locate an interferer
+
+<Steps>
+1. Choose an **ADJACENT SATELLITE**.
+2. Tune **TARGET FREQUENCY** to the interferer's uplink. Find it first on the RX Analysis tab or in the scenario briefing.
+3. Set **CORRELATION BANDWIDTH** close to the interferer's width. It must be within a factor of two of the real width.
+4. Press **CAPTURE** while the interferer is transmitting. Wait for the progress bar to finish. The message line reports the TDOA and FDOA of the new capture.
+5. Repeat until you have several measurements. Press **AUTO** if the interferer switches on and off.
+6. Press **COMPUTE FIX**. Read the position and error ellipse on the map.
+</Steps>
+
+### Improve a fix
+
+Capture more measurements, ideally at different times so the geometry changes, then press COMPUTE FIX again. A different adjacent satellite also gives a new line of position.
+
+## Status and what it means
+
+The message line under the progress bar shows the state of the last capture.
+
+| Message | Meaning |
+| --- | --- |
+| INTEGRATING... | A capture is running. CAPTURE is disabled until it finishes. |
+| CAPTURE n: TDOA ... / FDOA ... | A good measurement was added to the table. |
+| NO CORRELATION - check target frequency and bandwidth | Nothing matched the tuned frequency and bandwidth. |
+| NO CORRELATION - interferer not transmitting during integration | The interferer was on for too little of the window. It must be up for most of it, about 70 percent. |
+| CORRELATOR FAULT - satellite pair unavailable | The selected pair cannot be used right now. Pick another adjacent satellite. |
+| AUTO stopped: n measurements collected | AUTO stops itself after 40 measurements. |
+
+Fix summary: "No fix computed" means you have not pressed COMPUTE FIX. "geometry singular" means the lines do not cross cleanly enough to give an ellipse.
+
+## Troubleshooting
+
+- **Every capture fails with a frequency message.** The target frequency or bandwidth is off. Re-tune against the interferer on RX Analysis.
+- **Captures fail with "not transmitting".** The interferer cycles on and off. Turn on AUTO and leave it running.
+- **COMPUTE FIX shows geometry singular.** You have too few captures or they are too alike. Collect more, or change the adjacent satellite.
+- **The ellipse is very large.** Early fixes are rough. Add measurements.
+
+## Related pages
+
+- [RX Analysis](/mission-control/rx-analysis/)
+- [Ground Track](/mission-control/ground-track/)
+- [Link Budget](/mission-control/link-budget/)
+- [Systems overview](/systems/)

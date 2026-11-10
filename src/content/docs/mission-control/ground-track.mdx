@@ -1,0 +1,73 @@
+---
+title: Ground Track
+description: Follow satellites on a world map with their paths, coverage circles, stations and the day/night line.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 9
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+The Ground Track tab is a live map of where the satellites are. It draws each satellite's position over the Earth, the path it has flown and will fly, the area it can serve, and your ground stations. Use it to see when a satellite is heading toward your station and how wide its coverage is.
+
+The tab appears only when the scenario has satellites on real orbits. It shows up in two places. On the mission overview it is called World Map and shows every satellite equally. On a satellite's own tab set it is called Ground Track, centered on that satellite.
+
+![Ground Track tab with the satellite sub-point, track and coverage footprint.](/images/shots/mission-control/ground-track.webp)
+
+## Controls
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| Sat coverage | Shows or hides the coverage circle around each satellite. | On |
+| Station access | Shows a circle around your station marking where the focused satellite could be and still be above 5 degrees. Only offered on a satellite's own Ground Track tab. | Off |
+| Day/night | Shows or hides the day and night shading. | On |
+| Constellation switches | Appear when the scenario has satellite groups. Each shows or hides one group. | On |
+
+Below the map, the Sub-Satellite Points table lists each satellite with its Latitude, Longitude and Altitude. A satellite with no valid orbit solution shows "No solution".
+
+## Readouts
+
+### What the map draws
+
+- The sub-satellite point: the spot on the ground directly beneath the satellite.
+- The ground track: the path the sub-point follows. The part already flown is solid and the part ahead is dotted. The track covers about 45 minutes either side of now.
+- Coverage: a circle around the sub-point showing where the satellite is more than 5 degrees above the horizon.
+- Station markers, labeled with the station name.
+- The day/night boundary for the current scenario time.
+
+A clock on the tab shows the scenario time in UTC.
+
+## How it works
+
+### Read the map
+
+<Steps>
+
+1. Open World Map from the overview, or Ground Track from a satellite's tab set.
+2. Find your station marker. Find the satellite marker. The highlighted one is the satellite you are focused on.
+3. Follow the dotted line ahead of the satellite. If it passes through your station's coverage, a contact is coming.
+4. Switch on Station access to see how far away the satellite can be and still be usable from your site.
+5. Check the Sub-Satellite Points table for the exact latitude, longitude and altitude.
+
+</Steps>
+
+### Two circles, two meanings
+
+Coverage rides on the satellite. It marks everywhere that can use this satellite right now. Station access rides on the station. It marks everywhere the satellite could be and still be usable from your site. The size of the second depends on which satellite you mean, so it only appears when a single satellite is in focus. A high orbit gives a very large circle. A low orbit gives a small one.
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| No Ground Track or World Map tab. | The scenario has no satellites on real orbits. | Use a scenario with orbital satellites. |
+| No Station access switch. | You are on the world map, not a single satellite's tab. | Open the satellite's own Ground Track tab. |
+| The satellite is near but the Pass Schedule shows no contact. | The satellite is in coverage but too low to clear the planning elevation, or the station is not selected. | Check the selected station and the MAX EL of the pass. |
+| The map looks static. | Scenario time is paused. | Check the clock on the tab and the timeline controls. |
+| Satellite shows "No solution". | The orbit data cannot be solved at this time. | Load updated ephemeris on the Pass Schedule tab. |
+
+## Related pages
+
+- [Pass Schedule](/mission-control/pass-schedule/) lists the contacts the map predicts.
+- [Contact Plan](/mission-control/contact-schedule/) assigns passes to stations.
+- [Mission Overview](/mission-control/mission-overview/) is where the World Map sits.
+- [Satellite Dashboard](/mission-control/satellite-dashboard/) holds a satellite's own tabs.

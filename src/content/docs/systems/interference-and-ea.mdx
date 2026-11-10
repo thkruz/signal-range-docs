@@ -1,0 +1,65 @@
+---
+title: Interference and Electronic Attack
+description: How scripted interference, terrestrial emitters and player-driven jamming reach your receiver, and how J/S decides whether a link is denied.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 4
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Two systems put unwanted energy on a link. Interference is scripted by the scenario and happens to you. Electronic attack (EA) is something you do, by radiating a jam waveform at a target. Both go through the same signal model, so the effect is a real drop in C/N or C/I on whichever receiver hears it.
+
+![EA assessment view showing jam power, victim power and J/S for an interference event.](/images/shots/systems/interference-and-ea.webp)
+
+## Scripted interference
+
+A scenario lists interference events. Each one has a frequency, a bandwidth, an EIRP, a polarization, a start time and a duration. Inside that time it repeats a cycle: on for a set number of seconds, then off, then on again.
+
+That on and off pattern is the clue. Deliberate interference has a duty cycle. An accident is continuous or random. Time the windows before you name the cause.
+
+There are two ways an event can reach you.
+
+| Path | How it works | What you see |
+|---|---|---|
+| Transponder | The interferer is uplinked to a satellite and relayed to every station that receives that transponder | The same interference at every station on the same downlink. Polarization must match the victim transponder or it does not route |
+| Terrestrial | A ground emitter is heard directly by station antennas, by bearing and the antenna's off-axis pattern | Only stations that can hear it. No Doppler shift |
+
+The missing Doppler is a diagnostic. A signal that claims to be a satellite but never drifts is transmitting from the ground. In later campaigns the emitter also has a ground position, hidden from you, which geolocation measurements are built from.
+
+Effects on the link: carrier-to-interference ratio falls, C/N falls with it, and the receiver may drop lock. Check the spectrum analyzer for the extra carrier and the receiver for lost lock, then compare the pattern to the schedule you have.
+
+## Electronic attack
+
+In EA scenarios you operate a jam chain: a modem, upconverter, power amplifier and antenna. The simulation reads that chain each tick. A jam counts as radiating when its output is above a low floor in the target transponder's uplink band. The amplifier must be enabled and a waveform must be driving it. It counts as on target when the jam antenna is powered and pointed within a tolerance of the target satellite (5 degrees unless the scenario says otherwise).
+
+When both hold, the jam is uplinked and relayed with the target's own transponder. The victim downlink sees it as real co-channel interference. Denial emerges from the physics rather than from a script.
+
+The assessment compares the jam against the victim carrier.
+
+- **J** is the jam HPA's output power in the target uplink band, plus the scenario's path gain.
+- **S** is the victim carrier power the scenario sets.
+- **J/S** is J minus S in dB.
+
+Denial is effective when the jam is radiating, on target and J/S is at or above the threshold. The default threshold is 6 dB. The EA Assessment tab shows a status badge: STANDBY when nothing is happening, DEGRADED when the jam is radiating or on target but not yet effective, and DENIED when it is effective.
+
+<Aside type="caution">
+Protected frequencies matter. Radiating over a band the scenario marks as friendly is fratricide. It fails the mission at once, like the other RF safety rules for the amplifier and for dual transmission.
+</Aside>
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Jam is radiating but the badge stays DEGRADED | J/S below threshold, or pointing off | Raise drive, then check pointing error on the tab |
+| No radiating reading with HPA on | No waveform driving the amplifier | Confirm the modem is transmitting and routed to the chain |
+| Interference at one station only | Terrestrial source | Check bearing and Doppler. Use geolocation to locate it |
+| Interference at all stations on a transponder | Transponder path | Look for a source in the uplink band |
+
+## Related pages
+
+- [EA Assessment tab](/mission-control/ea-assessment/)
+- [Geolocation tab](/mission-control/geolocation/)
+- [Real-Time Spectrum Analyzer](/equipment/real-time-spectrum-analyzer/)
+- [High Power Amplifier](/equipment/high-power-amplifier/)
+- [Link Budget](/systems/link-budget/)

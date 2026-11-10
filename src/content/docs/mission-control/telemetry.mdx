@@ -1,0 +1,90 @@
+---
+title: Telemetry
+description: Read satellite state of health, limit bands and link status.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 12
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+The Telemetry tab (heading: Spacecraft Telemetry) is a read-only display of the satellite's state of health. Channels are grouped by subsystem. Each one shows its value, its limits and a colored state. Nothing on this tab is a control. You read it, report what you see, and act through other tabs.
+
+It appears only in scenarios that include telemetry. The top right shows the NORAD number and the receiving station.
+
+![Telemetry tab with link status and subsystem channel tables.](/images/shots/mission-control/telemetry.webp)
+
+## Readouts
+
+### Status strip
+
+| Item | What it shows |
+| --- | --- |
+| Link | LIVE, ACQUIRING or STALE. |
+| Frames | Number of telemetry frames received. |
+| Last frame | Seconds since the last frame arrived. |
+| State of health | The worst state across all channels: NOMINAL, YELLOW or RED. UNKNOWN when the stream is stale. |
+
+Frames only arrive while an antenna at the station has the satellite in its beam. Point the antenna and wait for frames to start counting.
+
+### Channel tables
+
+Each subsystem has a card with a table. The subsystem cards and channels depend on the scenario.
+
+| Column | What it shows |
+| --- | --- |
+| Channel | Name of the reading, with its short ID below. |
+| Value | Current reading with its unit. Shows "--" until the first frame arrives. |
+| Limits | Warning range after Y and alarm range after R, as low..high. A dash means no limit on that side. "none" means the channel has no limits. |
+| State | NOMINAL, YELLOW or RED. |
+
+## Status and alarms
+
+### States and what they mean
+
+| State | Meaning | Action |
+| --- | --- | --- |
+| NOMINAL | The value is inside its limits. | None. |
+| YELLOW | Outside the normal range but not yet at the alarm limit. | Report it and watch the trend. |
+| RED | Past the alarm limit. | Report it at once and follow the procedure in your brief. |
+| (STALE) added to a state | The value is old. It is the last one received. | Do not trust it. Restore the link. |
+
+### Link states
+
+| Link | Meaning |
+| --- | --- |
+| LIVE | Frames are arriving. |
+| ACQUIRING | Frames have stopped but an antenna is on the satellite. Wait a moment. |
+| STALE | No frame for the stale time (10 seconds by default) and no antenna on the satellite. Values are frozen. |
+
+If no frame has arrived yet, the Last frame field shows "--" and the Value and State cells show "--".
+
+## Common tasks
+
+### Check satellite health
+
+<Steps>
+
+1. Open the Telemetry tab and look at the Link badge.
+2. If it is not LIVE, point the antenna at the satellite using the [ACU Control](/mission-control/acu-control/) and wait for the Frames count to rise.
+3. Read State of health. If it is NOMINAL, scan the cards for anything else unusual.
+4. For any YELLOW or RED channel, note the name, value and limit.
+5. Report it to your lead as the scenario asks.
+
+</Steps>
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| Values show "--". | No frame has arrived yet. | Point the antenna and check the pass is under way. |
+| Link says STALE and values are frozen. | The antenna lost the satellite. | Re-acquire. See [Pass Schedule](/mission-control/pass-schedule/) for timing. |
+| State of health reads UNKNOWN. | The stream is stale. | Restore the link. |
+| A channel is YELLOW right after a command. | The command changed that subsystem. | Check the [TT&C Commanding](/mission-control/commanding/) history and watch for recovery. |
+
+## Related pages
+
+- [TT&C Commanding](/mission-control/commanding/) sends commands that change what you see here.
+- [Pass Schedule](/mission-control/pass-schedule/) shows when frames can arrive.
+- [ACU Control](/mission-control/acu-control/) points the dish.
+- [Faults](/systems/faults/) explains how problems are injected.

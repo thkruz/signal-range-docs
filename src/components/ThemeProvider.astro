@@ -1,14 +1,13 @@
 ---
 import Default from '@astrojs/starlight/components/ThemeProvider.astro';
 
-// Server-side check for dark mode parameter
-const url = Astro.url;
-const forceDark = url.searchParams.get("dark") === "true";
-const forceLight = url.searchParams.get("dark") === "false";
+// The docs are dark-only: every request is forced to the dark theme and the
+// ?dark= parameter (sent by the app's brief iframes) is accepted but no longer
+// changes anything. The theme picker is removed (ThemeSelect.astro).
 ---
 
-{/* Force dark mode when ?dark=true, override localStorage */}
-{forceDark && (
+{/* Always dark: override localStorage so Starlight never picks light */}
+{(
   <script is:inline>
     // Set dark theme immediately, before any other scripts run
     document.documentElement.setAttribute("data-theme", "dark");
@@ -19,25 +18,6 @@ const forceLight = url.searchParams.get("dark") === "false";
       Storage.prototype.getItem = function(key) {
         if (key === 'starlight-theme') {
           return 'dark';
-        }
-        return originalGetItem.call(this, key);
-      };
-    })();
-  </script>
-)}
-
-{/* Force light mode when ?dark=false, override localStorage */}
-{forceLight && (
-  <script is:inline>
-    // Set light theme immediately
-    document.documentElement.setAttribute("data-theme", "light");
-
-    // Prevent Starlight's theme script from overriding
-    (function() {
-      const originalGetItem = Storage.prototype.getItem;
-      Storage.prototype.getItem = function(key) {
-        if (key === 'starlight-theme') {
-          return 'light';
         }
         return originalGetItem.call(this, key);
       };

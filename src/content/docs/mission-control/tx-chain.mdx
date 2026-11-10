@@ -1,0 +1,117 @@
+---
+title: TX Chain
+description: The transmit chain - BUC, HPA and the transmitter modems - plus the power budget and the payload data card.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 5
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+TX Chain is where you build an uplink. A transmitter modem makes the carrier at IF. The BUC (block up converter) moves it up to the satellite's uplink band. The HPA (high power amplifier) raises it to the power that goes to the dish. Set them up in that order, then turn Transmit on.
+
+![TX Chain tab with BUC, HPA and transmitter modems.](/images/shots/mission-control/tx-chain.webp)
+
+## BUC
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| LO Frequency | The local oscillator in MHz, from 6000 to 7500. Coarse buttons step 100 MHz and fine buttons step 10 MHz. Staged until Apply Changes. | varies |
+| Gain | In dB, from 0 to 70. Coarse buttons step 1 dB and fine buttons step 0.5 dB. | varies |
+| Power | Turns the BUC on or off. | On |
+| Mute | Stops the BUC output without turning it off. | Off |
+| Loopback | Puts the BUC in loopback test mode. | Off |
+| Apply Changes | Sends the staged LO and gain. | n/a |
+
+Read-only status on the card: Output, RF Freq, P1dB Margin, Lock and Sideband under RF Status; Temp, Current, Trend (1 min) and 10 min ago under Thermal; Phase Noise and Freq Error under Signal Quality.
+
+## HPA
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| Output Back-off from P1dB (ALC setpoint) | How far below the amplifier's 1 dB compression point the output is held, in dB, from 0 to 30. Coarse buttons step 5 dB and fine buttons step 1 dB. Staged until Apply Changes. | varies |
+| Power | Turns the HPA on or off. | On |
+| HPA Enable | Lets the HPA transmit. If it will not enable, a note under the switch says "Enable refused" and gives the reason. | Off |
+| ALC | Automatic level control. It holds the output at the back-off setpoint. | On |
+
+Read-only status: Input, Output, Power, P1dB and Back-off under Power; Gain and Temp under Amplifier Status; IM3 (2-tone) and an Overdrive badge under Signal Quality. Overdrive reads Normal or OVERDRIVE.
+
+<Aside type="caution">
+Less back-off gives more output but more distortion. When the amplifier is driven past its limit the Overdrive badge turns to OVERDRIVE and neighbouring carriers can be disturbed.
+</Aside>
+
+## Transmitter modems
+
+Press TX 1 to TX 4 to choose a modem. Set it up, then press Apply Changes.
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| Antenna | Which antenna's uplink path this modem feeds. | varies |
+| Frequency (MHz) | The IF frequency of the carrier. | varies |
+| Bandwidth (MHz) | The width of the carrier. | varies |
+| Power (dBm) | The modem output level. | varies |
+| Modulation | BPSK, QPSK, 8QAM or 16QAM. | varies |
+| FEC | 1/2, 2/3, 3/4, 5/6 or 7/8. | varies |
+| Transmit | Puts the carrier on the air. | Off |
+| Loopback | Loops the modem back for testing. | Off |
+| Power | Turns the modem on. | Off |
+| Reset Fault | Clears a modem fault once the cause is fixed. | n/a |
+
+Each field shows a "Current:" line with the value that is applied now. Four small lights show TX, Fault, Loop and Online.
+
+The Power Budget bar shows how much of the transmitter's power budget your modems use. It is green, turns amber from 80 percent, and red at 100 percent. Output Power shows what the modem is putting out now.
+
+The TX Payload Data card shows the data source feeding the carrier, with its Data Rate.
+
+## Common tasks
+
+### Bring up a carrier
+
+<Steps>
+1. Check the antenna is pointed at the satellite on [ACU Control](/mission-control/acu-control/).
+2. Turn the BUC on and set its LO Frequency and Gain. Press Apply Changes.
+3. Turn the HPA on and set the back-off. Press Apply Changes, then turn HPA Enable on.
+4. Select a modem. Set Frequency, Bandwidth, Power, Modulation and FEC from your assignment. Press Apply Changes.
+5. Turn the modem Power on, then Transmit on.
+6. Check the Dashboard: TX Status should read 1 TX and the BUC and HPA lights should be green.
+</Steps>
+
+### Stop transmitting
+
+<Steps>
+1. Turn Transmit off on the modem.
+2. Turn HPA Enable off if you are finished for the pass.
+</Steps>
+
+## Alarms and what they mean
+
+| Alarm | Meaning |
+| --- | --- |
+| Modem N Faulted (error) | A transmitter modem has failed. Use Reset Fault when the cause is gone. |
+| Modem N Power Exceeds Max Transmit Power (error) | The modem's load is over 100 percent of the power budget. Lower Power or turn a modem off. |
+| Modem N Intermittent Fault (warning) | The output is dropping in and out. Only shown while the modem is powered. |
+| Modem N Power Approaching Max Transmit Power (warning) | The load is over 90 percent of the budget. It also appears alongside the Exceeds alarm. |
+| Modem N in Loopback Mode (info) | The modem is looped back for testing. |
+| Source feed idle (warning) | The TX Payload Data card has no source feed. |
+
+The badges at the top of the BUC, HPA and Transmitter Modems cards show the worst alarm for that part.
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| HPA Enable will not stay on | The HPA refused. The note under the switch says why. | Fix the reason, such as an unpowered BUC, then try again. |
+| BUC Lock reads unlocked | The BUC has no good 10 MHz reference. | Check [GPS Timing](/mission-control/gps-timing/). |
+| No carrier at the satellite | BUC muted, HPA Enable off, modem not transmitting, or antenna not pointed. | Walk through the chain from the modem to the dish. |
+| Power Budget bar red | Too much total power requested. | Lower modem Power or turn a modem off. |
+| Overdrive reads OVERDRIVE | Back-off is too small or the input is too high. | Raise the back-off or lower the BUC gain. |
+| Changes did not take effect | They are staged. | Press Apply Changes. |
+
+## Related pages
+
+- [Transmitter](/equipment/transmitter/)
+- [Block Upconverter](/equipment/block-upconverter/)
+- [High Power Amplifier](/equipment/high-power-amplifier/)
+- [Link budget](/systems/link-budget/)
+- [Dashboard](/mission-control/dashboard/)
+- [Link Budget tab](/mission-control/link-budget/)

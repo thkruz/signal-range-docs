@@ -1,0 +1,103 @@
+---
+title: Pass Schedule
+description: Read the list of upcoming satellite contacts, the countdown to the next one, and the ephemeris status.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 7
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+The Pass Schedule tab lists every upcoming contact between your station and the orbiting satellites in the scenario. Each row gives the acquisition time (AOS), the loss time (LOS), how high the satellite climbs, and a live countdown. Use it to decide when to be ready at the console.
+
+The tab only appears in scenarios that contain satellites on real orbits. Fixed and geostationary scenarios do not have it. In amateur (backyard) scenarios the same tab is called Observations and uses the hobby wording noted below.
+
+![Pass Schedule tab listing upcoming passes with AOS, LOS, duration and maximum elevation.](/images/shots/mission-control/pass-schedule.webp)
+
+## Readouts
+
+### Pass table columns
+
+| Column | What it does | Typical value |
+| --- | --- | --- |
+| SATELLITE | Name of the satellite making the pass. | varies |
+| AOS | Time the satellite rises into view and you can acquire the signal (UTC). | varies |
+| LOS | Time the satellite drops out of view (UTC). | varies |
+| DURATION | Length of the contact. | varies |
+| MAX EL | Highest elevation the satellite reaches, in degrees. | varies |
+| MAX EL AT | Time of that highest point (UTC). | varies |
+| AOS AZ | Compass bearing where the satellite rises, in degrees. Point the antenna here before AOS. | varies |
+| STATUS | Countdown to AOS, or time left in the contact. | see below |
+
+### Ephemeris Status panel
+
+Above the table sits the Ephemeris Status panel (Element Sets (TLEs) in Observations). It tells you whether the orbit data behind the predictions is still good.
+
+| Badge | Meaning |
+| --- | --- |
+| NOMINAL | The element set is current. Predictions can be trusted. |
+| EPHEMERIS STALE | The satellite has maneuvered, or its orbit was only estimated. Predictions and antenna tracking are running on old data. In Observations this badge reads TLE SUSPECT. |
+| UPDATED | A newer element set is loaded. Predictions are current again. |
+
+When a satellite is stale, the panel shows a Load Updated Ephemeris button (Fetch Fresh Elements in Observations). Pressing it loads the new data. The pass list and the antenna tracking correct themselves straight away.
+
+## How it works
+
+### What the tab shows
+
+The header reads "Next 12 hours" and "all times UTC". Passes are predicted for the station you have selected, so the list changes when you select a different ground station. It refreshes about once a minute of scenario time. Time skip moves the list forward with the clock.
+
+A pass only appears if its highest point clears the scenario's planning elevation (0 degrees by default; 5 degrees when the scenario sets up a contact timeline, unless it sets another value). Very low passes are left out. A pass that is already under way stays in the list until it ends.
+
+## Common tasks
+
+### Read the next contact
+
+<Steps>
+
+1. Open the Pass Schedule tab and check the selected station is the one you want.
+2. Find the first row whose STATUS starts with AOS. The number after it counts down to acquisition.
+3. Note AOS AZ and MAX EL. A high MAX EL gives a long, strong pass. A low one is short and more affected by weather.
+4. Point the antenna at the AOS AZ bearing before the countdown reaches zero.
+5. When the row turns active, STATUS changes to IN CONTACT and counts down to LOS.
+
+</Steps>
+
+### Refresh stale predictions
+
+<Steps>
+
+1. Look at the Ephemeris Status panel for an EPHEMERIS STALE badge.
+2. Press Load Updated Ephemeris.
+3. Confirm the badge changes to UPDATED and the pass times in the table shift to the corrected values.
+
+</Steps>
+
+## Status and alarms
+
+### Status values
+
+| STATUS | What it means |
+| --- | --- |
+| AOS -mm:ss | Time until the satellite rises. |
+| IN CONTACT (LOS -mm:ss) | The satellite is in view now. The row is highlighted and the number is the time until it sets. |
+
+Two messages can replace the table rows. "No orbital satellites in this scenario." means there is nothing to predict. "No contacts predicted in the planning horizon." means no pass clears the planning elevation in the next 12 hours.
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| The satellite is not where the table says it should be. | The ephemeris is stale after a maneuver. | Press Load Updated Ephemeris, then re-read the times. |
+| A pass you expected is missing. | Its highest point is below the planning elevation, or it is more than 12 hours away. | Check MAX EL on neighbouring passes. Use time skip to move the window forward. |
+| The list is empty. | No satellite on a real orbit, or none visible from the selected station. | Select another station, or wait for a later horizon. |
+| The tab is greyed out. | The station is not operational. | Restore the station, then reopen the tab. |
+| Contact Plan windows are shorter than the rows here. | Plans use only the part of the pass above the planning elevation. | Plan from the Contact Plan times, track from these times. |
+
+## Related pages
+
+- [Contact Plan](/mission-control/contact-schedule/) assigns each pass to a station.
+- [Ground Track](/mission-control/ground-track/) shows where the satellite is on the map.
+- [TT&C Commanding](/mission-control/commanding/) is where you send commands during a pass.
+- [Telemetry](/mission-control/telemetry/) shows satellite health once the link is up.
+- [Antenna Control Unit](/mission-control/acu-control/) points the dish.

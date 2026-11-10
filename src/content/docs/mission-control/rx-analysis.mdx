@@ -1,0 +1,136 @@
+---
+title: RX Analysis
+description: The receive chain - spectrum analyzer, LNB, AGC, IF filter, notch filters, tap points and the receiver modems.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 4
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+RX Analysis is where you find a downlink carrier and lock a receiver modem onto it. The spectrum analyzer shows what is on the air. The LNB, AGC, IF filter and notch filters shape the signal on its way to the receiver modems at the bottom of the page.
+
+![RX Analysis tab with a carrier on the spectrum analyzer and the receive chain controls.](/images/shots/mission-control/rx-analysis.webp)
+
+## Spectrum analyzer
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| AUTO-TUNE | Centres the analyzer on the strongest signal inside the current span. Hidden in scenarios that teach you to find the signal by hand. | n/a |
+| Peak Search | Puts the marker on the highest point of the trace. The readout shows its frequency and level. | n/a |
+| Center Frequency, Span | The window the analyzer shows, in MHz. | varies |
+| Min Amp, Max Amp, Ref Level | The vertical range, in dBm. | varies |
+| Scale | Decibels per division: 1, 2, 5, 6 or 10. | 6 dB/div |
+| RBW | Resolution bandwidth, from 10 Hz to 3 MHz, or Auto. | Auto |
+| Refresh | Screen updates per second, 1 to 30 Hz. | 10 Hz |
+| Markers | Enable a marker and choose its Index. | Off |
+| Spectral, Waterfall, Both | Choose the display type. | Spectral |
+| Pause | Freezes the display. | Running |
+| Traces T1, T2, T3 | Each trace has Visible and Updating switches and a mode: Clear Write, Max Hold, Min Hold or Average. | T1 Clear Write |
+
+## Receive chain
+
+| Card | Control | What it does | Typical value |
+| --- | --- | --- | --- |
+| LNB | LO Frequency | The local oscillator, in MHz. Coarse buttons step 100 MHz and fine buttons step 10 MHz. Staged until Apply Changes. | varies |
+| LNB | Gain | In dB. Coarse buttons step 1 dB and fine buttons step 0.1 dB. | varies |
+| LNB | Power | Turns the LNB on or off. | On |
+| LNB | Noise Temp, Lock, Thermal, LO Error | Read-only status. | varies |
+| AGC | Bypass | Takes the automatic gain control out of the path. | varies |
+| AGC | Mode, Gain, Input, Output | Read-only status. | varies |
+| IF Filter | Bandwidth | Picks one of 17 widths, from 100 Hz to 320 MHz. Narrower filters lower the noise floor but cost more insertion loss. | varies |
+| Notch Filter | Power | Powers the notch bank. | On |
+| Notch 1 to 3 | Enable, Center Freq (MHz, 950 to 2150), Width (MHz, 0.1 to 50) and Depth (dB, 1 to 60). Press Apply Changes. | Off |
+| Tap Points | Chooses where the analyzer listens: TX IF or RX IF by default. | RX IF |
+| I&Q Constellation | Plots the demodulated symbols for the selected modem. | n/a |
+
+Some scenarios unlock two tap points, A and B, with more places to listen along the TX and RX paths (for example after the BUC, after the HPA or after the LNA).
+
+## Receiver modems
+
+Press RX 1 to RX 4 to choose a modem. Set it up, then press Apply Changes.
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| Antenna | Which antenna's downlink this modem listens to. | varies |
+| Frequency (MHz) | The IF frequency the modem tunes to. | varies |
+| Bandwidth (MHz) | The width of the modem's channel. It must be at least as wide as the carrier. | varies |
+| Modulation | BPSK, QPSK, 8QAM or 16QAM. It must match the transmitter. | varies |
+| FEC Rate | 1/2, 2/3, 3/4, 5/6 or 7/8. It must match the transmitter. | varies |
+| Power | Turns the modem on. | Off |
+| Video Monitor | Shows the video feed once the modem locks, if the carrier carries video. | n/a |
+
+Each field shows a "Current:" line with the value that is applied now.
+
+## Signal Quality
+
+The Signal Quality badge is the modem's single verdict.
+
+| Badge | Meaning |
+| --- | --- |
+| Good | Locked with at least 1 dB of margin. |
+| Degraded | Locked with less than 1 dB of margin. The link can drop out. |
+| Acquiring | The signal is strong enough and the demodulator is still locking. |
+| Mismatch | A carrier is present but the modulation or FEC does not match. |
+| Clipped | The IF filter is cutting the carrier too narrow. |
+| No Lock | The carrier is too weak for the modem's settings. |
+| None, Off | No carrier, or the modem is powered off. |
+
+Other readouts on the modem card: Raw C/N, Effective C/N (after the converter penalty), Es/N0, C/N0, Required Es/N0, Power Level, Noise Floor, ADC Level and ADC Status. ADC Status reads Optimal, Clipping, CLIPPING!, Low Level or LOW LEVEL!. Adjust LNB gain or AGC until it reads Optimal.
+
+## Common tasks
+
+### Lock a carrier
+
+<Steps>
+1. Make sure the antenna is on the satellite. See [ACU Control](/mission-control/acu-control/).
+2. Press AUTO-TUNE, or set Center Frequency and Span, to find the carrier.
+3. Press Peak Search and note the frequency.
+4. Select a modem and enter that frequency. Set Bandwidth, Modulation and FEC Rate to match the carrier.
+5. Turn Power on and press Apply Changes.
+6. Wait for Signal Quality to move from Acquiring to Good.
+</Steps>
+
+### Remove an interferer
+
+<Steps>
+1. Find the unwanted spike on the analyzer with Peak Search.
+2. Enable a notch and set Center Freq to the spike's frequency.
+3. Set Width wide enough to cover it and Depth deep enough to drop it. Keep the notch narrow so it does not cut your carrier.
+4. Press Apply Changes and watch the trace.
+</Steps>
+
+<Aside type="note">
+Frequencies on this page are IF frequencies. The LNB converts the satellite's RF to IF using its LO Frequency, so an RF beacon will not sit at its RF number on the analyzer.
+</Aside>
+
+## Alarms and what they mean
+
+| Alarm | Meaning |
+| --- | --- |
+| Carrier lock lost (error) | A modem that was locked has lost its carrier. The detail line names the modem. |
+| Degraded margin (warning) | Locked with under 1 dB of margin. |
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| Analyzer shows only noise | Antenna not on the satellite, or the LNB is off. | Check ACU Control and LNB Power. |
+| AUTO-TUNE does nothing useful | The span is too wide, or the button is hidden for this scenario. | Narrow the span, or find the carrier by hand. |
+| Signal Quality reads Mismatch | Modulation or FEC differs from the carrier. | Match them to the transmitter. |
+| Signal Quality reads Clipped | The IF filter or modem bandwidth is narrower than the carrier. | Widen the filter or the modem Bandwidth. |
+| Signal Quality reads No Lock | Not enough margin. | Re-point, raise LNB gain, or choose a lower-order modulation and stronger FEC. |
+| ADC Status reads CLIPPING! | The signal is too strong. | Lower the LNB gain. |
+| ADC Status reads LOW LEVEL! | The signal is too weak for the converter. | Raise the LNB gain. |
+| Changes did not take effect | They are staged. | Press Apply Changes. |
+
+## Related pages
+
+- [Receiver](/equipment/receiver/)
+- [Low Noise Block Downconverter](/equipment/low-noise-block-downconverter/)
+- [Automatic Gain Control](/equipment/automatic-gain-control/)
+- [IF Filter Bank](/equipment/if-filter-bank/)
+- [Notch Filter](/equipment/notch-filter/)
+- [Coupler](/equipment/coupler/)
+- [Real-Time Spectrum Analyzer](/equipment/real-time-spectrum-analyzer/)
+- [Link budget](/systems/link-budget/)

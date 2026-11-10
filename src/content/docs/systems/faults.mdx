@@ -1,0 +1,62 @@
+---
+title: Faults
+description: How scenarios break equipment on a schedule, what each fault does to the station, and how faults show up as alarms.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 3
+---
+
+A fault is a failure a scenario introduces on purpose. Some are timed hardware failures at a named station. Others are payload conditions that override what a modem or crypto display reports. Either way, the operator finds out the way a real shift would: an alarm, a reading that moves the wrong way, or a link that stops working.
+
+![Active alarms panel listing station faults and warnings.](/images/shots/systems/faults.webp)
+
+## Scheduled hardware faults
+
+A scenario can trip a piece of equipment at a set time, or a set time after an objective goes live. Each fault trips once. A BUC or GNSS fault can last for a stated duration; a modem or key-mismatch fault holds until you fail over or re-key. If the scenario gives the fault a label, the ops log records the moment it trips. Silent faults leave no entry, so you have to notice them.
+
+| Fault | What happens | How it shows up |
+|---|---|---|
+| Transmit modem failure | A modem faults and stops radiating | A jam or service carrier drops. Fail over to a backup modem string |
+| BUC overtemperature | The BUC cooling degrades or a stage draws extra current | Temperature climbs, supply current rises, and a temperature alarm follows |
+| GNSS loss | The GPS signal drops with the switch still up | GPSDO enters holdover with zero satellites tracked |
+| Crypto key mismatch | The crypto unit's key goes to Mismatch | Decryption and authentication fail until you re-key |
+
+The BUC fault is physical. A slow fan means every watt dissipated lifts the temperature further, so reducing drive or muting the carrier cools it. Muting drops current and the temperature heads back below the alarm. A timed BUC or GNSS fault clears by itself when its duration ends. A modem or key-mismatch fault holds until you fail over or re-key.
+
+The GNSS loss differs from flipping the GNSS switch down. With the switch up and the signal gone, the satellite count reads zero and the unit is in holdover. That combination tells you the outage is external. See [Timing and GPSDO](/systems/timing-and-gpsdo/).
+
+## Payload faults
+
+A scenario can also inject conditions into the receive and transmit payload and the crypto display. These override the normal readings for a while, and stack by priority. They include:
+
+- a key approaching expiry
+- an authentication tag failure
+- frame sync loss
+- a high bit error rate
+- uncorrectable Reed-Solomon blocks
+- a crypto bypass mode left on
+- a transmit source feed error, a high transmit buffer and disabled transmit encryption
+
+These are readings to diagnose, not to fix with a button. Work from the symptom back: no frame sync with a good C/N points at framing or the key. A high error rate with a falling C/N points at the link. Payload faults clear when their set time runs out, when the scenario clears them, or when the scenario ends or changes.
+
+## Where faults show up as alarms
+
+Equipment raises its own alarms when a reading goes out of range. The command bar groups them as errors, warnings and info, and shows a count for each. Opening the panel lists every active alarm with the station and the unit that raised it. A fault that is working shows in the list and its severity changes as the reading changes. A fault that has cleared drops off the list.
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Carrier vanished mid-pass | Modem fault | Check the modem status and switch to the backup string |
+| Temperature alarm on the BUC | Cooling fault | Reduce drive or mute the carrier and watch temperature |
+| Decrypt fails with good C/N | Key mismatch or key expiry | Re-key the crypto unit |
+| Alarm appears and clears alone | Timed fault ended | Log it. No action is needed |
+
+## Related pages
+
+- [Dashboard](/mission-control/dashboard/)
+- [Telemetry](/mission-control/telemetry/)
+- [Block Upconverter](/equipment/block-upconverter/)
+- [Crypto Unit](/equipment/crypto-unit/)
+- [GPS Disciplined Oscillator](/equipment/gps-disciplined-oscillator/)
+- [Transmitter](/equipment/transmitter/)

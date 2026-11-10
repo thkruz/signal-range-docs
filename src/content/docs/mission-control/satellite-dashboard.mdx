@@ -1,0 +1,85 @@
+---
+title: Satellite Dashboard
+description: Check a satellite's health, look angles and transponders, and hand traffic control to another station.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 17
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+The Satellite Dashboard is the page you get when you select a satellite in the asset tree or click its card on the Mission Overview. It shows who the satellite is, where it is in the sky from each of your stations, how healthy it is, and which of its transponders are on. When the scenario gives a satellite an owning station, a Traffic Control card also appears so you can hand it over to another station.
+
+![Satellite Dashboard with the Satellite Information, Transponders and Traffic Control cards.](/images/shots/mission-control/satellite-dashboard.webp)
+
+## Fields and controls
+
+### Satellite Information
+
+| Field | What it shows | Typical value |
+| --- | --- | --- |
+| NORAD ID | The satellite's catalog number. | varies |
+| Az / El from (station) | Azimuth and elevation of the satellite as seen by that station's antenna. One row per station. | varies |
+| Polarization from (station) | The polarization angle that station sees, in degrees. | varies |
+| Azimuth, Elevation, Rotation | Shown instead of the station rows when the scenario has no station to look from. | varies |
+| Health | Healthy, Degraded or Critical, with a percentage. | Healthy |
+
+### Transponders
+
+| Field | What it shows | Typical value |
+| --- | --- | --- |
+| Total and Active | How many transponders the satellite has and how many are on. | varies |
+| Transponder row | Name, uplink (UL) and downlink (DL) frequency in MHz, and an ON or OFF badge. | varies |
+| Beacon | The beacon frequency in MHz. A beacon-only transponder shows just this line, because it has no translated uplink and downlink pair. | varies |
+
+### Traffic Control
+
+This card is hidden unless the scenario sets an owner for the satellite.
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| Current Owner | The station that holds traffic control now. | A station ID |
+| Handover To | Picks the station that should take over. Choosing one starts the handover. | A different station |
+| Target Status | Ready or Not Ready for the chosen station. Reads "No handover in progress" when idle. | Ready |
+| Target C/N | Carrier-to-noise the target station sees from this satellite, in dB. | varies |
+| EXECUTE HANDOVER | Completes the handover. It is only enabled when both stations are ready. | Press when both are ready |
+
+## Common tasks
+
+### Hand traffic control to another station
+
+<Steps>
+1. Select the satellite so its dashboard opens.
+2. In Traffic Control, choose a station in **Handover To**. You cannot choose the current owner.
+3. Wait for Target Status to read **Ready**. Check that Target C/N is healthy. If it is not, move to the target station and fix its antenna or receive chain.
+4. Press **EXECUTE HANDOVER**. Current Owner changes to the new station.
+</Steps>
+
+### Check whether a satellite is usable from a station
+
+Read the Az / El row for that station. A negative elevation means the satellite is below the horizon there. Then check that the transponder you need is ON.
+
+## Status and what it means
+
+| Indicator | Meaning |
+| --- | --- |
+| Healthy | Health is 90 percent or higher. |
+| Degraded | Health is between 50 and 90 percent. |
+| Critical | Health is below 50 percent. |
+| Transponder ON (green) / OFF (grey) | Whether that transponder is passing traffic. |
+| Target Status: Ready / Not Ready | Whether the target station can take the satellite now. |
+
+## Troubleshooting
+
+- **There is no Traffic Control card.** The scenario does not use traffic ownership for this satellite.
+- **EXECUTE HANDOVER is greyed out.** One of the two stations is not ready. Check Target Status, and check that the current owner is still operational.
+- **Target C/N shows --.** No handover has been started, or the target station has no usable signal path.
+- **Transponders are OFF.** Transponders are switched on by the scenario or by commands. See the Commanding tab if your scenario provides one.
+
+## Related pages
+
+- [Mission Overview](/mission-control/mission-overview/)
+- [Pass Schedule](/mission-control/pass-schedule/)
+- [Ground Track](/mission-control/ground-track/)
+- [Commanding](/mission-control/commanding/)
+- [Link Budget](/mission-control/link-budget/)

@@ -1,0 +1,162 @@
+---
+title: Field Panels
+description: The panels under the Site scene for power, service checks, workloads, evidence notes, handover forms, records and service paths.
+lastUpdated: 2026-11-09
+sidebar:
+  order: 20
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+Field panels are collapsible sections that open under the scene on the [Site tab](/mission-control/site/). Each one covers one part of diagnosing and handing back a field station: managing power, checking a service, running a workload, noting evidence, filing a handover, checking equipment records and tracing a service path. A panel only appears when the scenario provides what it needs.
+
+![Site tab with the field panels open under the scene.](/images/shots/mission-control/field-panels.webp)
+
+None of the panels tell you what is wrong. They show what you measured, when you measured it and where it came from. You decide what it means.
+
+## Power
+
+Shows stored energy, per-device draw, fuel and reserve. You choose a mode per device, see a forecast, and then apply.
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| Stored, Draw, Charge, Reserve | Battery state, current load, charge rate and reserve. Charge and Reserve only show when the station has them. | varies |
+| Device table | Each device with its current mode, draw in watts and fuel. | varies |
+| Set mode | Picks a new mode for a device. Each option shows its load in watts. | varies |
+| Forecast | Previews how your picks change the power picture. Nothing changes yet. | |
+| Apply | Commits all picks. Each change costs scenario time and is logged. | |
+| Discard picks | Throws away picks you have not applied. | |
+
+## Service checks
+
+For each service, a table with one row per layer: Power, Local network, Terminal link, Account, Provider and Application.
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| Check with | How you look: Device light, Local probe, Terminal app, Provider portal, Pilot report, Endpoint report or Workload run. Only methods that can see that layer are offered. | varies |
+| Metric drop-down (unlabelled) | For methods that give a number: Status, Latency, Download, Upload or Loss. | Status |
+| Check | Takes one sample, stamped with scenario time. | |
+| Reading, Source, Taken, Status | The latest sample, how it was taken, when, and whether it is Current, Stale or Invalidated. | Current |
+| Symptom history | Changes in service status you could have seen. | "Nothing has changed yet." at the start |
+
+A green device light does not prove end-to-end service. Pick a method that can see the layer you care about.
+
+## Workloads
+
+Requirement cards describe a job the station must support, such as a data transfer. Background transfers sit in their own group.
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| Service | Which service the run uses. | varies |
+| Priority | Background, Routine or Mission. Higher priority takes a larger share of shared capacity. | Routine |
+| Start run | Starts the run. | |
+| Hold for result | Waits out the rest of the run on the scenario clock. | |
+| Stop | Stops a running job. | |
+| Runs list | Each run with progress, share, start and end times, and a result: Running, Supported, Degraded, Unsupported or Aborted. | varies |
+
+## Notebook
+
+A timeline of what you observed, did and measured, newest first, and a form for hypotheses.
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| Timeline | Entries are added automatically as you inspect, measure and fix things. They cannot be edited. | |
+| I suspect | Scope: A part, connector or cable; A service path segment; Power supply; The provider; or The far endpoint. | varies |
+| Target | The item inside that scope. | varies |
+| Cause | A choice from the scenario's list, or free text when no list is given. | varies |
+| Confidence | Low, Medium or High. | Medium |
+| Backed by | Tick the timeline entries that support the hypothesis. | At least one |
+| Add hypothesis | Writes the hypothesis to the timeline. The panel does not grade it. | |
+
+## Handover
+
+A form you fill in and file when you hand the station back.
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| Form | Picks the form when the scenario has more than one. | varies |
+| Fields | Depend on the form. They can offer a use-my-latest-reading fill, a run picker, a freshness answer (Current, Last-known or Unavailable), a choice list, or a number or text box. | varies |
+| Back this with notebook entries | Cite notebook entries that support a claim. | |
+| Notebook ticks | Tick the notebook entries that back a field, as the hint asks. | |
+| Check | Reports plain-language problems with the form. Records nothing. | Press before Submit |
+| Submit | Files the record. | |
+
+## Records and notices
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| Equipment records | Each unit's paperwork next to what is on site, with differences marked. | |
+| Accept this unit | Accepts a unit. Refused while anything differs. | |
+| Send referral, File correction request | Sends an authored request, such as a referral or a correction to a record. | |
+| Notice inbox | Provider notices, newest first, with an unread mark. | "No notices yet." at the start |
+| Mark as read | Clears the unread mark. | |
+
+The panel does not say which side of a mismatch is wrong, and it does not say when an answer will arrive.
+
+## Service paths
+
+A diagram for each service showing its chain: power, local, terminal link, provider and remote segments.
+
+| Control | What it does | Typical value |
+| --- | --- | --- |
+| Box | Click to select a segment. | |
+| Record selection | Writes the selected nodes into the notebook timeline. | |
+| Clear | Clears the selection. | |
+
+Parts that sit on more than one service path are highlighted, unless the scenario turns the highlight off so you can find them yourself.
+
+## Common tasks
+
+### Find which layer is failing
+
+<Steps>
+1. Under **Service checks**, check the Power layer first, then work down: Local network, Terminal link, Provider, Application.
+2. Use a method that can see each layer. Read the Status badge. A Stale or Invalidated reading needs a fresh check.
+3. Open **Service paths** and select the segments where readings first go bad. Press **Record selection**.
+4. In the **Notebook**, add a hypothesis and tick the entries that back it.
+</Steps>
+
+### Check a plan against the power budget
+
+<Steps>
+1. Open **Power** and note Stored, Draw and Reserve.
+2. Choose modes in the **Set mode** column.
+3. Read the Forecast. If the picks leave too little reserve, change them.
+4. Press **Apply**.
+</Steps>
+
+### Hand the station back
+
+<Steps>
+1. Make sure your notebook holds the evidence you need.
+2. Open **Handover**, choose the form, and fill each field.
+3. Press **Check** and fix any problem it lists.
+4. Press **Submit**.
+</Steps>
+
+## Status and what it means
+
+| Badge | Meaning |
+| --- | --- |
+| Current | The sample is recent enough to trust. |
+| Stale | The sample is old. Check again. |
+| Invalidated | Something changed since the sample, so it no longer applies. |
+| Supported | A workload run met its requirements. |
+| Degraded | It ran but missed some metrics. |
+| Unsupported | It could not run. |
+| Aborted | You stopped it. |
+
+## Troubleshooting
+
+- **A panel is missing.** The scenario does not provide what it needs, such as handover forms or an equipment ledger.
+- **Apply changes nothing.** You have no picks that differ from the current modes.
+- **Accept this unit is refused.** Something differs between the paperwork and the unit. Look for the marked rows, and file a change request if it is authored.
+- **A Check method is not offered.** That method cannot see that layer. Pick another.
+- **A workload shows Unsupported but the lights are green.** The lights only show device power. Work down the service layers.
+
+## Related pages
+
+- [Site](/mission-control/site/)
+- [Dashboard](/mission-control/dashboard/)
+- [Link Budget](/mission-control/link-budget/)
+- [Systems overview](/systems/)
