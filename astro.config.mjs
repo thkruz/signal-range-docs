@@ -144,6 +144,70 @@ export default defineConfig({
         {
           label: 'Scenario 8 - Night Shift',
           slug: 'campaign-1/scenario-8'
+        },
+        {
+          label: 'Scenario 9 - Morning Rounds: Multi-Satellite Health Check',
+          slug: 'campaign-1/scenario-9'
+        },
+        {
+          label: 'Scenario 10 - Customer Pass: High-Throughput Window on AURORA-7',
+          slug: 'campaign-1/scenario-10'
+        },
+        {
+          label: 'Scenario 11 - Planned Maintenance: Hand Off',
+          slug: 'campaign-1/scenario-11'
+        },
+        {
+          label: 'Scenario 12 - Planned Maintenance: Return to Service',
+          slug: 'campaign-1/scenario-12'
+        },
+        {
+          label: 'Scenario 13 - Thermal Anomaly',
+          slug: 'campaign-1/scenario-13'
+        },
+        {
+          label: 'Scenario 14 - Rain Fade',
+          slug: 'campaign-1/scenario-14'
+        },
+        {
+          label: 'Scenario 15 - Frequency Coordination',
+          slug: 'campaign-1/scenario-15'
+        },
+        {
+          label: 'Scenario 16 - Cascade Failure',
+          slug: 'campaign-1/scenario-16'
+        },
+        {
+          label: 'Scenario 17 - Solar Event: Sun Transit Outage',
+          slug: 'campaign-1/scenario-17'
+        },
+        {
+          label: 'Scenario 18 - Satellite Anomaly: TIDEMARK-2 Station-Keeping Drift',
+          slug: 'campaign-1/scenario-18'
+        },
+        {
+          label: 'Scenario 19 - Train the New Hire: Producing the Quick-Reference Card',
+          slug: 'campaign-1/scenario-19'
+        },
+        {
+          label: 'Scenario 20 - Dual Outage: Concurrent Site Loss, Prioritized Recovery',
+          slug: 'campaign-1/scenario-20'
+        },
+        {
+          label: 'Scenario 21 - Hostile RF: Suspected Intentional Interference',
+          slug: 'campaign-1/scenario-21'
+        },
+        {
+          label: 'Scenario 22 - End-of-Life Planning: AURORA-7 Sunset Recommendation',
+          slug: 'campaign-1/scenario-22'
+        },
+        {
+          label: 'Scenario 23 - Emergency Bypass: Manual Operations During Automation Failure',
+          slug: 'campaign-1/scenario-23'
+        },
+        {
+          label: 'Scenario 24 - Constellation Crisis: Campaign Capstone',
+          slug: 'campaign-1/scenario-24'
         }
       ]
     }, {
